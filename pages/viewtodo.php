@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * Todo Index
+	 * View Todo Page
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -16,6 +16,8 @@
 	// Logged in users only
 	gatekeeper();
 	
+	$todo_guid = get_input('todo_guid');
+	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
 	$page_owner = page_owner_entity();
@@ -25,20 +27,12 @@
 			set_page_owner($page_owner_guid);
 	}	
 	
-	$limit = get_input("limit", 10);
-	$offset = get_input("offset", 0);
-
-	$title = elgg_echo('todo:title:yourtodos');
+	$todo = get_entity($todo_guid);
+	
+	$title = $todo->title;
 	
 	// create content for main column
-	$content = elgg_view_title($title);
-	
-	$context = get_context();
-	set_context('search');
-	
-	$content .= elgg_list_entities(array('types' => 'object', 'subtypes' => 'todo', 'container_guid' => page_owner(), 'limit' => $limit, 'offset' => $offset, 'full_view' => FALSE));
-	
-	set_context($context);
+ 	$content = elgg_view_entity($todo, true);
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('two_column_left_sidebar', '', $content);
