@@ -12,21 +12,52 @@
 $english = array(
 	
 	// Generic Title
-	'todo:title' => 'Todo\'s',
-	'item:object:todo' => 'Todo\'s',
+	'todo:title' => 'To Do\'s',
+	'item:object:todo' => 'To Do\'s',
+	'item:object:todosubmission' => 'To Do Submission',
 	
 	// Page titles 
-	'todo:title:yourtodos'	=> 'Your Todo\'s',
-	'todo:title:create' => 'Create New Todo',
-	'todo:title:edit' => 'Edit Todo',
+	'todo:title:yourtodos'	=> 'To Do\'s I\'ve Assigned',
+	'todo:title:assignedtodos' => 'To Do\'s Assigned To me',
+	'todo:title:create' => 'Create New To Do',
+	'todo:title:edit' => 'Edit To Do',
+	'todo:title:alltodos' => 'All Site To Do\'s',
 	
 	// Menu items
-	'todo:menu:yourtodos' => 'Your Todos',
-	'todo:menu:createtodo' => 'Create Todo',
+	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
+	'todo:menu:assignedtodos' => 'To Do\'s I\'ve Assigned', 
+	'todo:menu:createtodo' => 'Create To Do',
 	'todo:menu:admin' => 'todo Admin',
-		
+	'todo:menu:alltodos' => 'All Site To Do\'s',		
+	
 	// Labels 
-
+	'todo:label:noresults' => 'No Results',
+	'todo:label:description' => 'Instructions',
+	'todo:label:duedate' => 'Due Date',
+	'todo:label:assignto' => 'Assign To', 
+	'todo:label:returnrequired' => 'Return Required', 
+	'todo:label:individuals' => 'Individual(s)',
+	'todo:label:groups' => 'Group or Channel',
+	'todo:label:loggedin' => 'Logged In Users', 
+	'todo:label:assigneesonly' => 'Assignees Only',
+	'todo:label:accesslevel' => 'View Access Level',
+	'todo:label:assessmentrubric' => 'Assessment Rubric', 
+	'todo:label:rubricnone' => 'None',
+	'todo:label:rubricnew' => 'Create New',
+	'todo:label:rubricselect' => 'Select Existing',
+	'todo:label:selectgroup' => 'Select Group',
+	'todo:label:viewrubric' => 'View Rubric',
+	'todo:label:assignees' => 'Assignees',
+	'todo:label:status' => 'Status',
+	'todo:label:completetodo' => 'Complete This To Do',
+	'todo:label:newsubmission' => 'New Submission',
+	'todo:label:additionalcomments' => 'Additional Comments (Optional)',
+	'todo:label:assignee' => 'Assignee',
+	'todo:label:datecompleted' => 'Date Completed',
+	'todo:label:submission' => 'Submission',
+	'todo:label:complete' => 'Complete',
+	'todo:label:incomplete' => 'Outstanding',
+	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
 	'todo:success:edit' => 'Todo successfully edited',
@@ -37,7 +68,8 @@ $english = array(
 	'todo:error:delete' => 'There was an error deleting the Todo',
 	
 	// Other content
-	'todo:strapline' => '%s',
+	'todo:strapline' => 'Created: %s',
+	'todo:strapline:mode' => '%s',
 
 );
 

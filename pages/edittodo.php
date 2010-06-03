@@ -31,7 +31,7 @@
 	
 	// create content for main column
 	$content = elgg_view_title($title);
-	$content .= elgg_view("todo/forms/edit", $vars);
+	$content .= elgg_view("todo/forms/edittodo", $vars);
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('two_column_left_sidebar', '', $content);

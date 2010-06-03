@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * Todo Create Page
+	 * Todo To Do's assigned to me
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -24,12 +24,27 @@
 		if ($page_owner_guid)
 			set_page_owner($page_owner_guid);
 	}	
+	
+	$limit = get_input("limit", 10);
+	$offset = get_input("offset", 0);
 
-	$title = elgg_echo('todo:title:create');
+	$title = elgg_echo('todo:title:assignedtodos');
 	
 	// create content for main column
 	$content = elgg_view_title($title);
-	$content .= elgg_view("todo/forms/edit", $vars);
+	
+	$context = get_context();
+	set_context('search');
+	
+	$list .= list_entities_from_relationship(TODO_ASSIGNEE_RELATIONSHIP, $page_owner_guid, false, 'object', 'todo', 0, $limit, false, false, true);
+
+	set_context($context);
+	
+	if ($list) {
+		$content .= $list;
+	} else {
+		$content .= elgg_view('todo/noresults');
+	}
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('two_column_left_sidebar', '', $content);
