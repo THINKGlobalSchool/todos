@@ -170,7 +170,7 @@
 				cache: false, 
 				dataType: "html", 
 				error: function() {
-					alert('There was an error');	
+					//alert('There was an error');	
 				},
 				success: function(data) {
 				}

@@ -16,6 +16,8 @@
 	// - Which fields on edit form are required? Only title is checked ATM
 	// - Permissions... logged in works, but how to do 'assignees'?
 	// - Need seperate search area? Can just search from top
+	// - River stuff
+	// - Filter todo's based on compete/outstanding
 	
 	function todo_init() {
 		global $CONFIG;
