@@ -19,6 +19,7 @@
 	$url = $vars['entity']->getURL();
 	$owner = $vars['entity']->getOwnerEntity();
 	$title = $vars['entity']->title;
+	$return_required = $vars['entity']->return_required;
 	
 	
 	// Start putting content together
@@ -28,8 +29,11 @@
 	$duedate_label = elgg_echo("todo:label:duedate");
 	$duedate_content = elgg_view('output/longtext', array('value' => $vars['entity']->due_date));
 	
-	$assignees_label = elgg_echo("todo:label:assignees");
-	$assignees_content = elgg_view('todo/assigneelist', array('assignees' => get_todo_assignees($vars['entity']->getGUID())));
+	//$assignees_label = elgg_echo("todo:label:assignees");
+	//$assignees_content = elgg_view('todo/assigneelist', array('assignees' => get_todo_assignees($vars['entity']->getGUID())));
+	
+	$return_label = elgg_echo("todo:label:returnrequired");
+	$return_content = ($return_required ? "Yes": 'No' );
 	
 	$status_label = elgg_echo("todo:label:status");
 	
@@ -48,12 +52,19 @@
 	
 	// Assignee only content
 	if ($is_assignee) {
-		$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
 		
-		if (has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
+		if ($submission = has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
 			$status_content .= "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+			$controls .= "&nbsp;&nbsp;&nbsp;<a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a>";
 		} else {
 			$status_content .= "<span class='incomplete'>" . elgg_echo('todo:label:incomplete') . "</span>";
+			// If we need to return something for this todo, the complete link will point to the submission form
+			if ($vars['entity']->return_required) {
+				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
+			} else {
+				// No return required, link to createsubmissionaction and create blank submission
+				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
+			}
 		}
 		
 	} 
@@ -108,7 +119,6 @@
 							}
 						});
 		
-		/** SUBMISSION CLICK HANDLER **/
 		$("a#create_submission").click(
 			function() {
 				$("#submission_dialog").dialog("open");
@@ -116,29 +126,47 @@
 			}
 		);
 		
-		$("form#todo_submission_form").submit(
+		$("a#create_blank_submission").click(
 			function() {
-				/** May not be tinyMCE **/
-				if (tinyMCE) 
-					var comment = tinyMCE.get('submission_description').getContent();
-				else 
-					var comment = $("textarea#submission_description").val();
-				if (comment) {
-					sendSubmission({$vars['entity']->guid}, comment);
-					$("#submission_dialog").dialog("close");
-				} else {
-					// error
-				}
+				sendSubmission();
+				setTimeout ('window.location.reload()', 800);
 				return false;
-				
 			}
 		);
 		
-		function sendSubmission(entity_guid, comment) {
+		$("form#todo_submission_form").submit(
+			function() {
+				/** May not be tinyMCE **/
+				if (tinyMCE) {
+					var comment = tinyMCE.get('submission_description').getContent();
+					$("textarea#submission_description").val(comment);
+				}
+				else {
+					var comment = $("textarea#submission_description").val();
+					
+				}
+				
+				var content = $("#submission_content").val();
+					
+				if (content) {
+					sendSubmission();
+					$("#submission_dialog").dialog("close");
+					setTimeout ('window.location.reload()', 800);
+			
+				} else {
+					// error
+					$("#submission_error_message").show().html("** Content is required");
+				}
+				return false;
+			}
+		);
+		
+		function sendSubmission() {
+			data = $("form#todo_submission_form").serializeArray();
 			$.ajax({
 				url: "$submission_url",
 				type: "POST",
-				data: "todo_guid=" + entity_guid + "&description=" + comment,
+				data: data,
 				cache: false, 
 				dataType: "html", 
 				error: function() {
@@ -155,7 +183,6 @@
 EOT;
 	
 	// Put content together
-	$comments = elgg_view_comments($vars['entity']);
 	$info = <<<EOT
 			<div class='contentWrapper singleview'>
 				<div class='todo'>
@@ -179,9 +206,13 @@ EOT;
 						<label>$duedate_label</label><br />
 						$duedate_content
 					</div>
-					<div>
+					<!--<div>
 						<label>$assignees_label</label><br />
 						$assignees_content
+					</div><br />-->
+					<div>
+						<label>$return_label</label><br />
+						$return_content
 					</div><br />
 					<div>
 						<label>$status_label</label><br />
@@ -189,7 +220,6 @@ EOT;
 					</div><br />
 				</div>
 			</div>
-			$comments
 			<div id="submission_dialog" style="display: none;" >$submission_form</div>
 EOT;
 	

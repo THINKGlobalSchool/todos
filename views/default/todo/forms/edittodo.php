@@ -10,7 +10,8 @@
 	 * 
 	 */
 	
-		// JS
+	
+	// JS
 	$script = <<<EOT
 			<script type='text/javascript'>
 				$(document).ready(function() {
@@ -36,6 +37,10 @@ EOT;
 	
 	// Check if we've got an entity, if so, we're editing.
 	if (isset($vars['entity'])) {
+		
+		if (!$vars['entity']) {
+			forward('pg/todo');
+		}
 		
 		$action 		= "todo/edittodo";
 		$title 		 	= $vars['entity']->title;
@@ -80,6 +85,7 @@ EOT;
 		$action = "todo/createtodo";
 		$title = "";
 		$description = "";
+		$return_required = 0;
 		
 		$container_hidden = "";
 		$entity_hidden = "";
@@ -120,12 +126,14 @@ EOT;
 	$group_picker = elgg_view('input/pulldown', array('internalname' => 'assignee_guids[]', 'internalid' => 'group_assignee_picker', 'options_values' => get_todo_groups_array(), 'class' => 'multiselect', 'js' => 'MULTIPLE'));
 	
 	$return_label = elgg_echo('todo:label:returnrequired');
-	$return_content = elgg_view('input/checkboxes', array('internalname' => 'return_required', 'internalid' => 'todo_return_required', 'options' => array('' => 0), 'value' => $return_required));
+	$return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_required ? "checked='checked' ": '' ) .  " name='return_required' id='todo_return_required'>";
+
 
 	// Optional content 
 	$rubric_html = "";
 	if (TODO_RUBRIC_ENABLED) {
 		$rubric_label = elgg_echo('todo:label:assessmentrubric');
+		$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
 		$rubric_content = elgg_view('input/pulldown', array('internalname' => 'rubric_select', 
 															'internalid' => 'rubric_select', 
 															'options_values' => array(0 => elgg_echo('todo:label:rubricnone'),
@@ -155,8 +163,9 @@ EOT;
 			</script>
 EOT;
 
-		$rubric_html .= "<div><label>$rubric_label</label><br />$rubric_content</div>
+		$rubric_html .= "<div><label>$rubric_label</label><br />$rubric_content</div><br />
 						<div id='rubric_picker_container'>
+							<label>$rubric_picker_label</label><br />
 							$rubric_picker
 							<br /><br />
 						</div>";

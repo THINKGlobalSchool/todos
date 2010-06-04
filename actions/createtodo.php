@@ -24,28 +24,17 @@
 	$tags 				= string_to_tag_array(get_input('tags'));
 	$due_date			= get_input('due_date');
 	$assignees			= get_input('assignee_guids');
-	$return_required	= get_input('return_required');
+	
+	if (get_input('return_required', false)) {
+		$return_required = true;
+	} else {
+		$return_required = false;
+	}
+	
 	$rubric_select		= get_input('rubric_select');
 	$rubric_guid		= get_input('rubric_guid');
 	$access_level		= get_input('access_level');
-	
-	
-	/*&
-	print_r_html("Title: " . $title . "<br />");		
-	print_r_html("Desc: " . $description . "<br />"); 		
-	print_r_html("Tags: " . $tags) . "<br />"; 				
-	print_r_html("Due: " . $due_date . "<br />");			
-	print_r_html("Assignees: " . $assignees . "<br />");
-	print_r_html($assignees);	
-	print_r_html("Required" . $return_required . "<br />");	
-	var_dump($return_required);
-	print_r_html("Rubric Present: " . $rubric_select . "<br />");		
-	print_r_html("Rubric Guid: " . $rubric_guid . "<br />");		
-	print_r_html("Access: " . $access_level . "<br />");
-	*/
-	
-	
-	
+
 	// Cache to session
 	$_SESSION['user']->todo_title = $title;
 	$_SESSION['user']->todo_description = $description;
@@ -87,9 +76,16 @@
 	// Set up relationships for asignees, can be users or groups (multiple)
 	if (is_array($assignees)) {
 		foreach ($assignees as $assignee) {
-			// This states: 'Jeff' is 'assignedtodo' 'Task/Assignment' 
-			// Or, groups 'Group X' 'assignedtodo' 'Task/Assignment'
-			add_entity_relationship($assignee, TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
+			$entity = get_entity($assignee);
+			if ($entity instanceof ElggUser) {
+				// This states: 'Jeff' is 'assignedtodo' 'Task/Assignment' 
+				add_entity_relationship($assignee, TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
+			} else if ($entity instanceof ElggGroup) {
+				// If we've got a group, we need to assign each member of that group
+				foreach ($entity->getMembers() as $member) {
+					add_entity_relationship($member->getGUID(), TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
+				}
+			}
 		}
 	}
 	
@@ -98,5 +94,5 @@
 
 	// Save successful, forward to index
 	system_message(elgg_echo('todo:success:create'));
-	forward('pg/todo');
+	forward('pg/todo/owned');
 ?>

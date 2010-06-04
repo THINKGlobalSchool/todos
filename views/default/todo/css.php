@@ -35,6 +35,16 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
+.todo .submission_content_select {
+	border: 2px solid #bbbbbb;
+	font-size: 120%;
+	width: 100%;
+	height: auto;
+	padding: 10px;
+	-moz-border-radius:5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+}
+
 .todo_icon {
 	float:left;
 	margin:3px 0 0 0;
@@ -117,7 +127,6 @@
 	background: #eeeeee;
 }
 
-
 .todo .status_table {
 	width: 98%;
 	margin: 4px;
@@ -185,6 +194,35 @@
 .todo span.incomplete {
 	color: red;
 	font-weight: bold;
+}
+
+.todo #add_content_area {
+	width: 100%;
+}
+
+.todo #add_content_area .content_menu {
+	width: 20%;
+	float: left;
+	display: none;
+}
+
+.todo #add_content_area .content_menu  a {
+	font-size: 120%;
+}
+
+.todo #add_content_area #content_container {
+	width: 79%;
+	float: left;
+}
+
+.todo .content_div {
+	display:none;
+}
+
+.todo #submission_error_message {
+	color: red;
+	font-weight: bold;
+	display:none;
 }
 
 /** POPUP DIALOG **/

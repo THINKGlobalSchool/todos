@@ -37,7 +37,7 @@
 	set_context('search');
 	
 	$list .= list_entities_from_relationship(TODO_ASSIGNEE_RELATIONSHIP, $page_owner_guid, false, 'object', 'todo', 0, $limit, false, false, true);
-
+	
 	set_context($context);
 	
 	if ($list) {

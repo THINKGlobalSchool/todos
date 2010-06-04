@@ -7,12 +7,17 @@
 	 * @author Jeff Tilson
 	 * @copyright THINK Global School 2010
 	 * @link http://www.thinkglobalschool.com/
-	 * 
+	 * 	
 	 */
+	
+	// Determine how we are going to view this todo
+	$user = get_loggedin_user();
+	$is_owner = $vars['entity']->canEdit();
+	$is_assignee = is_todo_assignee($vars['entity']->getGUID(), $user->getGUID());
 
 	$url = $vars['entity']->getURL();
 	$owner = $vars['entity']->getOwnerEntity();
-	$canedit = true; // TODO: Who can edit?
+	$canedit = $is_owner; 
 	$title = $vars['entity']->title;
 
 	// Content

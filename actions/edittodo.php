@@ -27,10 +27,10 @@
 	$rubric_select		= get_input('rubric_select');
 	$rubric_guid		= get_input('rubric_guid');
 	$access_level		= get_input('access_level');
-	
-	$can_edit = true; // TODO: Something???? Owner only dude. 
 
 	$todo = get_entity($guid);
+	
+	$can_edit = $todo->canEdit(); 
 
 	if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 		
@@ -84,7 +84,7 @@
 
 		// Save successful, forward to index
 		system_message(elgg_echo('todo:success:edit'));
-		forward('pg/todo');	
+		forward('pg/todo/owned');	
 	}
 	
 	register_error(elgg_echo("todo:error:edit"));		

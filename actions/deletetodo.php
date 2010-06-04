@@ -21,9 +21,9 @@
 
 	$todo = get_entity($guid);
 	
-	$candelete = true; // TODO: Who can delete? 
+	$candelete = $todo->canEdit();
 	
-	if ($todo->getSubtype() == "todo" && $todo->canEdit() && $candelete) {
+	if ($todo->getSubtype() == "todo" && $candelete) {
 		
 		// Delete it!
 		$rowsaffected = $todo->delete();
@@ -37,6 +37,6 @@
 		}
 		
 		// Forward to the main blog page
-		forward("pg/todo");
+		forward("pg/todo/owned");
 	}
 ?>

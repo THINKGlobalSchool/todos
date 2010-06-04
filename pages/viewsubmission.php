@@ -16,7 +16,7 @@
 	// Logged in users only
 	gatekeeper();
 	
-	$todo_guid = get_input('todo_guid');
+	$submission_guid = get_input('submission_guid');
 	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
@@ -27,11 +27,14 @@
 			set_page_owner($page_owner_guid);
 	}	
 	
-	$todo = get_entity($todo_guid);
+	$submission = get_entity($submission_guid);
 	
-	$title = $todo->title;	
+	$title = elgg_echo("todo:label:viewsubmission");
+	
+	$content = elgg_view_title($title);
+	
 	// create content for main column
- 	$content = elgg_view_entity($todo, true);
+ 	$content .= elgg_view_entity($submission, true);
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('two_column_left_sidebar', '', $content);

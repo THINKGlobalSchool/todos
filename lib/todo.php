@@ -74,11 +74,9 @@
 															'count' => false,
 														));
 				
-		return $entities;										
+									
 		$assignees = array();
 		
-		
-		// Dunno..
 		// Need to be flexible, most likely will have either just users, or just 
 		// groups, but will take into account both just in case
 		foreach($entities as $entity) {
@@ -148,37 +146,12 @@
 		return false;
 	}
 	
-	/*
-	 * Return an array of guids for todo assignees
-	 * Can either be a custom list of students, or members of
-	 * a group. 
-	 * 
-	 * @return mixed array/bool
-	function get_todo_assignees($todo) {
-		// Make sure we have a todo object
-		if ($todo && $todo->getSubtype() == 'todo') {
-			$assignees_array = array();
-			$assignees = unserialize($todo->assignees);
-			if (is_array($assignees)) {
-				foreach ($assignees as $assignee) {
-					$assignees_array[] = (int)$assignee;
-				} 
-			} else {
-				if (get_entity((int)$assignees) instanceof ElggUser) {
-					$assignees_array[] = $assignees;
-				} else if (get_entity((int)$assignees) instanceof ElggGroup) {
-					$members = get_group_members($assignees,0);
-					foreach ($members as $member) {
-						$assignees_array[] = $member->getGUID();
-					}
-				}
-			}
-			return array_unique($assignees_array);
-		} else {
-			return false;
-		}
-	}*/
 	
+	/**
+	 * Clears any cached data
+	 * 
+	 * @return bool 
+	 */	
 	function clear_todo_cached_data() {
 		remove_metadata($_SESSION['user']->guid,'todo_title');
 		remove_metadata($_SESSION['user']->guid,'todo_description');

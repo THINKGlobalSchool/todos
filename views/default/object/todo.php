@@ -11,7 +11,7 @@
 	 */
 
 	// Check for valid entity
-	if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject) {
+	if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject && $vars['entity']) {
 		if ($vars['full']) {
 				echo elgg_view("todo/todofullview",$vars);
 		} else {
