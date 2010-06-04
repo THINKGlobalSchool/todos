@@ -15,96 +15,77 @@
 				
 		$url = $vars['entity']->getURL();
 		$owner = $vars['entity']->getOwnerEntity();
-		$canedit = true; // TODO: Who can edit?
+		$canedit = $vars['entity']->canEdit();
 		$title = $vars['entity']->title;
-		$description = $vars['entity']->description;
+		$todo = get_entity($vars['entity']->todo_guid);
+		$contents = unserialize($vars['entity']->content);
+		
+		$assignee_label = elgg_echo('todo:label:assignee');
+		$assignee_content = $owner->name;
+		
+		$todo_title_label = elgg_echo('todo:label:todo');
+		$todo_title_content = $todo->title;
+		
+		$date_label = elgg_echo('todo:label:datecompleted');
+		$date_content =  date("F j, Y", $vars['entity']->time_created);
+		
+		if ($contents) {
+			$work_submitted_label = elgg_echo('todo:label:worksubmitted');
+		
+			foreach ($contents as $item) {
+		 		$work_submitted_content .= elgg_view('output/longtext', array('value' => $item));
+			}
+		}
+		
+		if ($moreinfo_content = $vars['entity']->description) {
+			$moreinfo_label = elgg_echo('todo:label:moreinfo');
+		}
+		
 		
 		// Content
-		$icon = elgg_view("graphics/icon", array('entity' => $vars['entity'],'size' => 'small'));
-		$user_icon = elgg_view("profile/icon",array('entity' => $owner, 'size' => 'tiny'));
-		$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 		$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
 		$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
 		$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 		
 		if ($canedit) {
-			
 				$controls .= elgg_view("output/confirmlink", 
 										array(
-											'href' => $vars['url'] . "action/todo/deletesubmission?todo_guid=" . $vars['entity']->getGUID(),
+											'href' => $vars['url'] . "action/todo/deletesubmission?submission_guid=" . $vars['entity']->getGUID(),
 											'text' => elgg_echo('delete'),
 											'confirm' => elgg_echo('deleteconfirm'),
 										)) . "&nbsp;&nbsp;&nbsp;";
 										
-				$controls .= "<a href={$vars['url']}pg/todo/editsubmission/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a>";
-		}
-
-		
-		
-
-		// Figure out which viewing mode we're in
-		if ($vars['full']) {
-			$mode = 'full';
-		} else {
-			if (get_input('search_viewtype') == "gallery") {
-				$mode = 'gallery';				
-			} else {
-				$mode = 'listing';
-			}
 		}
 		
-		// Default info for gallery/listing mode
 		$info = <<<EOT
-			<div class='todo'>
-				<p>
-					<b><a href='$url'>$title</a></b>
-				</p>
-				<p class='listingstrapline'>
-					$strapline
-				</p>
-				<p class='{$mode}tags'>
-					$tags
-				</p>
-				<p class='controls'>
-					$controls
-				</p>
-			</div>
-EOT;
-		
-		switch ($mode) {
-			case 'full':
-			$comments = elgg_view_comments($vars['entity']);
-			$info = <<<EOT
-					<div class='contentWrapper singleview'>
-						<div class='todo'>
-							<h3><a href='$url'>$title</a></h3>
-							<div class="todo_icon">
-								$user_icon
-							</div>
-							<p class='strapline'>
-								$strapline
-							</p>
-							<p class='{$mode}tags'>
-								$tags
-							</p>
-							<div class='clearfloat'></div>
-							<div class='description'>
-								$description
-							</div>
-							$controls
+				<div class='contentWrapper singleview'>
+					<div class='todo'>
+						<div class='assignee'>
+							<label>$assignee_label</label><br />
+							$assignee_content
+						</div><br />
+						<div class='todo_info'>
+							<label>$todo_title_label</label><br />
+							$todo_title_content
+						</div><br />
+						<div>
+							<label>$date_label</label><br />
+							$date_content
+						</div><br />
+						<div class='work_submitted'>
+							<label>$work_submitted_label</label><br />
+							$work_submitted_content
+						</div><br />
+						<div class='description'>
+							<label>$moreinfo_label</label>
+							$moreinfo_content
 						</div>
+						$controls
 					</div>
-					$comments
+				</div>
 EOT;
-				echo $info;
-				break;
-			case 'listing':
-				echo elgg_view_listing($icon, $info);
-				break;
-			case 'gallery':
-				echo elgg_view_listing("", $info);
-				break;
-		}
+		echo $info;
+		
 		
 	} else {
 		// If were here something went wrong..

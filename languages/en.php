@@ -57,15 +57,26 @@ $english = array(
 	'todo:label:submission' => 'Submission',
 	'todo:label:complete' => 'Complete',
 	'todo:label:incomplete' => 'Outstanding',
+	'todo:label:viewsubmission' => 'View Submission',
+	'todo:label:todo' => 'Assignment',
+	'todo:label:moreinfo' => 'Additional Information',
+	'todo:label:worksubmitted' => 'Work Submitted',
+	'todo:label:addlink' => 'Add Link',
+	'todo:label:addfile' => 'Add File',
+	'todo:label:link' => 'Link',
+	'todo:label:content' => 'Content',
+	'todo:label:rubricpicker' => 'Choose Rubric',
 	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
 	'todo:success:edit' => 'Todo successfully edited',
 	'todo:success:delete' => 'Todo successfully deleted',
+	'todo:success:submissiondelete' => 'Submission successfully deleted',
 	'todo:error:titleblank' => 'Todo title cannot be blank',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
 	'todo:error:delete' => 'There was an error deleting the Todo',
+	'todo:error:submissiondelete' => 'There was an error deleting the submission',
 	
 	// Other content
 	'todo:strapline' => 'Created: %s',

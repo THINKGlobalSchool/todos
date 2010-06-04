@@ -14,15 +14,8 @@
 	// - Caching on an oops when editing or creating (Already caching, just
 	// need to handle retrieving, too lazy right now)
 	// - Which fields on edit form are required? Only title is checked ATM
-	// - What happens on delete? Do I need to remove relationships?  
-	// - Comments on fullview should use comment framework
-	// - Groups have group members assigned, not the group
 	// - Permissions... logged in works, but how to do 'assignees'?
-	// - Ask Mike
-	//		- Need seperate search area? Can just search from top
-	
-	
-	
+	// - Need seperate search area? Can just search from top
 	
 	function todo_init() {
 		global $CONFIG;
@@ -64,9 +57,13 @@
 		// Add submenus
 		register_elgg_event_handler('pagesetup','system','todo_submenus');
 		
+		// Register an annotation handler for comments etc
+		register_plugin_hook('entity:annotate', 'object', 'todo_annotate_comments');
+		register_plugin_hook('entity:annotate', 'object', 'submission_annotate_comments');
+		
 		// Set up url handlers
 		register_entity_url_handler('todo_url','object', 'todo');
-		register_entity_url_handler('todo_submission_url','object', 'todo_submission');
+		register_entity_url_handler('todo_submission_url','object', 'todosubmission');
 
 		// Register actions
 		register_action('todo/createtodo', false, $CONFIG->pluginspath . 'todo/actions/createtodo.php');
@@ -74,10 +71,8 @@
 		register_action('todo/edittodo', false, $CONFIG->pluginspath . 'todo/actions/edittodo.php');
 		register_action('todo/unassign', false, $CONFIG->pluginspath . 'todo/actions/unassign.php');
 		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
-		/*
-		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletetodo.php');
-		register_action('todo/editsubmission', false, $CONFIG->pluginspath . 'todo/actions/edittodo.php');
-		*/
+		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
+
 		
 		// Register type
 		register_entity_type('object', 'todo');		
@@ -87,10 +82,8 @@
 
 	function todo_page_handler($page) {
 		global $CONFIG;
-
 		
-		switch ($page[0])
-		{
+		switch ($page[0]) {
 			case 'createtodo':
 				include $CONFIG->pluginspath . 'todo/pages/createtodo.php';
 				break;
@@ -103,6 +96,10 @@
 					set_input('todo_guid', $page[1]);
 				}
 				include $CONFIG->pluginspath . 'todo/pages/edittodo.php';
+				break;
+			case 'viewsubmission':
+				set_input("submission_guid", $page[1]);
+				include $CONFIG->pluginspath . 'todo/pages/viewsubmission.php';
 				break;
 			case 'owned':
 				include $CONFIG->pluginspath . 'todo/pages/ownedtodos.php';
@@ -151,11 +148,62 @@
 	function todo_submission_url($entity) {
 		global $CONFIG;
 		
-		return $CONFIG->url . "pg/todo/view/{$entity->guid}/";
+		return $CONFIG->url . "pg/todo/viewsubmission/{$entity->guid}/";
+	}
+	
+	/**
+	 * Hook into the framework and provide comments on todo entities.
+	 *
+	 * @param unknown_type $hook
+	 * @param unknown_type $entity_type
+	 * @param unknown_type $returnvalue
+	 * @param unknown_type $params
+	 * @return unknown
+	 */
+	function todo_annotate_comments($hook, $entity_type, $returnvalue, $params)
+	{
+		$entity = $params['entity'];
+		$full = $params['full'];
+		
+		if (
+			($entity instanceof ElggEntity) &&	// Is the right type 
+			($entity->getSubtype() == 'todo') &&  // Is the right subtype
+			($full) // This is the full view
+		)
+		{
+			// Display comments
+			return elgg_view_comments($entity);
+		}
+		
+	}
+	
+	/**
+	 * Hook into the framework and provide comments on submission entities.
+	 *
+	 * @param unknown_type $hook
+	 * @param unknown_type $entity_type
+	 * @param unknown_type $returnvalue
+	 * @param unknown_type $params
+	 * @return unknown
+	 */
+	function submission_annotate_comments($hook, $entity_type, $returnvalue, $params)
+	{
+		$entity = $params['entity'];
+		$full = $params['full'];
+		
+		if (
+			($entity instanceof ElggEntity) &&	// Is the right type 
+			($entity->getSubtype() == 'todosubmission') &&  // Is the right subtype
+			($full) // This is the full view
+		)
+		{
+			// Display comments
+			return elgg_view_comments($entity);
+		}
+		
 	}
 	
 	
-
 
 	register_elgg_event_handler('init', 'system', 'todo_init');
 ?>

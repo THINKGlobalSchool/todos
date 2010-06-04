@@ -20,10 +20,10 @@
 	action_gatekeeper();
 	
 	// get input
-	$description = get_input('description');
+	$description = get_input('submission_description');
 	$todo_guid = get_input('todo_guid');
-//	$content = get_input('content');	
-	
+	$content = get_input('submission_content');
+		
 	$user = get_loggedin_user();
 	
 	// Cache to session
@@ -37,10 +37,12 @@
 	}*/
 	
 	$submission = new ElggObject();
-	$submission->subtype 		= "todosubmission";
-	$submission->description 	= $description;
+	$submission->subtype = "todosubmission";
+	$submission->description = $description;
+	$submission->content = serialize($content);
 	$submission->access_id 	= ACCESS_LOGGED_IN;
 	$submission->owner_id = $user->getGUID();
+	$submission->todo_guid = $todo_guid;
 
 	
 	// Save
