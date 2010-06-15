@@ -16,8 +16,6 @@
 	
 	$assignees = get_todo_assignees($todo->getGUID());
 	
-//	print_r_html(get_todo_submissions($todo->getGUID()));
-	
 	$content = "<div class='todo'>
 					<table class='status_table'>
 						<tr>

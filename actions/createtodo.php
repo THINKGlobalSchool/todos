@@ -9,9 +9,7 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-	
-	// TODO: What's required?
-	
+		
 	// must be logged in
 	gatekeeper();
 	
@@ -36,6 +34,7 @@
 	$access_level		= get_input('access_level');
 
 	// Cache to session
+	$_SESSION['user']->is_todo_cached = true;
 	$_SESSION['user']->todo_title = $title;
 	$_SESSION['user']->todo_description = $description;
 	$_SESSION['user']->todo_tags = $tags;
@@ -57,7 +56,7 @@
 	$todo->subtype 		= "todo";
 	$todo->title 		= $title;
 	$todo->description 	= $description;
-	$todo->access_id 	= $access_level; 
+	$todo->access_id 	= -2;//$access_level; 
 	$todo->tags 		= $tags;
 	$todo->due_date		= $due_date;
 	//$todo->assignees	= serialize($assignees); // Store the array of guids just in case.. No point.

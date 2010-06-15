@@ -42,10 +42,10 @@ EOT;
 			forward('pg/todo');
 		}
 		
-		$action 		= "todo/edittodo";
-		$title 		 	= $vars['entity']->title;
-		$description 	= $vars['entity']->description;
-		$tags 			= $vars['entity']->tags;
+		$action 			= "todo/edittodo";
+		$title 		 		= $vars['entity']->title;
+		$description 		= $vars['entity']->description;
+		$tags 				= $vars['entity']->tags;
 		$due_date			= $vars['entity']->due_date;
 		$return_required	= $vars['entity']->return_required;
 		$access_id			= $vars['entity']->access_id;
@@ -82,22 +82,28 @@ EOT;
 		
 	} else {
 	// No entity, creating new one
-		$action = "todo/createtodo";
-		$title = "";
-		$description = "";
-		$return_required = 0;
+		$action 			= "todo/createtodo";
+		$title 				= "";
+		$description 		= "";
+		$return_required 	= 0;
+		$is_rubric_selected = 0;
 		
-		$container_hidden = "";
-		$entity_hidden = "";
+		
+		$container_hidden 	= "";
+		$entity_hidden 		= "";
 	}
 	
-	if (empty($description)) {
-		$description = $vars['user']->todo_description;
-		if (!empty($description)) {
-			$title = $vars['user']->todo_title;
-			$tags = $vars['user']->todo_tags;
-			$type = $vars['user']->todo_type;
-		}
+	// Load cached data (result of an error on create/edit action)
+	if ($vars['user']->is_todo_cached) {
+		$title 				= $vars['user']->todo_title;
+		$description 		= $vars['user']->todo_description;
+		$tags 				= $vars['user']->todo_tags;
+		$due_date 			= $vars['user']->todo_due_date;
+		$assignees 			= $vars['user']->todo_assignees;
+		$return_required 	= $vars['user']->todo_return_required;
+		$is_rubric_selected	= $vars['user']->todo_rubric_select;
+		$rubric_guid 		= $vars['user']->todo_rubric_guid;
+		$access_id 			= $vars['user']->todo_access_level;
 	}
 	
 	
@@ -117,7 +123,8 @@ EOT;
 	$assign_label = elgg_echo('todo:label:assignto');
 	$assign_content = elgg_view('input/pulldown', array('internalname' => 'assignee_picker',
 														'internalid' => 'assignee_picker',
-														'options_values' =>	array(0 => elgg_echo('todo:label:individuals'),1 => elgg_echo('todo:label:groups'))		
+														'options_values' =>	array(	0 => elgg_echo('todo:label:individuals'),
+																					1 => elgg_echo('todo:label:groups'))		
 														));
 														
 	$user_picker = elgg_view('input/userpicker', array('internalname' => 'assignee_guids', 'internalid' => 'user_assignee_picker'));
@@ -136,9 +143,9 @@ EOT;
 		$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
 		$rubric_content = elgg_view('input/pulldown', array('internalname' => 'rubric_select', 
 															'internalid' => 'rubric_select', 
-															'options_values' => array(0 => elgg_echo('todo:label:rubricnone'),
-																			   1 => elgg_echo('todo:label:rubricselect')),
-															'value' => 0,
+															'options_values' => array(	0 => elgg_echo('todo:label:rubricnone'),
+																			   			1 => elgg_echo('todo:label:rubricselect')),
+															'value' => $is_rubric_selected,
 															));
 		
 		$rubric_picker = elgg_view('input/pulldown', array('internalname' => 'rubric_guid', 'internal_id' => 'rubric_picker', 'options_values' => get_todo_rubric_array(), 'value' => $rubric_guid));

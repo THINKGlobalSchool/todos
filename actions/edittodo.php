@@ -35,6 +35,7 @@
 	if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 		
 		// Cache to session
+		$_SESSION['user']->is_todo_cached = true;
 		$_SESSION['user']->todo_title = $title;
 		$_SESSION['user']->todo_description = $description;
 		$_SESSION['user']->todo_tags = $tags;

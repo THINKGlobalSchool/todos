@@ -11,13 +11,9 @@
 	 */
 	
 	/*********************** TODO: (Code related) ************************/
-	// - Caching on an oops when editing or creating (Already caching, just
-	// need to handle retrieving, too lazy right now)
-	// - Which fields on edit form are required? Only title is checked ATM
-	// - Permissions... logged in works, but how to do 'assignees'?
-	// - Need seperate search area? Can just search from top
-	// - River stuff
-	// - Filter todo's based on compete/outstanding
+	// - Permissions: Working, but in a bizarre way 
+	// - Group TODOS (Create a group TODO, and show only group TODO's) 
+	// 	 group is the TODO's owner?
 	
 	function todo_init() {
 		global $CONFIG;
@@ -62,6 +58,10 @@
 		// Register an annotation handler for comments etc
 		register_plugin_hook('entity:annotate', 'object', 'todo_annotate_comments');
 		register_plugin_hook('entity:annotate', 'object', 'submission_annotate_comments');
+		
+		// Permissions plugin hook
+		//register_plugin_hook('access:collections:read', 'user', 'todo_hook');
+		
 		
 		// Set up url handlers
 		register_entity_url_handler('todo_url','object', 'todo');
@@ -205,7 +205,15 @@
 		
 	}
 	
-	
+	function todo_permissions_check($hook, $type, $returnvalue, $params) {
+		$user_guid = get_loggedin_userid();
+		//if (is_todo_assignee($params['entity']->getGUID(), $user_guid)) {
+		//	print_r_html($params['entity']->access_id);
+		//	return true;
+		//}	
+		
+		return $returnvalue;
+	}
 
 	register_elgg_event_handler('init', 'system', 'todo_init');
 ?>

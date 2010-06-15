@@ -9,9 +9,9 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-	
+
 	$user = get_loggedin_user();
-	
+		
 	// Determine how we are going to view this todo
 	$is_owner = $vars['entity']->canEdit();
 	$is_assignee = is_todo_assignee($vars['entity']->getGUID(), $user->getGUID());
