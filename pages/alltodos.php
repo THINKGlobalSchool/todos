@@ -42,18 +42,22 @@
 	$assigned_entities = get_users_todos(get_loggedin_userid());
 	elgg_set_ignore_access($ia);
 	
-	$entities = array_merge($accessable_entities, $assigned_entities);
+	if ($assigned_entites) {
+		$entities = array_merge($accessable_entities, $assigned_entities);
 
-	// Need to make objects unique to use array_unique
-	foreach ($entities as $key => $value) {
-		$entities[$key] = serialize($value);
-	}
+		// Need to make objects unique to use array_unique
+		foreach ($entities as $key => $value) {
+			$entities[$key] = serialize($value);
+		}
 
-	$entities = array_unique($entities);
-	
-	// Unserialize back to objects
-	foreach ($entities as $key => $value) {
-		$entities[$key] = unserialize($value);
+		$entities = array_unique($entities);
+
+		// Unserialize back to objects
+		foreach ($entities as $key => $value) {
+			$entities[$key] = unserialize($value);
+		}
+	} else {
+		$entities = $accessable_entities;
 	}
 	
 	$context = get_context();
