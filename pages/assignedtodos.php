@@ -27,16 +27,53 @@
 	
 	$limit = get_input("limit", 10);
 	$offset = get_input("offset", 0);
+	
+	$status = get_input('status', 'incomplete');
+	
+	if (!$status == 'complete' || !$status == 'incomplete') {
+		$status = 'incomplete';
+	}
+	
 
 	$title = elgg_echo('todo:title:assignedtodos');
 	
 	// create content for main column
 	$content = elgg_view_title($title);
 	
+	$content .= elgg_view('todo/assignednav');
+	
 	$context = get_context();
 	set_context('search');
 	
-	$list .= list_entities_from_relationship(TODO_ASSIGNEE_RELATIONSHIP, $page_owner_guid, false, 'object', 'todo', 0, $limit, false, false, true);
+	/*
+		This is... weird. But it works and makes sense. 
+		Set ignore access, this will return all entities (ignoring access level) with which 
+		this user has been assigned. Which is fine, because we can ignore the access level 
+		safely because we'll only get entities where there is a relationship to this user. 
+		Make sense? Sure it does!
+		
+		TODO: Find a better way.. it makes sense, but its gross. 
+	*/
+	$ia = elgg_set_ignore_access(TRUE);
+	$assigned_entities = get_users_todos(get_loggedin_userid());
+	elgg_set_ignore_access($ia);
+	
+	if ($status == 'complete') {
+		foreach ($assigned_entities as $entity) {
+			if (has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
+				$entities[] = $entity;
+			}
+		}
+	} else if ($status == 'incomplete') {
+		foreach ($assigned_entities as $entity) {
+			if (!has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
+				$entities[] = $entity;
+			}
+		}
+	}
+	
+	$list .= elgg_view_entity_list($entities, count($entities), $offset, $limit, false, false, true);
+	//$list .= list_entities_from_relationship(TODO_ASSIGNEE_RELATIONSHIP, $page_owner_guid, false, 'object', 'todo', 0, $limit, false, false, true);
 	
 	set_context($context);
 	

@@ -67,6 +67,9 @@ $english = array(
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	
+	// River
+	'todo:river:annotate' => "a comment on a todo titled",
+	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
 	'todo:success:edit' => 'Todo successfully edited',

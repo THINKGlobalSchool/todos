@@ -57,7 +57,7 @@
 	/**
 	 * Return an array of users assigned to given todo
 	 *
-	 * @param int $todo
+	 * @param int $guid // todo guid
 	 * @return array
 	 */
 	function get_todo_assignees($guid) {
@@ -93,9 +93,9 @@
 	}
 	
 	/**
-	 * Return an array of users assigned to given todo
+	 * Return an array submissions for given todo
 	 *
-	 * @param int $todo
+	 * @param int $guid todo_guid
 	 * @return array
 	 */
 	function get_todo_submissions($guid) {
@@ -119,7 +119,9 @@
 	 * @return array 
 	 */
 	function get_users_todos($user_guid) {
-		return elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 'relationship_guid' => $user_guid, 'inverse_relationship' => FALSE));
+		return elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+														 'relationship_guid' => $user_guid, 
+														 'inverse_relationship' => FALSE));
 	}
 	
 	function is_todo_assignee($todo_guid, $user_guid) {
@@ -149,10 +151,10 @@
 	
 	/**
 	 * Clears any cached data
-	 * 
 	 * @return bool 
 	 */	
 	function clear_todo_cached_data() {
+		remove_metadata($_SESSION['user']->guid,'is_todo_cached');
 		remove_metadata($_SESSION['user']->guid,'todo_title');
 		remove_metadata($_SESSION['user']->guid,'todo_description');
 		remove_metadata($_SESSION['user']->guid,'todo_tags');
@@ -163,5 +165,19 @@
 		remove_metadata($_SESSION['user']->guid,'todo_rubric_guid');
 		remove_metadata($_SESSION['user']->guid,'todo_access_level');
 		return true;
+	}
+	
+	/** Hacky hacks **/
+	function get_viewed_entity() { 
+	     if ($backtrace = debug_backtrace()) { 
+	         foreach($backtrace as $step) { 
+	             if ($step['function'] == 'elgg_view' 
+	                 && isset($step['args'][1]['entity']) 
+	                 && $step['args'][1]['entity'] instanceof ElggObject) { 
+	                 return $step['args'][1]['entity']; 
+	             } 
+	         } 
+	     } 
+	     return false; 
 	}
 ?>
