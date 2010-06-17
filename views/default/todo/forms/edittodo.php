@@ -115,7 +115,7 @@ EOT;
 	$description_input = elgg_view("input/longtext", array('internalname' => 'description', 'value' => $description));
 	
 	$duedate_label = elgg_echo('todo:label:duedate');
-	$duedate_content = elgg_view('input/calendar', array('internalname' => 'due_date', 'value' => $due_date));
+	$duedate_content = elgg_view('input/calendar', array('internalname' => 'due_date', 'value' => $due_date, 'js' => 'readonly="readonly"'));
 	
 	$tag_label = elgg_echo('tags');
     $tag_input = elgg_view('input/tags', array('internalname' => 'tags', 'value' => $tags));

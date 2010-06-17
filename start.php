@@ -14,6 +14,11 @@
 	// - Permissions: Working, but in a bizarre way 
 	// - Group TODOS (Create a group TODO, and show only group TODO's) 
 	// 	 group is the TODO's owner?
+	// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
+	// - Upcoming/Completed
+	//		- Past Due 
+	// 		- Due Next Week 
+	//		- Future Todo's
 	
 	function todo_init() {
 		global $CONFIG;

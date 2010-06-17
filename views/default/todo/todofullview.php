@@ -20,14 +20,14 @@
 	$owner = $vars['entity']->getOwnerEntity();
 	$title = $vars['entity']->title;
 	$return_required = $vars['entity']->return_required;
-	
-	
+	$due_date = is_int($vars['entity']->due_date) ? date("F j, Y", $vars['entity']->due_date) : $vars['entity']->due_date;
+		
 	// Start putting content together
 	$description_label = elgg_echo("todo:label:description");
 	$description_content = elgg_view('output/longtext', array('value' => $vars['entity']->description));
 	
 	$duedate_label = elgg_echo("todo:label:duedate");
-	$duedate_content = elgg_view('output/longtext', array('value' => $vars['entity']->due_date));
+	$duedate_content = elgg_view('output/longtext', array('value' => $due_date));
 	
 	//$assignees_label = elgg_echo("todo:label:assignees");
 	//$assignees_content = elgg_view('todo/assigneelist', array('assignees' => get_todo_assignees($vars['entity']->getGUID())));
@@ -39,7 +39,7 @@
 	
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 				
-	$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
+	$strapline = sprintf(elgg_echo("todo:strapline"), $due_date);
 	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
@@ -57,7 +57,7 @@
 			$status_content .= "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
 			$controls .= "&nbsp;&nbsp;&nbsp;<a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a>";
 		} else {
-			$status_content .= "<span class='incomplete'>" . elgg_echo('todo:label:incomplete') . "</span>";
+			$status_content .= "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			// If we need to return something for this todo, the complete link will point to the submission form
 			if ($vars['entity']->return_required) {
 				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";

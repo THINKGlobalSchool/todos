@@ -21,7 +21,7 @@
 	$title 				= get_input('title');
 	$description 		= get_input('description');
 	$tags 				= string_to_tag_array(get_input('tags'));
-	$due_date			= get_input('due_date');
+	$due_date			= strtotime(get_input('due_date'));
 	$assignees			= get_input('assignee_guids');
 	$return_required	= get_input('return_required');
 	$rubric_select		= get_input('rubric_select');

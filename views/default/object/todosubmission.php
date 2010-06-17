@@ -24,7 +24,7 @@
 		$assignee_content = $owner->name;
 		
 		$todo_title_label = elgg_echo('todo:label:todo');
-		$todo_title_content = $todo->title;
+		$todo_title_content = elgg_view('output/url', array('href' => $todo->getURL(), 'text' => $todo->title));
 		
 		$date_label = elgg_echo('todo:label:datecompleted');
 		$date_content =  date("F j, Y", $vars['entity']->time_created);
@@ -32,8 +32,15 @@
 		if ($contents) {
 			$work_submitted_label = elgg_echo('todo:label:worksubmitted');
 		
-			foreach ($contents as $item) {
-		 		$work_submitted_content .= elgg_view('output/longtext', array('value' => $item));
+			foreach ($contents as $content) {
+				$guid = (int)$content;
+				if (is_int($guid) && $entity = get_entity($guid)) {
+					$href = $entity->getURL();
+					$text = $entity->title;
+				} else {
+					$href = $text = $content;
+				}
+				$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text)). "</li>";
 			}
 		}
 		
@@ -74,7 +81,9 @@
 						</div><br />
 						<div class='work_submitted'>
 							<label>$work_submitted_label</label><br />
+							<ul>
 							$work_submitted_content
+							</ul>
 						</div><br />
 						<div class='description'>
 							<label>$moreinfo_label</label>

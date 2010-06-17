@@ -29,18 +29,22 @@
 	$offset = get_input("offset", 0);
 	
 	$status = get_input('status', 'incomplete');
+	$due = get_input('due', 'past');
 	
-	if (!$status == 'complete' || !$status == 'incomplete') {
+	if (!in_array($status, array('complete', 'incomplete'))) {
 		$status = 'incomplete';
 	}
 	
-
+	if (!in_array($due, array('past', 'nextweek', 'future'))) {
+		$due = 'past';
+	}
+	
 	$title = elgg_echo('todo:title:assignedtodos');
 	
 	// create content for main column
 	$content = elgg_view_title($title);
 	
-	$content .= elgg_view('todo/assignednav');
+	$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo'));
 	
 	$context = get_context();
 	set_context('search');
@@ -59,17 +63,38 @@
 	elgg_set_ignore_access($ia);
 	
 	if ($status == 'complete') {
+		$content .= "</div>";
 		foreach ($assigned_entities as $entity) {
 			if (has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
 				$entities[] = $entity;
 			}
 		}
 	} else if ($status == 'incomplete') {
+		$content .= elgg_view('todo/nav_showbydue', array('return_url' => 'pg/todo'));
+		$content .= "</div>";
+		
 		foreach ($assigned_entities as $entity) {
 			if (!has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
 				$entities[] = $entity;
 			}
 		}
+		
+		$today = strtotime(date("F j, Y"));
+		$next_week = strtotime("+7 days", $today);
+				
+		switch ($due) {
+			case "nextweek":
+				$entities = get_todos_due_between($entities, $today, $next_week);
+				break;
+			case "future": 
+				$entities = get_todos_due_after($entities, $next_week);
+				break;
+			case "past":
+				$entities = get_todos_due_before($entities, $today);
+				break;
+		}
+		
+		sort_todos_by_due_date($entities);
 	}
 	
 	$list .= elgg_view_entity_list($entities, count($entities), $offset, $limit, false, false, true);

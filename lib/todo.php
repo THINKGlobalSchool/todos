@@ -136,6 +136,8 @@
 	/**
 	 * Determine if given user has made a submission to given todo
 	 * 
+	 * @param int $user_guid
+	 * @param int $todo_guid
 	 * @return bool
 	 */
 	function has_user_submitted($user_guid, $todo_guid) {
@@ -148,7 +150,105 @@
 		return false;
 	}
 	
+	/**
+	 * Determine if all users for a given todo have submiited to
+	 * or complete the todo
+	 *
+	 * @param int $todo_guid
+	 * @return bool
+	 */
+	function have_assignees_completed_todo($todo_guid) {
+		$assignees = get_todo_assignees($todo_guid);
+		$complete = true;
+		foreach ($assignees as $assignee) {
+			$complete &= has_user_submitted($assignee->getGUID(), $todo_guid);
+		}
+		return $complete;
+	}
 	
+	/**
+	 * Return todos with a due date before givin date
+	 *
+	 * @param array $todos
+	 * @param int $date (Timestamp)
+	 * @return array
+	 */
+	function get_todos_due_before($todos, $date) {
+		foreach($todos as $idx => $todo) {
+			if ($todo->due_date <= $date) {
+				continue;
+			} else {
+				unset($todos[$idx]);
+			}
+		}
+		return $todos;
+	}
+	
+	/**
+	 * Return todos with a due date after givin dates
+	 *
+	 * @param array $todos
+	 * @param int $date (Timestamp)
+	 * @return array
+	 */
+	function get_todos_due_after($todos, $date) {
+		foreach($todos as $idx => $todo) {
+			if ($todo->due_date > $date) {
+				continue;
+			} else {
+				unset($todos[$idx]);
+			}
+		}
+		return $todos;
+	}
+	
+	/**
+	 * Return todos with a due date between givin dates
+	 *
+	 * @param array $todos
+	 * @param int $start_date Timestamp
+	 * @param int $end_date Timestamp, default null for no end date
+	 * @return array
+	 */
+	function get_todos_due_between($todos, $start_date, $end_date) {
+		foreach($todos as $idx => $todo) {
+			if (($todo->due_date > $start_date) && ($todo->due_date <= $end_date)) {
+				continue;
+			} else {
+				unset($todos[$idx]);
+			}
+		}
+		return $todos;
+	}
+	
+	/**
+	 * S
+	 *
+	 *
+	 */
+	function sort_todos_by_due_date(&$todos, $descending = false) {
+		if ($descending) {
+			usort($todos, "compare_todo_due_dates_desc");
+		} else {
+			usort($todos, "compare_todo_due_dates_asc");	
+		}
+	}
+	
+	function compare_todo_due_dates_desc($a, $b) {
+		if ($a->due_date == $b->due_date) {
+			return 0;
+		}
+		return ($a->due_date > $b->due_date) ? -1 : 1;
+	}
+	
+	function compare_todo_due_dates_asc($a, $b) {
+		if ($a->due_date == $b->due_date) {
+			return 0;
+		}
+		return ($a->due_date < $b->due_date) ? -1 : 1;
+	}
+	
+
 	/**
 	 * Clears any cached data
 	 * @return bool 

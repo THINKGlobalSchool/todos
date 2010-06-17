@@ -56,7 +56,8 @@ $english = array(
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:complete' => 'Complete',
-	'todo:label:incomplete' => 'Outstanding',
+	'todo:label:incomplete' => 'Upcoming',
+	'todo:label:statusincomplete' => 'Incomplete',
 	'todo:label:viewsubmission' => 'View Submission',
 	'todo:label:todo' => 'Assignment',
 	'todo:label:moreinfo' => 'Additional Information',
@@ -66,6 +67,9 @@ $english = array(
 	'todo:label:link' => 'Link',
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
+	'todo:label:pastdue' => 'Past Due',
+	'todo:label:nextweek' => 'Due Next Week', 
+	'todo:label:future' => 'Future To Do\'s',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
@@ -82,7 +86,7 @@ $english = array(
 	'todo:error:submissiondelete' => 'There was an error deleting the submission',
 	
 	// Other content
-	'todo:strapline' => 'Created: %s',
+	'todo:strapline' => 'Due: %s',
 	'todo:strapline:mode' => '%s',
 
 );

@@ -20,8 +20,9 @@
 	$title 				= get_input('title');
 	$description 		= get_input('description');
 	$tags 				= string_to_tag_array(get_input('tags'));
-	$due_date			= get_input('due_date');
+	$due_date			= strtotime(get_input('due_date'));
 	$assignees			= get_input('assignee_guids');
+	
 	
 	if (get_input('return_required', false)) {
 		$return_required = true;
@@ -71,7 +72,7 @@
 		register_error(elgg_echo("todo:error:create"));		
 		forward($_SERVER['HTTP_REFERER']);
 	}
-	
+		
 	// Set up relationships for asignees, can be users or groups (multiple)
 	if (is_array($assignees)) {
 		foreach ($assignees as $assignee) {
