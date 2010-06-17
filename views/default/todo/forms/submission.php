@@ -25,7 +25,13 @@
 		}
 	
 		// Content Menu Items
-		$menu_items .= "<a href='#' id='add_link' onclick=\"javascript:todoShowDiv('add_link_container');return false;\">" . elgg_echo('todo:label:addlink') . "</a>";
+		$menu_items .= "<a href='#' id='add_link' onclick=\"javascript:todoShowDiv('add_link_container');return false;\">" 
+						. elgg_echo('todo:label:addlink') . 
+						"</a><br />";
+		$menu_items .= "<a href='#' id='add_file' onclick=\"javascript:todoShowDiv('add_file_container');return false;\">" 
+						. elgg_echo('todo:label:addfile') . 
+						"</a><br />";
+						
 		$back_button = "<a href='#' id='back_button' onclick=\"javascript:showDefault();return false;\"><< Back</a>";
 		
 		// Content Div's
@@ -36,12 +42,21 @@
 								
 		$add_link_div = "<div class='content_div' id='add_link_container'>
 							<form id='link_form'>
-								<label>" . elgg_echo('todo:label:link') . "</label><br />
+								<label>" . elgg_echo('todo:label:addlink') . "</label><br />
 								" . elgg_view('input/text', array('internalid' => 'submission_link', 'internalname' => 'submission_link')) . "<br />
 								" . elgg_view('input/submit', array('internalid' => 'link_submit', 'internalname' => 'link_submit', 'value' => 'Submit')) . "
 							</form>
 						</div>";
-	
+						
+		
+		$add_file_div = "<div class='content_div' id ='add_file_container'>
+							<form id='file_form' method='POST' enctype='multipart/form-data'>
+								<label>" . elgg_echo('todo:label:addfile') . "</label><br />
+								" . elgg_view("input/file",array('internalname' => 'upload', 'js' => 'id="upload"')) . "<br />
+								" . elgg_view('input/submit', array('internalid' => 'file_submit', 'internalname' => 'file_submit', 'value' => 'Submit')) . "
+							</form>
+						</div>";
+		
 		// Labels/Input
 		$title_label = elgg_echo("todo:label:newsubmission");
 		
@@ -53,8 +68,11 @@
 																'value' => $description));
 
 		$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('submit')));
+		
+		$ajax_spinner = '<div id="submission_ajax_spinner"><img src="' . $vars['url'] . '_graphics/ajax_loader.gif" /></div>';
 
-
+		$file_submit_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/upload.php');
+		
 		$script = <<<EOT
 			<script type="text/javascript">
 			$("div#content_display_div").show();
@@ -71,7 +89,45 @@
 					return false;
 				}
 			);
+						
+			$("#file_form").submit(
+				function() {
+					var options = { 
+							url: "$file_submit_url", 
+							type: "POST", 
+					        //target:        '#submit_output',   // target element(s) to be updated with server response 
+							clearForm: true,
+					        beforeSubmit:  showRequest,  // pre-submit callback 
+					        success:       showResponse,  // post-submit callback 
+							error: fileError
+					    };
+					$(this).ajaxSubmit(options); 
+					return false;
+				}
+			);
 			
+			// pre-submit callback 
+			function showRequest(formData, jqForm, options) { 
+			    var queryString = $.param(formData); 
+			    $("#submission_ajax_spinner").show();
+			    return true;	
+			} 
+
+			// post-submit callback 
+			function showResponse(data)  { 
+			    $("#submission_ajax_spinner").hide();
+				var file = eval( "(" + data + ")" );
+				$('#submission_content').append(
+					$('<option></option>').attr('selected', 'selected').val(file.guid).html(file.name)
+				);
+				showDefault();
+			}
+			
+			// error 
+			function fileError(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(errorThrown + " "  + textStatus);
+			}
+						
 			function showDefault() {
 				$("div.content_div").hide();
 				$("div#content_display_div").show();
@@ -109,6 +165,9 @@ EOT;
 				<div id='content_container'>
 					$content_display_div
 					$add_link_div
+					$add_file_div
+					$ajax_spinner
+					<div id='submit_output' style='dsdisplay: none;'></div>
 				</div>
 				<div style='clear:both;'></div>
 				<br />

@@ -19,13 +19,14 @@
 	$owner = $vars['entity']->getOwnerEntity();
 	$canedit = $is_owner; 
 	$title = $vars['entity']->title;
+	$due_date = is_int($vars['entity']->due_date) ? date("F j, Y", $vars['entity']->due_date) : $vars['entity']->due_date;
 
 	// Content
 	$icon = elgg_view("graphics/icon", array('entity' => $vars['entity'],'size' => 'small'));
 
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 
-	$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
+	$strapline = sprintf(elgg_echo("todo:strapline"), $due_date);
 	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 

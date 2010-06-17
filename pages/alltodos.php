@@ -27,11 +27,24 @@
 	
 	$limit = get_input("limit", 10);
 	$offset = get_input("offset", 0);
+	
+	$status = get_input('status', 'incomplete');
+	$due = get_input('due', 'past');
+	
+	if (!in_array($status, array('complete', 'incomplete'))) {
+		$status = 'incomplete';
+	}
+	
+	if (!in_array($due, array('past', 'nextweek', 'future'))) {
+		$due = 'past';
+	}
 
 	$title = elgg_echo('todo:title:alltodos');
 	
 	// create content for main column
 	$content = elgg_view_title($title);
+	
+	$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/everyone'));
 		
 	// First get a list of all accessable entities 
 	$accessable_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => $limit, 'offset' => $offset, 'full_view' => FALSE));
@@ -43,22 +56,59 @@
 	elgg_set_ignore_access($ia);
 	
 	if ($assigned_entites) {
-		$entities = array_merge($accessable_entities, $assigned_entities);
+		$all_entities = array_merge($accessable_entities, $assigned_entities);
 
 		// Need to make objects unique to use array_unique
-		foreach ($entities as $key => $value) {
-			$entities[$key] = serialize($value);
+		foreach ($all_entities as $key => $value) {
+			$all_entities[$key] = serialize($value);
 		}
 
-		$entities = array_unique($entities);
+		$all_entities = array_unique($entities);
 
 		// Unserialize back to objects
-		foreach ($entities as $key => $value) {
-			$entities[$key] = unserialize($value);
+		foreach ($all_entities as $key => $value) {
+			$all_entities[$key] = unserialize($value);
 		}
 	} else {
-		$entities = $accessable_entities;
+		$all_entities = $accessable_entities;
 	}
+	
+	
+	// Show based on status
+	if ($status == 'complete') {
+		$content .= "</div>";
+		foreach ($all_entities as $entity) {
+			if (have_assignees_completed_todo($entity->getGUID())) {
+				$entities[] = $entity;
+			}
+		}
+	} else if ($status == 'incomplete') {
+		$content .= elgg_view('todo/nav_showbydue', array('return_url' => 'pg/todo/everyone'));
+		$content .= "</div>";
+		foreach ($all_entities as $entity) {
+			if (!have_assignees_completed_todo($entity->getGUID())) {
+				$entities[] = $entity;
+			}
+		}
+		
+		$today = strtotime(date("F j, Y"));
+		$next_week = strtotime("+7 days", $today);
+				
+		switch ($due) {
+			case "nextweek":
+				$entities = get_todos_due_between($entities, $today, $next_week);
+				break;
+			case "future": 
+				$entities = get_todos_due_after($entities, $next_week);
+				break;
+			case "past":
+				$entities = get_todos_due_before($entities, $today);
+				break;
+		}
+		
+		sort_todos_by_due_date($entities);
+	}
+	
 	
 	$context = get_context();
 	set_context('search');
