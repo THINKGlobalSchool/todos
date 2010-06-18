@@ -29,14 +29,9 @@
 	$offset = get_input("offset", 0);
 	
 	$status = get_input('status', 'incomplete');
-	$due = get_input('due', 'past');
-	
+
 	if (!in_array($status, array('complete', 'incomplete'))) {
 		$status = 'incomplete';
-	}
-	
-	if (!in_array($due, array('past', 'nextweek', 'future'))) {
-		$due = 'past';
 	}
 	
 	$title = elgg_echo('todo:title:assignedtodos');
@@ -49,30 +44,26 @@
 	$context = get_context();
 	set_context('search');
 	
-	/*
-		This is... weird. But it works and makes sense. 
-		Set ignore access, this will return all entities (ignoring access level) with which 
-		this user has been assigned. Which is fine, because we can ignore the access level 
-		safely because we'll only get entities where there is a relationship to this user. 
-		Make sense? Sure it does!
-		
-		TODO: Find a better way.. it makes sense, but its gross. 
-	*/
+	// Get all assigned todos
 	$ia = elgg_set_ignore_access(TRUE);
 	$assigned_entities = get_users_todos(get_loggedin_userid());
 	elgg_set_ignore_access($ia);
 	
+	$context = get_context();
+	set_context('search');
+	
+	// Build list based on status
 	if ($status == 'complete') {
-		$content .= "</div>";
 		foreach ($assigned_entities as $entity) {
 			if (has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
 				$entities[] = $entity;
 			}
 		}
-	} else if ($status == 'incomplete') {
-		$content .= elgg_view('todo/nav_showbydue', array('return_url' => 'pg/todo'));
-		$content .= "</div>";
+		sort_todos_by_due_date($entities);
 		
+		$list .= elgg_view_entity_list(array_slice($entities, $offset, $limit), count($entities), $offset, $limit, false, false, true);
+		
+	} else if ($status == 'incomplete') {		
 		foreach ($assigned_entities as $entity) {
 			if (!has_user_submitted(get_loggedin_userid(), $entity->getGUID())) {
 				$entities[] = $entity;
@@ -81,24 +72,25 @@
 		
 		$today = strtotime(date("F j, Y"));
 		$next_week = strtotime("+7 days", $today);
+		
+		if ($past_entities = get_todos_due_before($entities, $today)) {
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:pastdue")));
+			sort_todos_by_due_date($past_entities);
+			$list .= elgg_view_entity_list($past_entities, count($past_entities), 0, 9999, false, false, false);
+		}
 				
-		switch ($due) {
-			case "nextweek":
-				$entities = get_todos_due_between($entities, $today, $next_week);
-				break;
-			case "future": 
-				$entities = get_todos_due_after($entities, $next_week);
-				break;
-			case "past":
-				$entities = get_todos_due_before($entities, $today);
-				break;
+		if ($nextweek_entities = get_todos_due_between($entities, $today, $next_week)) {
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:nextweek")));
+			sort_todos_by_due_date($nextweek_entities);
+			$list .= elgg_view_entity_list($nextweek_entities, count($nextweek_entities), 0, 9999, false, false, false);
 		}
 		
-		sort_todos_by_due_date($entities);
+		if ($future_entities = get_todos_due_after($entities, $next_week)) {
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:future")));
+			sort_todos_by_due_date($future_entities);
+			$list .= elgg_view_entity_list($future_entities, count($future_entities), 0, 9999, false, false, false);
+		}
 	}
-	
-	$list .= elgg_view_entity_list($entities, count($entities), $offset, $limit, false, false, true);
-	//$list .= list_entities_from_relationship(TODO_ASSIGNEE_RELATIONSHIP, $page_owner_guid, false, 'object', 'todo', 0, $limit, false, false, true);
 	
 	set_context($context);
 	

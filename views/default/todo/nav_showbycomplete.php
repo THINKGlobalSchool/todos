@@ -9,7 +9,6 @@
 				$status = 'incomplete';
 			}
 			
-			
 			echo "<li class='" . ($status == "incomplete" ? 'selected ' : '') . " edt_tab_nav'>" 
 					. elgg_view('output/url', array('href' => $vars['url'] . $vars['return_url'] . "?status=incomplete", 
 													'text' => elgg_echo("todo:label:incomplete"), 
@@ -25,3 +24,4 @@
 		</ul>
 		</center>
 	</div>
+</div>

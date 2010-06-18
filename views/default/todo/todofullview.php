@@ -137,7 +137,7 @@
 		$("form#todo_submission_form").submit(
 			function() {
 				/** May not be tinyMCE **/
-				if (tinyMCE) {
+				if (typeof(tinyMCE) !== 'undefined') {
 					var comment = tinyMCE.get('submission_description').getContent();
 					$("textarea#submission_description").val(comment);
 				}
@@ -150,6 +150,9 @@
 					
 				if (content) {
 					sendSubmission();
+					if (typeof(tinyMCE) !== 'undefined') {
+			    		tinyMCE.execCommand('mceRemoveControl', false, 'submission_description');
+					}
 					$("#submission_dialog").dialog("close");
 					setTimeout ('window.location.reload()', 800);
 			

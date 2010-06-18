@@ -121,7 +121,9 @@
 	function get_users_todos($user_guid) {
 		return elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
 														 'relationship_guid' => $user_guid, 
-														 'inverse_relationship' => FALSE));
+														 'inverse_relationship' => FALSE,
+														 'limit' => 9999,
+														 'offset' => 0,));
 	}
 	
 	function is_todo_assignee($todo_guid, $user_guid) {
