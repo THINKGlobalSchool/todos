@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * View Todo Page
+	 * View Submission page
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2

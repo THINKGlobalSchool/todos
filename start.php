@@ -8,6 +8,7 @@
 	 * @copyright THINK Global School 2010
 	 * @link http://www.thinkglobalschool.com/
 	 * 
+	 * DEPENDS ON EMBEDENABLER PLUGIN (Not sure why at the moment)
 	 */
 	
 	/*********************** TODO: (Code related) ************************/
@@ -15,10 +16,6 @@
 	// - Group TODOS (Create a group TODO, and show only group TODO's) 
 	// 	 group is the TODO's owner?
 	// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
-	// - Upcoming/Completed
-	//		- Past Due 
-	// 		- Due Next Week 
-	//		- Future Todo's
 	
 	function todo_init() {
 		global $CONFIG;
