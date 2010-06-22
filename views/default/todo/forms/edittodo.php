@@ -50,12 +50,11 @@ EOT;
 		$return_required	= $vars['entity']->return_required;
 		$access_id			= $vars['entity']->access_id;
 		
+		$entity_hidden  = elgg_view('input/hidden', array('internalname' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
+		
 		if (TODO_RUBRIC_ENABLED && $vars['entity']->rubric_guid) {
 			$rubric_guid = $vars['entity']->rubric_guid;
 		}
-		
-		$container_hidden = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => $vars['container_guid']));
-		$entity_hidden  = elgg_view('input/hidden', array('internalname' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
 		
 		$assignees_url = $CONFIG->wwwroot . 'mod/todo/pages/ajax/assignees.php';
 		
@@ -87,11 +86,13 @@ EOT;
 		$description 		= "";
 		$return_required 	= 0;
 		$is_rubric_selected = 0;
-		
-		
-		$container_hidden 	= "";
-		$entity_hidden 		= "";
+		$entity_hidden = "";
 	}
+	
+	$container_guid = get_input('container_guid', page_owner());
+	
+	$container_hidden = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => $container_guid));
+	
 	
 	// Load cached data (result of an error on create/edit action)
 	if ($vars['user']->is_todo_cached) {

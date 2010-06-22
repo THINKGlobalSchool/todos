@@ -15,6 +15,7 @@
 
 	// Logged in users only
 	gatekeeper();
+	group_gatekeeper();
 	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner

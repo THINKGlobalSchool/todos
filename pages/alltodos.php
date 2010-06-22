@@ -15,6 +15,7 @@
 
 	// Logged in users only
 	gatekeeper();
+	group_gatekeeper();
 	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
@@ -43,7 +44,7 @@
 		
 	// First get a list of all accessable entities 
 	$accessable_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => 9999, 'offset' => 0, 'full_view' => FALSE));
-	
+
 	// Next get a list of entities where I'm an assignee (these may not be available in the above list)
 	$ia = elgg_set_ignore_access(TRUE);
 	$assigned_entities = get_users_todos(get_loggedin_userid());

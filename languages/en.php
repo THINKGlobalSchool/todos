@@ -22,13 +22,16 @@ $english = array(
 	'todo:title:create' => 'Create New To Do',
 	'todo:title:edit' => 'Edit To Do',
 	'todo:title:alltodos' => 'All Site To Do\'s',
+	'todo:title:ownedtodos' => 'To Do\'s created by %s',
 	
 	// Menu items
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
 	'todo:menu:assignedtodos' => 'To Do\'s I\'ve Assigned', 
 	'todo:menu:createtodo' => 'Create To Do',
 	'todo:menu:admin' => 'todo Admin',
-	'todo:menu:alltodos' => 'All Site To Do\'s',		
+	'todo:menu:alltodos' => 'All Site To Do\'s',	
+	'todo:menu:groupassignedtodos' => 'Group Assigned To Do\'s', 	
+	'todo:menu:groupcreatetodo' => 'Create Group To Do', 	
 	
 	// Labels 
 	'todo:label:noresults' => 'No Results',
@@ -79,15 +82,19 @@ $english = array(
 	'todo:success:edit' => 'Todo successfully edited',
 	'todo:success:delete' => 'Todo successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
-	'todo:error:titleblank' => 'Todo title cannot be blank',
+	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
 	'todo:error:delete' => 'There was an error deleting the Todo',
 	'todo:error:submissiondelete' => 'There was an error deleting the submission',
+	'todo:error:permission' => 'You do not have permission to create/edit this object', 
+	'todo:error:permissiondenied' => 'Permission Denied', 
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',
 	'todo:strapline:mode' => '%s',
+	'groups:enabletodo' => 'Enable group to do\'s',
+	'todo:group' => 'Group to do\'s', 
 
 );
 

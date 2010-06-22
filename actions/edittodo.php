@@ -27,8 +27,14 @@
 	$rubric_select		= get_input('rubric_select');
 	$rubric_guid		= get_input('rubric_guid');
 	$access_level		= get_input('access_level');
-
+	$container_guid 	= get_input('container_guid');
+	
 	$todo = get_entity($guid);
+	
+	if (!can_write_to_container(get_loggedin_userid(), $container_guid)) {
+		register_error(elgg_echo("todo:error:permission"));		
+		forward($_SERVER['HTTP_REFERER']);
+	}
 	
 	$can_edit = $todo->canEdit(); 
 
@@ -47,8 +53,8 @@
 		$_SESSION['user']->todo_access_level = $access_level;
 
 		// Check values
-		if (empty($title)) {
-			register_error(elgg_echo('todo:error:titleblank'));
+		if (empty($title) || empty($due_date)) {
+			register_error(elgg_echo('todo:error:requiredfields'));
 			forward($_SERVER['HTTP_REFERER']);
 		}
 		
@@ -85,7 +91,7 @@
 
 		// Save successful, forward to index
 		system_message(elgg_echo('todo:success:edit'));
-		forward('pg/todo/owned');	
+		forward($todo->getURL());	
 	}
 	
 	register_error(elgg_echo("todo:error:edit"));		

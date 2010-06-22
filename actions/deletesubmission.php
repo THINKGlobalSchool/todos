@@ -37,7 +37,7 @@
 			register_error(elgg_echo("todo:error:submissiondelete"));
 		}
 		
-		// Forward to the main blog page
+		// Forward
 		forward("pg/todo/viewtodo/$todo_guid");
 	}
 ?>

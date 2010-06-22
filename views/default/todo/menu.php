@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * Todo no results view
+	 * Todo add groups menu
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -10,10 +10,6 @@
 	 * 
 	 */
 ?>
-<div class="contentWrapper">
-		<center>
-		<?php 
-			echo elgg_echo("todo:label:noresults");
-		?>
-		</center>
-</div>
+<p>
+	<a href="<?php echo $vars['url']; ?>pg/todo/owned/<?php echo $vars['entity']->username; ?>"><?php echo elgg_echo("pages"); ?></a>	
+</p>
