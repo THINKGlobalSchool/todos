@@ -21,14 +21,20 @@
 	$page_owner = page_owner_entity();
 	if (!$page_owner) {
 		$page_owner_guid = get_loggedin_userid();
-		if ($page_owner_guid)
+		if ($page_owner_guid) {
 			set_page_owner($page_owner_guid);
+			$page_owner = page_owner_entity();
+		}
 	}	
 	
 	$limit = get_input("limit", 10);
 	$offset = get_input("offset", 0);
 
-	$title = elgg_echo('todo:title:yourtodos');
+	if ($page_owner instanceof ElggGroup || $page_owner->getGUID() != get_loggedin_userid()) {
+		$title = sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name);
+	} else {
+		$title = elgg_echo('todo:title:yourtodos');
+	}
 	
 	// create content for main column
 	$content = elgg_view_title($title);

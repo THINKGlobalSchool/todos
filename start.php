@@ -12,11 +12,9 @@
 	 */
 	
 	/*********************** TODO: (Code related) ************************/
-	// - Permissions: Working, but in a bizarre way 
-	// - Group TODOS (Create a group TODO, and show only group TODO's) 
-	// 	 group is the TODO's owner?
 	// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
-	
+	// - Prettier everything (Rubric select, view rubric modal popup, etc.. )
+
 	function todo_init() {
 		global $CONFIG;
 		
@@ -48,6 +46,12 @@
 		// Extend Metatags (for js)
 		elgg_extend_view('metatags','todo/metatags');
 		
+		// Add groups menu
+		elgg_extend_view('groups/menu/links', 'todo/menu'); 
+		
+		// add the group pages tool option     
+        add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
+
 		// Page handler
 		register_page_handler('todo','todo_page_handler');
 
@@ -60,11 +64,7 @@
 		// Register an annotation handler for comments etc
 		register_plugin_hook('entity:annotate', 'object', 'todo_annotate_comments');
 		register_plugin_hook('entity:annotate', 'object', 'submission_annotate_comments');
-		
-		// Permissions plugin hook
-		//register_plugin_hook('access:collections:read', 'user', 'todo_hook');
-		
-		
+			
 		// Set up url handlers
 		register_entity_url_handler('todo_url','object', 'todo');
 		register_entity_url_handler('todo_submission_url','object', 'todosubmission');
@@ -106,6 +106,9 @@
 				include $CONFIG->pluginspath . 'todo/pages/viewsubmission.php';
 				break;
 			case 'owned':
+				// Set page owner
+				if (isset($page[1]))
+					set_input('username',$page[1]);
 				include $CONFIG->pluginspath . 'todo/pages/ownedtodos.php';
 				break;
 			case 'everyone':
@@ -122,12 +125,26 @@
 
 	function todo_submenus() {
 		global $CONFIG;
+		$page_owner = page_owner_entity();
 		
+		if (get_context() == 'todo' && $page_owner instanceof ElggGroup) {
+			if (can_write_to_container(get_loggedin_userid(), $page_owner->getGUID())) {
+				add_submenu_item(elgg_echo("todo:menu:groupcreatetodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID(), 'groupview');
+			}
+			add_submenu_item(elgg_echo("todo:menu:groupassignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username, 'groupview');
+		}
+	 	
 		if (get_context() == 'todo') {
-			add_submenu_item(elgg_echo("todo:menu:yourtodos"), $CONFIG->wwwroot . 'pg/todo');
-			add_submenu_item(elgg_echo("todo:menu:assignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/');
-			add_submenu_item(elgg_echo("todo:menu:alltodos"), $CONFIG->wwwroot . 'pg/todo/everyone/');			
-			add_submenu_item(elgg_echo("todo:menu:createtodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/');
+			add_submenu_item(elgg_echo("todo:menu:yourtodos"), $CONFIG->wwwroot . 'pg/todo', 'userview');
+			add_submenu_item(elgg_echo("todo:menu:assignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/', 'userview');
+			add_submenu_item(elgg_echo("todo:menu:alltodos"), $CONFIG->wwwroot . 'pg/todo/everyone/', 'userview');			
+			add_submenu_item(elgg_echo("todo:menu:createtodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/', 'userview');
+		}
+		
+		if (get_context() == 'groups' && $page_owner instanceof ElggGroup) {
+			if($page_owner->todo_enable != "no") {
+				add_submenu_item(sprintf(elgg_echo("todo:group"),$page_owner->name), $CONFIG->wwwroot . "pg/todo/owned/" . $page_owner->username);
+			}
 		}
 	}
 	
@@ -207,15 +224,5 @@
 		
 	}
 	
-	function todo_permissions_check($hook, $type, $returnvalue, $params) {
-		$user_guid = get_loggedin_userid();
-		//if (is_todo_assignee($params['entity']->getGUID(), $user_guid)) {
-		//	print_r_html($params['entity']->access_id);
-		//	return true;
-		//}	
-		
-		return $returnvalue;
-	}
-
 	register_elgg_event_handler('init', 'system', 'todo_init');
 ?>

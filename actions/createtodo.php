@@ -22,7 +22,7 @@
 	$tags 				= string_to_tag_array(get_input('tags'));
 	$due_date			= strtotime(get_input('due_date'));
 	$assignees			= get_input('assignee_guids');
-	
+	$container_guid 	= get_input('container_guid');	
 	
 	if (get_input('return_required', false)) {
 		$return_required = true;
@@ -48,8 +48,8 @@
 
 	
 	// Check values
-	if (empty($title)) {
-		register_error(elgg_echo('todo:error:titleblank'));
+	if (empty($title) || empty($due_date)) {
+		register_error(elgg_echo('todo:error:requiredfields'));
 		forward($_SERVER['HTTP_REFERER']);
 	}
 	
@@ -57,15 +57,21 @@
 	$todo->subtype 		= "todo";
 	$todo->title 		= $title;
 	$todo->description 	= $description;
-	$todo->access_id 	= -2;//$access_level; 
+	$todo->access_id 	= $access_level; 
 	$todo->tags 		= $tags;
 	$todo->due_date		= $due_date;
 	//$todo->assignees	= serialize($assignees); // Store the array of guids just in case.. No point.
 	$todo->return_required = $return_required;
+	$todo->container_guid = $container_guid;
 	
 	if ($rubric_select) 
 		$todo->rubric_guid = $rubric_guid;
 	
+	// Before saving, check permissions
+	if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
+		register_error(elgg_echo("todo:error:permission"));		
+		forward($_SERVER['HTTP_REFERER']);
+	}
 	
 	// Save
 	if (!$todo->save()) {
@@ -94,5 +100,5 @@
 
 	// Save successful, forward to index
 	system_message(elgg_echo('todo:success:create'));
-	forward('pg/todo/owned');
+	forward($todo->getURL());
 ?>

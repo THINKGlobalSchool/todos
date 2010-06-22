@@ -18,6 +18,9 @@
 	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
+	if ($container = (int) get_input('container_guid')) {
+		set_page_owner($container);
+	}
 	$page_owner = page_owner_entity();
 	if (!$page_owner) {
 		$page_owner_guid = get_loggedin_userid();

@@ -11,15 +11,18 @@
 	 */
 
 	// Only admins can delete
-	admin_gatekeeper();
+	gatekeeper();
 	
 	// must have security token 
 	action_gatekeeper();
 	
 	// get input
+	
 	$guid = get_input('todo_guid');
 
-	$todo = get_entity($guid);
+	$todo = get_entity($guid);	
+
+	$container_guid = $todo->container_guid;
 	
 	$candelete = $todo->canEdit();
 	
@@ -36,7 +39,8 @@
 			register_error(elgg_echo("todo:error:delete"));
 		}
 		
-		// Forward to the main blog page
-		forward("pg/todo/owned");
+		// Forward
+		//forward("pg/todo/owned/" . get_entity($container_guid)->username);
+		forward($_SERVER['HTTP_REFERER']);
 	}
 ?>

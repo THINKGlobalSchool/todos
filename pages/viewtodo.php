@@ -18,16 +18,15 @@
 	
 	$todo_guid = get_input('todo_guid');
 	
-	// if username or owner_guid was not set as input variable, we need to set page owner
-	// Get the current page's owner
-	$page_owner = page_owner_entity();
-	if (!$page_owner) {
-		$page_owner_guid = get_loggedin_userid();
-		if ($page_owner_guid)
-			set_page_owner($page_owner_guid);
-	}	
-	
 	$todo = get_entity($todo_guid);
+	
+	$container = $todo->container_guid;
+
+	if ($container) {
+		set_page_owner($container);
+	} else {
+		set_page_owner($pages->owner_guid);
+	}
 	
 	$title = $todo->title;	
 	// create content for main column

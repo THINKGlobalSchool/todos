@@ -11,6 +11,8 @@
 	 */
 
 	$user = get_loggedin_user();
+	
+	$page_owner = page_owner_entity();
 		
 	// Determine how we are going to view this todo
 	$is_owner = $vars['entity']->canEdit();
@@ -50,14 +52,21 @@
 		$controls .= "<a href='{$rubric->getURL()}'>" . elgg_echo('todo:label:viewrubric') . "</a>";
 	}
 	
+	// Set status content for viewers (will be changed, updated depending on how this todo is viewed)
+	if (have_assignees_completed_todo($vars['entity']->getGUID())) {
+		$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+	} else {
+		$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+	}
+	
 	// Assignee only content
 	if ($is_assignee) {
 		
 		if ($submission = has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
-			$status_content .= "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
 			$controls .= "&nbsp;&nbsp;&nbsp;<a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a>";
 		} else {
-			$status_content .= "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			// If we need to return something for this todo, the complete link will point to the submission form
 			if ($vars['entity']->return_required) {
 				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
@@ -72,7 +81,7 @@
 	// Owner only Content
 	if ($is_owner) {
 			$status_content .= elgg_view('todo/todostatus', $vars);
-			$controls .= "&nbsp;&nbsp;&nbsp;<a href={$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a>";
+			$controls .= "&nbsp;&nbsp;&nbsp;<a href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a>";
 			$controls .= "&nbsp;&nbsp;&nbsp;" . elgg_view("output/confirmlink", 
 									array(
 										'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
