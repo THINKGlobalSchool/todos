@@ -50,6 +50,10 @@ EOT;
 		$return_required	= $vars['entity']->return_required;
 		$access_id			= $vars['entity']->access_id;
 		
+		if ($access_id != TODO_ACCESS_LEVEL_LOGGED_IN) {
+			$access_id = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
+		} 
+		
 		$entity_hidden  = elgg_view('input/hidden', array('internalname' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
 		
 		if (TODO_RUBRIC_ENABLED && $vars['entity']->rubric_guid) {

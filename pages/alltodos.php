@@ -42,31 +42,8 @@
 	
 	$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/everyone'));
 		
-	// First get a list of all accessable entities 
-	$accessable_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => 9999, 'offset' => 0, 'full_view' => FALSE));
-
-	// Next get a list of entities where I'm an assignee (these may not be available in the above list)
-	$ia = elgg_set_ignore_access(TRUE);
-	$assigned_entities = get_users_todos(get_loggedin_userid());
-	elgg_set_ignore_access($ia);
-	
-	if ($assigned_entites) {
-		$all_entities = array_merge($accessable_entities, $assigned_entities);
-
-		// Need to make objects unique to use array_unique
-		foreach ($all_entities as $key => $value) {
-			$all_entities[$key] = serialize($value);
-		}
-
-		$all_entities = array_unique($entities);
-
-		// Unserialize back to objects
-		foreach ($all_entities as $key => $value) {
-			$all_entities[$key] = unserialize($value);
-		}
-	} else {
-		$all_entities = $accessable_entities;
-	}
+	// Get entities
+	$all_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => 9999, 'offset' => 0, 'full_view' => FALSE));
 	
 	$context = get_context();
 	set_context('search');

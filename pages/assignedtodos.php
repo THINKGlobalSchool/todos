@@ -46,9 +46,7 @@
 	set_context('search');
 	
 	// Get all assigned todos
-	$ia = elgg_set_ignore_access(TRUE);
 	$assigned_entities = get_users_todos(get_loggedin_userid());
-	elgg_set_ignore_access($ia);
 	
 	$context = get_context();
 	set_context('search');

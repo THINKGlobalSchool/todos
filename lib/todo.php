@@ -11,6 +11,50 @@
 	 */
 	
 	/**
+	 * Assign users to a todo. 
+	 * Takes an array of guids, can be either users or groups 
+	 * If a group guid is encountered, the users from the group
+	 * will be assigned. 
+	 *
+	 * @param array $assignee_guids
+	 * @param int $todo_guid
+	 * @return bool 
+	 */
+	function assign_users_to_todo($assignee_guids, $todo_guid) {
+		// Set up relationships for asignees, can be users or groups (multiple)
+		if (is_array($assignee_guids)) {
+			$success = true;
+			foreach ($assignee_guids as $assignee) {
+				$entity = get_entity($assignee);
+				if ($entity instanceof ElggUser) {
+					$success &= assign_user_to_todo($assignee, $todo_guid);
+				} else if ($entity instanceof ElggGroup) {
+					// If we've got a group, we need to assign each member of that group
+					foreach ($entity->getMembers() as $member) {
+						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
+					}
+				}
+			}
+			return $success;
+		}
+		return true; 
+	}
+	
+	/**
+	 * Assign a single user to a todo
+	 * 
+	 * @param int $user_guid
+	 * @param int $todo_guid
+	 * @return bool 
+	 */
+	function assign_user_to_todo($user_guid, $todo_guid) {
+		if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
+			return trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
+		}
+		return false;
+	}
+	
+	/**
 	 * Return an array containing the todo access levels
 	 * 
 	 * @return array
@@ -269,17 +313,4 @@
 		return true;
 	}
 	
-	/** Hacky hacks **/
-	function get_viewed_entity() { 
-	     if ($backtrace = debug_backtrace()) { 
-	         foreach($backtrace as $step) { 
-	             if ($step['function'] == 'elgg_view' 
-	                 && isset($step['args'][1]['entity']) 
-	                 && $step['args'][1]['entity'] instanceof ElggObject) { 
-	                 return $step['args'][1]['entity']; 
-	             } 
-	         } 
-	     } 
-	     return false; 
-	}
 ?>

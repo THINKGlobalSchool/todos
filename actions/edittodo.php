@@ -60,32 +60,29 @@
 		
 		$todo->title 		= $title;
 		$todo->description 	= $description;
-		$todo->access_id 	= $access_level; 
 		$todo->tags 		= $tags;
 		$todo->due_date		= $due_date;
 		//$todo->assignees	= serialize($assignees); // Store the array of guids just in case.. no point
 		$todo->return_required = $return_required;
+		
+		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+			$todo->access_id = $todo->assignee_acl;
+		} else {
+			$todo->access_id = $access_level;
+		}
+		
 
 		if ($rubric_select) 
 			$todo->rubric_guid = $rubric_guid;
 		else 
 			$todo->rubric_guid = null;
 		
-		// Save
-		if (!$todo->save()) {
+		// Save and assign users
+		if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 			register_error(elgg_echo("todo:error:create"));		
 			forward($_SERVER['HTTP_REFERER']);
 		}
 		
-		// Set up relationships for asignees, can be users or groups (multiple)
-		if (is_array($assignees)) {
-			foreach ($assignees as $assignee) {
-				// This states: 'Jeff' is 'assignedtodo' 'Task/Assignment' 
-				// Or, groups 'Group X' 'assignedtodo' 'Task/Assignment'
-				add_entity_relationship($assignee, TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
-			}
-		}
-
 		// Clear cached info
 		clear_todo_cached_data();
 

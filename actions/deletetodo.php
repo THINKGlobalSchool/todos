@@ -40,7 +40,7 @@
 		}
 		
 		// Forward
-		//forward("pg/todo/owned/" . get_entity($container_guid)->username);
-		forward($_SERVER['HTTP_REFERER']);
+		forward("pg/todo/owned/" . get_entity($container_guid)->username);
+		//forward($_SERVER['HTTP_REFERER']);
 	}
 ?>

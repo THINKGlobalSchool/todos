@@ -14,6 +14,7 @@
 	/*********************** TODO: (Code related) ************************/
 	// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
 	// - Prettier everything (Rubric select, view rubric modal popup, etc.. )
+	// - Submission permissions? Submitter, and Assigner 
 
 	function todo_init() {
 		global $CONFIG;
@@ -61,6 +62,21 @@
 		// Add submenus
 		register_elgg_event_handler('pagesetup','system','todo_submenus');
 		
+		// Register a handler for creating todos
+		register_elgg_event_handler('create', 'object', 'todo_create_event_listener');
+
+		// Register a handler for deleting todos
+		register_elgg_event_handler('delete', 'object', 'todo_delete_event_listener');
+
+		// Register a handler for assigning users to todos
+		register_elgg_event_handler('assign','object','todo_assign_user_event_listener');
+		
+		// Register a handler for removing assignees from todos
+		register_elgg_event_handler('unassign','object','todo_unassign_user_event_listener');
+		
+		// Plugin hook for write access
+		register_plugin_hook('access:collections:write', 'all', 'todo_write_acl_plugin_hook');
+		
 		// Register an annotation handler for comments etc
 		register_plugin_hook('entity:annotate', 'object', 'todo_annotate_comments');
 		register_plugin_hook('entity:annotate', 'object', 'submission_annotate_comments');
@@ -77,7 +93,6 @@
 		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
 		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
 
-		
 		// Register type
 		register_entity_type('object', 'todo');		
 
@@ -122,81 +137,6 @@
 		
 		return true;
 	}
-
-	function todo_submenus() {
-		global $CONFIG;
-		$page_owner = page_owner_entity();
-		
-		if (get_context() == 'todo' && $page_owner instanceof ElggGroup) {
-			if (can_write_to_container(get_loggedin_userid(), $page_owner->getGUID())) {
-				add_submenu_item(elgg_echo("todo:menu:groupcreatetodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID(), 'groupview');
-			}
-			add_submenu_item(elgg_echo("todo:menu:groupassignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username, 'groupview');
-		}
-	 	
-		if (get_context() == 'todo') {
-			add_submenu_item(elgg_echo("todo:menu:yourtodos"), $CONFIG->wwwroot . 'pg/todo', 'userview');
-			add_submenu_item(elgg_echo("todo:menu:assignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/', 'userview');
-			add_submenu_item(elgg_echo("todo:menu:alltodos"), $CONFIG->wwwroot . 'pg/todo/everyone/', 'userview');			
-			add_submenu_item(elgg_echo("todo:menu:createtodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/', 'userview');
-		}
-		
-		if (get_context() == 'groups' && $page_owner instanceof ElggGroup) {
-			if($page_owner->todo_enable != "no") {
-				add_submenu_item(sprintf(elgg_echo("todo:group"),$page_owner->name), $CONFIG->wwwroot . "pg/todo/owned/" . $page_owner->username);
-			}
-		}
-	}
-	
-	/**
-	 * Populates the ->getUrl() method for todo entities
-	 *
-	 * @param ElggEntity entity
-	 * @return string request url
-	 */
-	function todo_url($entity) {
-		global $CONFIG;
-		
-		return $CONFIG->url . "pg/todo/viewtodo/{$entity->guid}/";
-	}
-	
-	/**
-	 * Populates the ->getUrl() method for todo submission entities
-	 *
-	 * @param ElggEntity entity
-	 * @return string request url
-	 */
-	function todo_submission_url($entity) {
-		global $CONFIG;
-		
-		return $CONFIG->url . "pg/todo/viewsubmission/{$entity->guid}/";
-	}
-	
-	/**
-	 * Hook into the framework and provide comments on todo entities.
-	 *
-	 * @param unknown_type $hook
-	 * @param unknown_type $entity_type
-	 * @param unknown_type $returnvalue
-	 * @param unknown_type $params
-	 * @return unknown
-	 */
-	function todo_annotate_comments($hook, $entity_type, $returnvalue, $params)
-	{
-		$entity = $params['entity'];
-		$full = $params['full'];
-		
-		if (
-			($entity instanceof ElggEntity) &&	// Is the right type 
-			($entity->getSubtype() == 'todo') &&  // Is the right subtype
-			($full) // This is the full view
-		)
-		{
-			// Display comments
-			return elgg_view_comments($entity);
-		}
-		
-	}
 	
 	/**
 	 * Hook into the framework and provide comments on submission entities.
@@ -222,6 +162,176 @@
 			return elgg_view_comments($entity);
 		}
 		
+	}
+	
+	/**
+	 * Hook into the framework and provide comments on todo entities.
+	 *
+	 * @param unknown_type $hook
+	 * @param unknown_type $entity_type
+	 * @param unknown_type $returnvalue
+	 * @param unknown_type $params
+	 * @return unknown
+	 */
+	function todo_annotate_comments($hook, $entity_type, $returnvalue, $params) {
+		$entity = $params['entity'];
+		$full = $params['full'];
+		
+		if (
+			($entity instanceof ElggEntity) &&	// Is the right type 
+			($entity->getSubtype() == 'todo') &&  // Is the right subtype
+			($full) // This is the full view
+		)
+		{
+			// Display comments
+			return elgg_view_comments($entity);
+		}
+		
+	}
+	
+	/**
+	 * Todo created, so add users to access lists.
+	 */
+	function todo_create_event_listener($event, $object_type, $object) {
+		if ($object->getSubtype() == 'todo') {
+			$todo_acl = create_access_collection(elgg_echo('todo:todo') . ":" . $object->title, $object->getGUID());
+			if ($todo_acl) {
+				$object->assignee_acl = $todo_acl;
+				set_context('todo_acl');
+				add_user_to_access_collection($object->owner_guid, $todo_acl);
+				set_context($context);
+				if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+					$object->access_id = $todo_acl;
+					$object->save();
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Todo deleted, so remove access lists.
+	 */
+	function todo_delete_event_listener($event, $object_type, $object) {
+		if ($object->getSubtype() == 'todo') {
+			$context = get_context();
+			set_context('todo_acl');
+			register_error(delete_access_collection($object->assignee_acl));
+			set_context($context);
+		}
+		return true;
+	}
+
+	/**
+	 * Listens to a todo assign event and adds a user to the todos's access control
+	 *
+	 */
+	function todo_assign_user_event_listener($event, $object_type, $object) {
+		if ($object['todo']->getSubtype() == 'todo') {
+			$todo = $object['todo'];
+			$user = $object['user'];
+			$acl = $todo->assignee_acl;
+			
+			$context = get_context();
+			set_context('todo_acl');
+			$result = add_user_to_access_collection($user->getGUID(), $acl);
+			set_context($context);			
+		}
+		return true;
+	}
+
+	/**
+	 * Listens to a todo unassign event and removes a user from the todo's access control
+	 *
+	 */
+	function todo_unassign_user_event_listener($event, $object_type, $object) {
+		if ($object['todo']->getSubtype() == 'todo') {	
+			$todo = $object['todo'];
+			$user = $object['user'];
+			$acl = $todo->assignee_acl;
+		
+			$context = get_context();
+			set_context('todo_acl');
+			remove_user_from_access_collection($user->getGUID(), $acl);
+			set_context($context);	
+		}
+		return true;
+	}
+	
+	/**
+	 * Return the write access for the current todo if the user has write access to it.
+	 */
+	function todo_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) {
+		if (get_context() == 'todo_acl') {
+			// get all todos if logged in
+			if ($loggedin = get_loggedin_user()) {
+				//$todos = get_users_todos($loggedin->getGUID());
+				$todos = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo'));
+				if (is_array($todos)) {
+					foreach ($todos as $todo) {
+						$returnvalue[$todo->assignee_acl] = elgg_echo('todo:todo') . ':' . $todo->title;
+					}
+				}
+			}
+		}
+		return $returnvalue;
+	}
+	
+	/**
+	 * Setup todo submenus
+	 */
+	function todo_submenus() {
+		global $CONFIG;
+		$page_owner = page_owner_entity();
+		
+		// Load up the groups related submenus if the page ownert is a group
+		if (get_context() == 'todo' && $page_owner instanceof ElggGroup) {
+			if (can_write_to_container(get_loggedin_userid(), $page_owner->getGUID())) {
+				add_submenu_item(elgg_echo("todo:menu:groupcreatetodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID(), 'groupview');
+			}
+			add_submenu_item(elgg_echo("todo:menu:groupassignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username, 'groupview');
+		}
+	 	
+		// Default todo submenus
+		if (get_context() == 'todo') {
+			add_submenu_item(elgg_echo("todo:menu:yourtodos"), $CONFIG->wwwroot . 'pg/todo', 'userview');
+			add_submenu_item(elgg_echo("todo:menu:assignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/', 'userview');
+			add_submenu_item(elgg_echo("todo:menu:alltodos"), $CONFIG->wwwroot . 'pg/todo/everyone/', 'userview');			
+			add_submenu_item(elgg_echo("todo:menu:createtodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/', 'userview');
+		}
+		
+		// Groups context submenus
+		if (get_context() == 'groups' && $page_owner instanceof ElggGroup) {
+			if($page_owner->todo_enable != "no") {
+				add_submenu_item(sprintf(elgg_echo("todo:group"),$page_owner->name), $CONFIG->wwwroot . "pg/todo/owned/" . $page_owner->username);
+			}
+		}
+	}
+	
+	/**
+	 * Populates the ->getUrl() method for todo submission entities
+	 *
+	 * @param ElggEntity entity
+	 * @return string request url
+	 */
+	function todo_submission_url($entity) {
+		global $CONFIG;
+		
+		return $CONFIG->url . "pg/todo/viewsubmission/{$entity->guid}/";
+	}
+	
+	/**
+	 * Populates the ->getUrl() method for todo entities
+	 *
+	 * @param ElggEntity entity
+	 * @return string request url
+	 */
+	function todo_url($entity) {
+		global $CONFIG;
+		
+		return $CONFIG->url . "pg/todo/viewtodo/{$entity->guid}/";
 	}
 	
 	register_elgg_event_handler('init', 'system', 'todo_init');

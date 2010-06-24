@@ -73,28 +73,13 @@
 		forward($_SERVER['HTTP_REFERER']);
 	}
 	
-	// Save
-	if (!$todo->save()) {
+	// Save and assign users
+	if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
+		set_context($context);
 		register_error(elgg_echo("todo:error:create"));		
 		forward($_SERVER['HTTP_REFERER']);
 	}
 		
-	// Set up relationships for asignees, can be users or groups (multiple)
-	if (is_array($assignees)) {
-		foreach ($assignees as $assignee) {
-			$entity = get_entity($assignee);
-			if ($entity instanceof ElggUser) {
-				// This states: 'Jeff' is 'assignedtodo' 'Task/Assignment' 
-				add_entity_relationship($assignee, TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
-			} else if ($entity instanceof ElggGroup) {
-				// If we've got a group, we need to assign each member of that group
-				foreach ($entity->getMembers() as $member) {
-					add_entity_relationship($member->getGUID(), TODO_ASSIGNEE_RELATIONSHIP, $todo->getGUID());
-				}
-			}
-		}
-	}
-	
 	// Clear Cached info
 	clear_todo_cached_data();
 
