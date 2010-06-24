@@ -28,7 +28,7 @@
 	if ($todo && $todo->getSubtype() == "todo") {
 		
 		$success = $assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
-		
+		$success &= trigger_elgg_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee));
 		echo $success ? 1 : 0;
 		return;
 	}
