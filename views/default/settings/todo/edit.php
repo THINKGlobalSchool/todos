@@ -1,4 +1,3 @@
-<p>
 <?php 
 	/**
 	 * Todo settings form
@@ -10,7 +9,10 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-
-	
 ?>
+<p>
+	<?php echo elgg_echo('todo:label:calendarsalt'); ?>
+
+	<input type='text' size='60' name='params[calsalt]' value="<?php echo $vars['entity']->calsalt; ?>" />
+	<br />
 </p>

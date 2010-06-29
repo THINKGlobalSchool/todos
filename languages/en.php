@@ -74,6 +74,8 @@ $english = array(
 	'todo:label:pastdue' => 'Past Due',
 	'todo:label:nextweek' => 'Due Next Week', 
 	'todo:label:future' => 'Future To Do\'s',
+	'todo:label:calendarsalt' => 'Calendar unique hash salt',
+	'todo:label:calendarurl' => 'Todo Calendar URL', 
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",

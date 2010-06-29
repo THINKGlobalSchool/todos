@@ -294,6 +294,24 @@
 		return ($a->due_date < $b->due_date) ? -1 : 1;
 	}
 	
+	function generate_todo_user_hash($user) {
+		$salt = get_plugin_setting('calsalt', 'todo');
+		
+		$hash = md5($user->username);
+		$hash .= md5($salt);
+		$hash .= md5($user->getGUID());
+		$hash = md5($hash);
+			
+		return substr($hash, 0, 12);
+	}
+
+	function check_todo_user_hash($hash, $user) {
+		if ($user) {
+			return $hash === generate_todo_user_hash($user);
+		}
+		return false;
+	}
+	
 
 	/**
 	 * Clears any cached data
