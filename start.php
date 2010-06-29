@@ -129,6 +129,10 @@
 			case 'everyone':
 				include $CONFIG->pluginspath . 'todo/pages/alltodos.php';
 				break;
+			case 'calendar':
+				set_input('user', $page[1]);
+				include $CONFIG->pluginspath . 'todo/pages/todocalendar.php';
+				break;
 			case 'assigned':
 			default:
 				include $CONFIG->pluginspath . 'todo/pages/assignedtodos.php';
