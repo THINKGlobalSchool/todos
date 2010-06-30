@@ -16,16 +16,15 @@
 		$time_format_str = "Ymd\THi00";
 		$ical_events = array();
 		
-		
 		foreach($todos as $todo) {
 			$ical_events[] = array('dtstart' => date($date_format_str, $todo->due_date),				// Start date
-								   'dtend' => date($date_format_str, $todo->due_date),				// End date
-								   'dtstamp' => date($time_format_str,$todo->time_created),			// Created
-								   'uid' => md5($todo->time_created . $username), 				// Unique id, time created hashed with username
-								   'created' => date($time_format_str, $todo->time_created), 		// Created
-								   'last-modified' =>  date($time_format_str, $todo->time_updated),	// Last modified
-								   'summary' => $todo->title, 									// Short summary
-								   'descrtiption' => $todo->description);						// Full description
+								   'dtend' => date($date_format_str, $todo->due_date),					// End date
+								   'dtstamp' => date($time_format_str,$todo->time_created),				// Created
+								   'uid' => md5($todo->time_created . $username), 						// Unique id, time created hashed with username
+								   'created' => date($time_format_str, $todo->time_created), 			// Created
+								   'last-modified' =>  date($time_format_str, $todo->time_updated),		// Last modified
+								   'summary' => $todo->title, 											// Short summary
+								   'description' => str_replace("\r", "=0D=0A=", strip_tags($todo->description)));	// Full description, CFLF
 		}
 		
 		$filename = "SpotTodoExport.ics";
@@ -54,6 +53,7 @@ LAST-MODIFIED:<?php echo $event['last-modified']. "\n"; ?>
 SEQUENCE:1
 STATUS:CONFIRMED
 SUMMARY:<?php echo $event['summary']. "\n"; ?>
+DESCRIPTION;ENCODING=QUOTED-PRINTABLE: <?php echo $event['description'] . "\n"; ?>
 TRANSP:OPAQUE
 END:VEVENT<?php echo "\n";
 		}
@@ -62,4 +62,3 @@ END:VCALENDAR
 <?php
 	}
 ?>
-
