@@ -75,6 +75,9 @@
 		
 		$script = <<<EOT
 			<script type="text/javascript">
+			
+			var file_submit_url = "$file_submit_url";
+			
 			$("div#content_display_div").show();
 			showDefault();
 			
@@ -93,9 +96,9 @@
 			$("#file_form").submit(
 				function() {
 					var options = { 
-							url: "$file_submit_url", 
+							url: stripJunk(file_submit_url), 
 							type: "POST", 
-					        //target:        '#submit_output',   // target element(s) to be updated with server response 
+					        target:        '#submit_output',   // target element(s) to be updated with server response 
 							clearForm: true,
 					        beforeSubmit:  showRequest,  // pre-submit callback 
 					        success:       showResponse,  // post-submit callback 
@@ -150,7 +153,7 @@ EOT;
 		// Build Form Body
 		$form_body = <<<EOT
 
-		<div class='contentWrapper todo'>
+		<div class='todo' style='padding: 10px;'>
 			<div>
 				<h3>$title_label</h3><br />
 			</div>

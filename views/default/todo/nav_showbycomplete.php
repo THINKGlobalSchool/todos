@@ -1,5 +1,5 @@
-<div class="contentWrapper">
-	<div id="elgg_horizontal_tabbed_nav">
+<div class="">
+	<div class="elgg_horizontal_tabbed_nav margin_top">
 		<center>
 		<ul>
 		<?php 

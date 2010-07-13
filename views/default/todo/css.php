@@ -28,7 +28,7 @@
 .todo .multiselect {
 	border: 2px solid #bbbbbb;
 	font-size: 120%;
-	width: 150px;
+	width: auto;
 	height: auto;
 	padding: 10px;
 	-moz-border-radius:5px 5px 5px 5px;
@@ -51,6 +51,7 @@
 	padding:0;
 }
 
+
 .todo .listingstrapline {
 	margin: 0 0 0 0px;
 	padding:0;
@@ -59,11 +60,11 @@
 }
 
 .todo .strapline {
-	padding: 10px;
+	padding:10px;
 	height: 16px;
-	background: #bbdaf7;
+	background: #E8F1FC;
+	border: 1px solid #D4DAE6;
 	margin: 0 0 0 0px;
-	line-height:1em;
 	-moz-border-radius:5px 5px 5px 5px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
@@ -128,11 +129,9 @@
 }
 
 .todo .status_table {
-	width: 98%;
-	margin: 4px;
-	border: 3px solid #aaaaaa;
-	-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
+	width: 100%;
+	margin-top: 4px;
+	border: 1px solid #aaaaaa;
 }
 
 .todo .status_table td {
@@ -141,7 +140,7 @@
 
 .todo .status_table th {
 	padding: 5px;
-	background: #bbdaf7;
+	background: #E8F1FC;
 	font-weight: bold;
 	color: #666666;
 	border-bottom: 1px solid #aaaaaa;
@@ -223,6 +222,38 @@
 	color: red;
 	font-weight: bold;
 	display:none;
+}
+
+.todo .entity_edit a {
+	color: #4690D6;
+}
+
+.todo_seperator {
+	/**-moz-border-radius:5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+	border-radius: 5px 5px 5px 5px;**/
+	margin-bottom:5px;
+	margin-top: 5px;
+	padding: 3px;
+}
+
+.todo_seperator h3 {
+	color: #000000;
+}
+
+.todo_priority_1 {
+	border: 2px solid #E83131;
+	background: #FFECEC;
+}
+
+.todo_priority_2 {
+	border: 2px solid #F19F45;
+	background: #FFFFCC;
+}
+
+.todo_priority_3 {
+	border: 2px solid #438743;
+	background: #E1FFE1;
 }
 
 #submission_ajax_spinner {

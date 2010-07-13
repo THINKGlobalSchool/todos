@@ -33,6 +33,19 @@
 					foreach ($entity->getMembers() as $member) {
 						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
 					}
+				} else if (TODO_CHANNELS_ENABLED && $entity->getSubtype() == 'shared_access') {
+					// If shared access (channels) is enabled, we need to assign the users of that channel																			
+					$channel_members = elgg_get_entities_from_relationship(array(
+																			'relationship' => 'shared_access_member',
+																			'relationship_guid' => $entity->getGUID(),
+																			'inverse_relationship' => TRUE,
+																			'types' => 'user',
+																			'limit' => 9999
+																		));
+
+					foreach($channel_members as $member) {
+						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
+					}
 				}
 			}
 			return $success;
@@ -72,12 +85,30 @@
 	 * @return array 
 	 */
 	function get_todo_groups_array() {
-		$groups = elgg_get_entities(array('types' => 'group'));
-		$groups_array = array();
+		// Get user's groups
+		$groups = get_users_membership(get_loggedin_userid());
+	
+		$array = array();
 		foreach ($groups as $group) {
-			$groups_array[$group->getGUID()] = $group->name;
+			$array[$group->getGUID()] = "Group: " . $group->name;
 		}
-		return $groups_array;
+		
+		// If shared_access (channels) is enabled
+		if (TODO_CHANNELS_ENABLED) {
+			// Get users channels
+			$channels = elgg_get_entities(array('relationship' => 'shared_access_member',
+												'relationship_guid' => get_loggedin_userid(),
+												'inverse_relationship' => FALSE,
+												'types' => 'object',
+												'subtypes' => 'shared_access',
+												'limit' => 9999
+										  		));
+										
+			foreach ($channels as $channel) {
+				$array[$channel->getGUID()] = "Channel: " . $channel->title;
+			}
+		}
+		return $array;
 	}
 	
 	/**
@@ -268,9 +299,11 @@
 	}
 	
 	/**
-	 * S
-	 *
-	 *
+	 * Sort given todo array by due date, ascending or descending
+	 * 
+	 * @param array &$todos 
+	 * @param bool $descending 
+	 * 
 	 */
 	function sort_todos_by_due_date(&$todos, $descending = false) {
 		if ($descending) {
@@ -280,6 +313,13 @@
 		}
 	}
 	
+	/** 
+	 * Compare given todos by due_date descending
+	 *  
+	 * @param ElggEntity $a 
+	 * @param ElggEntity $b
+	 * @return bool
+	 */
 	function compare_todo_due_dates_desc($a, $b) {
 		if ($a->due_date == $b->due_date) {
 			return 0;
@@ -287,6 +327,13 @@
 		return ($a->due_date > $b->due_date) ? -1 : 1;
 	}
 	
+	/** 
+	 * Compare given todos by due_date ascending
+	 *  
+	 * @param ElggEntity $a 
+	 * @param ElggEntity $b
+	 * @return bool
+	 */
 	function compare_todo_due_dates_asc($a, $b) {
 		if ($a->due_date == $b->due_date) {
 			return 0;
@@ -294,17 +341,35 @@
 		return ($a->due_date < $b->due_date) ? -1 : 1;
 	}
 	
+	/**
+	 * Generate unique user hash 
+	 *
+	 * @param ElggUser $user 
+	 * @return string
+	 */
 	function generate_todo_user_hash($user) {
+		// Salt defined in plugin settings
 		$salt = get_plugin_setting('calsalt', 'todo');
 		
+		// Hash username, hash salt, hash user_guid
 		$hash = md5($user->username);
 		$hash .= md5($salt);
 		$hash .= md5($user->getGUID());
+		
+		// Hash again
 		$hash = md5($hash);
 			
+		// Return 12 digit hash
 		return substr($hash, 0, 12);
 	}
 
+	/**
+	 * Check if given hash is valid
+	 * 
+	 * @param string $hash
+	 * @param ElggUser $user
+	 * @return bool
+	 */
 	function check_todo_user_hash($hash, $user) {
 		if ($user) {
 			return $hash === generate_todo_user_hash($user);
@@ -312,7 +377,36 @@
 		return false;
 	}
 	
-
+	/**
+	 * Get To Do's content header
+	 * 
+	 * @param string $context - Which mode we're in (nothing to do with get_context())
+	 * @return html
+	 */
+	function get_todo_content_header($context, $new_link = "pg/todo/createtodo/") {
+		global $CONFIG;
+		
+		$tabs = array(
+			'all' => array(
+				'title' => 'All',
+				'url' => $CONFIG->wwwroot . 'pg/todo/everyone/',
+				'selected' => ($context == 'all'),
+			),
+			'assigned' => array(
+				'title' => 'Assigned to me',
+				'url' => $CONFIG->wwwroot . 'pg/todo/',
+				'selected' => ($context == 'assigned'),
+			),
+			'owned' => array(
+				'title' => 'Assigned by me',
+				'url' => $CONFIG->wwwroot . 'pg/todo/owned',
+				'selected' => ($context == 'owned'),
+			)
+		);
+						
+		return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
+	}
+	
 	/**
 	 * Clears any cached data
 	 * @return bool 

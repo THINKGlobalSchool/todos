@@ -40,7 +40,7 @@
 	$submission->subtype = "todosubmission";
 	$submission->description = $description;
 	$submission->content = serialize($content);
-	$submission->access_id 	= ACCESS_LOGGED_IN;
+	$submission->access_id 	= ACCESS_LOGGED_IN; // Needs to be fixed
 	$submission->owner_id = $user->getGUID();
 	$submission->todo_guid = $todo_guid;
 

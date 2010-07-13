@@ -41,15 +41,15 @@
 	
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 				
-	$strapline = sprintf(elgg_echo("todo:strapline"), $due_date);
-	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
+	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
+	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>");
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
 	$submission_form = elgg_view('todo/forms/submission', $vars);
 	
 	// Optional functionality
 	if (TODO_RUBRIC_ENABLED && $rubric = get_entity($vars['entity']->rubric_guid)) {
-		$controls .= "<a href='{$rubric->getURL()}'>" . elgg_echo('todo:label:viewrubric') . "</a>";
+		$controls .= "<span class='entity_edit'><a href='{$rubric->getURL()}'>" . elgg_echo('todo:label:viewrubric') . "</a></span>";
 	}
 	
 	// Set status content for viewers (will be changed, updated depending on how this todo is viewed)
@@ -64,15 +64,15 @@
 		
 		if ($submission = has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
-			$controls .= "&nbsp;&nbsp;&nbsp;<a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a>";
+			$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a></span>";
 		} else {
 			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			// If we need to return something for this todo, the complete link will point to the submission form
 			if ($vars['entity']->return_required) {
-				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
+				$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
 			} else {
 				// No return required, link to createsubmissionaction and create blank submission
-				$controls .= "&nbsp;&nbsp;&nbsp;<a id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a>";
+				$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
 			}
 		}
 		
@@ -81,21 +81,13 @@
 	// Owner only Content
 	if ($is_owner) {
 			$status_content .= elgg_view('todo/todostatus', $vars);
-			$controls .= "&nbsp;&nbsp;&nbsp;<a href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a>";
-			$controls .= "&nbsp;&nbsp;&nbsp;" . elgg_view("output/confirmlink", 
+			$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+			$controls .= "&nbsp;&nbsp;&nbsp;<span class='delete_button'>" . elgg_view("output/confirmlink", 
 									array(
 										'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
 										'text' => elgg_echo('delete'),
 										'confirm' => elgg_echo('deleteconfirm'),
-									));
-	}
-
-	if ($tags) {
-		$tags = "<p class='fulltags'>
-					" . $tags . "
-				</p>";
-	} else {
-		$tags = '<p></p>';
+									)) . "</span>";
 	}
 	
 	// AJAX Endpoint for submissions
@@ -196,28 +188,30 @@ EOT;
 	
 	// Put content together
 	$info = <<<EOT
-			<div class='contentWrapper singleview'>
-				<div class='todo'>
-					<div class='todo_header'>
-						<div class='todo_header_title'><h2><a href='$url'>$title</a></h2></div>
-						<div class='todo_header_controls'>
-							$controls
-						</div>
+			
+				<div class='todo' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px;'>
+					<div class='content_header'>
+						<div class='entity_title'><h2><a href='$url'>$title</a></h2></div>
 						<div style='clear:both;'></div>
 					</div>
 					<div class='strapline'>
-						$strapline
+						<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
+							$strapline
+						</div>
+						<div class='entity_metadata' style='float: right;'>
+							$controls
+						</div>
 					</div>
-					$tags
+					<p class='tags'>$tags</p>
 					<div class='clearfloat'></div>
-					<div class='description'>
+					<div class='description '>
 						<label>$description_label</label><br />
 						$description_content
-					</div>
+					</div><br />
 					<div>
 						<label>$duedate_label</label><br />
 						$duedate_content
-					</div>
+					</div><br />
 					<!--<div>
 						<label>$assignees_label</label><br />
 						$assignees_content
@@ -231,7 +225,6 @@ EOT;
 						$status_content
 					</div><br />
 				</div>
-			</div>
 			<div id="submission_dialog" style="display: none;" >$submission_form</div>
 EOT;
 	

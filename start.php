@@ -15,6 +15,7 @@
 	// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
 	// - Prettier everything (Rubric select, view rubric modal popup, etc.. )
 	// - Submission permissions? Submitter, and Assigner 
+	// - File permissions
 
 	function todo_init() {
 		global $CONFIG;
@@ -28,6 +29,7 @@
 		
 		// Determine if optional plugins are enabled
 		define('TODO_RUBRIC_ENABLED', is_plugin_enabled('rubricbuilder') ? true : false);
+		define('TODO_CHANNELS_ENABLED', is_plugin_enabled('shared_access') ? true : false);
 		
 		// Relationship for assignees
 		define('TODO_ASSIGNEE_RELATIONSHIP', 'assignedtodo');
@@ -39,7 +41,12 @@
 		define('TODO_MODE_ASSIGNER', 0);
 		define('TODO_MODE_ASSIGNEE', 1);
 		
-		get_todo_groups_array();
+		// Priorities (currently just used for a pretty display)
+		define('TODO_PRIORITY_HIGH', 1);
+		define('TODO_PRIORITY_MEDIUM', 2);
+		define('TODO_PRIORITY_LOW', 3);
+		
+		//get_todo_groups_array();
 		
 		// Extend CSS
 		elgg_extend_view('css','todo/css');
@@ -61,7 +68,7 @@
 
 		// Add submenus
 		register_elgg_event_handler('pagesetup','system','todo_submenus');
-		
+				
 		// Register a handler for creating todos
 		register_elgg_event_handler('create', 'object', 'todo_create_event_listener');
 
@@ -289,7 +296,7 @@
 	function todo_submenus() {
 		global $CONFIG;
 		$page_owner = page_owner_entity();
-		
+			
 		// Load up the groups related submenus if the page ownert is a group
 		if (get_context() == 'todo' && $page_owner instanceof ElggGroup) {
 			if (can_write_to_container(get_loggedin_userid(), $page_owner->getGUID())) {
@@ -299,11 +306,10 @@
 		}
 	 	
 		// Default todo submenus
-		if (get_context() == 'todo') {
+		if (get_context() == 'todo') {	
 			add_submenu_item(elgg_echo("todo:menu:yourtodos"), $CONFIG->wwwroot . 'pg/todo', 'userview');
 			add_submenu_item(elgg_echo("todo:menu:assignedtodos"), $CONFIG->wwwroot . 'pg/todo/owned/', 'userview');
 			add_submenu_item(elgg_echo("todo:menu:alltodos"), $CONFIG->wwwroot . 'pg/todo/everyone/', 'userview');			
-			add_submenu_item(elgg_echo("todo:menu:createtodo"), $CONFIG->wwwroot . 'pg/todo/createtodo/', 'userview');
 		}
 		
 		// Groups context submenus

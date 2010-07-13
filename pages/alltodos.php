@@ -17,6 +17,8 @@
 	gatekeeper();
 	group_gatekeeper();
 	
+	global $CONFIG;
+	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
 	$page_owner = page_owner_entity();
@@ -38,15 +40,18 @@
 	$title = elgg_echo('todo:title:alltodos');
 	
 	// create content for main column
-	$content = elgg_view_title($title);
+	
+	// breadcrumbs
+	elgg_push_breadcrumb(elgg_echo('todo:title'), "{$CONFIG->site->url}pg/todo/everyone");	
+	elgg_push_breadcrumb(elgg_echo('todo:label:' . $status), "{$CONFIG->site->url}pg/todo/?status=" . $status);
+	
+	$content .= elgg_view('navigation/breadcrumbs');	
+	$content .= get_todo_content_header('all');
 	
 	$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/everyone'));
 		
 	// Get entities
 	$all_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => 9999, 'offset' => 0, 'full_view' => FALSE));
-	
-	$context = get_context();
-	set_context('search');
 	
 	// Show based on status
 	if ($status == 'complete') {
@@ -70,25 +75,23 @@
 		$next_week = strtotime("+7 days", $today);
 		
 		if ($past_entities = get_todos_due_before($entities, $today)) {
-			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:pastdue")));
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:pastdue"), 'priority' => TODO_PRIORITY_HIGH));
 			sort_todos_by_due_date($past_entities);
 			$list .= elgg_view_entity_list($past_entities, count($past_entities), 0, 9999, false, false, false);
 		}
 				
 		if ($nextweek_entities = get_todos_due_between($entities, $today, $next_week)) {
-			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:nextweek")));
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:nextweek"), 'priority' => TODO_PRIORITY_MEDIUM));
 			sort_todos_by_due_date($nextweek_entities);
 			$list .= elgg_view_entity_list($nextweek_entities, count($nextweek_entities), 0, 9999, false, false, false);
 		}
 		
 		if ($future_entities = get_todos_due_after($entities, $next_week)) {
-			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:future")));
+			$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:future"), 'priority' => TODO_PRIORITY_LOW));
 			sort_todos_by_due_date($future_entities);
 			$list .= elgg_view_entity_list($future_entities, count($future_entities), 0, 9999, false, false, false);
 		}
 	}
-	
-	set_context($context);
 	
 	if ($list) {
 		$content .= $list;
@@ -97,7 +100,7 @@
 	}
 	
 	// layout the sidebar and main column using the default sidebar
-	$body = elgg_view_layout('two_column_left_sidebar', '', $content);
+	$body = elgg_view_layout('one_column_with_sidebar', $content, '');
 
 	// create the complete html page and send to browser
 	page_draw($title, $body);

@@ -16,6 +16,8 @@
 	// Logged in users only
 	gatekeeper();
 	
+	global $CONFIG;
+	
 	// if username or owner_guid was not set as input variable, we need to set page owner
 	// Get the current page's owner
 	$page_owner = page_owner_entity();
@@ -37,15 +39,24 @@
 	}
 	
 	// create content for main column
-	$content = elgg_view_title($title);
 	
-	$context = get_context();
-	set_context('search');
+	// breadcrumbs
+	elgg_push_breadcrumb(elgg_echo('todo:title'), "{$CONFIG->site->url}pg/todo/everyone");	
 	
+	
+	if ($page_owner instanceof ElggGroup) { 
+		$header = elgg_view_title($title);
+		elgg_push_breadcrumb(elgg_echo('todo:menu:groupassignedtodos'), "{$CONFIG->site->url}pg/todo/owned/" . $page_owner->username);
+	} else {
+		$header = get_todo_content_header('owned');
+		elgg_push_breadcrumb(elgg_echo('todo:title:yourtodos'), "{$CONFIG->site->url}pg/todo/owned");
+	}
+	
+	$content .= elgg_view('navigation/breadcrumbs');
+	$content .= $header;
+		
 	$list .= elgg_list_entities(array('types' => 'object', 'subtypes' => 'todo', 'container_guid' => page_owner(), 'limit' => $limit, 'offset' => $offset, 'full_view' => FALSE));
-	
-	set_context($context);
-	
+		
 	if ($list) {
 		$content .= $list;
 	} else {
@@ -53,7 +64,7 @@
 	}
 	
 	// layout the sidebar and main column using the default sidebar
-	$body = elgg_view_layout('two_column_left_sidebar', '', $content);
+	$body = elgg_view_layout('one_column_with_sidebar', $content, '');
 
 	// create the complete html page and send to browser
 	page_draw($title, $body);
