@@ -11,9 +11,11 @@
 	 */
 $english = array(
 	
-	// Generic Title
+	// Generic
 	'todo:title' => 'To Do\'s',
 	'todo:todo' => 'todo',
+	'todo' => 'To Do\'s',
+	'todo:new' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submission',
 	
@@ -76,6 +78,8 @@ $english = array(
 	'todo:label:future' => 'Future To Do\'s',
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
 	'todo:label:calendarurl' => 'Todo Calendar URL', 
+	'todo:label:assignedby' => '| Assigned by %s ',
+	'todo:label:deletesubmission' => 'Delete Submission',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",

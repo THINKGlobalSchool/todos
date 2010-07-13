@@ -58,28 +58,29 @@
 				$controls .= elgg_view("output/confirmlink", 
 										array(
 											'href' => $vars['url'] . "action/todo/deletesubmission?submission_guid=" . $vars['entity']->getGUID(),
-											'text' => elgg_echo('delete'),
+											'text' => elgg_echo('todo:label:deletesubmission'),
 											'confirm' => elgg_echo('deleteconfirm'),
 										)) . "&nbsp;&nbsp;&nbsp;";
 										
 		}
 		
 		$info = <<<EOT
-				<div class='contentWrapper singleview'>
-					<div class='todo'>
-						<div class='assignee'>
-							<label>$assignee_label</label><br />
-							$assignee_content
-						</div><br />
-						<div class='todo_info'>
-							<label>$todo_title_label</label><br />
-							$todo_title_content
-						</div><br />
-						<div>
-							<label>$date_label</label><br />
-							$date_content
-						</div><br />
-						<div class='work_submitted'>
+					<div class='todo margin_top' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px; padding-bottom: 10px;'>
+						<div class='strapline'>
+							<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
+								<b>$assignee_label: </b>
+								$assignee_content | 
+								<b>$todo_title_label: </b>
+								$todo_title_content | 
+								<b>$date_label: </b>
+								$date_content
+							</div>
+							<div class='entity_metadata' style='float: right;'>
+								$controls
+							</div>
+							<div style='clear: both;'></div>
+						</div>
+						<div class='work_submitted margin_top'>
 							<label>$work_submitted_label</label><br />
 							<ul>
 							$work_submitted_content
@@ -89,9 +90,7 @@
 							<label>$moreinfo_label</label>
 							$moreinfo_content
 						</div>
-						$controls
 					</div>
-				</div>
 EOT;
 		echo $info;
 		

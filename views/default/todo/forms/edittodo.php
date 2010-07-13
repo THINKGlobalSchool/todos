@@ -193,7 +193,7 @@ EOT;
 	// Build Form Body
 	$form_body = <<<EOT
 	
-	<div class='contentWrapper todo'>
+	<div class='margin_top todo'>
 		<div>
 			<label>$title_label</label><br />
 	        $title_input

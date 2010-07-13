@@ -17,6 +17,10 @@
 
   	google.load("jqueryui", "1.7.2");
 
+	function stripJunk(text) {
+		return text.replace("amp;", '');
+	}
+
 </script>
 
 

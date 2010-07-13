@@ -26,8 +26,8 @@
 
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 
-	$strapline = sprintf(elgg_echo("todo:strapline"), $due_date);
-	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
+	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
+	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>");
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
 	if ($canedit) {
@@ -42,28 +42,17 @@
 			$controls .= "<a href={$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a>";
 	}
 
-	if ($tags) {
-		$tags = "<p class='listingtags'>
-					" . $tags . "
-				</p>";
-	} else {
-		$tags = '<p></p>';
-	}
-
 	$info = <<<EOT
-		<div class='todo'>
-			<p>
-				<b><a href='$url'>$title</a></b>
-			</p>
-			<p class='listingstrapline'>
-				$strapline
-			</p>
-			$tags
-			<p class='controls'>
-				$controls
-			</p>
+		<div id='todo' class='entity_listing'>
+			<div class='todo_icon'>$icon</div>
+			<div class='todo' style='float: left;'>
+				<p class="entity_title" style='margin-bottom:0px; margin-top:3px;'><a href='$url'>$title</a></p>
+				<p class="entity_subtext" style='margin-bottom: 0px;'>$strapline</p>
+				<p class="tags">$tags</p>
+			</div>
+			<div style='clear: both;'></div>
 		</div>
 EOT;
 
-	echo elgg_view_listing($icon, $info);
+	echo $info;
 ?>
