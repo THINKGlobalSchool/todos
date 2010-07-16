@@ -286,6 +286,7 @@
 }
 
 
+/** jQuery UI Stuff **/
 
 .ui-dialog .ui-dialog-buttonpane {
 	position: absolute; 

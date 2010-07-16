@@ -49,6 +49,7 @@
 		
 		// Extend CSS
 		elgg_extend_view('css','todo/css');
+		elgg_extend_view('css','todo/ui-datepicker');
 		
 		// Extend Metatags (for js)
 		elgg_extend_view('metatags','todo/metatags');
