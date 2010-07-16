@@ -383,7 +383,7 @@
 	 * @param string $context - Which mode we're in (nothing to do with get_context())
 	 * @return html
 	 */
-	function get_todo_content_header($context, $new_link = "pg/todo/createtodo/") {
+	function get_todo_content_header($context = 'owned', $new_link = "pg/todo/createtodo/") {
 		global $CONFIG;
 		
 		$tabs = array(

@@ -26,9 +26,10 @@
 
 	echo <<<EOT
 		<script type='text/javascript'>
+			var unassign_url = "$unassign_url";
 			function unassignAssignee(assignee_guid) {
 				$.ajax({
-					url: "$unassign_url",
+					url: stripJunk(unassign_url),
 					type: "POST",
 					data: {assignee_guid: assignee_guid, todo_guid: $guid},
 					cache: false, 

@@ -10,14 +10,26 @@
 	 * 
 	 */
 	
-	// Check for valid entity
+	$valid = false;
+	
+	//Check for valid entity
 	if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject) {
-				
+		$todo = get_entity($vars['entity']->todo_guid);
+		$todo_owner = get_entity($todo->owner_guid);
+			
+		// Hacky way to check security on todo submissions
+		if (get_loggedin_user() == $todo_owner || get_loggedin_user() == get_entity($vars['entity']->owner_guid) || isadminloggedin()) {
+			$valid = true;
+		}
+	}
+
+	if ($valid) {
+
 		$url = $vars['entity']->getURL();
-		$owner = $vars['entity']->getOwnerEntity();
+		$owner = $vars['entity']->getOwnerEntity();	
+		
 		$canedit = $vars['entity']->canEdit();
 		$title = $vars['entity']->title;
-		$todo = get_entity($vars['entity']->todo_guid);
 		$contents = unserialize($vars['entity']->content);
 		
 		$assignee_label = elgg_echo('todo:label:assignee');
@@ -97,8 +109,9 @@ EOT;
 		
 	} else {
 		// If were here something went wrong..
-		$url = 'javascript:history.go(-1);';
 		$owner = $vars['user'];
 		$canedit = false;
+		forward();
 	}
+	
 ?>

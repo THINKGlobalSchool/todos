@@ -61,7 +61,8 @@
 
 .todo .strapline {
 	padding:10px;
-	height: 16px;
+	height: auto;
+	min-height: 16px;
 	background: #E8F1FC;
 	border: 1px solid #D4DAE6;
 	margin: 0 0 0 0px;

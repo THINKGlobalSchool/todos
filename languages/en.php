@@ -25,7 +25,7 @@ $english = array(
 	'todo:title:create' => 'Create New To Do',
 	'todo:title:edit' => 'Edit To Do',
 	'todo:title:alltodos' => 'All Site To Do\'s',
-	'todo:title:ownedtodos' => 'To Do\'s created by %s',
+	'todo:title:ownedtodos' => '%s\'s To Do\'s',
 	
 	// Menu items
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
@@ -83,6 +83,20 @@ $english = array(
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
+	'todo:river:create' => 'a To Do titled',
+	'todo:river:created' => "%s created",
+	'todosubmission:river:create' => 'a submission for a To Do titled',
+	'todosubmission:river:created' => "%s created",
+	
+	// Email Notifications 
+	'todo:email:subject' => 'To Do Submission Notification',
+	'todo:email:body' => "%s has completed a To Do assigned by you titled: %s
+	
+---
+
+To view this To Do, click here:
+
+%s",
 	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
