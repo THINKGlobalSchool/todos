@@ -19,11 +19,14 @@
 	// must have security token 
 	action_gatekeeper();
 	
+	global $CONFIG;
+	
 	// get input
 	$description = get_input('submission_description');
 	$todo_guid = get_input('todo_guid');
 	$content = get_input('submission_content');
 		
+	$todo = get_entity($todo_guid);
 	$user = get_loggedin_user();
 	
 	// Cache to session
@@ -40,7 +43,7 @@
 	$submission->subtype = "todosubmission";
 	$submission->description = $description;
 	$submission->content = serialize($content);
-	$submission->access_id 	= ACCESS_LOGGED_IN; // Needs to be fixed
+	$submission->access_id 	= $todo->access_id;
 	$submission->owner_id = $user->getGUID();
 	$submission->todo_guid = $todo_guid;
 
@@ -53,7 +56,20 @@
 	
 	// This states that: 'Submission' is 'submittedo' 'Todo' 
 	$success = add_entity_relationship($submission->getGUID(), SUBMISSION_RELATIONSHIP, $todo_guid);
+	
+	// River
+	add_to_river('river/object/todosubmission/create', 'create', get_loggedin_userid(), $submission->getGUID());	
 
+	// Notify todo owner
+	/*notify_user($todo->owner_id, 
+				$CONFIG->site->guid, 
+				elgg_echo('todo:email:subject'), 
+				sprintf(elgg_echo('todo:email:body'), $user->name, $todo->title, $todo->getURL())
+			);
+			*/
+	
+	notify_user($todo->owner_guid, $CONFIG->site->guid, elgg_echo('todo:email:subject'), sprintf(elgg_echo('todo:email:body'), $user->name, $todo->title, $todo->getURL()));
+	
 	// Clear Cached info
 	remove_metadata($_SESSION['user']->guid,'submission_content');
 	remove_metadata($_SESSION['user']->guid,'submission_description');

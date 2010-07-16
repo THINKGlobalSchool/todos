@@ -10,6 +10,8 @@
 	 * 	
 	 */
 	
+	$container = get_entity($vars['entity']->container_guid);
+	
 	// Determine how we are going to view this todo
 	$user = get_loggedin_user();
 	$is_owner = $vars['entity']->canEdit();
@@ -26,8 +28,11 @@
 
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 
+	// If container is a group, show the group name as well as the author in the info
+	$group_name = $container instanceof ElggGroup ? " (<a href='{$container->getURL()}'>$container->name</a>)" : '';			
+
 	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>");
+	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> $group_name");
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
 	if ($canedit) {

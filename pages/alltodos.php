@@ -42,7 +42,7 @@
 	// create content for main column
 	
 	// breadcrumbs
-	elgg_push_breadcrumb(elgg_echo('todo:title'), "{$CONFIG->site->url}pg/todo/everyone");	
+	elgg_push_breadcrumb(elgg_echo('todo:title:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
 	elgg_push_breadcrumb(elgg_echo('todo:label:' . $status), "{$CONFIG->site->url}pg/todo/?status=" . $status);
 	
 	$content .= elgg_view('navigation/breadcrumbs');	

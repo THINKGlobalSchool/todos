@@ -40,9 +40,12 @@
 	$status_label = elgg_echo("todo:label:status");
 	
 	$tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
+			
+	// If container is a group, show the group name as well as the author in the info	
+	$group_name = $page_owner instanceof ElggGroup ? " (<a href='{$page_owner->getURL()}'>$page_owner->name</a>)" : '';			
 				
 	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>");
+	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>$group_name | ");
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
 	$submission_form = elgg_view('todo/forms/submission', $vars);
@@ -188,7 +191,6 @@ EOT;
 	
 	// Put content together
 	$info = <<<EOT
-			
 				<div class='todo' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px;'>
 					<div class='content_header'>
 						<div class='entity_title'><h2><a href='$url'>$title</a></h2></div>
@@ -196,11 +198,12 @@ EOT;
 					</div>
 					<div class='strapline'>
 						<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
-							$strapline
+							$strapline 
 						</div>
 						<div class='entity_metadata' style='float: right;'>
 							$controls
 						</div>
+						<div style='clear: both;'></div>
 					</div>
 					<p class='tags'>$tags</p>
 					<div class='clearfloat'></div>

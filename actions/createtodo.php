@@ -79,7 +79,9 @@
 		register_error(elgg_echo("todo:error:create"));		
 		forward($_SERVER['HTTP_REFERER']);
 	}
-		
+	
+	add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+	
 	// Clear Cached info
 	clear_todo_cached_data();
 

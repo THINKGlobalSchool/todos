@@ -40,7 +40,7 @@
 	$title = elgg_echo('todo:title:assignedtodos');
 		
 	// breadcrumbs
-	elgg_push_breadcrumb(elgg_echo('todo:title'), "{$CONFIG->site->url}pg/todo/everyone");	
+	elgg_push_breadcrumb(elgg_echo('todo:title:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
 	elgg_push_breadcrumb(elgg_echo('todo:title:assignedtodos'), "{$CONFIG->site->url}pg/todo/");
 	
 	// Get all assigned todos
