@@ -307,8 +307,8 @@
 .ui-dialog .ui-dialog-buttonpane button {
 	-moz-border-radius:4px 4px 4px 4px;
 	-webkit-border-radius: 5px 5px 5px 5px;
-	background:none repeat scroll 0 0 #4690D6;
-	border:1px solid #4690D6;
+	background:none repeat scroll 0 0 #000000;
+	border:1px solid #000000;
 	color:#FFFFFF;
 	cursor:pointer;
 	font:bold 12px/100% Arial,Helvetica,sans-serif;
