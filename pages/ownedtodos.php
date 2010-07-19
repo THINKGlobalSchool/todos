@@ -51,20 +51,19 @@
 	if ($page_owner != get_loggedin_user()) { 
 		if ($page_owner instanceof ElggGroup) {
 			// breadcrumbs
+			elgg_pop_breadcrumb();
 			elgg_push_breadcrumb(elgg_echo('Groups'), "{$CONFIG->site->url}pg/groups/world");
 			elgg_push_breadcrumb($page_owner->name, "{$CONFIG->site->url}pg/groups/" . $page_owner->getGUID() ."/");
 			// If we're a group, use regular header, with proper new link
 			$header = get_todo_content_header('groups', 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID());
 			$options['container_guid'] = $page_owner->getGUID();
 		} else {
-			elgg_push_breadcrumb(elgg_echo('todo:title:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");
 			// If viewing another user, user the member header
 			$header .= elgg_view("page_elements/content_header_member", array('type' => 'To Do\'s'));
 			$options['owner_guid'] = $page_owner->getGUID();
 		}
 		elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "{$CONFIG->site->url}pg/todo/owned/" . $page_owner->username);
 	} else {
-		elgg_push_breadcrumb(elgg_echo('todo:title:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");
 		$header = get_todo_content_header('owned');
 		elgg_push_breadcrumb(elgg_echo('todo:title:yourtodos'), "{$CONFIG->site->url}pg/todo/owned");
 		// Setting owner_guid will show all users owned todo's, including todo's created on a groups behalf

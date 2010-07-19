@@ -31,7 +31,6 @@
 		// create content for main column
 	
 		// breadcrumbs
-		elgg_push_breadcrumb(elgg_echo('todo:title:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
 		elgg_push_breadcrumb($todo->title, $todo->getURL());
 		$content .= elgg_view('navigation/breadcrumbs');
 	 	$content .= elgg_view_entity($todo, true);
