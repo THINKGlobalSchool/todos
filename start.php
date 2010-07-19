@@ -115,6 +115,8 @@
 	function todo_page_handler($page) {
 		global $CONFIG;
 		
+		elgg_push_breadcrumb(elgg_echo('todo:menu:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
+		
 		switch ($page[0]) {
 			case 'createtodo':
 				include $CONFIG->pluginspath . 'todo/pages/createtodo.php';

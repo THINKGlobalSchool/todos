@@ -30,9 +30,15 @@
 
 	$title = elgg_echo('todo:title:edit');
 	
+	// Breadcrumbs
+	elgg_push_breadcrumb($vars['entity']->title, $vars['entity']->getURL());
+	elgg_push_breadcrumb($title);
+	
 	// create content for main column
-	$content = elgg_view_title($title);
+	$content .= elgg_view('navigation/breadcrumbs');
+	$content .= elgg_view_title($title);
 	$content .= elgg_view("todo/forms/edittodo", $vars);
+	
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('one_column_with_sidebar', $content, '');
