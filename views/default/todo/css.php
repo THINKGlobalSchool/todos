@@ -63,7 +63,7 @@
 	padding:10px;
 	height: auto;
 	min-height: 16px;
-	background: #E8F1FC;
+	background: #EEEEEE;
 	border: 1px solid #D4DAE6;
 	margin: 0 0 0 0px;
 	-moz-border-radius:5px 5px 5px 5px;
@@ -141,7 +141,7 @@
 
 .todo .status_table th {
 	padding: 5px;
-	background: #E8F1FC;
+	
 	font-weight: bold;
 	color: #666666;
 	border-bottom: 1px solid #aaaaaa;
@@ -225,9 +225,6 @@
 	display:none;
 }
 
-.todo .entity_edit a {
-	color: #4690D6;
-}
 
 .todo_seperator {
 	/**-moz-border-radius:5px 5px 5px 5px;
