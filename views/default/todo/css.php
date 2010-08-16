@@ -196,6 +196,16 @@
 	font-weight: bold;
 }
 
+span.accepted {
+	font-weight: bold !important;
+	color: green !important;
+}
+
+span.unviewed {
+	font-weight: bold !important;
+	color: black !important;
+}
+
 .todo #add_content_area {
 	width: 100%;
 }
@@ -227,31 +237,37 @@
 
 
 .todo_seperator {
-	/**-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
-	border-radius: 5px 5px 5px 5px;**/
+	-webkit-border-radius: 8px; 
+	-moz-border-radius: 8px;
+	-webkit-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* safari v3+ */
+	-moz-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* FF v3.5+ */
 	margin-bottom:5px;
 	margin-top: 5px;
-	padding: 3px;
+	padding: 5px 5px 5px 10px;
 }
 
 .todo_seperator h3 {
-	color: #000000;
+	color: #ffffff;
+	text-shadow: #000 -1px 1px 2px;
+	font-weight: bold;
 }
 
 .todo_priority_1 {
-	border: 2px solid #E83131;
+	/**border: 2px solid #E83131;**/
 	background: #FFECEC;
+	background: #FA2A02;
 }
 
 .todo_priority_2 {
-	border: 2px solid #F19F45;
+		/**border: 2px solid #F19F45;**/
 	background: #FFFFCC;
+	background: #FFAB25;
 }
 
 .todo_priority_3 {
-	border: 2px solid #438743;
+		/**border: 2px solid #438743;**/
 	background: #E1FFE1;
+	background: #71BC17;
 }
 
 #submission_ajax_spinner {
@@ -282,6 +298,56 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
+/** Top Bar **/
+
+#todo_topbar_link{
+	margin-left:4px !important;
+}
+
+/* messages/new messages icon & counter in elgg_topbar */
+a.todonotifier {
+	background:transparent url(<?php echo $vars['url']; ?>mod/todo/images/todo_topbar.gif) no-repeat left 2px;
+	padding-left:16px;
+	margin:3px 15px 0 5px;
+	cursor:pointer;
+}
+a.todonotifier:hover {
+	text-decoration: none;
+	background:transparent url(<?php echo $vars['url']; ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
+}
+a.todonotifier.new {
+	background:transparent url(<?php echo $vars['url']; ?>mod/todo/images/todo_topbar.gif) no-repeat left 2px;
+	padding-left:18px;
+	margin:3px 15px 0 5px;
+	color:white;
+}
+a.todonotifier.new:hover {
+	text-decoration: none;
+	background:transparent url(<?php echo $vars['url']; ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
+}
+a.todonotifier.new span {
+	background-color: red;
+	-webkit-border-radius: 10px; 
+	-moz-border-radius: 10px;
+	-webkit-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* safari v3+ */
+	-moz-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* FF v3.5+ */
+	color:white;
+	display:block;
+	float:right;
+	padding:0;
+	position:relative;
+	text-align:center;
+	top:-2px;
+	right:5px;
+	min-width: 16px;
+	height:16px;
+	font-size:10px;
+	font-weight:bold;
+}
+
+#todo_topbar_link img {
+	margin-top: 2px;
+}
 
 /** jQuery UI Stuff **/
 

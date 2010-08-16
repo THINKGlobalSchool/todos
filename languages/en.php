@@ -62,6 +62,7 @@ $english = array(
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:complete' => 'Complete',
+	'todo:label:accepted' => 'Accepted', 
 	'todo:label:incomplete' => 'Upcoming',
 	'todo:label:statusincomplete' => 'Incomplete',
 	'todo:label:viewsubmission' => 'View Submission',
@@ -80,6 +81,11 @@ $english = array(
 	'todo:label:calendarurl' => 'Todo Calendar URL', 
 	'todo:label:assignedby' => '| Assigned by %s ',
 	'todo:label:deletesubmission' => 'Delete Submission',
+	'todo:label:unviewed' => 'You have %s unaccepted To Do%s',
+	'todo:label:nounviewed' => 'You don\'t have any accepted To Do\'s',
+	'todo:label:acceptconfirm' => 'Accept this To Do?',
+	'todo:label:no' => 'No',
+	'todo:label:yes' => 'Yes',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
@@ -90,20 +96,32 @@ $english = array(
 	'todosubmission:river:created' => "%s created",
 	
 	// Email Notifications 
-	'todo:email:subject' => 'To Do Submission Notification',
-	'todo:email:body' => "%s has completed a To Do assigned by you titled: %s
+	'todo:email:subjectsubmission' => 'To Do Submission Notification',
+	'todo:email:bodysubmission' => "%s has completed a To Do assigned by you titled: %s
 	
 ---
 
 To view this To Do, click here:
 
 %s",
+
+	// Email Notifications 
+	'todo:email:subjectassign' => 'You have been assigned a To Do',
+	'todo:email:bodyassign' => "%s has assigned you To Do titled: %s
+
+---
+
+To view this To Do, click here:
+
+%s",
+
 	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
 	'todo:success:edit' => 'Todo successfully edited',
 	'todo:success:delete' => 'Todo successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
+	'todo:success:accepted' => 'To Do has been accepted',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
@@ -111,6 +129,7 @@ To view this To Do, click here:
 	'todo:error:submissiondelete' => 'There was an error deleting the submission',
 	'todo:error:permission' => 'You do not have permission to create/edit this object', 
 	'todo:error:permissiondenied' => 'Permission Denied', 
+	'todo:error:accepted' => 'There was an error accepting the To Do',
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',

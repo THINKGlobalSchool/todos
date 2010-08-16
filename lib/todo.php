@@ -61,10 +61,36 @@
 	 * @return bool 
 	 */
 	function assign_user_to_todo($user_guid, $todo_guid) {
-		if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
-			return trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
+		// Check if user is already assigned, if not, assign.
+		if (!is_todo_assignee($todo_guid, $user_guid)) {
+			$todo = get_entity($todo_guid);
+			$owner = get_entity($todo->container_guid);
+			if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
+				return (trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)))
+						&& notify_user($user_guid, $todo->container_guid, elgg_echo('todo:email:subjectassign'), sprintf(elgg_echo('todo:email:bodyassign'), $owner->name, $todo->title, $todo->getURL()))
+				);
+			} else {
+				return false;
+			}
+		} else {
+			return true;
 		}
-		return false;
+	}
+	
+	/**
+	 * Set 'accepted' for a user on given todo
+	 * 
+	 * @param int $user_guid
+	 * @param int $todo_guid
+	 * @return bool 
+	 */
+	function user_accept_todo($user_guid, $todo_guid) {
+		// Check if user is has already accepted
+		if (!has_user_accepted_todo($todo_guid, $user_guid)) {
+			return add_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED, $todo_guid);
+		} else {
+			return true;
+		}
 	}
 	
 	/**
@@ -201,6 +227,13 @@
 														 'offset' => 0,));
 	}
 	
+	/** 
+	 * Determine if given user is an assignee of given todo
+	 * 
+	 * @param int $todo_guid
+	 * @param int $user_guid
+	 * @return bool
+	 */
 	function is_todo_assignee($todo_guid, $user_guid) {
  		$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP , $todo_guid);
 		if ($object) {
@@ -225,6 +258,22 @@
 			}
 		}
 		return false;
+	}
+	
+	/** 
+	 * Determine if given user is an assignee of given todo
+	 * 
+	 * @param int $todo_guid
+	 * @param int $user_guid
+	 * @return bool
+	 */
+	function has_user_accepted_todo($user_guid, $todo_guid) {
+ 		$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED , $todo_guid);
+		if ($object) {
+ 			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**

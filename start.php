@@ -33,6 +33,9 @@
 		// Relationship for assignees
 		define('TODO_ASSIGNEE_RELATIONSHIP', 'assignedtodo');
 		
+		// Relationship for accepting todo's
+		define('TODO_ASSIGNEE_ACCEPTED', 'acceptstodo');
+		
 		// Relationship for submissions 
 		define('SUBMISSION_RELATIONSHIP', 'submittedto');
 		
@@ -59,6 +62,9 @@
 		
 		// Extend groups profile page
 		elgg_extend_view('groups/tool_latest','todo/group_todos');
+		
+		// Extend topbar
+		elgg_extend_view('elgg_topbar/extend','todo/todo_topbar');
 		
 		// add the group pages tool option     
         add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
@@ -102,6 +108,7 @@
 		register_action('todo/createtodo', false, $CONFIG->pluginspath . 'todo/actions/createtodo.php');
 		register_action('todo/deletetodo', false, $CONFIG->pluginspath . 'todo/actions/deletetodo.php');
 		register_action('todo/edittodo', false, $CONFIG->pluginspath . 'todo/actions/edittodo.php');
+		register_action('todo/accepttodo', false, $CONFIG->pluginspath . 'todo/actions/accepttodo.php');
 		register_action('todo/unassign', false, $CONFIG->pluginspath . 'todo/actions/unassign.php');
 		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
 		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
