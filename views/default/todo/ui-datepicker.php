@@ -8,6 +8,7 @@
 		background: white;
 		border: 2px solid black;
 		padding: 10px;
+		display: none;
 	}
 	
 	/* Overlays */

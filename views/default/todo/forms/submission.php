@@ -170,7 +170,7 @@ EOT;
 					$add_link_div
 					$add_file_div
 					$ajax_spinner
-					<div id='submit_output' style='dsdisplay: none;'></div>
+					<div id='submit_output' style='display: none;'></div>
 				</div>
 				<div style='clear:both;'></div>
 				<br />
