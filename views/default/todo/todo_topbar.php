@@ -35,6 +35,8 @@
 <span><?php 
 	if ($count > 0) {
 		echo $count;
+	} else {
+		echo "&nbsp;";
 	}
 ?></span>
 </a>
