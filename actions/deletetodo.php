@@ -28,10 +28,10 @@
 	
 	if ($todo->getSubtype() == "todo" && $candelete) {
 		
-		// Delete it!
-		$rowsaffected = $todo->delete();
+		// Disable it
+		$success = $todo->disable();
 		
-		if ($rowsaffected > 0) {
+		if ($success) {
 			// Success message
 			system_message(elgg_echo("todo:success:delete"));
 			

@@ -85,7 +85,8 @@ $english = array(
 	'todo:river:annotate' => "a comment on a todo titled",
 	'todo:river:create' => 'a To Do titled',
 	'todo:river:created' => "%s created",
-	'todosubmission:river:create' => 'a submission for a To Do titled',
+	'todosubmission:river:create' => 'a submission for a To Do',
+	'todosubmission:river:createdeleted' => 'a submission for a To Do that no longer exists.',
 	'todosubmission:river:created' => "%s created",
 	
 	// Email Notifications 
