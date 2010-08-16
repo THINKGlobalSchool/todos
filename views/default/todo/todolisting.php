@@ -34,25 +34,40 @@
 	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
 	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> $group_name");
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
-
-	if ($canedit) {
-
+			
+	if ($is_assignee) {
+		if (has_user_accepted_todo($user->getGUID(), $vars['entity']->getGUID())) {
+			$controls .= "<span class='accepted'>✓ Accepted</span>";
+		} else {
+			$controls .= "<span class='unviewed'>";
 			$controls .= elgg_view("output/confirmlink", 
+											array(
+											'href' => $vars['url'] . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
+											'text' => '✗ Not Yet Accepted',
+											'confirm' => elgg_echo('todo:label:acceptconfirm'),
+										)) . "</span>"; 
+		}
+	}	
+		
+	if ($canedit) {
+		$controls .= '<span class="entity_edit">' . "<a href={$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a></span>";
+		
+		$controls .= '<span class="delete_button">' . elgg_view("output/confirmlink", 
 									array(
 										'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
 										'text' => elgg_echo('delete'),
 										'confirm' => elgg_echo('deleteconfirm'),
-									)) . "&nbsp;&nbsp;&nbsp;";
-
-			$controls .= "<a href={$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a>";
+									)) . "</span>";
+			
 	}
-
+	
 	$info = <<<EOT
 		<div id='todo' class='entity_listing'>
 			<div class='todo_icon'>$icon</div>
+			<div class="entity_metadata">$controls</div>
 			<div class='todo' style='float: left;'>
 				<p class="entity_title" style='margin-bottom:0px; margin-top:3px;'><a href='$url'>$title</a></p>
-				<p class="entity_subtext" style='margin-bottom: 0px;'>$strapline</p>
+				<p class="entity_subtext" style='margin-bottom: 0px;'>$strapline</p>	
 				<p class="tags">$tags</p>
 			</div>
 			<div style='clear: both;'></div>

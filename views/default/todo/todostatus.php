@@ -19,7 +19,8 @@
 	$content = "<div class='todo'>
 					<table class='status_table'>
 						<tr>
-							<th>" . elgg_echo('todo:label:assignee') . "</th>
+							<th>" . elgg_echo('todo:label:assignee') . "</th
+							<th>" . elgg_echo('todo:label:accepted') . "</th>
 							<th>" . elgg_echo('todo:label:status') . "</th>
 							<th>" . elgg_echo('todo:label:datecompleted') . "</th>
 							<th>" . elgg_echo('todo:label:submission') . "</th>
@@ -32,18 +33,26 @@
 			$class .= ' alt'; 
 		}
 		
-		$status = '-';
+		$status = '<span class="incomplete">' . elgg_echo('todo:label:statusincomplete') . '</span>';
 		$date = '-';
 		$url = '-';
 		
+		if (has_user_accepted_todo($assignee->guid, $vars['entity']->getGUID())) {
+			$accepted = '<span class="complete">' . elgg_echo('todo:label:yes') . '</span>';	
+		} else {
+			$accepted = '<span class="incomplete">' . elgg_echo('todo:label:no') . '</span>';
+		}
+		
 		if ($submission = has_user_submitted($assignee->guid, $vars['entity']->getGUID())) {
-			$status = 'Complete';
+			$status = '<span class="complete">Complete</span>';
 			$date = date("F j, Y", $submission->time_created);
 			$url = "<a href='{$submission->getURL()}'>View</a>";
 		}
 		
+		
 		$content .= '<tr>';
 		$content .= 	"<td class='$class'>$assignee->name</td>";
+		$content .= 	"<td class='$class'>$accepted</td>";
 		$content .= 	"<td class='$class'>$status</td>";
 		$content .= 	"<td class='$class'>$date</td>";
 		$content .= 	"<td class='$class'>$url</td>";

@@ -1,0 +1,36 @@
+<?php
+	/**
+	 * Todo Accept todo action
+	 * 
+	 * @package Todo
+	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
+	 * @author Jeff Tilson
+	 * @copyright THINK Global School 2010
+	 * @link http://www.thinkglobalschool.com/
+	 * 
+	 */
+	
+	// Start engine as this action is triggered via ajax
+	require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/engine/start.php');
+	
+	// Logged in check
+	gatekeeper();
+	
+	// must have security token 
+	action_gatekeeper();
+
+	$user = get_loggedin_user();
+
+	$todo_guid = get_input('todo_guid');
+	$todo = get_entity($todo_guid);
+		
+	if ($user && $todo && $todo->getSubtype() == "todo" && user_accept_todo($user->getGUID(), $todo_guid)) {
+		// Success message
+		system_message(elgg_echo("todo:success:accepted"));
+		forward($_SERVER['HTTP_REFERER']);
+	}
+	
+	register_error(elgg_echo("todo:error:accepted"));		
+	forward($_SERVER['HTTP_REFERER']);
+
+?>
