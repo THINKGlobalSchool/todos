@@ -23,7 +23,7 @@
 	access_show_hidden_entities(true);
 	$todo = get_entity($object->todo_guid);
 	if ($todo->enabled == 'yes'){
-		$string .= elgg_echo("todosubmission:river:create") . " titled <a href=\"" . $todo->url . "\">" . $todo->title  .  "</a>";
+		$string .= elgg_echo("todosubmission:river:create") . " titled <a href=\"" . $todo->getURL() . "\">" . $todo->title  .  "</a>";
 	} else if ($todo->enabled == 'no'){
 		$string .= elgg_echo("todosubmission:river:create") . ' titled ' . $todo->title;
 	} else if (!$todo){
