@@ -1,7 +1,7 @@
 <?php
 
 	/**
-	 * Todo Metatags - Include jqueryui from google
+	 * To Do Group list
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2

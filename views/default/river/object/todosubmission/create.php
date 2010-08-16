@@ -14,21 +14,32 @@
 
 	$performed_by = get_entity($vars['item']->subject_guid); // $statement->getSubject();
 	$object = get_entity($vars['item']->object_guid);
-
-	$todo = get_entity($object->todo_guid);
-	$url = $todo->getURL();
 	
 	$url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-	$contents = strip_tags($object->txt); //strip tags from the contents to stop large images etc blowing out the river view
-	$contents = elgg_view('output/longtext', array('value' => $contents));
 	$string = sprintf(elgg_echo("todosubmission:river:created"),$url) . " ";
-	$string .= elgg_echo("todosubmission:river:create") . " <a href=\"" . $todo->getURL() . "\">" . $todo->title  .  "</a>";
+	
+	// Get associated todo object.. may be deleted or disabled
+	$access_status = access_get_show_hidden_status();
+	access_show_hidden_entities(true);
+	$todo = get_entity($object->todo_guid);
+	if ($todo->enabled == 'yes'){
+		$string .= elgg_echo("todosubmission:river:create") . " titled <a href=\"" . $todo->url . "\">" . $todo->title  .  "</a>";
+	} else if ($todo->enabled == 'no'){
+		$string .= elgg_echo("todosubmission:river:create") . ' titled ' . $todo->title;
+	} else if (!$todo){
+		$string .= elgg_echo("todosubmission:river:createdeleted");
+	}
+
+
+	
 	$string .= " <span class='entity_subtext'>" . friendly_time($object->time_created);
 	if (isloggedin()){
 		$string .= "<a class='river_comment_form_button link'>Comment</a>";
 		$string .= elgg_view('likes/forms/link', array('entity' => $object));
 	}
 	$string .= "</span>";
+	
+	access_show_hidden_entities($access_status);
 ?>
 
 <?php echo $string;  ?>
