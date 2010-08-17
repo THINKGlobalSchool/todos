@@ -112,6 +112,7 @@
 		register_action('todo/unassign', false, $CONFIG->pluginspath . 'todo/actions/unassign.php');
 		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
 		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
+		register_action('todo/sendreminder', false, $CONFIG->pluginspath . 'todo/actions/sendreminder.php');
 
 		// Register type
 		register_entity_type('object', 'todo');		
