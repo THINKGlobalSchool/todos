@@ -73,7 +73,7 @@
 		register_page_handler('todo','todo_page_handler');
 
 		// Add to tools menu
-		add_menu(elgg_echo("todo:title"), $CONFIG->wwwroot . 'pg/todo');
+		//add_menu(elgg_echo("todo:title"), $CONFIG->wwwroot . 'pg/todo');
 
 		// Add submenus
 		register_elgg_event_handler('pagesetup','system','todo_submenus');

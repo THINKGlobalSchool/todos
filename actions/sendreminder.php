@@ -34,7 +34,6 @@
 		$success = false;
 	} 
 		
-		
 	foreach ($assignees as $guid) {	
 		$assignee = get_entity($assignee_guid);
 		if ($assignee && $todo && $todo->getSubtype() == "todo") {
