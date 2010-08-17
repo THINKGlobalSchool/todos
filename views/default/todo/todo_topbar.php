@@ -22,7 +22,7 @@
 	}	
 	
 	if ($count > 0) {
-		$title = sprintf(elgg_echo('todo:label:unviewed'), $count,(($count > 1) ? '\'s' : ''));
+		$title = sprintf(elgg_echo('todo:label:unviewed'), $count,(($count > 1) ? 's' : ''));
 		$class = 'todonotifier new';
 	} else {
 		$title = elgg_echo('todo:label:nounviewed');
@@ -31,12 +31,14 @@
 
 ?>
 
-<a id="todo_topbar_link" href="<? echo $CONFIG->wwwroot; ?>pg/todo" class="<?php echo $class; ?>" title="<?= $title ?>">
-<span><?php 
-	if ($count > 0) {
-		echo $count;
-	} else {
-		echo "&nbsp;";
-	}
-?></span>
+<a id="todo_topbar_link" href="<? echo $CONFIG->wwwroot; ?>pg/todo" class="<?php echo $class; ?>">
+	<span>
+		<?php 
+			if ($count > 0) {
+				echo $count;
+			} else {
+				echo "&nbsp;";
+			}
+		?>
+	</span>
 </a>
