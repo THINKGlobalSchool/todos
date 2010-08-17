@@ -268,6 +268,7 @@
 	 * @return bool
 	 */
 	function has_user_accepted_todo($user_guid, $todo_guid) {
+		
  		$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED , $todo_guid);
 		if ($object) {
  			return true;

@@ -86,17 +86,21 @@ $english = array(
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
+	'todo:label:reminder' => 'Reminder',
+	'todo:label:sendreminder' => 'Send Reminder', 
+	'todo:label:remindconfirm' => 'Send Reminder?', 
+	'todo:label:remindall' => 'Remind All',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
 	'todo:river:create' => 'a To Do titled',
 	'todo:river:created' => "%s created",
-	'todosubmission:river:create' => 'a submission for a To Do',
-	'todosubmission:river:createdeleted' => 'a submission for a To Do that no longer exists.',
-	'todosubmission:river:created' => "%s created",
+	'todosubmission:river:create' => 'a To Do',
+	'todosubmission:river:createdeleted' => 'a To Do that no longer exists.',
+	'todosubmission:river:created' => "%s completed",
 	
 	// Email Notifications 
-	'todo:email:subjectsubmission' => 'To Do Submission Notification',
+	'todo:email:subjectsubmission' => 'To Do Completed Notification',
 	'todo:email:bodysubmission' => "%s has completed a To Do assigned by you titled: %s
 	
 ---
@@ -105,7 +109,6 @@ To view this To Do, click here:
 
 %s",
 
-	// Email Notifications 
 	'todo:email:subjectassign' => 'You have been assigned a To Do',
 	'todo:email:bodyassign' => "%s has assigned you To Do titled: %s
 
@@ -115,6 +118,14 @@ To view this To Do, click here:
 
 %s",
 
+	'todo:email:subjectreminder' => 'To Do Reminder',
+	'todo:email:bodyreminder' => "%s would like to remind you that you need to complete a To Do titled: %s
+
+---
+
+To view this To Do, click here:
+
+%s",
 	
 	// Messages
 	'todo:success:create' => 'Todo successfully submitted',
@@ -122,6 +133,7 @@ To view this To Do, click here:
 	'todo:success:delete' => 'Todo successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
 	'todo:success:accepted' => 'To Do has been accepted',
+	'todo:success:reminder' => 'User(s) reminded',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
@@ -130,6 +142,7 @@ To view this To Do, click here:
 	'todo:error:permission' => 'You do not have permission to create/edit this object', 
 	'todo:error:permissiondenied' => 'Permission Denied', 
 	'todo:error:accepted' => 'There was an error accepting the To Do',
+	'todo:error:reminder' => 'There was an error reminding user(s)',
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',
