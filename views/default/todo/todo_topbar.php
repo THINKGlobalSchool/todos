@@ -41,6 +41,6 @@
 			}
 		?>
 	</span>
-<div class='todolabel'>To Do's</div>
+<div class='<?php echo ($count > 0) ? 'todoexists' : 'todolabel'; ?>'>To Do's</div>
 </a> 
 
