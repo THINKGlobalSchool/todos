@@ -31,7 +31,7 @@
 
 ?>
 
-<a id="todo_topbar_link" href="<? echo $CONFIG->wwwroot; ?>pg/todo" class="<?php echo $class; ?>">
+<a id="todo_topbar_link" href="<? echo $CONFIG->wwwroot; ?>pg/todo" class="<?php echo $class; ?>" style="margin-right: -4px;">
 	<span>
 		<?php 
 			if ($count > 0) {
@@ -41,4 +41,6 @@
 			}
 		?>
 	</span>
-</a>
+<div class='todolabel'>To Do's</div>
+</a> 
+
