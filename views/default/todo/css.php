@@ -353,6 +353,14 @@ a.todonotifier.new span {
 div.todolabel {
 	width: auto;
 	bottom: 2px;
+	left: 0px;
+	position: relative;
+	display: inline;
+}
+
+div.todoexists {
+	width: auto;
+	bottom: 2px;
 	left: 16px;
 	position: relative;
 	display: inline;
