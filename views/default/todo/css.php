@@ -343,10 +343,19 @@ a.todonotifier.new span {
 	height:16px;
 	font-size:10px;
 	font-weight:bold;
+	left: -53px;
 }
 
 #todo_topbar_link img {
 	margin-top: 2px;
+}
+
+div.todolabel {
+	width: auto;
+	bottom: 2px;
+	left: 16px;
+	position: relative;
+	display: inline;
 }
 
 /** jQuery UI Stuff **/
