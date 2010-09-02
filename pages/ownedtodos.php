@@ -58,8 +58,20 @@
 			$header = get_todo_content_header('groups', 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID());
 			$options['container_guid'] = $page_owner->getGUID();
 		} else {
-			// If viewing another user, user the member header
-			$header .= elgg_view("page_elements/content_header_member", array('type' => 'To Do\'s'));
+			$tabs = array(
+				'assigned' => array(
+					'title' => 'Assigned to ' . $page_owner->name,
+					'url' => $CONFIG->wwwroot . 'pg/todo/' . $page_owner->username,
+					'selected' => false,
+				),
+				'owned' => array(
+					'title' => 'Assigned by ' . $page_owner->name,
+					'url' => $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username,
+					'selected' => true,
+				)
+			);
+
+ 			$header .= elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
 			$options['owner_guid'] = $page_owner->getGUID();
 		}
 		elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "{$CONFIG->site->url}pg/todo/owned/" . $page_owner->username);

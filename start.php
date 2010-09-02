@@ -66,6 +66,9 @@
 		// Extend topbar
 		elgg_extend_view('elgg_topbar/extend','todo/todo_topbar');
 		
+		// Extend profile_ownerblock
+		elgg_extend_view('profile_ownerblock/extend', 'todo/profile_link');
+		
 		// add the group pages tool option     
         add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
 
@@ -147,8 +150,9 @@
 				break;
 			case 'owned':
 				// Set page owner
-				if (isset($page[1]))
+				if (isset($page[1])) {
 					set_input('username',$page[1]);
+				}
 				include $CONFIG->pluginspath . 'todo/pages/ownedtodos.php';
 				break;
 			case 'everyone':
@@ -160,6 +164,9 @@
 				break;
 			case 'assigned':
 			default:
+				if (isset($page[0])) {
+					set_input('username',$page[0]);
+				}
 				include $CONFIG->pluginspath . 'todo/pages/assignedtodos.php';
 				break;
 		}
