@@ -62,7 +62,7 @@
 		
 		// Extend groups profile page
 		//elgg_extend_view('groups/tool_latest','todo/group_todos');
-		elgg_extend_view('group-extender/sidebar','todo/group_todos');
+		elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
 		
 		// Extend topbar
 		elgg_extend_view('elgg_topbar/extend','todo/todo_topbar');
