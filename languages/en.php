@@ -90,6 +90,7 @@ $english = array(
 	'todo:label:sendreminder' => 'Send Reminder', 
 	'todo:label:remindconfirm' => 'Send Reminder?', 
 	'todo:label:remindall' => 'Remind All',
+	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",

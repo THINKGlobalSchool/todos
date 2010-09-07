@@ -23,7 +23,7 @@
 ?>
 <div class="group_tool_widget todo">
 <span class="group_widget_link"><a href="<?php echo $vars['url'] . "pg/todo/owned/" . page_owner_entity()->username; ?>"><?php echo elgg_echo('link:view:all')?></a></span>
-<h3><?php echo elgg_echo('todo') ?></h3>
+<h3><?php echo elgg_echo('todo:label:upcomingtodos') ?></h3>
 <?php	
 if($todos){
 	foreach($todos as $todo){
