@@ -57,6 +57,9 @@
 	// This states that: 'Submission' is 'submittedo' 'Todo' 
 	$success = add_entity_relationship($submission->getGUID(), SUBMISSION_RELATIONSHIP, $todo_guid);
 	
+	// Accept the todo when completing (if not already accepted)
+	user_accept_todo($user->getGUID(), $todo_guid);
+	
 	// River
 	add_to_river('river/object/todosubmission/create', 'create', get_loggedin_userid(), $submission->getGUID());	
 
