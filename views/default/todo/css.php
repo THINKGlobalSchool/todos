@@ -276,6 +276,14 @@ span.unviewed {
 	display: none;
 }
 
+.todo_owner_block {
+	float: left; 
+	color: black; 
+	margin: 0;
+	font-size: 75%;
+	font-style: italic;
+}
+
 /** POPUP DIALOG **/
 
 /** Popups **/

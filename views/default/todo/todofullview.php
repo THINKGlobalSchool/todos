@@ -44,9 +44,9 @@
 	// If container is a group, show the group name as well as the author in the info	
 	$group_name = $page_owner instanceof ElggGroup ? " (<a href='{$page_owner->getURL()}'>$page_owner->name</a>)" : '';			
 				
-	$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>$group_name | ");
-	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
+	//$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
+	$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>$group_name ");
+	//$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 
 	$submission_form = elgg_view('todo/forms/submission', $vars);
 	
@@ -64,7 +64,18 @@
 	
 	// Assignee only content
 	if ($is_assignee) {
-		
+		if (has_user_accepted_todo($user->getGUID(), $vars['entity']->getGUID())) {
+			$controls .= "<span class='accepted'>✓ Accepted</span>";
+		} else {
+			$controls .= "<span class='unviewed'>";
+			$controls .= elgg_view("output/confirmlink", 
+											array(
+											'href' => $vars['url'] . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
+											'text' => 'Accept',
+											'confirm' => elgg_echo('todo:label:acceptconfirm'),
+											'class' => 'action_button'
+										)) . "</span>"; 
+		}
 		if ($submission = has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
 			$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a></span>";
@@ -196,10 +207,11 @@ EOT;
 						<div class='entity_title'><h2><a href='$url'>$title</a></h2></div>
 						<div style='clear:both;'></div>
 					</div>
+					<div class='todo_owner_block'>
+						$strapline 
+					</div>
+					<br />
 					<div class='strapline'>
-						<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
-							$strapline 
-						</div>
 						<div class='entity_metadata' style='float: right;'>
 							$controls
 						</div>
