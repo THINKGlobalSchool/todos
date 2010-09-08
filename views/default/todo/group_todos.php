@@ -46,8 +46,7 @@ if($todos){
 		//display 
 		echo "<div class='entity_listing clearfloat'>" . $info . "</div>";
 	} 
-} else {
-	$create_todo = $vars['url'] . "pg/todo/createtodo/?container_guid=" . page_owner_entity()->username;
-	echo "<p class='margin_top'><a href=\"{$create_todo}\">" . elgg_echo("todo:new") . "</a></p>";
-}
+} 
+$create_todo = $vars['url'] . "pg/todo/createtodo/?container_guid=" . page_owner_entity()->getGUID();
+echo "<p class='margin_top'><a class='action_button' href=\"{$create_todo}\">" . elgg_echo("todo:new") . "</a></p>";
 echo "</div>";
