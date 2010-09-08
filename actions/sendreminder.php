@@ -35,10 +35,10 @@
 	} 
 		
 	foreach ($assignees as $guid) {	
-		$assignee = get_entity($assignee_guid);
-		if ($assignee && $todo && $todo->getSubtype() == "todo") {
+		$assignee = get_entity($guid);
+		if ($assignee && $todo && $todo->getSubtype() == "todo" && !has_user_submitted($guid, $todo->getGUID())) {
 			$owner = get_entity($todo->container_guid);
-			$success &= notify_user($assignee_guid, 
+			$success &= notify_user($guid, 
 									$todo->container_guid, 
 									elgg_echo('todo:email:subjectreminder'), 
 									sprintf(elgg_echo('todo:email:bodyreminder'), $owner->name, $todo->title, $todo->getURL())
