@@ -72,10 +72,10 @@
 			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			// If we need to return something for this todo, the complete link will point to the submission form
 			if ($vars['entity']->return_required) {
-				$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+				$controls .= "&nbsp;&nbsp;&nbsp;<span ><a class='action_button' id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
 			} else {
 				// No return required, link to createsubmissionaction and create blank submission
-				$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+				$controls .= "&nbsp;&nbsp;&nbsp;<span><a class='action_button' id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
 			}
 		}
 		
@@ -84,7 +84,7 @@
 	// Owner only Content
 	if ($is_owner) {
 			$status_content .= elgg_view('todo/todostatus', $vars);
-			$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+			$controls .= "&nbsp;&nbsp;&nbsp;<span><a class='action_button' href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 			$controls .= "&nbsp;&nbsp;&nbsp;<span class='delete_button'>" . elgg_view("output/confirmlink", 
 									array(
 										'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),

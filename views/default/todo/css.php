@@ -203,7 +203,7 @@ span.accepted {
 
 span.unviewed {
 	font-weight: bold !important;
-	color: black !important;
+	color: #9D1520 !important;
 }
 
 .todo #add_content_area {

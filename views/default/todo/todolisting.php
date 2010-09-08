@@ -40,11 +40,13 @@
 			$controls .= "<span class='accepted'>✓ Accepted</span>";
 		} else {
 			$controls .= "<span class='unviewed'>";
+			$controls .= "✗ Not Accepted ";
 			$controls .= elgg_view("output/confirmlink", 
 											array(
 											'href' => $vars['url'] . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
-											'text' => '✗ Not Yet Accepted',
+											'text' => 'Accept',
 											'confirm' => elgg_echo('todo:label:acceptconfirm'),
+											'class' => 'action_button'
 										)) . "</span>"; 
 		}
 	}	
