@@ -122,6 +122,7 @@
 		register_entity_type('object', 'todo');		
 
 		return true;
+		
 	}
 
 	function todo_page_handler($page) {
