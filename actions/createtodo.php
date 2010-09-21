@@ -64,6 +64,8 @@
 	$todo->return_required = $return_required;
 	$todo->container_guid = $container_guid;
 	$todo->status = $status;
+
+	$todo->time_published = ($status == TODO_STATUS_PUBLISHED ? time() : null);
 	
 	if ($rubric_select) {
 		$todo->rubric_guid = $rubric_guid;
