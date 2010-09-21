@@ -28,7 +28,8 @@
 	$rubric_guid		= get_input('rubric_guid');
 	$access_level		= get_input('access_level');
 	$container_guid 	= get_input('container_guid');
-	
+	$status				= get_input('status');
+		
 	$todo = get_entity($guid);
 	
 	if (!can_write_to_container(get_loggedin_userid(), $container_guid)) {
@@ -37,8 +38,11 @@
 	}
 	
 	$can_edit = $todo->canEdit(); 
-
+	
 	if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
+		
+		// Get previous status for notifications
+		$previous_status = $todo->status;
 		
 		// Cache to session
 		$_SESSION['user']->is_todo_cached = true;
@@ -62,8 +66,8 @@
 		$todo->description 	= $description;
 		$todo->tags 		= $tags;
 		$todo->due_date		= $due_date;
-		//$todo->assignees	= serialize($assignees); // Store the array of guids just in case.. no point
 		$todo->return_required = $return_required;
+		$todo->status = $status;
 		
 		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
 			$todo->access_id = $todo->assignee_acl;
@@ -76,11 +80,35 @@
 			$todo->rubric_guid = $rubric_guid;
 		else 
 			$todo->rubric_guid = null;
-		
+				
 		// Save and assign users
 		if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 			register_error(elgg_echo("todo:error:create"));		
 			forward($_SERVER['HTTP_REFERER']);
+		}
+		
+		// If the todo was previously a draft and has been changed to published, notify all users and add to river
+		if ($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) {
+			add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+			notify_todo_users_assigned($todo);
+		} else if ($previous_status == TODO_STATUS_PUBLISHED && $status == TODO_STATUS_DRAFT) {
+			// Remove from river if being set back to draft from published
+			remove_from_river_by_object($todo->getGUID());
+		} 
+		
+		// If we have new assignees, notify them if status is published
+		if ($assignees && $status = TODO_STATUS_PUBLISHED) {
+			$owner = get_entity($todo->container_guid);
+			foreach ($assignees as $assignee) {
+				notify_user($assignee,
+							$todo->container_guid,
+							elgg_echo('todo:email:subjectassign'), 
+							sprintf(elgg_echo('todo:email:bodyassign'), 
+							$owner->name, 
+							$todo->title, 
+							$todo->getURL())
+				);
+			}
 		}
 		
 		// Clear cached info
