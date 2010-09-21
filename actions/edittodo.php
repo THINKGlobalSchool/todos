@@ -29,7 +29,7 @@
 	$access_level		= get_input('access_level');
 	$container_guid 	= get_input('container_guid');
 	$status				= get_input('status');
-		
+			
 	$todo = get_entity($guid);
 	
 	if (!can_write_to_container(get_loggedin_userid(), $container_guid)) {
@@ -69,6 +69,8 @@
 		$todo->return_required = $return_required;
 		$todo->status = $status;
 		
+		$todo->time_published = (($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) ? time() : null);
+		
 		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
 			$todo->access_id = $todo->assignee_acl;
 		} else {
@@ -86,7 +88,7 @@
 			register_error(elgg_echo("todo:error:create"));		
 			forward($_SERVER['HTTP_REFERER']);
 		}
-		
+			
 		// If the todo was previously a draft and has been changed to published, notify all users and add to river
 		if ($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) {
 			add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
