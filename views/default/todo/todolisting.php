@@ -60,13 +60,23 @@
 										'text' => elgg_echo('delete'),
 										'confirm' => elgg_echo('deleteconfirm'),
 									)) . "</span>";
+									
+		if ($vars['entity']->status == TODO_STATUS_DRAFT) {
+			$todo_status = elgg_echo('todo:status:draft'); 
+		} else if ($vars['entity']->status == TODO_STATUS_PUBLISHED) {
+			$todo_status = elgg_echo('todo:status:published');
+		}
+
+		$status_content = elgg_echo('todo:label:status') . ': ' . $todo_status;
 			
 	}
+	
+	
 	
 	$info = <<<EOT
 		<div id='todo' class='entity_listing'>
 			<div class='todo_icon'>$icon</div>
-			<div class="entity_metadata">$controls</div>
+			<div class="entity_metadata">$status_content $controls</div>
 			<div class='todo' style='float: left;'>
 				<p class="entity_title" style='margin-bottom:0px; margin-top:3px;'><a href='$url'>$title</a></p>
 				<p class="entity_subtext" style='margin-bottom: 0px;'>$strapline</p>	
