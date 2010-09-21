@@ -49,6 +49,7 @@ EOT;
 		$due_date			= $vars['entity']->due_date;
 		$return_required	= $vars['entity']->return_required;
 		$access_id			= $vars['entity']->access_id;
+		$status				= $vars['entity']->status;
 		
 		if ($access_id != TODO_ACCESS_LEVEL_LOGGED_IN) {
 			$access_id = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
@@ -91,6 +92,7 @@ EOT;
 		$return_required 	= 0;
 		$is_rubric_selected = 0;
 		$entity_hidden = "";
+		$status = TODO_STATUS_PUBLISHED;
 	}
 	
 	$container_guid = get_input('container_guid', page_owner());
@@ -187,6 +189,18 @@ EOT;
 	$access_label = elgg_echo('todo:label:accesslevel');
 	$access_content = elgg_view('input/pulldown', array('internalname' => 'access_level', 'internalid' => 'todo_access', 'options_values' => get_todo_access_array(), 'value' => $access_id));
 	
+	$status_label = elgg_echo('todo:label:status');
+	$status_input = elgg_view('input/pulldown', array(
+		'internalname' => 'status',
+		'internalid' => 'todo_status',
+		'value' => $status,
+		'options_values' => array(
+			TODO_STATUS_DRAFT => elgg_echo('todo:status:draft'),
+			TODO_STATUS_PUBLISHED => elgg_echo('todo:status:published')
+		)
+	));
+	
+	
 	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('submit')));
 		
 
@@ -231,6 +245,10 @@ EOT;
 		<div>
 			<label>$access_label</label><br />
 			$access_content
+		</div><br />
+		<div>
+			<label>$status_label</label><br />
+			$status_input
 		</div>
 		<div>
 			$submit_input

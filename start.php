@@ -48,6 +48,10 @@
 		define('TODO_PRIORITY_MEDIUM', 2);
 		define('TODO_PRIORITY_LOW', 3);
 		
+		// Todo status's 
+		define('TODO_STATUS_DRAFT', 0);
+		define('TODO_STATUS_PUBLISHED', 1);
+		
 		//get_todo_groups_array();
 		
 		// Extend CSS

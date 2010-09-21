@@ -23,6 +23,7 @@
 	$due_date			= strtotime(get_input('due_date'));
 	$assignees			= get_input('assignee_guids');
 	$container_guid 	= get_input('container_guid');	
+	$status 			= get_input('status');
 	
 	if (get_input('return_required', false)) {
 		$return_required = true;
@@ -60,19 +61,20 @@
 	$todo->access_id 	= $access_level; 
 	$todo->tags 		= $tags;
 	$todo->due_date		= $due_date;
-	//$todo->assignees	= serialize($assignees); // Store the array of guids just in case.. No point.
 	$todo->return_required = $return_required;
 	$todo->container_guid = $container_guid;
+	$todo->status = $status;
 	
-	if ($rubric_select) 
+	if ($rubric_select) {
 		$todo->rubric_guid = $rubric_guid;
+	}
 	
 	// Before saving, check permissions
 	if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
 		register_error(elgg_echo("todo:error:permission"));		
 		forward($_SERVER['HTTP_REFERER']);
 	}
-	
+		
 	// Save and assign users
 	if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 		set_context($context);
@@ -80,7 +82,11 @@
 		forward($_SERVER['HTTP_REFERER']);
 	}
 	
-	add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+	// Don't notify or add todo to the river unless its published
+	if ($status == TODO_STATUS_PUBLISHED) {
+		add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+		notify_todo_users_assigned($todo);
+	}
 	
 	// Clear Cached info
 	clear_todo_cached_data();

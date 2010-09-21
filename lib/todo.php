@@ -66,15 +66,39 @@
 			$todo = get_entity($todo_guid);
 			$owner = get_entity($todo->container_guid);
 			if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
-				return (trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)))
-						&& notify_user($user_guid, $todo->container_guid, elgg_echo('todo:email:subjectassign'), sprintf(elgg_echo('todo:email:bodyassign'), $owner->name, $todo->title, $todo->getURL()))
-				);
+				return trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
 			} else {
 				return false;
 			}
 		} else {
 			return true;
 		}
+	}
+	
+	/** 
+	 * Notifies a todo's users that the todo has been created and assigned to them
+	 * 
+	 * @param int $todo_guid
+	 * @return bool
+	 */
+	function notify_todo_users_assigned($todo) {
+		if ($todo->getSubtype() == 'todo') {
+			$owner = get_entity($todo->container_guid);
+			$assignees = get_todo_assignees($todo->getGUID());
+			$success = true;
+			foreach ($assignees as $assignee) {
+				$success &= notify_user($assignee->getGUID(), 
+										$todo->container_guid,
+										elgg_echo('todo:email:subjectassign'), 
+										sprintf(elgg_echo('todo:email:bodyassign'), 
+										$owner->name, 
+										$todo->title, 
+										$todo->getURL())
+										);
+			}
+			return $success;
+		} 
+		return false;		
 	}
 	
 	/**
@@ -220,11 +244,20 @@
 	 * @return array 
 	 */
 	function get_users_todos($user_guid) {
-		return elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+		$todos = elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
 														 'relationship_guid' => $user_guid, 
 														 'inverse_relationship' => FALSE,
 														 'limit' => 9999,
 														 'offset' => 0,));
+														
+		// Do not include draft todos
+		foreach ($todos as $idx => $todo) {
+			if ($todo->status == TODO_STATUS_DRAFT) {
+				unset($todos[$idx]);
+			}
+		} 
+		
+		return $todos;
 	}
 	
 	/** 

@@ -74,11 +74,6 @@ $english = array(
 	'todo:label:link' => 'Link',
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
-	'todo:label:pastdue' => 'Past Due',
-	'todo:label:nextweek' => 'Due This Week', 
-	'todo:label:future' => 'Future To Do\'s',
-	'todo:label:calendarsalt' => 'Calendar unique hash salt',
-	'todo:label:calendarurl' => 'Todo Calendar URL', 
 	'todo:label:assignedby' => 'Assigned by %s ',
 	'todo:label:deletesubmission' => 'Delete Submission',
 	'todo:label:unviewed' => 'You have %s unaccepted To Do%s',
@@ -86,11 +81,27 @@ $english = array(
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
+	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
+	
+	// Calendar labels
+	'todo:label:calendarsalt' => 'Calendar unique hash salt',
+	'todo:label:calendarurl' => 'Todo Calendar URL',
+	
+	// Time frame labels
+	'todo:label:pastdue' => 'Past Due',
+	'todo:label:nextweek' => 'Due This Week', 
+	'todo:label:future' => 'Future To Do\'s',
+	
+	// Reminder Labels
 	'todo:label:reminder' => 'Reminder',
 	'todo:label:sendreminder' => 'Send Reminder', 
 	'todo:label:remindconfirm' => 'Send Reminder?', 
 	'todo:label:remindall' => 'Remind All',
-	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
+	
+	// Status Labels
+	'todo:label:status' => 'Status',
+	'todo:status:published' => 'Published', 
+	'todo:status:draft' => 'Draft',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
