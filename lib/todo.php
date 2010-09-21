@@ -30,7 +30,7 @@
 					$success &= assign_user_to_todo($assignee, $todo_guid);
 				} else if ($entity instanceof ElggGroup) {
 					// If we've got a group, we need to assign each member of that group
-					foreach ($entity->getMembers() as $member) {
+					foreach ($entity->getMembers(9999) as $member) {
 						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
 					}
 				} else if (TODO_CHANNELS_ENABLED && $entity->getSubtype() == 'shared_access') {
