@@ -15,8 +15,13 @@
 	$todos = elgg_get_entities(array('type' => 'object', 'subtype' => 'todo', 
 										'container_guids' => page_owner(), 'limit' => 6));
 										
+										
 	foreach ($todos as $idx => $todo) {
 		if (have_assignees_completed_todo($todo->getGUID())) {
+			unset($todos[$idx]);
+		}
+		
+		if ($todo->status == TODO_STATUS_DRAFT) {
 			unset($todos[$idx]);
 		}
 	}
