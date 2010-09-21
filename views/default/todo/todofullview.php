@@ -110,7 +110,7 @@
 		$todo_status = elgg_echo('todo:status:published');
 	}
 	
-	$status_content = elgg_echo('todo:label:status') . ': ' . $todo_status; 
+	$todo_status_content = elgg_echo('todo:label:status') . ': ' . $todo_status; 
 	
 	// AJAX Endpoint for submissions
 	$submission_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/createsubmission.php');
@@ -221,7 +221,7 @@ EOT;
 					<br />
 					<div class='strapline'>
 						<div class='entity_metadata' style='float: right;'>
-							$status_content $controls
+							$todo_status_content $controls
 						</div>
 						<div style='clear: both;'></div>
 					</div>
