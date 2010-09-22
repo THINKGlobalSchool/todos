@@ -333,11 +333,14 @@
 	 */
 	function todo_profile_menu($hook, $entity_type, $return_value, $params) {
 		global $CONFIG;
-
-		$return_value[] = array(
-			'text' => elgg_echo('todo'),
-			'href' => "{$CONFIG->url}pg/todo/owned/{$params['owner']->username}",
-		);
+		
+		// Only display todo link for users or groups with enabled todos
+		if ($params['owner'] instanceof ElggUser || $params['owner']->todo_enable == 'yes') {
+			$return_value[] = array(
+				'text' => elgg_echo('todo'),
+				'href' => "{$CONFIG->url}pg/todo/owned/{$params['owner']->username}",
+			);
+		}
 
 		return $return_value;
 	}
