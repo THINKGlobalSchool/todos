@@ -121,6 +121,7 @@
 		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
 		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
 		register_action('todo/sendreminder', false, $CONFIG->pluginspath . 'todo/actions/sendreminder.php');
+		register_action('todo/completetodo', false, $CONFIG->pluginspath . 'todo/actions/completetodo.php');
 
 		// Register type
 		register_entity_type('object', 'todo');		

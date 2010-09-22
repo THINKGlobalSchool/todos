@@ -56,6 +56,8 @@ $english = array(
 	'todo:label:assignees' => 'Assignees',
 	'todo:label:status' => 'Status',
 	'todo:label:completetodo' => 'Complete This To Do',
+	'todo:label:flagcomplete' => 'Mark as Complete',
+	'todo:label:flagcompleteconfirm' => 'Mark this To Do as completed?',
 	'todo:label:newsubmission' => 'New Submission',
 	'todo:label:additionalcomments' => 'Additional Comments (Optional)',
 	'todo:label:assignee' => 'Assignee',
@@ -82,6 +84,7 @@ $english = array(
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
 	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
+	
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
@@ -140,12 +143,13 @@ To view this To Do, click here:
 %s",
 	
 	// Messages
-	'todo:success:create' => 'Todo successfully submitted',
-	'todo:success:edit' => 'Todo successfully edited',
-	'todo:success:delete' => 'Todo successfully deleted',
+	'todo:success:create' => 'To Do successfully submitted',
+	'todo:success:edit' => 'To Do successfully edited',
+	'todo:success:delete' => 'To Do successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
 	'todo:success:accepted' => 'To Do has been accepted',
 	'todo:success:reminder' => 'User(s) reminded',
+	'todo:success:flagcomplete' => 'To Do marked as complete',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
@@ -155,6 +159,7 @@ To view this To Do, click here:
 	'todo:error:permissiondenied' => 'Permission Denied', 
 	'todo:error:accepted' => 'There was an error accepting the To Do',
 	'todo:error:reminder' => 'There was an error reminding user(s)',
+	'todo:error:flagcomplete' => 'There was an error marking the to do as complete',
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',

@@ -62,10 +62,15 @@
 		}
 		
 		// Show completed submission data
-		if ($submission = has_user_submitted($assignee->guid, $vars['entity']->getGUID())) {
+		if (has_user_submitted($assignee->guid, $vars['entity']->getGUID())) {
 			$status = '<span class="complete">Complete</span>';
-			$date = date("F j, Y", $submission->time_created);
-			$url = "<a href='{$submission->getURL()}'>View</a>";
+			
+			// Check if theres a submission, may have been manually completed
+			if ($submission = get_user_submission($assignee->guid, $vars['entity']->getGUID())) {
+				$date = date("F j, Y", $submission->time_created);
+				$url = "<a href='{$submission->getURL()}'>View</a>";
+			}
+			
 			$reminder = '<span style="color: #bbbbbb;">-</span>';
 		}
 		
