@@ -76,9 +76,11 @@
 											'class' => 'action_button'
 										)) . "</span>"; 
 		}
-		if ($submission = has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
+		if (has_user_submitted($user->getGUID(), $vars['entity']->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
-			$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a></span>";
+			if ($submission = get_user_submission($user->getGUID(), $vars['entity']->getGUID())) {
+				$controls .= "&nbsp;&nbsp;&nbsp;<span class='entity_edit'><a id='view_submission' href='" . $submission->getURL() . "'>" . elgg_echo("todo:label:viewsubmission") . "</a></span>";
+			}	
 		} else {
 			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			// If we need to return something for this todo, the complete link will point to the submission form
@@ -96,6 +98,15 @@
 	if ($is_owner) {
 			$status_content .= elgg_view('todo/todostatus', $vars);
 			$controls .= "&nbsp;&nbsp;&nbsp;<span><a class='action_button' href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+			
+			$controls .= "&nbsp;&nbsp;&nbsp;" . elgg_view("output/confirmlink", 
+									array(
+										'href' => $vars['url'] . "action/todo/completetodo?todo_guid=" . $vars['entity']->getGUID(),
+										'text' => elgg_echo('todo:label:flagcomplete'),
+										'confirm' => elgg_echo('todo:label:flagcompleteconfirm'),
+										'class' => 'action_button'
+									)) . "</span>";
+									
 			$controls .= "&nbsp;&nbsp;&nbsp;<span class='delete_button'>" . elgg_view("output/confirmlink", 
 									array(
 										'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),

@@ -281,9 +281,26 @@
 	 * 
 	 * @param int $user_guid
 	 * @param int $todo_guid
-	 * @return bool
+	 * @return mixed
 	 */
 	function has_user_submitted($user_guid, $todo_guid) {
+		$todo = get_entity($todo_guid);
+		if ($todo->manual_complete || get_user_submission($user_guid, $todo_guid)) {
+					
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/** 
+	 * Returns a given users submission for a todo, if any
+	 * 
+	 * @param int $user_guid
+	 * @param int $todo_guid
+	 * @return mixed
+	 */
+	function get_user_submission($user_guid, $todo_guid) {
 		$submissions = get_todo_submissions($todo_guid);
 		foreach ($submissions as $submission) {
 			if ($user_guid == $submission->owner_guid) {
@@ -318,12 +335,18 @@
 	 * @return bool
 	 */
 	function have_assignees_completed_todo($todo_guid) {
-		$assignees = get_todo_assignees($todo_guid);
-		$complete = true;
-		foreach ($assignees as $assignee) {
-			$complete &= has_user_submitted($assignee->getGUID(), $todo_guid);
+		$todo = get_entity($todo_guid);
+		// Check if the todo has been marked as manually completed
+		if (!$todo->manual_complete) {
+			$assignees = get_todo_assignees($todo_guid);
+			$complete = true;
+			foreach ($assignees as $assignee) {
+				$complete &= has_user_submitted($assignee->getGUID(), $todo_guid);
+			}
+			return $complete;
+		} else {
+			return true;
 		}
-		return $complete;
 	}
 	
 	/**
