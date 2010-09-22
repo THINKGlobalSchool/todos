@@ -18,5 +18,5 @@
 	echo "<label>" . elgg_echo('todo:label:calendarurl') . ": </label><br />";
 	
 ?>
-<input type='text' size='100' style='font-size: 12px;' readonly=readonly name='params[calurl]' value="<?php echo $CONFIG->wwwroot . "pg/todo/calendar/" . $user->username . "?t=" . $hash; ?>" />
+<input type='text' size='100' style='font-size: 12px;' readonly=readonly name='params[calurl]' value="<?php echo $CONFIG->wwwroot . "pg/todo/calendar/" . $user->username . "?t=" . $hash . '&bogo=' . time(); ?>" />
 <br />
