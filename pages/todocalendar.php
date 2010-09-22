@@ -23,9 +23,10 @@
 								   'uid' => md5($todo->time_created . $username), 						// Unique id, time created hashed with username
 								   'created' => date($time_format_str, $todo->time_created), 			// Created
 								   'last-modified' =>  date($time_format_str, $todo->time_updated),		// Last modified
-								   'summary' => $todo->title, 											// Short summary
-								   'description' => str_replace("\r", "=0D=0A=", strip_tags($todo->description)));	// Full description, CFLF
-		}
+								   'summary' => "To Do: " . $todo->title, 											// Short summary
+								  // 'description' => str_replace("\r\n", "=0D=0A=", strip_tags($todo->description)));	// Full description, CFLF
+								   'description' => '');
+		}	
 		
 		$filename = "SpotTodoExport.ics";
 		
@@ -37,25 +38,26 @@ PRODID:-//THINK Global School//Spot Todo Export//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
+X-WR-CALNAME:THINK Spot To Do's
 X-WR-TIMEZONE:UTC
-X-WR-CALDESC:SpotTodoExport
+X-WR-CALDESC:Displays To Do's from Spot on your Google Calendar
 <?php
 		foreach ($ical_events as $event) {
 			?>
 BEGIN:VEVENT
-DTSTART;VALUE=DATE:<?php echo $event['dtstart'] . "\n"; ?>
-DTEND;VALUE=DATE:<?php echo $event['dtend']. "\n"; ?>
-DTSTAMP:<?php echo $event['dtstamp'] . "Z" . "\n"; ?>
-UID:<?php echo $event['uid']. "\n"; ?>
+DTSTART;VALUE=DATE:<?php echo $event['dtstart'] . "\r\n"; ?>
+DTEND;VALUE=DATE:<?php echo $event['dtend']. "\r\n"; ?>
+DTSTAMP:<?php echo $event['dtstamp'] . "Z" . "\r\n"; ?>
+UID:<?php echo $event['uid']. "\r\n"; ?>
 CLASS:PUBLIC
-CREATED:<?php echo $event['created']. "\n"; ?>
-LAST-MODIFIED:<?php echo $event['last-modified']. "\n"; ?>
+CREATED:<?php echo $event['created']. "\r\n"; ?>
+LAST-MODIFIED:<?php echo $event['last-modified']. "\r\n"; ?>
 SEQUENCE:1
 STATUS:CONFIRMED
-SUMMARY:<?php echo $event['summary']. "\n"; ?>
-DESCRIPTION;ENCODING=QUOTED-PRINTABLE: <?php echo $event['description'] . "\n"; ?>
+SUMMARY:<?php echo $event['summary']. "\r\n"; ?>
+DESCRIPTION;ENCODING=QUOTED-PRINTABLE: <?php echo $event['description'] . "\r\n"; ?>
 TRANSP:OPAQUE
-END:VEVENT<?php echo "\n";
+END:VEVENT<?php echo "\r\n";
 		}
 ?>
 END:VCALENDAR
