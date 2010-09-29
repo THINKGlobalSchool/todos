@@ -30,14 +30,7 @@
 		$string .= elgg_echo("todosubmission:river:createdeleted");
 	}
 
-
-	
-	$string .= " <span class='entity_subtext'>" . friendly_time($object->time_created);
-	if (isloggedin()){
-		$string .= "<a class='river_comment_form_button link'>Comment</a>";
-		$string .= elgg_view('likes/forms/link', array('entity' => $object));
-	}
-	$string .= "</span>";
+	$string .= " <span class='entity_subtext'>" . friendly_time($object->time_created) . "</span>";
 	
 	access_show_hidden_entities($access_status);
 ?>

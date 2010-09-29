@@ -37,7 +37,7 @@
 	
 	$content .= elgg_view('navigation/breadcrumbs');
 	$content .= elgg_view_title($title);
-	$content .= elgg_view("todo/forms/edittodo", $vars);
+	$content .= elgg_view("todo/forms/edittodo");
 	
 	// layout the sidebar and main column using the default sidebar
 	$body = elgg_view_layout('one_column_with_sidebar', $content, '');

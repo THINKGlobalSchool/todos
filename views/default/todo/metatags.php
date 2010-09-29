@@ -19,7 +19,14 @@
 
 	function stripJunk(text) {
 		return text.replace("amp;", '');
-	}
+	} 
+	
+	$(document).ready(
+		function() {
+			$('.todo_submission_river_item .river_comments').remove();
+			$('.todo_submission_river_item .river_comments_tabs').remove();
+		}
+	);
 
 </script>
 

@@ -107,7 +107,10 @@
 		
 		// Profile hook	
 		register_plugin_hook('profile_menu', 'profile', 'todo_profile_menu');	
-			
+		
+		// Hook into views to post process river/item/wrapper for todo submissions
+		register_plugin_hook('display', 'view', 'todo_submission_river_rewrite');
+		
 		// Set up url handlers
 		register_entity_url_handler('todo_url','object', 'todo');
 		register_entity_url_handler('todo_submission_url','object', 'todosubmission');
@@ -237,7 +240,7 @@
 	 */
 	function todo_create_event_listener($event, $object_type, $object) {
 		if ($object->getSubtype() == 'todo') {
-			$todo_acl = create_access_collection(elgg_echo('todo:todo') . ":" . $object->title, $object->getGUID());
+			$todo_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $object->title, $object->getGUID());
 			if ($todo_acl) {
 				$object->assignee_acl = $todo_acl;
 				set_context('todo_acl');
@@ -314,7 +317,7 @@
 				$todos = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo'));
 				if (is_array($todos)) {
 					foreach ($todos as $todo) {
-						$returnvalue[$todo->assignee_acl] = elgg_echo('todo:todo') . ':' . $todo->title;
+						$returnvalue[$todo->assignee_acl] = elgg_echo('todo:todo') . ': ' . $todo->title;
 					}
 				}
 			}
@@ -343,6 +346,24 @@
 		}
 
 		return $return_value;
+	}
+	
+	/** 
+	 *
+	 */
+	 
+	function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $params) {
+		global $CONFIG;
+
+		$view = $params['view'];
+	
+		if ($view == 'river/item/wrapper') {
+			$submission = get_entity($params['vars']['item']->object_guid);
+			if ($submission->getSubtype() == 'todosubmission') {			
+				$new_content = "<div class='todo_submission_river_item'>" . $returnvalue . "</div>";
+				return $new_content;
+			}
+		}
 	}
 	
 	/**
