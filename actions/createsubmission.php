@@ -39,21 +39,14 @@
 		forward($_SERVER['HTTP_REFERER']);
 	}*/
 	
-	// Create an ACL for the submission, only the todo assigner and assignee can see it
-	$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, 0);
-	var_dump($submission_acl);
-	add_user_to_access_collection($todo->owner_guid, $submission_acl);
-	add_user_to_access_collection($user->getGUID(), $submission_acl);
-	
 	$submission = new ElggObject();
 	$submission->subtype = "todosubmission";
 	$submission->description = $description;
 	$submission->content = serialize($content);
-	$submission->access_id 	= $submission_acl;
 	$submission->owner_id = $user->getGUID();
 	$submission->todo_guid = $todo_guid;
-	$submission->submission_acl = $submission_acl;
-
+	
+	// NOTE: Access ID and ACL's handled by an event listener
 	
 	// Save
 	if (!$submission->save()) {
