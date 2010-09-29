@@ -13,7 +13,7 @@ $english = array(
 	
 	// Generic
 	'todo:title' => 'To Do\'s',
-	'todo:todo' => 'todo',
+	'todo:todo' => 'To Do',
 	'todo' => 'To Do\'s',
 	'todo:new' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
