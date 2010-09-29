@@ -98,8 +98,14 @@
 		// Register a handler for removing assignees from todos
 		register_elgg_event_handler('unassign','object','todo_unassign_user_event_listener');
 		
+		// Register a handler for created submissions 
+		register_elgg_event_handler('create', 'object', 'submission_create_event_listener');
+		
 		// Plugin hook for write access
 		register_plugin_hook('access:collections:write', 'all', 'todo_write_acl_plugin_hook');
+		
+		// Plugin hook for write access
+		register_plugin_hook('access:collections:write', 'all', 'submission_write_acl_plugin_hook');
 		
 		// Register an annotation handler for comments etc
 		register_plugin_hook('entity:annotate', 'object', 'todo_annotate_comments');
@@ -326,6 +332,52 @@
 	}
 	
 	/**
+	 * Submission created, so add users to access lists.
+	 */
+	function submission_create_event_listener($event, $object_type, $object) {
+		if ($object->getSubtype() == 'todosubmission') {
+			// Get the submissions todo
+			$todo = get_entity($object->todo_guid);
+			
+			// Create an ACL for the submission, only the todo assigner and assignee can see it
+			$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, $object->getGUID());
+			
+			if ($submission_acl) {
+				$object->submission_acl = $submission_acl;
+				$context = get_context();
+				set_context('submission_acl');
+				add_user_to_access_collection($todo->owner_guid, $submission_acl);
+				add_user_to_access_collection(get_loggedin_userid(), $submission_acl);
+				set_context($context);
+				$object->access_id = $submission_acl;
+				$object->save();
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Return the write access for the current todo submission if the user has write access to it.
+	 */
+	function submission_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) {
+		if (get_context() == 'submission_acl') {
+			// get all todos if logged in
+			if ($loggedin = get_loggedin_user()) {
+				$submissions = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todosubmission'));
+				if (is_array($submissions)) {
+					foreach ($submissions as $submission) {
+						$todo = get_entity($submission->todo_guid);
+						$returnvalue[$submission->submission_acl] = elgg_echo('todo:todo') . ': ' . $todo->title;
+					}
+				}
+			}
+		}
+		return $returnvalue;
+	}
+	
+	/**
 	 * Plugin hook to add to do's to users profile block
 	 * 	
 	 * @param unknown_type $hook
@@ -349,17 +401,20 @@
 	}
 	
 	/** 
-	 *
+	 * Comments for submissions on the river are forcefully hidden
+	 * 
+	 * @param unknown_type $hook
+	 * @param unknown_type $entity_type
+	 * @param unknown_type $returnvalue
+	 * @param unknown_type $params
+	 * @return unknown
 	 */
 	 
 	function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $params) {
-		global $CONFIG;
-
 		$view = $params['view'];
-	
 		if ($view == 'river/item/wrapper') {
 			$submission = get_entity($params['vars']['item']->object_guid);
-			if ($submission->getSubtype() == 'todosubmission') {			
+			if ($submission->getSubtype() == 'todosubmission') {	
 				$new_content = "<div class='todo_submission_river_item'>" . $returnvalue . "</div>";
 				return $new_content;
 			}
