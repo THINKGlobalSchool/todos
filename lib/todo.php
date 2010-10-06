@@ -21,6 +21,7 @@
 	 * @return bool 
 	 */
 	function assign_users_to_todo($assignee_guids, $todo_guid) {
+		$todo = get_entity($todo_guid);
 		// Set up relationships for asignees, can be users or groups (multiple)
 		if (is_array($assignee_guids)) {
 			$success = true;
@@ -31,7 +32,11 @@
 				} else if ($entity instanceof ElggGroup) {
 					// If we've got a group, we need to assign each member of that group
 					foreach ($entity->getMembers(9999) as $member) {
+						if ($member->getGUID() == $todo->owner_guid) {
+							continue;
+						}
 						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
+						
 					}
 				} else if (TODO_CHANNELS_ENABLED && $entity->getSubtype() == 'shared_access') {
 					// If shared access (channels) is enabled, we need to assign the users of that channel																			
@@ -44,6 +49,9 @@
 																		));
 
 					foreach($channel_members as $member) {
+						if ($member->getGUID() == $todo->owner_guid) {
+							continue;
+						}
 						$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
 					}
 				}
