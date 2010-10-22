@@ -84,6 +84,7 @@ $english = array(
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
 	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
+	'todo:label:savenew' => 'Save and New',
 	
 	
 	// Calendar labels
