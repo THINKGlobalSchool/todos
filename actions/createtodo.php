@@ -25,6 +25,9 @@
 	$container_guid 	= get_input('container_guid');	
 	$status 			= get_input('status');
 	
+	// If user clicks 'save and new' 
+	$forward_new		= get_input('submit_and_new', 0);
+		
 	if (get_input('return_required', false)) {
 		$return_required = true;
 	} else {
@@ -93,7 +96,12 @@
 	// Clear Cached info
 	clear_todo_cached_data();
 
-	// Save successful, forward to index
+	// Save successful, forward
 	system_message(elgg_echo('todo:success:create'));
-	forward($todo->getURL());
+	if ($forward_new) {
+		forward($CONFIG->wwwroot . 'pg/todo/createtodo');
+	} else {
+		forward($todo->getURL());
+	}
+
 ?>

@@ -83,6 +83,8 @@ EOT;
 			</script>
 EOT;
 		
+		$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('save')));	
+		
 		
 	} else {
 	// No entity, creating new one
@@ -93,6 +95,9 @@ EOT;
 		$is_rubric_selected = 0;
 		$entity_hidden = "";
 		$status = TODO_STATUS_PUBLISHED;
+		
+		$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('save')));	
+		$submit_input .= '&nbsp;' . elgg_view('input/submit', array('internalname' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
 	}
 	
 	$container_guid = get_input('container_guid', page_owner());
@@ -182,7 +187,7 @@ EOT;
 							<label>$rubric_picker_label</label><br />
 							$rubric_picker
 							<br /><br />
-						</div>";
+						</div>";	
 	}
 		
 
@@ -199,10 +204,7 @@ EOT;
 			TODO_STATUS_PUBLISHED => elgg_echo('todo:status:published')
 		)
 	));
-	
-	
-	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('submit')));
-		
+			
 
 	// Build Form Body
 	$form_body = <<<EOT
