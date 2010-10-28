@@ -21,7 +21,7 @@
 	$content = "<div class='todo'>
 					<table class='status_table'>
 						<tr>
-							<th>" . elgg_echo('todo:label:assignee') . "</th
+							<th>" . elgg_echo('todo:label:assignee') . "</th>
 							<th>" . elgg_echo('todo:label:accepted') . "</th>
 							<th>" . elgg_echo('todo:label:status') . "</th>
 							<th>" . elgg_echo('todo:label:datecompleted') . "</th>
