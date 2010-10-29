@@ -40,6 +40,7 @@
 	}*/
 	
 	$submission = new ElggObject();
+	$submission->title = sprintf(elgg_echo('todo:label:submissiontitleprefix'), $todo->title);
 	$submission->subtype = "todosubmission";
 	$submission->description = $description;
 	$submission->content = serialize($content);
@@ -71,7 +72,14 @@
 			);
 			*/
 	
-	notify_user($todo->owner_guid, $CONFIG->site->guid, elgg_echo('todo:email:subjectsubmission'), sprintf(elgg_echo('todo:email:bodysubmission'), $user->name, $todo->title, $todo->getURL()));
+	notify_user($todo->owner_guid, 
+				$CONFIG->site->guid,
+				elgg_echo('todo:email:subjectsubmission'), 
+				sprintf(elgg_echo('todo:email:bodysubmission'), 
+				$user->name, 
+				$todo->title, 
+				$todo->getURL())
+	);
 	
 	// Clear Cached info
 	remove_metadata($_SESSION['user']->guid,'submission_content');

@@ -8,7 +8,6 @@
 	 * @copyright THINK Global School 2010
 	 * @link http://www.thinkglobalschool.com/
 	 * 
-	 * DEPENDS ON EMBEDENABLER PLUGIN (Not sure why at the moment)
 	 */
 	
 	/*********************** TODO: (Code related) ************************/
@@ -100,6 +99,9 @@
 		
 		// Register a handler for created submissions 
 		register_elgg_event_handler('create', 'object', 'submission_create_event_listener');
+		
+		// Register a handler for submission comments so that the todo owner is notified
+		register_elgg_event_handler('annotate', 'all', 'submission_comment_event_listener');
 		
 		// Plugin hook for write access
 		register_plugin_hook('access:collections:write', 'all', 'todo_write_acl_plugin_hook');
@@ -375,6 +377,33 @@
 			}
 		}
 		return $returnvalue;
+	}
+	
+	/**
+	 * Submission commented, notify todo creator
+	 */
+	function submission_comment_event_listener($event, $object_type, $object) {
+		if ($object->getSubtype() == 'todosubmission') {
+			global $CONFIG;
+			// Get the submissions todo
+			$todo = get_entity($object->todo_guid);
+			$user = get_entity($object->owner_guid);
+			
+			// Notify todo owner that the submission was commented on
+			notify_user($todo->owner_guid, 
+						$user->getGUID(),
+						elgg_echo('generic_comment:email:subject'), 
+						sprintf(elgg_echo('todo:email:bodysubmissioncomment'), 
+								$user->name, 
+								$todo->title,
+								$object->getURL(),
+								$user->name,
+								$user->getURL()
+						)
+			);
+			
+		}
+		return true;
 	}
 	
 	/**

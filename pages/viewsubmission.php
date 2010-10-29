@@ -29,6 +29,10 @@
 	
 	$submission = get_entity($submission_guid);
 	
+	if (!$submission) {
+		forward();
+	}
+	
 	$title = elgg_echo("todo:label:viewsubmission");
 	
 	$content = elgg_view_title($title);
