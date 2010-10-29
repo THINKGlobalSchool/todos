@@ -160,7 +160,7 @@ To view %s's profile, click here:
 
 You cannot reply to this email.",
 
-	'todo:email:bodysubmissioncomment' => "%s has commented on their submission for the To Do titled %s.
+	'todo:email:bodysubmissioncomment' => "There is a new comment on a submission for the To Do titled %s.
 
 To view or comment on the original submission, click here:
 
