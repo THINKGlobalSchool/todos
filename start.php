@@ -394,7 +394,6 @@
 						$user->getGUID(),
 						elgg_echo('generic_comment:email:subject'), 
 						sprintf(elgg_echo('todo:email:bodysubmissioncomment'), 
-								$user->name, 
 								$todo->title,
 								$object->getURL(),
 								$user->name,
