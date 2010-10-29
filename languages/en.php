@@ -85,6 +85,7 @@ $english = array(
 	'todo:label:yes' => 'Yes',
 	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
 	'todo:label:savenew' => 'Save and New',
+	'todo:label:submissiontitleprefix' => 'Submission for: %s',
 	
 	
 	// Calendar labels
@@ -142,6 +143,34 @@ To view this To Do, click here:
 To view this To Do, click here:
 
 %s",
+
+	'generic_comment:email:body' => "You have a new comment on your item \"%s\" from %s. It reads:
+
+
+%s
+
+
+To reply, view, or comment on the original item, click here:
+
+%s
+
+To view %s's profile, click here:
+
+%s
+
+You cannot reply to this email.",
+
+	'todo:email:bodysubmissioncomment' => "%s has commented on their submission for the To Do titled %s.
+
+To view or comment on the original submission, click here:
+
+%s
+
+To view %s's profile, click here:
+
+%s
+
+You cannot reply to this email.",
 	
 	// Messages
 	'todo:success:create' => 'To Do successfully submitted',
