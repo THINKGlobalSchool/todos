@@ -73,6 +73,9 @@
 		// Extend profile_ownerblock
 		elgg_extend_view('profile_ownerblock/extend', 'todo/profile_link');
 		
+		// Extend admin view to include some extra styles
+		elgg_extend_view('canvas/layouts/administration', 'todo/admin/css');
+		
 		// add the group pages tool option     
         add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
 
@@ -179,6 +182,15 @@
 			case 'calendar':
 				set_input('user', $page[1]);
 				include $CONFIG->pluginspath . 'todo/pages/todocalendar.php';
+				break;
+			case 'admin_stats':
+				admin_gatekeeper();
+				set_context('admin');
+				set_page_owner($_SESSION['guid']);
+				$title = elgg_echo('todo:title:admin_stats');
+				$body = elgg_view_title($title);
+				$body .= elgg_view("todo/admin/stats");
+				page_draw($title, elgg_view_layout("administration", $body), 'page_shells/admin');
 				break;
 			case 'assigned':
 			default:
@@ -468,6 +480,12 @@
 			if($page_owner->todo_enable != "no") {
 				//add_submenu_item(sprintf(elgg_echo("todo:group"),$page_owner->name), $CONFIG->wwwroot . "pg/todo/owned/" . $page_owner->username);
 			}
+		}
+		
+		// Admin stats
+		if (isadminloggedin()) {
+			elgg_add_submenu_item(array('text' => elgg_echo('todo:menu:admin_stats'), 
+										'href' => $CONFIG->url . "pg/todo/admin_stats"), 'admin', 'z');
 		}
 	}
 	

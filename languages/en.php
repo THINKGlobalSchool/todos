@@ -26,6 +26,7 @@ $english = array(
 	'todo:title:edit' => 'Edit To Do',
 	'todo:title:alltodos' => 'All Site To Do\'s',
 	'todo:title:ownedtodos' => '%s\'s To Do\'s',
+	'todo:title:admin_stats' => 'To Do Statistics',
 	
 	// Menu items
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
@@ -35,6 +36,7 @@ $english = array(
 	'todo:menu:alltodos' => 'All Site To Do\'s',	
 	'todo:menu:groupassignedtodos' => 'Group Assigned To Do\'s', 	
 	'todo:menu:groupcreatetodo' => 'Create Group To Do', 	
+	'todo:menu:admin_stats' => 'To Do Statistics',
 	
 	// Labels 
 	'todo:label:noresults' => 'No Results',
@@ -107,6 +109,20 @@ $english = array(
 	'todo:label:status' => 'Status',
 	'todo:status:published' => 'Published', 
 	'todo:status:draft' => 'Draft',
+	
+	// Admin Labels
+	'todo:label:admin:general' => 'General Statistics',
+	'todo:label:admin:totaltodos' => 'To Do\'s',
+	'todo:label:admin:totalsubmissions' => 'To Do Submissions',
+	'todo:label:admin:assignedusers' => 'Total To Do\'s Assigned to Users',
+	'todo:label:admin:assignedgroups' => 'Total Groups Assigned',
+	'todo:label:admin:totalcomplete' => 'Completed To Do\'s', 
+	'todo:label:admin:totalincomplete' => 'Incomplete To Do\'s', 
+	'todo:label:admin:completepercentage' => 'Complete Percentage', 
+	'todo:label:admin:manualcomplete' => 'Manually Completed To Do\'s', 
+	'todo:label:admin:manualpercentage' => 'Manually Completed Percentage', 
+	'todo:label:admin:assignedsubmitted' => 'Submitted/Assigned', 
+	'todo:label:admin:completionaverage' => 'Average User Completion',
 	
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
