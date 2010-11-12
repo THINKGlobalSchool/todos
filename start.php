@@ -74,7 +74,7 @@
 		elgg_extend_view('profile_ownerblock/extend', 'todo/profile_link');
 		
 		// Extend admin view to include some extra styles
-		elgg_extend_view('canvas/layouts/administration', 'todo/admin/css');
+		elgg_extend_view('layouts/administration', 'todo/admin/css');
 		
 		// add the group pages tool option     
         add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
@@ -190,7 +190,7 @@
 				$title = elgg_echo('todo:title:admin_stats');
 				$body = elgg_view_title($title);
 				$body .= elgg_view("todo/admin/stats");
-				page_draw($title, elgg_view_layout("administration", $body), 'page_shells/admin');
+				page_draw($title, elgg_view_layout("administration", array('content' => $body)), 'page_shells/admin');
 				break;
 			case 'assigned':
 			default:
