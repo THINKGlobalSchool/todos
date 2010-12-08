@@ -310,9 +310,11 @@
 	 */
 	function get_user_submission($user_guid, $todo_guid) {
 		$submissions = get_todo_submissions($todo_guid);
-		foreach ($submissions as $submission) {
-			if ($user_guid == $submission->owner_guid) {
-				return $submission;
+		if ($submissions) {
+			foreach ($submissions as $submission) {
+				if ($user_guid == $submission->owner_guid) {
+					return $submission;
+				}
 			}
 		}
 		return false;

@@ -31,5 +31,5 @@
 	$area .= "<p>Update all todos to status: <a href='{$url}?change_status=0'>Draft</a> <a href='{$url}?change_status=1'>Published</a></p>";
 
 	$body = elgg_view_layout("one_column", $area);
-	page_draw("Update Todo Status",$body);
+	echo elgg_view_page("Update Todo Status",$body);
 ?>
