@@ -190,7 +190,7 @@
 				$title = elgg_echo('todo:title:admin_stats');
 				$body = elgg_view_title($title);
 				$body .= elgg_view("todo/admin/stats");
-				page_draw($title, elgg_view_layout("administration", array('content' => $body)), 'page_shells/admin');
+				echo elgg_view_page($title, elgg_view_layout("administration", array('content' => $body)), 'admin');
 				break;
 			case 'assigned':
 			default:
@@ -360,8 +360,8 @@
 				$object->submission_acl = $submission_acl;
 				$context = get_context();
 				set_context('submission_acl');
-				add_user_to_access_collection($todo->owner_guid, $submission_acl);
-				add_user_to_access_collection(get_loggedin_userid(), $submission_acl);
+				error_log(add_user_to_access_collection($todo->owner_guid, $submission_acl));
+				error_log(add_user_to_access_collection(get_loggedin_userid(), $submission_acl));
 				set_context($context);
 				$object->access_id = $submission_acl;
 				$object->save();

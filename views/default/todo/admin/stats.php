@@ -1,6 +1,6 @@
 <?php 
 	/**
-	 * Todo Assignee view, includes a control to remove assignee from a todo
+	 * Todo Admin Stats
 	 * 
 	 * @package Todo
 	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
