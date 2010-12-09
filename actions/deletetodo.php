@@ -9,13 +9,7 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-
-	// Only admins can delete
-	gatekeeper();
-	
-	// must have security token 
-	action_gatekeeper();
-	
+		
 	// get input
 	
 	$guid = get_input('todo_guid');

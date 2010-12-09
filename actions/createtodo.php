@@ -9,13 +9,7 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-		
-	// must be logged in
-	gatekeeper();
-	
-	// must have security token 
-	action_gatekeeper();
-	
+			
 	// get input
 	$title 				= get_input('title');
 	$description 		= get_input('description');
