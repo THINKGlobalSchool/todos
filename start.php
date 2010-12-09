@@ -127,15 +127,15 @@
 		register_entity_url_handler('todo_submission_url','object', 'todosubmission');
 
 		// Register actions
-		register_action('todo/createtodo', false, $CONFIG->pluginspath . 'todo/actions/createtodo.php');
-		register_action('todo/deletetodo', false, $CONFIG->pluginspath . 'todo/actions/deletetodo.php');
-		register_action('todo/edittodo', false, $CONFIG->pluginspath . 'todo/actions/edittodo.php');
-		register_action('todo/accepttodo', false, $CONFIG->pluginspath . 'todo/actions/accepttodo.php');
-		register_action('todo/unassign', false, $CONFIG->pluginspath . 'todo/actions/unassign.php');
-		register_action('todo/createsubmission', false, $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
-		register_action('todo/deletesubmission', false, $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
-		register_action('todo/sendreminder', false, $CONFIG->pluginspath . 'todo/actions/sendreminder.php');
-		register_action('todo/completetodo', false, $CONFIG->pluginspath . 'todo/actions/completetodo.php');
+		elgg_register_action('todo/createtodo', $CONFIG->pluginspath . 'todo/actions/createtodo.php');
+		elgg_register_action('todo/deletetodo', $CONFIG->pluginspath . 'todo/actions/deletetodo.php');
+		elgg_register_action('todo/edittodo', $CONFIG->pluginspath . 'todo/actions/edittodo.php');
+		elgg_register_action('todo/accepttodo', $CONFIG->pluginspath . 'todo/actions/accepttodo.php');
+		elgg_register_action('todo/unassign', $CONFIG->pluginspath . 'todo/actions/unassign.php');
+		elgg_register_action('todo/createsubmission', $CONFIG->pluginspath . 'todo/actions/createsubmission.php');
+		elgg_register_action('todo/deletesubmission', $CONFIG->pluginspath . 'todo/actions/deletesubmission.php');
+		elgg_register_action('todo/sendreminder', $CONFIG->pluginspath . 'todo/actions/sendreminder.php');
+		elgg_register_action('todo/completetodo', $CONFIG->pluginspath . 'todo/actions/completetodo.php');
 
 		// Register type
 		register_entity_type('object', 'todo');		
