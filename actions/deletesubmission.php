@@ -9,12 +9,6 @@
 	 * @link http://www.thinkglobalschool.com/
 	 * 
 	 */
-
-	// Logged in users
-	gatekeeper();
-	
-	// must have security token 
-	action_gatekeeper();
 	
 	// get input
 	$guid = get_input('submission_guid');
