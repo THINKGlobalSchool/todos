@@ -58,7 +58,7 @@
 		elgg_extend_view('css','todo/ui-datepicker');
 		
 		// Extend Metatags (for js)
-		elgg_extend_view('metatags','todo/metatags');
+		elgg_extend_view('html_head/extend','todo/metatags');
 		
 		// Add groups menu
 		elgg_extend_view('groups/menu/links', 'todo/menu'); 
