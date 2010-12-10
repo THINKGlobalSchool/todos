@@ -54,8 +54,8 @@
 		//get_todo_groups_array();
 		
 		// Extend CSS
-		elgg_extend_view('css','todo/css');
-		elgg_extend_view('css','todo/ui-datepicker');
+		elgg_extend_view('css/screen','todo/css');
+		elgg_extend_view('css/screen','todo/ui-datepicker');
 		
 		// Extend Metatags (for js)
 		elgg_extend_view('html_head/extend','todo/metatags');
