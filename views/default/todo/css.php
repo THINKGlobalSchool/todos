@@ -408,3 +408,9 @@ div.todoexists {
 	padding:2px 6px;
 	width:auto;
 }
+
+/** Tweaks for todo sidebar in groups **/
+.todo-sidebar .entity_listing_info {
+	width: auto;
+}
+}

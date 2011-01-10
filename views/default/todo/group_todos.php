@@ -30,7 +30,7 @@
 			}
 		}
 ?>
-<div class="group_tool_widget todo" style='height: auto; margin-bottom: 5px; min-height: 100%;'>
+<div class="group_tool_widget todo todo-sidebar" style='height: auto; margin-bottom: 5px; min-height: 100%;'>
 <span class="group_widget_link"><a href="<?php echo $vars['url'] . "pg/todo/owned/" . page_owner_entity()->username; ?>"><?php echo elgg_echo('link:view:all')?></a></span>
 <h3><?php echo elgg_echo('todo:label:upcomingtodos') ?></h3>
 <?php	
