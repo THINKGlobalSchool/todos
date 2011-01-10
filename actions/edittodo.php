@@ -23,6 +23,12 @@
 	$access_level		= get_input('access_level');
 	$container_guid 	= get_input('container_guid');
 	$status				= get_input('status');
+	
+
+
+	
+	// Sticky form
+	elgg_make_sticky_form('todo_post_forms');
 			
 	$todo = get_entity($guid);
 	
@@ -37,21 +43,9 @@
 		
 		// Get previous status for notifications
 		$previous_status = $todo->status;
-		
-		// Cache to session
-		$_SESSION['user']->is_todo_cached = true;
-		$_SESSION['user']->todo_title = $title;
-		$_SESSION['user']->todo_description = $description;
-		$_SESSION['user']->todo_tags = $tags;
-		$_SESSION['user']->todo_due_date = $due_date;
-		$_SESSION['user']->todo_assignees = $assignees;
-		$_SESSION['user']->todo_return_required = $return_required;
-		$_SESSION['user']->todo_rubric_select = $rubric_select;
-		$_SESSION['user']->todo_rubric_guid = $rubric_guid;
-		$_SESSION['user']->todo_access_level = $access_level;
 
 		// Check values
-		if (empty($title) || empty($due_date)) {
+		if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
 			register_error(elgg_echo('todo:error:requiredfields'));
 			forward($_SERVER['HTTP_REFERER']);
 		}
@@ -108,7 +102,7 @@
 		}
 		
 		// Clear cached info
-		clear_todo_cached_data();
+		elgg_clear_sticky_form('todo_post_forms');
 
 		// Save successful, forward to index
 		system_message(elgg_echo('todo:success:edit'));

@@ -521,24 +521,5 @@
 		);
 						
 		return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
-	}
-	
-	/**
-	 * Clears any cached data
-	 * @return bool 
-	 */	
-	function clear_todo_cached_data() {
-		remove_metadata($_SESSION['user']->guid,'is_todo_cached');
-		remove_metadata($_SESSION['user']->guid,'todo_title');
-		remove_metadata($_SESSION['user']->guid,'todo_description');
-		remove_metadata($_SESSION['user']->guid,'todo_tags');
-		remove_metadata($_SESSION['user']->guid,'todo_due_date');
-		remove_metadata($_SESSION['user']->guid,'todo_assignees');
-		remove_metadata($_SESSION['user']->guid,'todo_return_required');
-		remove_metadata($_SESSION['user']->guid,'todo_rubric_select');
-		remove_metadata($_SESSION['user']->guid,'todo_rubric_guid');
-		remove_metadata($_SESSION['user']->guid,'todo_access_level');
-		return true;
-	}
-	
+	}	
 ?>
