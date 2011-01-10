@@ -104,20 +104,22 @@ EOT;
 	
 	$container_hidden = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => $container_guid));
 	
-	
-	// Load cached data (result of an error on create/edit action)
-	if ($vars['user']->is_todo_cached) {
-		$title 				= $vars['user']->todo_title;
-		$description 		= $vars['user']->todo_description;
-		$tags 				= $vars['user']->todo_tags;
-		$due_date 			= $vars['user']->todo_due_date;
-		$assignees 			= $vars['user']->todo_assignees;
-		$return_required 	= $vars['user']->todo_return_required;
-		$is_rubric_selected	= $vars['user']->todo_rubric_select;
-		$rubric_guid 		= $vars['user']->todo_rubric_guid;
-		$access_id 			= $vars['user']->todo_access_level;
+
+	// Load sticky form values
+	if (elgg_is_sticky_form('todo_post_forms')) {
+		$title = elgg_get_sticky_value('todo_post_forms', 'title');
+		$description = elgg_get_sticky_value('todo_post_forms', 'description');
+		$tags = elgg_get_sticky_value('todo_post_forms', 'tags');
+		$due_date = elgg_get_sticky_value('todo_post_forms', 'due_date');		
+		$assignees = elgg_get_sticky_value('todo_post_forms', 'assignee_guids');
+		$return_required = elgg_get_sticky_value('todo_post_forms', 'return_required');
+		$is_ribric_selecred = elgg_get_sticky_value('todo_post_forms', 'rubric_select');
+		$rubric_guid = elgg_get_sticky_value('todo_post_forms', 'rubric_guid');
+		$access_id = elgg_get_sticky_value('todo_post_forms', 'access_level');
+		$status = elgg_get_sticky_value('todo_post_forms', 'status');
 	}
 	
+
 	
 	// Labels/Input
 	$title_label = elgg_echo('title');
@@ -261,5 +263,5 @@ EOT;
 	
 EOT;
 
-	echo $script . elgg_view('input/form', array('action' => "{$vars['url']}action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms'));
+	echo $script . elgg_view('input/form', array('action' => "{$vars['url']}action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms', 'internalname' => 'todo_post_forms'));
 ?>

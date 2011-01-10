@@ -151,8 +151,6 @@
 		
 		switch ($page[0]) {
 			case 'createtodo':
-				// Just in case there is still cached data from an error
-				clear_todo_cached_data();
 				include $CONFIG->pluginspath . 'todo/pages/createtodo.php';
 				break;
 			case 'viewtodo':
