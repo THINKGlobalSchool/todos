@@ -201,7 +201,7 @@
 		function sendSubmission() {
 			data = $("form#todo_submission_form").serializeArray();
 			$.ajax({
-				url: "$submission_url",
+				url: stripJunk("$submission_url"),
 				type: "POST",
 				data: data,
 				cache: false, 
