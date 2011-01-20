@@ -56,6 +56,7 @@ $english = array(
 	'todo:label:selectgroup' => 'Select Group',
 	'todo:label:viewrubric' => 'View Rubric',
 	'todo:label:assignees' => 'Assignees',
+	'todo:label:currentassignees' => 'Current Assignees',
 	'todo:label:status' => 'Status',
 	'todo:label:completetodo' => 'Complete This To Do',
 	'todo:label:flagcomplete' => 'Mark as Complete',

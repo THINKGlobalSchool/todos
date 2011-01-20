@@ -13,10 +13,10 @@
 	 */
 
 	echo <<<EOT
-		<div class="todo_listing">
-			<div class="todo_listing_info">
+		<div class="todo_assignee">
+			<div class="todo_assingee_info">
+			<a href='#' onclick="javascript:unassignAssignee({$vars['entity']->guid});return false;">[Remove]</a>
 			{$vars['entity']->name}
-			<a href='#' onclick="javascript:unassignAssignee({$vars['entity']->guid});return false;">[x]</a>
 			</div>
 		</div>
 EOT;
