@@ -5,14 +5,13 @@
 	 */
 ?>
 	#ui-datepicker-div {
-		background: white;
+		background: #ffffff;
 		border: 2px solid black;
 		padding: 10px;
 		display: none;
 	}
 	
-	/* Overlays */
-	.ui-widget-overlay { background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: .30;filter:Alpha(Opacity=30); }
+
 	.ui-widget-shadow { margin: -8px 0 0 -8px; padding: 8px; background: #aaaaaa 50% 50% repeat-x; opacity: .30;filter:Alpha(Opacity=30); -moz-border-radius: 8px; -webkit-border-radius: 8px; }/* Datepicker
 	----------------------------------*/
 	.ui-datepicker { width: 17em; padding: .2em .2em 0; }
