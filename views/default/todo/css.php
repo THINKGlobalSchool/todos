@@ -293,7 +293,7 @@ span.unviewed {
 	position: fixed;
 	top: 0px;
 	left: 0px;
-    background-color: #000000;
+    background-color: #000000 !important;
     opacity: 0.5;
 	-moz-opacity: 0.5; 
 	z-index: 1001 !important;
