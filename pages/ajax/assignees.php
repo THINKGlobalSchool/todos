@@ -16,11 +16,13 @@
 		
 	$assignees = get_todo_assignees($guid);	
 		
-	foreach ($assignees as $assignee) {
-		$member_list .= elgg_view('todo/assignee', array('entity' => $assignee));
-	}
-	$member_list .= "<div style='clear: both;'></div>";
-	
+	if ($assignees) {
+		foreach ($assignees as $assignee) {
+			$member_list .= elgg_view('todo/assignee', array('entity' => $assignee));
+		}
+		$assignees_title = "<label>" . elgg_echo('todo:label:currentassignees') . "</label>";
+		$member_list .= "<div style='clear: both;'></div>";
+	} 
 	
 	$unassign_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/unassign.php');
 
@@ -44,6 +46,7 @@
 			}
 			
 		</script>
+		$assignees_title
 		$member_list
 EOT;
 
