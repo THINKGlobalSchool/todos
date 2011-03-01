@@ -1,3 +1,2 @@
 <?php
-	echo $vars['url'] . "mod/todo/images/todo.jpg";
-?>
+echo $vars['url'] . "mod/todo/images/todo.jpg";
