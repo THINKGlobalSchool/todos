@@ -413,4 +413,3 @@ div.todoexists {
 .todo-sidebar .entity_listing_info {
 	width: auto;
 }
-}
