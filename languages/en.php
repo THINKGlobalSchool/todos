@@ -67,6 +67,7 @@ $english = array(
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:complete' => 'Complete',
+	'todo:label:accept' => 'Accept',
 	'todo:label:accepted' => 'Accepted', 
 	'todo:label:incomplete' => 'Upcoming',
 	'todo:label:statusincomplete' => 'Incomplete',
@@ -89,6 +90,8 @@ $english = array(
 	'todo:label:upcomingtodos' => 'Upcoming To Do\'s',
 	'todo:label:savenew' => 'Save and New',
 	'todo:label:submissiontitleprefix' => 'Submission for: %s',
+	'todo:label:signup' => 'Sign Up',
+	'todo:label:signupconfirm' => 'Do you want to assign yourself this To Do?',
 	
 	
 	// Calendar labels
@@ -197,6 +200,7 @@ You cannot reply to this email.",
 	'todo:success:accepted' => 'To Do has been accepted',
 	'todo:success:reminder' => 'User(s) reminded',
 	'todo:success:flagcomplete' => 'To Do marked as complete',
+	'todo:success:signup' => 'Successfully signed up for To Do',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
@@ -207,6 +211,7 @@ You cannot reply to this email.",
 	'todo:error:accepted' => 'There was an error accepting the To Do',
 	'todo:error:reminder' => 'There was an error reminding user(s)',
 	'todo:error:flagcomplete' => 'There was an error marking the to do as complete',
+	'todo:error:signup' => 'There was an error signing up for the To Do',
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',
@@ -217,5 +222,3 @@ You cannot reply to this email.",
 );
 
 add_translation('en',$english);
-
-?>
