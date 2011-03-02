@@ -362,6 +362,8 @@ function submission_create_event_listener($event, $object_type, $object) {
 			$object->submission_acl = $submission_acl;
 			$context = get_context();
 			set_context('submission_acl');
+			add_user_to_access_collection($todo->owner_guid, $submission_acl);
+			add_user_to_access_collection(get_loggedin_userid(), $submission_acl);
 			set_context($context);
 			$object->access_id = $submission_acl;
 			$object->save();
