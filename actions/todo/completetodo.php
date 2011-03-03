@@ -25,6 +25,9 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 			user_accept_todo($assignee->getGUID(), $todo_guid);
 		}
 		
+		// This will check and set the complete flag on the todo
+		update_todo_complete($todo_guid);
+		
 		// Success message
 		system_message(elgg_echo("todo:success:flagcomplete"));
 		forward($_SERVER['HTTP_REFERER']);
