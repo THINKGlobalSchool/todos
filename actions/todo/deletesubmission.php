@@ -23,6 +23,9 @@ if (elgg_instanceof($submission, 'object', 'todosubmission') && $candelete) {
 	// Delete it!
 	$rowsaffected = $submission->delete();
 	
+	// This will check and set the complete flag on the todo
+	update_todo_complete($todo_guid);
+	
 	if ($rowsaffected > 0) {
 		// Success message
 		system_message(elgg_echo("todo:success:submissiondelete"));

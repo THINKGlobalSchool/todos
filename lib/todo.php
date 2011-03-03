@@ -365,6 +365,27 @@ function have_assignees_completed_todo($todo_guid) {
 }
 
 /**
+ * Checks to see if the todo is complete and sets the 
+ * complete metadata accordingly
+ * @param int $todo_guid
+ * @return bool
+ */
+function update_todo_complete($todo_guid) {
+	$todo = get_entity($todo_guid);
+	if ($todo) { // Make sure we have a legit entity
+		if (have_assignees_completed_todo($todo_guid)) {
+			$todo->complete = true;
+		} else {
+			$todo->complete = false;
+		}
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
+/**
  * Return todos with a due date before givin date
  *
  * @param array $todos
