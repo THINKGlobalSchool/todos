@@ -1,6 +1,6 @@
 <?php
 /**
- * Todo remove assignee from todo relationship
+ * Todo manually assign a todo to a user
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2

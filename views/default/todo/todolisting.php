@@ -35,6 +35,7 @@ $strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
 $strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> $group_name");
 $strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
 		
+			
 if ($is_assignee) {
 	if (has_user_accepted_todo($user->getGUID(), $vars['entity']->getGUID())) {
 		$controls .= "<span class='accepted'>✓ Accepted</span>";
@@ -67,10 +68,11 @@ if ($canedit) {
 		$todo_status = elgg_echo('todo:status:published');
 	}
 
-	$status_content = elgg_echo('todo:label:status') . ': ' . $todo_status;
+	$status_content .= elgg_echo('todo:label:status') . ': ' . $todo_status;
 		
 }
 
+$controls .= elgg_view('todo/todo_duelabel', $vars);	
 
 
 $info = <<<EOT

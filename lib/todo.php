@@ -74,6 +74,11 @@ function assign_user_to_todo($user_guid, $todo_guid) {
 		$todo = get_entity($todo_guid);
 		$owner = get_entity($todo->container_guid);
 		if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
+			if ($todo->manual_complete) {
+				// Add a relationship stating that the user has completed the todo if this todo is marked as manually complete
+				// This shouldn't really happen, but it could I suppose
+				add_entity_relationship($user_guid, COMPLETED_RELATIONSHIP, $todo_guid);
+			}
 			return trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
 		} else {
 			return false;
@@ -371,6 +376,8 @@ function have_assignees_completed_todo($todo_guid) {
  * @return bool
  */
 function update_todo_complete($todo_guid) {
+	$ia = elgg_get_ignore_access();
+	elgg_set_ignore_access(true);
 	$todo = get_entity($todo_guid);
 	if ($todo) { // Make sure we have a legit entity
 		if (have_assignees_completed_todo($todo_guid)) {
@@ -378,8 +385,10 @@ function update_todo_complete($todo_guid) {
 		} else {
 			$todo->complete = false;
 		}
+		elgg_set_ignore_access($ia);
 		return true;
 	} else {
+		elgg_set_ignore_access($ia);
 		return false;
 	}
 }

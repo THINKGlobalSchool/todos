@@ -23,6 +23,9 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 		$assignees = get_todo_assignees($todo_guid);
 		foreach ($assignees as $assignee) {
 			user_accept_todo($assignee->getGUID(), $todo_guid);
+			
+			// Add the submission complete relationship stating that the user has completed the todo
+			add_entity_relationship($assignee->getGUID(), COMPLETED_RELATIONSHIP, $todo_guid);
 		}
 		
 		// This will check and set the complete flag on the todo
