@@ -20,6 +20,10 @@ $candelete = $submission->canEdit();
 
 if (elgg_instanceof($submission, 'object', 'todosubmission') && $candelete) {
 	
+	
+	// Remove the submission complete relationship stating that the user has completed the todo
+	remove_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submission->todo_guid);
+	
 	// Delete it!
 	$rowsaffected = $submission->delete();
 	

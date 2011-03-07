@@ -48,48 +48,46 @@ $content .= elgg_view('navigation/breadcrumbs');
 $content .= get_todo_content_header('all');
 
 $content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/everyone'));
-	
-// Get entities
-$all_entities = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo', 'limit' => 9999, 'offset' => 0, 'full_view' => FALSE));
 
 // Show based on status
 if ($status == 'complete') {
-	foreach ($all_entities as $entity) {
-		if (have_assignees_completed_todo($entity->getGUID())) {
-			$entities[] = $entity;
-		}
-	}
-	sort_todos_by_due_date($entities);
-	
-	$list .= elgg_view_entity_list(array_slice($entities, $offset, $limit), count($entities), $offset, $limit, false, false, true);
-	
+	$list .= elgg_list_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'metadata_name_value_pairs' => array(array(
+												'name' => 'complete',
+												'value' => 1, 
+												'operand' => '='),
+											array(
+												'name' => 'status',
+												'value' => TODO_STATUS_PUBLISHED,
+												'operand' => '=',
+											)),
+		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int'),
+		'full_view' => FALSE,
+	));	
 } else if ($status == 'incomplete') {
-	foreach ($all_entities as $entity) {
-		if (!have_assignees_completed_todo($entity->getGUID())) {
-			$entities[] = $entity;
-		}
-	}
+	set_input('display_label', true);
+	// Creating some magic SQL to grab todos without complete metadata
+	$test_id = get_metastring_id('complete');
+	$one_id = get_metastring_id(1);
+	$wheres = array();
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $test_id
+				AND md.value_id = $one_id)";
+
 	
-	$today = strtotime(date("F j, Y"));
-	$next_week = strtotime("+7 days", $today);
-	
-	if ($past_entities = get_todos_due_before($entities, $today)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:pastdue"), 'priority' => TODO_PRIORITY_HIGH));
-		sort_todos_by_due_date($past_entities);
-		$list .= elgg_view_entity_list($past_entities, count($past_entities), 0, 9999, false, false, false);
-	}
-			
-	if ($nextweek_entities = get_todos_due_between($entities, $today, $next_week)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:nextweek"), 'priority' => TODO_PRIORITY_MEDIUM));
-		sort_todos_by_due_date($nextweek_entities);
-		$list .= elgg_view_entity_list($nextweek_entities, count($nextweek_entities), 0, 9999, false, false, false);
-	}
-	
-	if ($future_entities = get_todos_due_after($entities, $next_week)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:future"), 'priority' => TODO_PRIORITY_LOW));
-		sort_todos_by_due_date($future_entities);
-		$list .= elgg_view_entity_list($future_entities, count($future_entities), 0, 9999, false, false, false);
-	}
+	$list = elgg_list_entities_from_metadata(array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'metadata_name' => 'status',
+		'metadata_value' => TODO_STATUS_PUBLISHED,
+		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int'),
+		'full_view' => FALSE,
+		'wheres' => $wheres,
+	));	
 }
 
 if ($list) {

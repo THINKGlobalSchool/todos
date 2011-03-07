@@ -40,6 +40,9 @@ function todo_init() {
 	// Relationship for submissions 
 	define('SUBMISSION_RELATIONSHIP', 'submittedto');
 	
+	// Relationship for complete todos
+	define('COMPLETED_RELATIONSHIP', 'completedtodo');
+	
 	// View Modes
 	define('TODO_MODE_ASSIGNER', 0);
 	define('TODO_MODE_ASSIGNEE', 1);
@@ -161,7 +164,26 @@ function todo_page_handler($page) {
 	elgg_push_breadcrumb(elgg_echo('todo:menu:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
 	
 	switch ($page[0]) {
-		case 'forceupdate': // Force an update
+		case 'updateusercomplete': // Force a user todo complete update
+			admin_gatekeeper();
+			
+			$entities = elgg_get_entities_from_metadata(array(
+				'owner_guid' => ELGG_ENTITIES_ANY_VALUE,
+				'subtype' => 'todosubmission',
+				'type' => 'object',
+				'limit' => 0,
+				'order_by_metadata' => array('name' => 'todo_guid', 'as' => 'int'),
+			));
+		
+			
+			foreach($entities as $entity) {
+				echo $entity->owner_guid . " - "  . $entity->todo_guid . "</br>"; 
+				add_entity_relationship($entity->owner_guid, COMPLETED_RELATIONSHIP, $entity->todo_guid);
+			}
+			
+			
+			break;
+		case 'updatetodocomplete': // Force a todo complete update
 			admin_gatekeeper(); 
 			
 			$entities = elgg_get_entities(array(
@@ -176,8 +198,6 @@ function todo_page_handler($page) {
 				var_dump($entity->complete);
 			}
 			break;
-		
-		
 		case 'createtodo':
 			include $CONFIG->pluginspath . 'todo/pages/createtodo.php';
 			break;
