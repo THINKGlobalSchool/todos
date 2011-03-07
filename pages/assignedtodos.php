@@ -96,7 +96,7 @@ $list = elgg_list_entities_from_relationship(array(
 	'inverse_relationship' => FALSE,
 	'metadata_name' => 'status',
 	'metadata_value' => TODO_STATUS_PUBLISHED,
-	'order_by_metadata' => array('name' => 'due_date', 'as' => 'int'),
+	'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 	'full_view' => FALSE,
 	'wheres' => $wheres,
 ));
