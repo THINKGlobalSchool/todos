@@ -63,7 +63,7 @@ if ($status == 'complete') {
 												'value' => TODO_STATUS_PUBLISHED,
 												'operand' => '=',
 											)),
-		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int'),
+		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 		'full_view' => FALSE,
 	));	
 } else if ($status == 'incomplete') {
@@ -84,7 +84,7 @@ if ($status == 'complete') {
 		'subtype' => 'todo',
 		'metadata_name' => 'status',
 		'metadata_value' => TODO_STATUS_PUBLISHED,
-		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int'),
+		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 		'full_view' => FALSE,
 		'wheres' => $wheres,
 	));	
