@@ -53,16 +53,19 @@ $content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/
 if ($status == 'complete') {
 	$list .= elgg_list_entities_from_metadata(array(
 		'type' => 'object',
-		'subtype' => 'todo',
+		'subtype' => 'todo',	
+		'metadata_name' => 'status',				// Always check for status
+		'metadata_value' => TODO_STATUS_PUBLISHED,	
 		'metadata_name_value_pairs' => array(array(
 												'name' => 'complete',
 												'value' => 1, 
 												'operand' => '='),
 											array(
-												'name' => 'status',
-												'value' => TODO_STATUS_PUBLISHED,
+												'name' => 'manual_complete',
+												'value' => 1,
 												'operand' => '=',
 											)),
+		'metadata_name_value_pairs_operator' => 'OR',
 		'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 		'full_view' => FALSE,
 	));	
