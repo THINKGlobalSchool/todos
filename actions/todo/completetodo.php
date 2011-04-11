@@ -20,6 +20,7 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 	$todo->manual_complete = true;
 	if ($todo->save()) {
 		// Grab the todo's assignees and mark each as having accepted the todo
+		/*
 		$assignees = get_todo_assignees($todo_guid);
 		foreach ($assignees as $assignee) {
 			user_accept_todo($assignee->getGUID(), $todo_guid);
@@ -30,6 +31,7 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 		
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo_guid);
+		*/
 		
 		// Success message
 		system_message(elgg_echo("todo:success:flagcomplete"));
