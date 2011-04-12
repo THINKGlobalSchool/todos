@@ -83,40 +83,52 @@ if ($is_assignee) {
 		}	
 	} else {
 		$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
-		// If we need to return something for this todo, the complete link will point to the submission form
-		if ($vars['entity']->return_required) {
-			$controls .= "&nbsp;&nbsp;&nbsp;<span ><a class='action_button' id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+		// Check if the todo has been manually completed
+		if ($vars['entity']->manual_complete) {
+			$controls .= "<span class='todo-meta-controls'><b>Closed</b></span>";
 		} else {
-			// No return required, link to createsubmissionaction and create blank submission
-			$controls .= "&nbsp;&nbsp;&nbsp;<span><a class='action_button' id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+			// If we need to return something for this todo, the complete link will point to the submission form
+			if ($vars['entity']->return_required) {
+				$controls .= "<span class='todo-meta-controls'><a class='action_button' id='create_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+			} else {
+				// No return required, link to createsubmissionaction and create blank submission
+				$controls .= "<span class='todo-meta-controls'><a class='action_button' id='create_blank_submission' href='#'>" . elgg_echo("todo:label:completetodo") . "</a></span>";
+			}
 		}
 	}
 	
 } else {
-	$controls .= "<span class='unviewed'>";
-	$controls .= elgg_view("output/confirmlink", 
-									array(
-									'href' => $vars['url'] . "action/todo/assign?todo_guid=" . $vars['entity']->getGUID(),
-									'text' => elgg_echo('todo:label:signup'),
-									'confirm' => elgg_echo('todo:label:signupconfirm'),
-									'class' => 'action_button'
-								)) . "</span>";
+	if ($vars['entity']->manual_complete != true) {
+		$controls .= "<span class='unviewed'>";
+		$controls .= elgg_view("output/confirmlink", 
+										array(
+										'href' => $vars['url'] . "action/todo/assign?todo_guid=" . $vars['entity']->getGUID(),
+										'text' => elgg_echo('todo:label:signup'),
+										'confirm' => elgg_echo('todo:label:signupconfirm'),
+										'class' => 'action_button'
+									)) . "</span>";
+	}
+
 }
 
 // Owner only Content
 if ($is_owner) {
 		$status_content .= elgg_view('todo/todostatus', $vars);
-		$controls .= "&nbsp;&nbsp;&nbsp;<span><a class='action_button' href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+		$controls .= "<span class='todo-meta-controls'><a class='action_button' href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 		
-		$controls .= "&nbsp;&nbsp;&nbsp;" . elgg_view("output/confirmlink", 
-								array(
-									'href' => $vars['url'] . "action/todo/completetodo?todo_guid=" . $vars['entity']->getGUID(),
-									'text' => elgg_echo('todo:label:flagcomplete'),
-									'confirm' => elgg_echo('todo:label:flagcompleteconfirm'),
-									'class' => 'action_button'
-								)) . "</span>";
-								
-		$controls .= "&nbsp;&nbsp;&nbsp;<span class='delete_button'>" . elgg_view("output/confirmlink", 
+		if ($vars['entity']->manual_complete) {
+			$controls .= "<span class='todo-meta-controls'><b>Closed</b></span>";
+		} else {
+			$controls .= "<span class='todo-meta-controls'>" . elgg_view("output/confirmlink", 
+									array(
+										'href' => $vars['url'] . "action/todo/completetodo?todo_guid=" . $vars['entity']->getGUID(),
+										'text' => elgg_echo('todo:label:flagcomplete'),
+										'confirm' => elgg_echo('todo:label:flagcompleteconfirm'),
+										'class' => 'action_button'
+									)) . "</span>";
+		}
+							
+		$controls .= "<span class='delete_button todo-meta-controls'>" . elgg_view("output/confirmlink", 
 								array(
 									'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
 									'text' => elgg_echo('delete'),

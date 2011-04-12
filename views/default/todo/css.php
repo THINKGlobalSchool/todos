@@ -196,6 +196,10 @@
 	font-weight: bold;
 }
 
+span.todo-meta-controls {
+	margin-left: 20px;
+}
+
 span.accepted {
 	font-weight: bold !important;
 	color: green !important;
