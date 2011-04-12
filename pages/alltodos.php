@@ -72,13 +72,20 @@ if ($status == 'complete') {
 } else if ($status == 'incomplete') {
 	set_input('display_label', true);
 	// Creating some magic SQL to grab todos without complete metadata
-	$test_id = get_metastring_id('complete');
+	$complete = get_metastring_id('complete');
+	$manual_complete = get_metastring_id('manual_complete');
 	$one_id = get_metastring_id(1);
 	$wheres = array();
 	$wheres[] = "NOT EXISTS (
 			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
 			WHERE md.entity_guid = e.guid
-				AND md.name_id = $test_id
+				AND md.name_id = $complete
+				AND md.value_id = $one_id)";
+				
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $manual_complete
 				AND md.value_id = $one_id)";
 
 	
