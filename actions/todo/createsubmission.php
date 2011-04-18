@@ -58,6 +58,9 @@ if (!$submission->save()) {
 // This states that: 'Submission' is 'submitted' to 'Todo' 
 $success = add_entity_relationship($submission->getGUID(), SUBMISSION_RELATIONSHIP, $todo_guid);
 
+// Add a relationship stating that the user has completed the todo
+add_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submission->todo_guid);
+
 // Accept the todo when completing (if not already accepted)
 user_accept_todo($user->getGUID(), $todo_guid);
 

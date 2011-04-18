@@ -40,6 +40,9 @@ function todo_init() {
 	// Relationship for submissions 
 	define('SUBMISSION_RELATIONSHIP', 'submittedto');
 	
+	// Relationship for complete todos
+	define('COMPLETED_RELATIONSHIP', 'completedtodo');
+	
 	// View Modes
 	define('TODO_MODE_ASSIGNER', 0);
 	define('TODO_MODE_ASSIGNEE', 1);
@@ -105,6 +108,13 @@ function todo_init() {
 	// Register a handler for created submissions 
 	register_elgg_event_handler('create', 'object', 'submission_create_event_listener');
 	
+	// Register a handler for deleted submissions
+	register_elgg_event_handler('delete', 'object', 'submission_delete_event_listener');
+	
+	// Register handlers for submission relationships
+	register_elgg_event_handler('create', SUBMISSION_RELATIONSHIP, 'submission_relationship_event_listener');
+	//register_elgg_event_handler('delete', SUBMISSION_RELATIONSHIP, 'submission_relationship_event_listener');
+	
 	// Register a handler for submission comments so that the todo owner is notified
 	register_elgg_event_handler('annotate', 'all', 'submission_comment_event_listener');
 	
@@ -154,6 +164,40 @@ function todo_page_handler($page) {
 	elgg_push_breadcrumb(elgg_echo('todo:menu:alltodos'), "{$CONFIG->site->url}pg/todo/everyone");	
 	
 	switch ($page[0]) {
+		case 'updateusercomplete': // Force a user todo complete update
+			admin_gatekeeper();
+			
+			$entities = elgg_get_entities_from_metadata(array(
+				'owner_guid' => ELGG_ENTITIES_ANY_VALUE,
+				'subtype' => 'todosubmission',
+				'type' => 'object',
+				'limit' => 0,
+				'order_by_metadata' => array('name' => 'todo_guid', 'as' => 'int'),
+			));
+		
+			
+			foreach($entities as $entity) {
+				echo $entity->owner_guid . " - "  . $entity->todo_guid . "</br>"; 
+				add_entity_relationship($entity->owner_guid, COMPLETED_RELATIONSHIP, $entity->todo_guid);
+			}
+			
+			
+			break;
+		case 'updatetodocomplete': // Force a todo complete update
+			admin_gatekeeper(); 
+			
+			$entities = elgg_get_entities(array(
+				'type' => 'object',
+				'subtype' => 'todo',
+				'limit' => 0
+			));
+			
+			foreach($entities as $entity) {
+				var_dump(have_assignees_completed_todo($entity->getGUID()));
+				update_todo_complete($entity->getGUID());
+				var_dump($entity->complete);
+			}
+			break;
 		case 'createtodo':
 			include $CONFIG->pluginspath . 'todo/pages/createtodo.php';
 			break;
@@ -302,6 +346,9 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 		$user = $object['user'];
 		$acl = $todo->assignee_acl;
 		
+		// This will check and set the complete flag on the todo
+		update_todo_complete($todo->getGUID());
+		
 		$context = get_context();
 		set_context('todo_acl');
 		$result = add_user_to_access_collection($user->getGUID(), $acl);
@@ -319,6 +366,9 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 		$todo = $object['todo'];
 		$user = $object['user'];
 		$acl = $todo->assignee_acl;
+		
+		// This will check and set the complete flag on the todo
+		update_todo_complete($todo->getGUID());
 	
 		$context = get_context();
 		set_context('todo_acl');
@@ -362,15 +412,47 @@ function submission_create_event_listener($event, $object_type, $object) {
 			$object->submission_acl = $submission_acl;
 			$context = get_context();
 			set_context('submission_acl');
+			add_user_to_access_collection($todo->owner_guid, $submission_acl);
+			add_user_to_access_collection(get_loggedin_userid(), $submission_acl);
 			set_context($context);
 			$object->access_id = $submission_acl;
-			$object->save();
+			$object->save();			
 		} else {
 			return false;
 		}
 	}
 	return true;
 }
+
+/**
+ * Submission deleted
+ */
+function submission_delete_event_listener($event, $object_type, $object) {
+	if ($object->getSubtype() == 'todosubmission') {
+		// Get the submissions todo
+		$todo = get_entity($object->todo_guid);
+		
+		// Make sure we nuke the relationship so the remove event fires
+		remove_entity_relationship($object->getGUID(), SUBMISSION_RELATIONSHIP, $todo->getGUID());
+		
+		// Nuke the ACL
+		delete_access_collection($submission_acl);
+		
+	}
+	return true;
+}
+
+/**
+ * Submission relationship created/removed
+ */
+function submission_relationship_event_listener($event, $object_type, $object) {
+	// The todo is 'guid_two'
+	$todo = get_entity($object->guid_two);
+	
+	// This will check and set the complete flag on the todo
+	update_todo_complete($todo->getGUID());
+}
+
 
 /**
  * Return the write access for the current todo submission if the user has write access to it.

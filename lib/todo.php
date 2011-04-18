@@ -295,7 +295,7 @@ function is_todo_assignee($todo_guid, $user_guid) {
  */
 function has_user_submitted($user_guid, $todo_guid) {
 	$todo = get_entity($todo_guid);
-	if ($todo->manual_complete || get_user_submission($user_guid, $todo_guid)) {
+	if (get_user_submission($user_guid, $todo_guid)) {
 				
 		return true;
 	} else {
@@ -348,21 +348,42 @@ function has_user_accepted_todo($user_guid, $todo_guid) {
  */
 function have_assignees_completed_todo($todo_guid) {
 	$todo = get_entity($todo_guid);
-	// Check if the todo has been marked as manually completed
-	if (!$todo->manual_complete) {
-		$assignees = get_todo_assignees($todo_guid);
-		if (count($assignees) == 0) {
-			return false;
+	
+	$assignees = get_todo_assignees($todo_guid);
+	if (count($assignees) == 0) {
+		return false;
+	}
+	$complete = true;
+	foreach ($assignees as $assignee) {
+		$complete &= has_user_submitted($assignee->getGUID(), $todo_guid);
+	}
+	return $complete;
+}
+
+/**
+ * Checks to see if the todo is complete and sets the 
+ * complete metadata accordingly
+ * @param int $todo_guid
+ * @return bool
+ */
+function update_todo_complete($todo_guid) {
+	$ia = elgg_get_ignore_access();
+	elgg_set_ignore_access(true);
+	$todo = get_entity($todo_guid);
+	if ($todo) { // Make sure we have a legit entity
+		if (have_assignees_completed_todo($todo_guid)) {
+			$todo->complete = true;
+		} else {
+			$todo->complete = false;
 		}
-		$complete = true;
-		foreach ($assignees as $assignee) {
-			$complete &= has_user_submitted($assignee->getGUID(), $todo_guid);
-		}
-		return $complete;
-	} else {
+		elgg_set_ignore_access($ia);
 		return true;
+	} else {
+		elgg_set_ignore_access($ia);
+		return false;
 	}
 }
+
 
 /**
  * Return todos with a due date before givin date

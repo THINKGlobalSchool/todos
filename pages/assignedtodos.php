@@ -45,50 +45,62 @@ if ($page_owner->getGUID() != get_loggedin_userid()) {
 	elgg_push_breadcrumb(elgg_echo('todo:title:assignedtodos'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}");
 }
 
-// Get all assigned todos
-$assigned_entities = get_users_todos($page_owner->getGUID());
+global $CONFIG;
+
+$test_id = get_metastring_id('manual_complete');
+$one_id = get_metastring_id(1);
+$wheres = array();
+			
+$user_id = get_loggedin_userid();		
+$relationship = COMPLETED_RELATIONSHIP;
 	
 // Build list based on status
 if ($status == 'complete') {
 	elgg_push_breadcrumb(elgg_echo('todo:label:complete'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}?status=complete");
-	foreach ($assigned_entities as $entity) {
-		if (has_user_submitted($page_owner->getGUID(), $entity->getGUID())) {
-			$entities[] = $entity;
-		}
-	}
-	sort_todos_by_due_date($entities);
-	
-	$list .= elgg_view_entity_list(array_slice($entities, $offset, $limit), count($entities), $offset, $limit, false, false, true);
+				
+	$wheres[] = "(EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+			WHERE r2.guid_one = '$user_id'
+			AND r2.relationship = '$relationship'
+			AND r2.guid_two = e.guid) OR 
+				EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $test_id
+				AND md.value_id = $one_id))";
+
 	
 } else if ($status == 'incomplete') {	
+	set_input('display_label', true);
 	elgg_push_breadcrumb(elgg_echo('todo:label:incomplete'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}?status=incomplete");	
-	foreach ($assigned_entities as $entity) {
-		if (!has_user_submitted($page_owner->getGUID(), $entity->getGUID())) {
-			$entities[] = $entity;
-		}
-	}
 	
-	$today = strtotime(date("F j, Y"));
-	$next_week = strtotime("+7 days", $today);
-	
-	if ($past_entities = get_todos_due_before($entities, $today)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:pastdue"), 'priority' => TODO_PRIORITY_HIGH));
-		sort_todos_by_due_date($past_entities);
-		$list .= elgg_view_entity_list($past_entities, count($past_entities), 0, 9999, false, false, false);
-	}
-			
-	if ($nextweek_entities = get_todos_due_between($entities, $today, $next_week)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:nextweek"), 'priority' => TODO_PRIORITY_MEDIUM));
-		sort_todos_by_due_date($nextweek_entities);
-		$list .= elgg_view_entity_list($nextweek_entities, count($nextweek_entities), 0, 9999, false, false, false);
-	}
-	
-	if ($future_entities = get_todos_due_after($entities, $next_week)) {
-		$list .= elgg_view('todo/todoheader', array('value' => elgg_echo("todo:label:future"), 'priority' => TODO_PRIORITY_LOW));
-		sort_todos_by_due_date($future_entities);
-		$list .= elgg_view_entity_list($future_entities, count($future_entities), 0, 9999, false, false, false);
-	}
+	// Non existant 'manual complete'
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $test_id
+				AND md.value_id = $one_id)";
+						
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+			WHERE r2.guid_one = '$user_id'
+			AND r2.relationship = '$relationship'
+			AND r2.guid_two = e.guid)";
 }
+
+$list = elgg_list_entities_from_relationship(array(
+	'type' => 'object',
+	'subtype' => 'todo',
+	'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+	'relationship_guid' => get_loggedin_userid(), 
+	'inverse_relationship' => FALSE,
+	'metadata_name' => 'status',
+	'metadata_value' => TODO_STATUS_PUBLISHED,
+	'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+	'full_view' => FALSE,
+	'wheres' => $wheres,
+));
+
 
 // Start building content
 $content .= elgg_view('navigation/breadcrumbs');
