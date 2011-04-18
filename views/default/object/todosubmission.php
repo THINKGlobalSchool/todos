@@ -18,7 +18,7 @@ if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject) {
 	$todo_owner = get_entity($todo->owner_guid);
 		
 	// Hacky way to check security on todo submissions
-	if (get_loggedin_user() == $todo_owner || get_loggedin_user() == get_entity($vars['entity']->owner_guid) || isadminloggedin()) {
+	if (elgg_get_logged_in_user_entity() == $todo_owner || elgg_get_logged_in_user_entity() == get_entity($vars['entity']->owner_guid) || elgg_is_admin_logged_in()) {
 		$valid = true;
 	}
 }
@@ -63,8 +63,8 @@ if ($valid) {
 	
 	// Content
 	$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
-	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> ";
-	$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
+	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}todo/{$owner->username}'>{$owner->name}</a> ";
+	$strapline .= sprintf(elgg_echo("comments")) . " (" . $vars['entity']->countComments() . ")";
 	
 	if ($canedit) {
 			$controls .= elgg_view("output/confirmlink", 
@@ -76,7 +76,7 @@ if ($valid) {
 									
 	}
 	
-	$info = <<<EOT
+	$info = <<<HTML
 				<div class='todo margin_top' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px; padding-bottom: 10px;'>
 					<div class='strapline'>
 						<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
@@ -103,7 +103,7 @@ if ($valid) {
 						$moreinfo_content
 					</div>
 				</div>
-EOT;
+HTML;
 	echo $info;
 	
 	

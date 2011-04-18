@@ -10,13 +10,11 @@
  * 
  */
 
-global $CONFIG;
-
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 $hash = generate_todo_user_hash($user);
 
 echo "<label>" . elgg_echo('todo:label:calendarurl') . ": </label><br />";
 	
 ?>
-<input type='text' size='100' style='font-size: 12px;' readonly=readonly name='params[calurl]' value="<?php echo $CONFIG->wwwroot . "pg/todo/calendar/" . $user->username . "?t=" . $hash . '&bogo=' . time(); ?>" />
+<input type='text' size='100' style='font-size: 12px;' readonly=readonly name='params[calurl]' value="<?php echo elgg_get_site_url() . "todo/calendar/" . $user->username . "?t=" . $hash . '&bogo=' . time(); ?>" />
 <br />

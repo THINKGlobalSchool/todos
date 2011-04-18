@@ -39,5 +39,5 @@ if (elgg_instanceof($submission, 'object', 'todosubmission') && $candelete) {
 	}
 	
 	// Forward
-	forward("pg/todo/viewtodo/$todo_guid");
+	forward("todo/viewtodo/$todo_guid");
 }

@@ -71,9 +71,9 @@ if (isset($vars['entity'])) {
 	
 	$ajax_spinner = '<div id="submission_ajax_spinner"><img src="' . $vars['url'] . '_graphics/ajax_loader.gif" /></div>';
 
-	$file_submit_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/todo/upload.php');
+	$file_submit_url = elgg_add_action_tokens_to_url(elgg_get_site_url() . 'mod/todo/actions/todo/upload.php');
 	
-	$script = <<<EOT
+	$script = <<<HTML
 		<script type="text/javascript">
 		
 		var file_submit_url = "$file_submit_url";
@@ -148,10 +148,10 @@ if (isset($vars['entity'])) {
 			$(div_name).show();
 		}
 		</script>
-EOT;
+HTML;
 
 	// Build Form Body
-	$form_body = <<<EOT
+	$form_body = <<<HTML
 
 	<div class='todo' style='padding: 10px;'>
 		<div>
@@ -189,7 +189,7 @@ EOT;
 		</div>
 	</div>
 
-EOT;
+HTML;
 	echo $script . elgg_view('input/form', array('body' => $form_body, 'internalid' => 'todo_submission_form'));
 	
 }

@@ -22,9 +22,9 @@ if ($todo = get_entity($todo_guid)) {
 	$container = $todo->container_guid;
 
 	if ($container) {
-		set_page_owner($container);
+		elgg_set_page_owner_guid($container);
 	} else {
-		set_page_owner($pages->owner_guid);
+		elgg_set_page_owner_guid($pages->owner_guid);
 	}
 
 	$title = $todo->title;	

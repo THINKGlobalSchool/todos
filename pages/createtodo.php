@@ -19,13 +19,13 @@ gatekeeper();
 // if username or owner_guid was not set as input variable, we need to set page owner
 // Get the current page's owner
 if ($container = (int) get_input('container_guid')) {
-	set_page_owner($container);
+	elgg_set_page_owner_guid($container);
 }
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
-	$page_owner_guid = get_loggedin_userid();
+	$page_owner_guid = elgg_get_logged_in_user_guid();
 	if ($page_owner_guid)
-		set_page_owner($page_owner_guid);
+		elgg_set_page_owner_guid($page_owner_guid);
 }	
 
 $title = elgg_echo('todo:title:create');

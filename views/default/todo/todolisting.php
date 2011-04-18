@@ -13,7 +13,7 @@
 $container = get_entity($vars['entity']->container_guid);
 
 // Determine how we are going to view this todo
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 $is_owner = $vars['entity']->canEdit();
 $is_assignee = is_todo_assignee($vars['entity']->getGUID(), $user->getGUID());
 
@@ -32,8 +32,8 @@ $tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 $group_name = $container instanceof ElggGroup ? " (<a href='{$container->getURL()}'>$container->name</a>)" : '';			
 
 $strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a> $group_name");
-$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
+$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}todo/{$owner->username}'>{$owner->name}</a> $group_name");
+$strapline .= sprintf(elgg_echo("comments")) . " (" . $vars['entity']->countComments() . ")";
 		
 			
 if ($is_assignee) {
@@ -53,7 +53,7 @@ if ($is_assignee) {
 }	
 	
 if ($canedit) {
-	$controls .= '<span class="entity_edit">' . "<a href={$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a></span>";
+	$controls .= '<span class="entity_edit">' . "<a href={$vars['url']}todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a></span>";
 	
 	$controls .= '<span class="delete_button">' . elgg_view("output/confirmlink", 
 								array(
@@ -75,7 +75,7 @@ if ($canedit) {
 $controls .= elgg_view('todo/todo_duelabel', $vars);	
 
 
-$info = <<<EOT
+$info = <<<HTML
 	<div id='todo' class='entity_listing'>
 		<div class='todo_icon'>$icon</div>
 		<div class="entity_metadata">$status_content $controls</div>
@@ -86,6 +86,6 @@ $info = <<<EOT
 		</div>
 		<div style='clear: both;'></div>
 	</div>
-EOT;
+HTML;
 
 echo $info;

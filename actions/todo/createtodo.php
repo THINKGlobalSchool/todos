@@ -68,14 +68,14 @@ if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
 	
 // Save and assign users
 if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
-	set_context($context);
+	elgg_set_context($context);
 	register_error(elgg_echo("todo:error:create"));		
 	forward($_SERVER['HTTP_REFERER']);
 }
 
 // Don't notify or add todo to the river unless its published
 if ($status == TODO_STATUS_PUBLISHED) {
-	add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+	add_to_river('river/object/todo/create', 'create', elgg_get_logged_in_user_guid(), $todo->getGUID());	
 	notify_todo_users_assigned($todo);
 }
 
@@ -84,7 +84,7 @@ elgg_clear_sticky_form('todo_post_forms');
 // Save successful, forward
 system_message(elgg_echo('todo:success:create'));
 if ($forward_new) {
-	forward($CONFIG->wwwroot . 'pg/todo/createtodo');
+	forward(elgg_get_site_url() . 'todo/createtodo');
 } else {
 	forward($todo->getURL());
 }

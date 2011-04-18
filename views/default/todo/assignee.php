@@ -12,13 +12,13 @@
  * 
  */
 
-echo <<<EOT
+echo <<<HTML
 	<div class="todo_assignee">
 		<div class="todo_assingee_info">
 		<a href='#' onclick="javascript:unassignAssignee({$vars['entity']->guid});return false;">[Remove]</a>
 		{$vars['entity']->name}
 		</div>
 	</div>
-EOT;
+HTML;
 ?>
 

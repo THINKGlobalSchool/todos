@@ -10,7 +10,7 @@
  * 
  */
 
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 
 $todos = get_users_todos($user->getGUID());
 
@@ -30,7 +30,7 @@ if ($count > 0) {
 }
 ?>
 
-<a id="todo_topbar_link" href="<? echo $CONFIG->wwwroot; ?>pg/todo" class="<?php echo $class; ?>" style="margin-right: -4px;">
+<a id="todo_topbar_link" href="<? echo elgg_get_site_url(); ?>todo" class="<?php echo $class; ?>" style="margin-right: -4px;">
 	<span>
 		<?php 
 			if ($count > 0) {

@@ -19,15 +19,13 @@ gatekeeper();
 // must have security token 
 action_gatekeeper();
 
-global $CONFIG;
-
 // get input
 $description = get_input('submission_description');
 $todo_guid = get_input('todo_guid');
 $content = get_input('submission_content');
 	
 $todo = get_entity($todo_guid);
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 
 // Cache to session
 $_SESSION['user']->submission_content = $content;
@@ -65,16 +63,10 @@ add_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submis
 user_accept_todo($user->getGUID(), $todo_guid);
 
 // River
-add_to_river('river/object/todosubmission/create', 'create', get_loggedin_userid(), $submission->getGUID());	
+add_to_river('river/object/todosubmission/create', 'create', elgg_get_logged_in_user_guid(), $submission->getGUID());	
 
 // Notify todo owner
-/*notify_user($todo->owner_id, 
-			$CONFIG->site->guid, 
-			elgg_echo('todo:email:subjectsubmission'), 
-			sprintf(elgg_echo('todo:email:bodysubmission'), $user->name, $todo->title, $todo->getURL())
-		);
-		*/
-
+global $CONFIG;
 notify_user($todo->owner_guid, 
 			$CONFIG->site->guid,
 			elgg_echo('todo:email:subjectsubmission'), 

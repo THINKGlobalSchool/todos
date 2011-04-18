@@ -21,12 +21,12 @@ global $CONFIG;
 	
 // if username or owner_guid was not set as input variable, we need to set page owner
 // Get the current page's owner 
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
-	$page_owner_guid = get_loggedin_userid();
+	$page_owner_guid = elgg_get_logged_in_user_guid();
 	if ($page_owner_guid) {
-		set_page_owner($page_owner_guid);
-		$page_owner = page_owner_entity();
+		elgg_set_page_owner_guid($page_owner_guid);
+		$page_owner = elgg_get_page_owner_entity();
 	}
 }
 
@@ -39,24 +39,22 @@ if (!in_array($status, array('complete', 'incomplete'))) {
 	$status = 'incomplete';
 }
 	
-if ($page_owner->getGUID() != get_loggedin_userid()) {
-	elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "{$CONFIG->site->url}pg/todo/owned/" . $page_owner->username);
+if ($page_owner->getGUID() != elgg_get_logged_in_user_guid()) {
+	elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "todo/owned/" . $page_owner->username);
 } else {
-	elgg_push_breadcrumb(elgg_echo('todo:title:assignedtodos'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}");
+	elgg_push_breadcrumb(elgg_echo('todo:title:assignedtodos'), "todo/{$page_owner->username}");
 }
-
-global $CONFIG;
 
 $test_id = get_metastring_id('manual_complete');
 $one_id = get_metastring_id(1);
 $wheres = array();
 			
-$user_id = get_loggedin_userid();		
+$user_id = elgg_get_logged_in_user_guid();		
 $relationship = COMPLETED_RELATIONSHIP;
 	
 // Build list based on status
 if ($status == 'complete') {
-	elgg_push_breadcrumb(elgg_echo('todo:label:complete'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}?status=complete");
+	elgg_push_breadcrumb(elgg_echo('todo:label:complete'), "todo/{$page_owner->username}?status=complete");
 				
 	$wheres[] = "(EXISTS (
 			SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
@@ -72,7 +70,7 @@ if ($status == 'complete') {
 	
 } else if ($status == 'incomplete') {	
 	set_input('display_label', true);
-	elgg_push_breadcrumb(elgg_echo('todo:label:incomplete'), "{$CONFIG->site->url}pg/todo/{$page_owner->username}?status=incomplete");	
+	elgg_push_breadcrumb(elgg_echo('todo:label:incomplete'), "todo/{$page_owner->username}?status=incomplete");	
 	
 	// Non existant 'manual complete'
 	$wheres[] = "NOT EXISTS (
@@ -92,7 +90,7 @@ $list = elgg_list_entities_from_relationship(array(
 	'type' => 'object',
 	'subtype' => 'todo',
 	'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
-	'relationship_guid' => get_loggedin_userid(), 
+	'relationship_guid' => elgg_get_logged_in_user_guid(), 
 	'inverse_relationship' => FALSE,
 	'metadata_name' => 'status',
 	'metadata_value' => TODO_STATUS_PUBLISHED,
@@ -105,29 +103,29 @@ $list = elgg_list_entities_from_relationship(array(
 // Start building content
 $content .= elgg_view('navigation/breadcrumbs');
 
-if ($page_owner instanceof ElggGroup || $page_owner->getGUID() != get_loggedin_userid()) {
+if ($page_owner instanceof ElggGroup || $page_owner->getGUID() != elgg_get_logged_in_user_guid()) {
 	$title = sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name);
 	$tabs = array(
 		'assigned' => array(
 			'title' => 'Assigned to ' . $page_owner->name,
-			'url' => $CONFIG->wwwroot . 'pg/todo/' . $page_owner->username,
+			'url' => elgg_get_site_url() . 'todo/' . $page_owner->username,
 			'selected' => true,
 		),
 		'owned' => array(
 			'title' => 'Assigned by ' . $page_owner->name,
-			'url' => $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username,
+			'url' => elgg_get_site_url() . 'todo/owned/' . $page_owner->username,
 			'selected' => false,
 		)
 	);
 					
-	$content .= elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
+	$content .= elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => elgg_get_site_url() . $new_link));
 } else {
 	$title = elgg_echo('todo:title:assignedtodos');
-	$content .= get_todo_content_header('assigned', $new_link = "pg/todo/createtodo/");
+	$content .= get_todo_content_header('assigned', $new_link = "todo/createtodo/");
 }	
 	
 
-$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo'));
+$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'todo'));
 
 if ($list) {
 	$content .= $list;

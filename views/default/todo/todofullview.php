@@ -10,9 +10,9 @@
  * 
  */
 
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 	
 // Determine how we are going to view this todo
 $is_owner = $vars['entity']->canEdit();
@@ -31,9 +31,6 @@ $description_content = elgg_view('output/longtext', array('value' => $vars['enti
 $duedate_label = elgg_echo("todo:label:duedate");
 $duedate_content = elgg_view('output/longtext', array('value' => $due_date));
 
-//$assignees_label = elgg_echo("todo:label:assignees");
-//$assignees_content = elgg_view('todo/assigneelist', array('assignees' => get_todo_assignees($vars['entity']->getGUID())));
-
 $return_label = elgg_echo("todo:label:returnrequired");
 $return_content = ($return_required ? "Yes": 'No' );
 
@@ -44,9 +41,7 @@ $tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 // If container is a group, show the group name as well as the author in the info	
 $group_name = $page_owner instanceof ElggGroup ? " (<a href='{$page_owner->getURL()}'>$page_owner->name</a>)" : '';			
 			
-//$strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}pg/todo/{$owner->username}'>{$owner->name}</a>$group_name ");
-//$strapline .= sprintf(elgg_echo("comments")) . " (" . elgg_count_comments($vars['entity']) . ")";
+$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}todo/{$owner->username}'>{$owner->name}</a>$group_name ");
 
 $submission_form = elgg_view('todo/forms/submission', $vars);
 
@@ -114,7 +109,7 @@ if ($is_assignee) {
 // Owner only Content
 if ($is_owner) {
 		$status_content .= elgg_view('todo/todostatus', $vars);
-		$controls .= "<span class='todo-meta-controls'><a class='action_button' href='{$vars['url']}pg/todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+		$controls .= "<span class='todo-meta-controls'><a class='action_button' href='{$vars['url']}todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 		
 		if ($vars['entity']->manual_complete) {
 			$controls .= "<span class='todo-meta-controls'><b>Closed</b></span>";
@@ -147,10 +142,10 @@ if ($vars['entity']->status == TODO_STATUS_DRAFT) {
 $todo_status_content = elgg_echo('todo:label:status') . ': ' . $todo_status; 
 
 // AJAX Endpoint for submissions
-$submission_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/todo/createsubmission.php');
+$submission_url = elgg_add_action_tokens_to_url(elgg_get_site_url() . 'mod/todo/actions/todo/createsubmission.php');
 
 // JS
-$script = <<<EOT
+$script = <<<HTML
 <script type='text/javascript'>
 $(function() {
 	/** SET UP DIALOG POPUP **/
@@ -240,10 +235,10 @@ $(function() {
 });
 </script>
 
-EOT;
+HTML;
 
 // Put content together
-$info = <<<EOT
+$info = <<<HTML
 			<div class='todo' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px;'>
 				<div class='content_header'>
 					<div class='entity_title'><h2><a href='$url'>$title</a></h2></div>
@@ -283,7 +278,7 @@ $info = <<<EOT
 				</div><br />
 			</div>
 		<div id="submission_dialog" style="display: none;" >$submission_form</div>
-EOT;
+HTML;
 
 // Echo content
 echo $script . $info;

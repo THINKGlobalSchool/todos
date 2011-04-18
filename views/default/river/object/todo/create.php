@@ -10,8 +10,6 @@
  * 
  */
 
-global $CONFIG;
-
 $performed_by = get_entity($vars['item']->subject_guid); // $statement->getSubject();
 $object = get_entity($vars['item']->object_guid);
 $url = $object->getURL();
@@ -23,7 +21,7 @@ $contents = elgg_view('output/longtext', array('value' => $contents));
 $string = sprintf(elgg_echo("todo:river:created"),$url) . " ";
 $string .= elgg_echo("todo:river:create") . " <a href=\"" . $object->getURL() . "\">" . $object->title  .  "</a>";
 $string .= " <span class='entity_subtext'>" . elgg_echo('todo:status:published') . ": " . friendly_time($published);
-if (isloggedin()){
+if (elgg_is_logged_in()){
 	$string .= "<a class='river_comment_form_button link'>Comment</a>";
 	$string .= elgg_view('likes/forms/link', array('entity' => $object));
 }

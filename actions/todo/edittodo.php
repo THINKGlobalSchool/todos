@@ -32,7 +32,7 @@ elgg_make_sticky_form('todo_post_forms');
 		
 $todo = get_entity($guid);
 
-if (!can_write_to_container(get_loggedin_userid(), $container_guid)) {
+if (!can_write_to_container(elgg_get_logged_in_user_guid(), $container_guid)) {
 	register_error(elgg_echo("todo:error:permission"));		
 	forward($_SERVER['HTTP_REFERER']);
 }
@@ -79,7 +79,7 @@ if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 		
 	// If the todo was previously a draft and has been changed to published, notify all users and add to river
 	if ($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) {
-		add_to_river('river/object/todo/create', 'create', get_loggedin_userid(), $todo->getGUID());	
+		add_to_river('river/object/todo/create', 'create', elgg_get_logged_in_user_guid(), $todo->getGUID());	
 		notify_todo_users_assigned($todo);
 	} else if ($previous_status == TODO_STATUS_PUBLISHED && $status == TODO_STATUS_DRAFT) {
 		// Remove from river if being set back to draft from published

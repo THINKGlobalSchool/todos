@@ -144,7 +144,7 @@ function get_todo_access_array() {
  */
 function get_todo_groups_array() {
 	// Get user's groups
-	$groups = get_users_membership(get_loggedin_userid());
+	$groups = get_users_membership(elgg_get_logged_in_user_guid());
 
 	$array = array();
 	foreach ($groups as $group) {
@@ -155,7 +155,7 @@ function get_todo_groups_array() {
 	if (TODO_CHANNELS_ENABLED) {
 		// Get users channels
 		$channels = elgg_get_entities(array('relationship' => 'shared_access_member',
-											'relationship_guid' => get_loggedin_userid(),
+											'relationship_guid' => elgg_get_logged_in_user_guid(),
 											'inverse_relationship' => FALSE,
 											'types' => 'object',
 											'subtypes' => 'shared_access',
@@ -497,7 +497,7 @@ function compare_todo_due_dates_asc($a, $b) {
  */
 function generate_todo_user_hash($user) {
 	// Salt defined in plugin settings
-	$salt = get_plugin_setting('calsalt', 'todo');
+	$salt = elgg_get_plugin_setting('calsalt', 'todo');
 	
 	// Hash username, hash salt, hash user_guid
 	$hash = md5($user->username);
@@ -528,29 +528,27 @@ function check_todo_user_hash($hash, $user) {
 /**
  * Get To Do's content header
  * 
- * @param string $context - Which mode we're in (nothing to do with get_context())
+ * @param string $context - Which mode we're in (nothing to do with elgg_get_context())
  * @return html
  */
-function get_todo_content_header($context = 'owned', $new_link = "pg/todo/createtodo/") {
-	global $CONFIG;
-	
+function get_todo_content_header($context = 'owned', $new_link = "todo/createtodo/") {	
 	$tabs = array(
 		'all' => array(
 			'title' => 'All',
-			'url' => $CONFIG->wwwroot . 'pg/todo/everyone/',
+			'url' => elgg_get_site_url() . 'todo/everyone/',
 			'selected' => ($context == 'all'),
 		),
 		'assigned' => array(
 			'title' => 'Assigned to me',
-			'url' => $CONFIG->wwwroot . 'pg/todo/',
+			'url' => elgg_get_site_url() . 'todo/',
 			'selected' => ($context == 'assigned'),
 		),
 		'owned' => array(
 			'title' => 'Assigned by me',
-			'url' => $CONFIG->wwwroot . 'pg/todo/owned',
+			'url' => elgg_get_site_url() . 'todo/owned',
 			'selected' => ($context == 'owned'),
 		)
 	);
 					
-	return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
+	return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => elgg_get_site_url() . $new_link));
 }	

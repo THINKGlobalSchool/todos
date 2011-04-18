@@ -16,7 +16,7 @@ gatekeeper();
 // must have security token 
 action_gatekeeper();
 
-$user = get_loggedin_user();
+$user = elgg_get_logged_in_user_entity();
 
 $todo_guid = get_input('todo_guid');
 $todo = get_entity($todo_guid);

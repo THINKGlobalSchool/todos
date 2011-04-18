@@ -11,5 +11,5 @@
  */
 ?>
 <p>
-	<a href="<?php echo $vars['url']; ?>pg/todo/owned/<?php echo $vars['entity']->username; ?>"><?php echo elgg_echo("pages"); ?></a>	
+	<a href="<?php echo $vars['url']; ?>todo/owned/<?php echo $vars['entity']->username; ?>"><?php echo elgg_echo("pages"); ?></a>	
 </p>
