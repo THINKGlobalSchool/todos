@@ -19,6 +19,9 @@ $english = array(
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submission',
 	
+	// Admin
+	'admin:statistics:todo' => 'Todo Statistics',
+	
 	// Page titles 
 	'todo:title:yourtodos'	=> 'To Do\'s I\'ve Assigned',
 	'todo:title:assignedtodos' => 'To Do\'s Assigned To me',

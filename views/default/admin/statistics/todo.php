@@ -15,7 +15,11 @@ $ia = elgg_get_ignore_access();
 elgg_set_ignore_access(true);
 
 // Grab all site todos
-$todos = elgg_get_entities(array('type' => 'object', 'subtype' => 'todo', 'limit' => 999999)); 
+$todos = elgg_get_entities(array('type' => 'object', 'subtype' => 'todo', 'limit' => 0)); 
+
+if (!$todos) {
+	$todos = array();
+}
 
 elgg_set_ignore_access($ia);
 
@@ -62,6 +66,9 @@ $todo_count = count($todos);
 // Submission count
 $submission_count_label = elgg_echo('todo:label:admin:totalsubmissions');
 $submission_count = elgg_get_entities(array('type' => 'object', 'subtype' => 'todosubmission', 'count' => true)); 
+if (!$submission_count) {
+	$submission_count = 0;
+}
 
 // Assigned users count 
 $assigned_user_count_label = elgg_echo('todo:label:admin:assignedusers');
@@ -79,7 +86,11 @@ $todo_incomplete_count = $todo_count - count($complete_todos);
 
 // Percentage complete 
 $todo_complete_percentage_label = elgg_echo('todo:label:admin:completepercentage');
-$todo_complete_percentage = number_format(($todo_complete_count / $todo_count) * 100, 1);
+
+$todo_complete_percentage = 0;
+if ($todo_count) {
+	$todo_complete_percentage = number_format(($todo_complete_count / $todo_count) * 100, 1);
+}
 
 // Manual complete count 
 $manual_complete_count_label = elgg_echo('todo:label:admin:manualcomplete');
@@ -87,18 +98,32 @@ $manual_complete_count = count($manually_completed_todos);
 
 // Manual complete percentage 
 $manual_complete_percentage_label = elgg_echo('todo:label:admin:manualpercentage');
-$manual_complete_percentage = number_format(($manual_complete_count / $todo_complete_count) * 100, 1);
+
+$manual_complete_percentage = 0;
+if ($todo_complete_count) {
+	$manual_complete_percentage = number_format(($manual_complete_count / $todo_complete_count) * 100, 1);
+}
 
 // Assigned/Subissions
 $assigned_submitted_label = elgg_echo('todo:label:admin:assignedsubmitted');
-$assigned_submitted_content = $submission_count . '/'  . $assigned_to_users . ' (' . number_format(($submission_count / $assigned_to_users) * 100, 1) . '%)';
+
+$assigned_submitted_percent = 0;
+if ($assigned_to_users) {
+	$assigned_submitted_percent = number_format(($submission_count / $assigned_to_users) * 100, 1);
+}
+
+$assigned_submitted_content = $submission_count . '/'  . $assigned_to_users . ' (' . $assigned_submitted_percent . '%)';
 
 // Completion average
 $completion_average_label = elgg_echo('todo:label:admin:completionaverage');
-$completion_average = number_format($total_completion / count($todos), 1) . '%';
 
+$completion_average = 0 . '%';
 
-echo <<<EOT
+if (count($todos)) {
+	$completion_average = number_format($total_completion / count($todos), 1) . '%';
+}
+
+echo <<<HTML
 
 <div class='todoadmin'>
 <table class='todostats totals'>
@@ -153,6 +178,5 @@ echo <<<EOT
 	</tr>
 </table>
 </div>
-EOT;
+HTML;
 ?>
-

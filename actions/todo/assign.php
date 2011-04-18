@@ -12,7 +12,7 @@
 // Logged in check
 gatekeeper();
 
-$assignee = get_loggedin_user();
+$assignee = elgg_get_logged_in_user_entity();
 
 $todo_guid = get_input('todo_guid');
 $todo = get_entity($todo_guid);

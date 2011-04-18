@@ -2,7 +2,7 @@
 	<center>
 	<ul>
 	<?php 
-		$user = page_owner_entity();
+		$user = elgg_get_page_owner_entity();
 		$status = get_input('status', 'incomplete');
 		
 		if (!in_array($status, array('complete', 'incomplete'))) {

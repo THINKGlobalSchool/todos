@@ -12,7 +12,7 @@
 
 
 // JS
-$script = <<<EOT
+$script = <<<HTML
 		<script type='text/javascript'>
 			$(document).ready(function() {
 				$('#assign_individual_container').show();
@@ -33,13 +33,13 @@ $script = <<<EOT
 				});
 			});
 		</script>
-EOT;
+HTML;
 
 // Check if we've got an entity, if so, we're editing.
 if (isset($vars['entity'])) {
 	
 	if (!$vars['entity']) {
-		forward('pg/todo');
+		forward('todo');
 	}
 	
 	$action 			= "todo/edittodo";
@@ -61,9 +61,9 @@ if (isset($vars['entity'])) {
 		$rubric_guid = $vars['entity']->rubric_guid;
 	}
 	
-	$assignees_url = $CONFIG->wwwroot . 'mod/todo/pages/ajax/assignees.php';
+	$assignees_url = elgg_get_site_url() . 'mod/todo/pages/ajax/assignees.php';
 	
-	$script .= <<<EOT
+	$script .= <<<HTML
 		<script type='text/javascript'>
 			$(document).ready(function() {
 				loadAssignees({$vars['entity']->getGUID()});
@@ -81,7 +81,7 @@ if (isset($vars['entity'])) {
 				});
 			}
 		</script>
-EOT;
+HTML;
 	
 	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('save')));	
 	
@@ -164,7 +164,7 @@ if (TODO_RUBRIC_ENABLED) {
 	
 	$rubric_picker = elgg_view('input/pulldown', array('internalname' => 'rubric_guid', 'internal_id' => 'rubric_picker', 'options_values' => get_todo_rubric_array(), 'value' => $rubric_guid));
 			
-	$rubric_html = <<<EOT
+	$rubric_html = <<<HTML
 	
 		<script type='text/javascript'>
 			$(document).ready(function() {
@@ -182,7 +182,7 @@ if (TODO_RUBRIC_ENABLED) {
 				});
 			});	
 		</script>
-EOT;
+HTML;
 
 	$rubric_html .= "<div><label>$rubric_label</label><br />$rubric_content</div><br />
 					<div id='rubric_picker_container'>
@@ -209,7 +209,7 @@ $status_input = elgg_view('input/pulldown', array(
 		
 
 // Build Form Body
-$form_body = <<<EOT
+$form_body = <<<HTML
 
 <div class='margin_top todo'>
 	<div>
@@ -261,6 +261,6 @@ $form_body = <<<EOT
 	</div>
 </div>
 
-EOT;
+HTML;
 
 echo $script . elgg_view('input/form', array('action' => "{$vars['url']}action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms', 'internalname' => 'todo_post_forms'));

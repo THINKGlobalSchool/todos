@@ -24,9 +24,9 @@ if ($assignees) {
 	$member_list .= "<div style='clear: both;'></div>";
 } 
 
-$unassign_url = elgg_add_action_tokens_to_url($CONFIG->wwwroot . 'mod/todo/actions/todo/unassign.php');
+$unassign_url = elgg_add_action_tokens_to_url(elgg_get_site_url() . 'mod/todo/actions/todo/unassign.php');
 
-echo <<<EOT
+echo <<<HTML
 	<script type='text/javascript'>
 		var unassign_url = "$unassign_url";
 		function unassignAssignee(assignee_guid) {
@@ -48,6 +48,6 @@ echo <<<EOT
 	</script>
 	$assignees_title
 	$member_list
-EOT;
+HTML;
 
 ?>

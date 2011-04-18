@@ -13,8 +13,6 @@
 // Start engine as this action is triggered via ajax
 require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/engine/start.php');
 
-global $CONFIG;
-
 // Logged in users only
 gatekeeper();
 

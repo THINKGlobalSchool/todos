@@ -9,6 +9,6 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-$user = page_owner_entity();
-echo "<li><a href=\"{$vars['url']}pg/todo/{$user->username}\">" . elgg_echo('todo:title') . "</a></li>";
+$user = elgg_get_page_owner_entity();
+echo "<li><a href=\"{$vars['url']}todo/{$user->username}\">" . elgg_echo('todo:title') . "</a></li>";
 ?>

@@ -20,12 +20,12 @@ $vars['entity'] = get_entity(get_input('todo_guid'));
 
 // Get the current page's owner
 if ($container = $vars['entity']->container_guid) {
-	set_page_owner($container);
+	elgg_set_page_owner_guid($container);
 }
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 if ($page_owner === false || is_null($page_owner)) {
 	$page_owner = $_SESSION['user'];
-	set_page_owner($page_owner->getGUID());
+	elgg_set_page_owner_guid($page_owner->getGUID());
 }
 
 $title = elgg_echo('todo:title:edit');

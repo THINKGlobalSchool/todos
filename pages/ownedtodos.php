@@ -16,23 +16,21 @@ include_once dirname(dirname(dirname(dirname(__FILE__)))) . "/engine/start.php";
 // Logged in users only
 gatekeeper();
 
-global $CONFIG;
-
 // if username or owner_guid was not set as input variable, we need to set page owner
 // Get the current page's owner 
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
-	$page_owner_guid = get_loggedin_userid();
+	$page_owner_guid = elgg_get_logged_in_user_guid();
 	if ($page_owner_guid) {
-		set_page_owner($page_owner_guid);
-		$page_owner = page_owner_entity();
+		elgg_set_page_owner_guid($page_owner_guid);
+		$page_owner = elgg_get_page_owner_entity();
 	}
 }	
 
 $limit = get_input("limit", 10);
 $offset = get_input("offset", 0);
 
-if ($page_owner instanceof ElggGroup || $page_owner->getGUID() != get_loggedin_userid()) {
+if ($page_owner instanceof ElggGroup || $page_owner->getGUID() != elgg_get_logged_in_user_guid()) {
 	$title = sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name);
 } else {
 	$title = elgg_echo('todo:title:yourtodos');
@@ -48,36 +46,36 @@ $options = array(
 				);
 
 // Check page owner for other user, loggedinuser or group
-if ($page_owner != get_loggedin_user()) { 
+if ($page_owner != elgg_get_logged_in_user_entity()) { 
 	if ($page_owner instanceof ElggGroup) {
 		// breadcrumbs
 		elgg_pop_breadcrumb();
-		elgg_push_breadcrumb(elgg_echo('Groups'), "{$CONFIG->site->url}pg/groups/world");
-		elgg_push_breadcrumb($page_owner->name, "{$CONFIG->site->url}pg/groups/" . $page_owner->getGUID() ."/");
+		elgg_push_breadcrumb(elgg_echo('Groups'), "groups/world");
+		elgg_push_breadcrumb($page_owner->name, "groups/" . $page_owner->getGUID() ."/");
 		// If we're a group, use regular header, with proper new link
-		$header = get_todo_content_header('groups', 'pg/todo/createtodo/?container_guid=' . $page_owner->getGUID());
+		$header = get_todo_content_header('groups', 'todo/createtodo/?container_guid=' . $page_owner->getGUID());
 		$options['container_guid'] = $page_owner->getGUID();
 	} else {
 		$tabs = array(
 			'assigned' => array(
 				'title' => 'Assigned to ' . $page_owner->name,
-				'url' => $CONFIG->wwwroot . 'pg/todo/' . $page_owner->username,
+				'url' => elgg_get_site_url() . 'todo/' . $page_owner->username,
 				'selected' => false,
 			),
 			'owned' => array(
 				'title' => 'Assigned by ' . $page_owner->name,
-				'url' => $CONFIG->wwwroot . 'pg/todo/owned/' . $page_owner->username,
+				'url' => elgg_get_site_url() . 'todo/owned/' . $page_owner->username,
 				'selected' => true,
 			)
 		);
 
-			$header .= elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => $CONFIG->url . $new_link));
+			$header .= elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => elgg_get_site_url() . $new_link));
 		$options['owner_guid'] = $page_owner->getGUID();
 	}
-	elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "{$CONFIG->site->url}pg/todo/owned/" . $page_owner->username);
+	elgg_push_breadcrumb(sprintf(elgg_echo('todo:title:ownedtodos'), $page_owner->name), "todo/owned/" . $page_owner->username);
 } else {
 	$header = get_todo_content_header('owned');
-	elgg_push_breadcrumb(elgg_echo('todo:title:yourtodos'), "{$CONFIG->site->url}pg/todo/owned");
+	elgg_push_breadcrumb(elgg_echo('todo:title:yourtodos'), "todo/owned");
 	// Setting owner_guid will show all users owned todo's, including todo's created on a groups behalf
 	$options['owner_guid'] = $page_owner->getGUID();
 }

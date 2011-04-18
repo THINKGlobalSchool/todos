@@ -21,11 +21,11 @@ global $CONFIG;
 
 // if username or owner_guid was not set as input variable, we need to set page owner
 // Get the current page's owner
-$page_owner = page_owner_entity();
+$page_owner = elgg_get_page_owner_entity();
 if (!$page_owner) {
-	$page_owner_guid = get_loggedin_userid();
+	$page_owner_guid = elgg_get_logged_in_user_guid();
 	if ($page_owner_guid)
-		set_page_owner($page_owner_guid);
+		elgg_set_page_owner_guid($page_owner_guid);
 }	
 
 $limit = get_input("limit", 10);
@@ -42,12 +42,12 @@ $title = elgg_echo('todo:title:alltodos');
 // create content for main column
 
 // breadcrumbs
-elgg_push_breadcrumb(elgg_echo('todo:label:' . $status), "{$CONFIG->site->url}pg/todo/?status=" . $status);
+elgg_push_breadcrumb(elgg_echo('todo:label:' . $status), "todo/?status=" . $status);
 
 $content .= elgg_view('navigation/breadcrumbs');	
 $content .= get_todo_content_header('all');
 
-$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'pg/todo/everyone'));
+$content .= elgg_view('todo/nav_showbycomplete', array('return_url' => 'todo/everyone'));
 
 // Show based on status
 if ($status == 'complete') {
