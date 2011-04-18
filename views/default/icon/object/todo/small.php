@@ -1,2 +1,2 @@
 <?php
-echo $vars['url'] . "mod/todo/images/todo.jpg";
+echo elgg_get_site_url() . "mod/todo/images/todo.jpg";

@@ -32,7 +32,7 @@ $tags = elgg_view('output/tags', array('tags' => $vars['entity']->tags));
 $group_name = $container instanceof ElggGroup ? " (<a href='{$container->getURL()}'>$container->name</a>)" : '';			
 
 $strapline = "<b>" . sprintf(elgg_echo("todo:strapline"), $due_date) . "</b> ";
-$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='{$vars['url']}todo/{$owner->username}'>{$owner->name}</a> $group_name");
+$strapline .= sprintf(elgg_echo('todo:label:assignedby') , "<a href='todo/{$owner->username}'>{$owner->name}</a> $group_name");
 $strapline .= sprintf(elgg_echo("comments")) . " (" . $vars['entity']->countComments() . ")";
 		
 			
@@ -44,7 +44,7 @@ if ($is_assignee) {
 		$controls .= "✗ Not Accepted ";
 		$controls .= elgg_view("output/confirmlink", 
 										array(
-										'href' => $vars['url'] . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
+										'href' => elgg_get_site_url() . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
 										'text' => 'Accept',
 										'confirm' => elgg_echo('todo:label:acceptconfirm'),
 										'class' => 'action_button'
@@ -53,11 +53,11 @@ if ($is_assignee) {
 }	
 	
 if ($canedit) {
-	$controls .= '<span class="entity_edit">' . "<a href={$vars['url']}todo/edittodo/{$vars['entity']->getGUID()}>" . elgg_echo("edit") . "</a></span>";
+	$controls .= '<span class="entity_edit">' . "<a href='todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 	
 	$controls .= '<span class="delete_button">' . elgg_view("output/confirmlink", 
 								array(
-									'href' => $vars['url'] . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
+									'href' => elgg_get_site_url() . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
 									'text' => elgg_echo('delete'),
 									'confirm' => elgg_echo('deleteconfirm'),
 								)) . "</span>";

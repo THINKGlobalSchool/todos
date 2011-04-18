@@ -263,4 +263,4 @@ $form_body = <<<HTML
 
 HTML;
 
-echo $script . elgg_view('input/form', array('action' => "{$vars['url']}action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms', 'internalname' => 'todo_post_forms'));
+echo $script . elgg_view('input/form', array('action' => "action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms', 'internalname' => 'todo_post_forms'));

@@ -49,5 +49,4 @@ echo <<<HTML
 	$assignees_title
 	$member_list
 HTML;
-
 ?>

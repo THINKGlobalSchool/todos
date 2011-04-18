@@ -57,8 +57,7 @@ function todo_init() {
 	//get_todo_groups_array();
 	
 	// Extend CSS
-	elgg_extend_view('css/screen','todo/css');
-	elgg_extend_view('css/screen','todo/ui-datepicker');
+	elgg_extend_view('css/elgg','css/todo/css');
 	
 	// Admin CSS
 	elgg_extend_view('css/admin', 'css/todo/admin');
@@ -70,11 +69,9 @@ function todo_init() {
 	elgg_extend_view('groups/menu/links', 'todo/menu'); 
 	
 	// Extend groups profile page
-	//elgg_extend_view('groups/tool_latest','todo/group_todos');
-	elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
-	
-	// Extend topbar
-	elgg_extend_view('elgg_topbar/extend','todo/todo_topbar');
+	if (elgg_is_active_plugin('group-extender')) {
+		elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
+	}
 	
 	// Extend profile_ownerblock
 	elgg_extend_view('profile_ownerblock/extend', 'todo/profile_link');
@@ -83,7 +80,7 @@ function todo_init() {
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
 	
 	// add the group pages tool option     
-       add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
+	add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
 
 	// Page handler
 	elgg_register_page_handler('todo','todo_page_handler');
@@ -135,6 +132,9 @@ function todo_init() {
 	// Set up url handlers
 	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
 	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
+	
+	// Hook for site menu
+	elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -156,6 +156,10 @@ function todo_init() {
 	
 }
 
+/**
+ * Todo page handler
+ * @TODO needs more comments
+ */
 function todo_page_handler($page) {
 	elgg_push_breadcrumb(elgg_echo('todo:menu:alltodos'), elgg_get_site_url() . "todo/everyone");	
 	
@@ -586,3 +590,37 @@ function todo_submission_url($entity) {
 function todo_url($entity) {	
 	return elgg_get_site_url() . "todo/viewtodo/{$entity->guid}/";
 }
+
+/**
+ * Tobar menu hook handler
+ * - adds the todo icon to the topbar
+ */
+function todo_topbar_menu_setup($hook, $type, $return, $params) {	
+	$user = elgg_get_logged_in_user_entity();
+	$todos = get_users_todos($user->getGUID());
+	$count = 0;
+	foreach ($todos as $todo) {
+		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID())) {
+			$count++;
+		}
+	}	
+	
+	$class = "elgg-icon todo-notifier";
+	$text = "<span class='$class'></span>";
+
+	if ($count != 0) {
+		$text .= "<span class=\"messages-new\">$count</span>";
+	}
+
+	// Add logout button
+	$options = array(
+		'name' => 'todo',
+		'text' => $text,
+		'href' =>  'todo',
+		'priority' => 999,
+	);
+	$return[] = ElggMenuItem::factory($options);
+
+	return $return;
+}
+

@@ -63,13 +63,13 @@ if ($valid) {
 	
 	// Content
 	$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
-	$strapline .= " " . elgg_echo('by') . " <a href='{$vars['url']}todo/{$owner->username}'>{$owner->name}</a> ";
+	$strapline .= " " . elgg_echo('by') . " <a href='todo/{$owner->username}'>{$owner->name}</a> ";
 	$strapline .= sprintf(elgg_echo("comments")) . " (" . $vars['entity']->countComments() . ")";
 	
 	if ($canedit) {
 			$controls .= elgg_view("output/confirmlink", 
 									array(
-										'href' => $vars['url'] . "action/todo/deletesubmission?submission_guid=" . $vars['entity']->getGUID(),
+										'href' => elgg_get_site_url() . "action/todo/deletesubmission?submission_guid=" . $vars['entity']->getGUID(),
 										'text' => elgg_echo('todo:label:deletesubmission'),
 										'confirm' => elgg_echo('deleteconfirm'),
 									)) . "&nbsp;&nbsp;&nbsp;";
