@@ -20,13 +20,13 @@
 		}
 		
 		echo "<li class='" . ($status == "incomplete" ? 'selected ' : '') . " edt_tab_nav'>" 
-				. elgg_view('output/url', array('href' => $vars['url'] . $vars['return_url'] . "/{$user->username}?status=incomplete{$qs}", 
+				. elgg_view('output/url', array('href' => elgg_get_site_url() . $vars['return_url'] . "/{$user->username}?status=incomplete{$qs}", 
 												'text' => elgg_echo("todo:label:incomplete") . ($status == "incomplete" ? $text : ''), 
 												'class' => 'todo')) . 
 			 "</li>"; 
 			
 		echo "<li class='" . ($status == "complete" ? 'selected ' : '') . " edt_tab_nav'>" 
-				. elgg_view('output/url', array('href' => $vars['url'] . $vars['return_url'] . "/{$user->username}?status=complete{$qs}", 
+				. elgg_view('output/url', array('href' => elgg_get_site_url() . $vars['return_url'] . "/{$user->username}?status=complete{$qs}", 
 												'text' => elgg_echo("todo:label:complete") . ($status == "complete" ? $text : ''), 
 												'class' => 'todo')) . 
 			 "</li>";

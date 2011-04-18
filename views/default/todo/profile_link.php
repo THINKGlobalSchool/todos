@@ -10,5 +10,5 @@
  * 
  */
 $user = elgg_get_page_owner_entity();
-echo "<li><a href=\"{$vars['url']}todo/{$user->username}\">" . elgg_echo('todo:title') . "</a></li>";
+echo "<li><a href=\"todo/{$user->username}\">" . elgg_echo('todo:title') . "</a></li>";
 ?>

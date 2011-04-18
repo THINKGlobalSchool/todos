@@ -49,7 +49,7 @@ foreach ($assignees as $assignee) {
 	$url = '-';
 	$reminder = elgg_view("output/confirmlink", 
 									array(
-									'href' => $vars['url'] . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . "&a=" . $assignee->getGUID(),
+									'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . "&a=" . $assignee->getGUID(),
 									'text' => elgg_echo('todo:label:sendreminder'),
 									'confirm' => elgg_echo('todo:label:remindconfirm'),
 								));
@@ -93,7 +93,7 @@ foreach ($assignee_guids as $idx => $guid) {
 
 $remind_all = elgg_view("output/confirmlink", 
 								array(
-								'href' => $vars['url'] . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
+								'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
 								'text' => elgg_echo('todo:label:remindall'),
 								'confirm' => elgg_echo('todo:label:remindconfirm'),
 							));

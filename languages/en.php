@@ -1,14 +1,14 @@
 <?php
-	/**
-	 * Todo English language translation
-	 * 
-	 * @package Todo
-	 * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
-	 * @author Jeff Tilson
-	 * @copyright THINK Global School 2010
-	 * @link http://www.thinkglobalschool.com/
-	 * 
-	 */
+/**
+ * Todo English language translation
+ * 
+ * @package Todo
+ * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
+ * @author Jeff Tilson
+ * @copyright THINK Global School 2010
+ * @link http://www.thinkglobalschool.com/
+ * 
+ */
 $english = array(
 	
 	// Generic
@@ -85,8 +85,6 @@ $english = array(
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
 	'todo:label:deletesubmission' => 'Delete Submission',
-	'todo:label:unviewed' => 'You have %s unaccepted To Do%s',
-	'todo:label:nounviewed' => 'You have no unaccepted To Dos',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
