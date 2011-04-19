@@ -195,6 +195,7 @@ function todo_get_page_content_view($type, $guid) {
 	$params = array(
 		'buttons' => '',
 		'filter' => '',
+		'header' => '',
 	);
 	
 	if (elgg_entity_exists($guid)) {

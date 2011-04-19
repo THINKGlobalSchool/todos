@@ -44,6 +44,7 @@ $english = array(
 	'todo:menu:assignedbyme' => 'Assigned by me',
 	
 	// Labels 
+	'todo:label:due' => 'Due: %s',
 	'todo:label:noresults' => 'No Results',
 	'todo:label:description' => 'Instructions',
 	'todo:label:duedate' => 'Due Date',
@@ -220,7 +221,6 @@ You cannot reply to this email.",
 	'todo:error:invalid' => 'Invalid Entity',
 	
 	// Other content
-	'todo:strapline' => 'Due: %s',
 	'todo:strapline:mode' => '%s',
 	'groups:enabletodo' => 'Enable group to do\'s',
 	'todo:group' => 'Group to do\'s', 
