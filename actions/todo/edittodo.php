@@ -28,7 +28,7 @@ $status				= get_input('status');
 
 
 // Sticky form
-elgg_make_sticky_form('todo_post_forms');
+elgg_make_sticky_form('todo_edit');
 		
 $todo = get_entity($guid);
 
@@ -102,7 +102,7 @@ if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 	}
 	
 	// Clear cached info
-	elgg_clear_sticky_form('todo_post_forms');
+	elgg_clear_sticky_form('todo_edit');
 
 	// Save successful, forward to index
 	system_message(elgg_echo('todo:success:edit'));

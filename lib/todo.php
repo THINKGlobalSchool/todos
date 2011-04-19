@@ -30,6 +30,8 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 	
 	// Get status
 	$status = get_input('status', 'incomplete');
+		
+	global $CONFIG;
 	
 	if ($type == 'assigned') {
 		// SHOW ASSIGNED TODOS
@@ -43,8 +45,6 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 
 		$user_id = $page_owner->getGUID();		
 		$relationship = COMPLETED_RELATIONSHIP;
-		
-		global $CONFIG;
 
 		// Build list based on status
 		if ($status == 'complete') {
@@ -139,6 +139,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 			$complete = get_metastring_id('complete');
 			$manual_complete = get_metastring_id('manual_complete');
 			$one_id = get_metastring_id(1);
+									
 			$wheres = array();
 			$wheres[] = "NOT EXISTS (
 					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
@@ -197,16 +198,32 @@ function todo_get_page_content_view() {
  * @param int $guid 	object or container
  */
 function todo_get_page_content_edit($type, $guid) {
+	// No button or filter
 	$params = array(
 		'buttons' => '',
 		'filter' => '',
 	);
 	
+	// Form vars
+	$vars = array();
+	$vars['id'] = 'todo-edit';
+	$vars['name'] = 'todo_edit';
+	
 	if ($type == 'edit') {
 		$title = elgg_echo('todo:title:edit');
+		
+		$todo = get_entity($guid);
+		
+		if (elgg_instanceof($todo, 'object', 'todo')) {
+			$body_vars = todo_prepare_form_vars($todo);
+			$content = elgg_view_form('todo/save', $vars, $body_vars);
+		} else {
+			$content = elgg_echo('todo:error:edit');
+		}
 	} else {
 		$title = elgg_echo('todo:add');
-
+		$body_vars = todo_prepare_form_vars();
+		$content = elgg_view_form('todo/save', $vars, $body_vars);
 	}
 	
 	elgg_push_breadcrumb($title);
@@ -246,6 +263,51 @@ function todo_get_filter_content($secondary = TRUE) {
 }
 
 /** HELPER FUNCTIONS */
+
+/**
+ * Pull together todo variables for the save form
+ *
+ * @param ElggObject       $todo
+ * @return array
+ */
+function todo_prepare_form_vars($todo = NULL) {
+
+	// input names => defaults
+	$values = array(
+		'title' => NULL,
+		'description' => NULL,
+		'due_date' => NULL,
+		'assignee_guids' => NULL,
+		'status' => TODO_STATUS_PUBLISHED,
+		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
+		'tags' => NULL,
+		'container_guid' => NULL,
+		'todo_guid' => NULL,
+		'return_required' => 0,
+		'rubric_select' => 0,
+		'rubric_guid' => NULL,
+	);
+
+
+	if ($todo) {
+		foreach (array_keys($values) as $field) {
+			if (isset($todo->$field)) {
+				$values[$field] = $todo->$field;
+			}
+		}
+	}
+
+	if (elgg_is_sticky_form('todo_edit')) {
+		$sticky_values = elgg_get_sticky_values('todo_edit');
+		foreach ($sticky_values as $key => $value) {
+			$values[$key] = $value;
+		}
+	}
+	
+	elgg_clear_sticky_form('todo_edit');
+
+	return $values;
+}
 
 /**
  * Assign users to a todo. 
