@@ -23,6 +23,7 @@ elgg_register_event_handler('init', 'system', 'todo_init');
 function todo_init() {	
 	// Library
 	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todo/lib/todo.php');
+	elgg_load_library('elgg:todo');
 
 	// Assignment (todo) access levels
 	define('TODO_ACCESS_LEVEL_LOGGED_IN', ACCESS_LOGGED_IN);
@@ -145,24 +146,39 @@ function todo_init() {
 	// Handler to prepare secondary todo menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-secondary', 'todo_secondary_menu_setup');
 
+
+	// @TODO clean these up
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
-	elgg_register_action('todo/createtodo', "$action_base/createtodo.php");
-	elgg_register_action('todo/deletetodo', "$action_base/deletetodo.php");
+	elgg_register_action('todo/save', "$action_base/save.php");
+	elgg_register_action('todo/delete', "$action_base/delete.php");
 	elgg_register_action('todo/edittodo', "$action_base/edittodo.php");
 	elgg_register_action('todo/accepttodo', "$action_base/accepttodo.php");
 	elgg_register_action('todo/assign', "$action_base/assign.php");
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
-	elgg_register_action('todo/createsubmission', "$action_base/createsubmission.php");
-	elgg_register_action('todo/deletesubmission', "$action_base/deletesubmission.php");
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
 	elgg_register_action('todo/completetodo', "$action_base/completetodo.php");
+	
+	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
+	elgg_register_action('submission/save', "$action_base/save.php");
+	elgg_register_action('submission/delete', "$action_base/delete.php");
+
 
 	// Register type
 	elgg_register_entity_type('object', 'todo');		
 
-	return true;
+
 	
+	/*create dummy object for metastrings
+	$dummy = new ElggObject();
+	$dummy->manual_complete = 1;
+	$dummy->complete = 1;
+	$dummy->one = 1;
+	
+	$dummy->save();
+	$dummy->delete();	
+	*/
+	return true;	
 }
 
 /**
@@ -189,9 +205,7 @@ function todo_init() {
  * @param array $page
  * @return NULL
  */
-function todo_page_handler($page) {
-	elgg_load_library('elgg:todo');
-	
+function todo_page_handler($page) {	
 	elgg_push_breadcrumb(elgg_echo('todo'), elgg_get_site_url() . "todo/all");	
 	
 	$page_type = $page[0];
@@ -660,10 +674,7 @@ function todo_url($entity) {
  * Tobar menu hook handler
  * - adds the todo icon to the topbar
  */
-function todo_topbar_menu_setup($hook, $type, $return, $params) {	
-	// Need lib here
-	elgg_load_library('elgg:todo');
-	
+function todo_topbar_menu_setup($hook, $type, $return, $params) {		
 	$user = elgg_get_logged_in_user_entity();
 	$todos = get_users_todos($user->getGUID());
 	$count = 0;

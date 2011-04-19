@@ -10,6 +10,19 @@
  * 
  */
 
+// Get values/sticky values
+$title 				= elgg_extract('title', $vars);
+$description 		= elgg_extract('description', $vars);
+$tags 				= elgg_extract('tags', $vars);
+$due_date			= elgg_extract('due_date', $vars);
+$assignees			= elgg_extract('assignee_guids', $vars);
+$container_guid 	= elgg_extract('container_guid', $vars);
+$return_required	= elgg_extract('return_required', $vars);
+$is_rubric_selected	= elgg_extract('rubric_select', $vars);
+$rubric_guid		= elgg_extract('rubric_guid', $vars);
+$access_id 			= elgg_extract('access_level', $vars);
+$status				= elgg_extract('status', $vars);
+$guid				= elgg_extract('todo_guid', $vars);
 
 // JS
 $script = <<<HTML
@@ -36,31 +49,10 @@ $script = <<<HTML
 HTML;
 
 // Check if we've got an entity, if so, we're editing.
-if (isset($vars['entity'])) {
+if ($guid) {
 	
-	if (!$vars['entity']) {
-		forward('todo');
-	}
-	
-	$action 			= "todo/edittodo";
-	$title 		 		= $vars['entity']->title;
-	$description 		= $vars['entity']->description;
-	$tags 				= $vars['entity']->tags;
-	$due_date			= $vars['entity']->due_date;
-	$return_required	= $vars['entity']->return_required;
-	$access_id			= $vars['entity']->access_id;
-	$status				= $vars['entity']->status;
-	
-	if ($access_id != TODO_ACCESS_LEVEL_LOGGED_IN) {
-		$access_id = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
-	} 
-	
-	$entity_hidden  = elgg_view('input/hidden', array('internalname' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
-	
-	if (TODO_RUBRIC_ENABLED && $vars['entity']->rubric_guid) {
-		$rubric_guid = $vars['entity']->rubric_guid;
-	}
-	
+	$entity_hidden  = elgg_view('input/hidden', array('name' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
+		
 	$assignees_url = elgg_get_site_url() . 'todo/loadassignees';
 	
 	$script .= <<<HTML
@@ -83,86 +75,92 @@ if (isset($vars['entity'])) {
 		</script>
 HTML;
 	
-	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('save')));	
-	
-	
-} else {
-// No entity, creating new one
-	$action 			= "todo/createtodo";
-	$title 				= "";
-	$description 		= "";
-	$return_required 	= 0;
-	$is_rubric_selected = 0;
-	$entity_hidden = "";
-	$status = TODO_STATUS_PUBLISHED;
-	
-	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('save')));	
-	$submit_input .= '&nbsp;' . elgg_view('input/submit', array('internalname' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
+	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));		
+} else {	
+	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));	
+	$submit_input .= '&nbsp;' . elgg_view('input/submit', array('name' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
 }
 
 $container_guid = get_input('container_guid', page_owner());
 
-$container_hidden = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => $container_guid));
-
-
-// Load sticky form values
-if (elgg_is_sticky_form('todo_post_forms')) {
-	$title = elgg_get_sticky_value('todo_post_forms', 'title');
-	$description = elgg_get_sticky_value('todo_post_forms', 'description');
-	$tags = elgg_get_sticky_value('todo_post_forms', 'tags');
-	$due_date = elgg_get_sticky_value('todo_post_forms', 'due_date');		
-	$assignees = elgg_get_sticky_value('todo_post_forms', 'assignee_guids');
-	$return_required = elgg_get_sticky_value('todo_post_forms', 'return_required');
-	$is_ribric_selecred = elgg_get_sticky_value('todo_post_forms', 'rubric_select');
-	$rubric_guid = elgg_get_sticky_value('todo_post_forms', 'rubric_guid');
-	$access_id = elgg_get_sticky_value('todo_post_forms', 'access_level');
-	$status = elgg_get_sticky_value('todo_post_forms', 'status');
-}
-
-
+$container_hidden = elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $container_guid));
 
 // Labels/Input
 $title_label = elgg_echo('title');
-$title_input = elgg_view('input/text', array('internalname' => 'title', 'value' => $title));
+$title_input = elgg_view('input/text', array(
+	'name' => 'title', 
+	'value' => $title
+));
 
 $description_label = elgg_echo("todo:label:description");
-$description_input = elgg_view("input/longtext", array('internalname' => 'description', 'value' => $description));
+$description_input = elgg_view("input/longtext", array(
+	'name' => 'description', 
+	'value' => $description
+));
 
 $duedate_label = elgg_echo('todo:label:duedate');
-$duedate_content = elgg_view('input/datepicker', array('internalname' => 'due_date', 'value' => $due_date, 'js' => 'readonly="readonly"'));
+$duedate_content = elgg_view('input/datepicker', array(
+	'name' => 'due_date', 
+	'value' => $due_date
+));
 
 $tag_label = elgg_echo('tags');
-   $tag_input = elgg_view('input/tags', array('internalname' => 'tags', 'value' => $tags));
+$tag_input = elgg_view('input/tags', array(
+	'name' => 'tags', 
+	'value' => $tags
+));
 
 $assign_label = elgg_echo('todo:label:assignto');
-$assign_content = elgg_view('input/pulldown', array('internalname' => 'assignee_picker',
-													'internalid' => 'assignee_picker',
-													'options_values' =>	array(	0 => elgg_echo('todo:label:individuals'),
-																				1 => elgg_echo('todo:label:groups'))		
-													));
+$assign_content = elgg_view('input/pulldown', array(
+	'name' => 'assignee_picker',
+	'id' => 'assignee_picker',
+	'options_values' =>	array(
+		0 => elgg_echo('todo:label:individuals'),
+		1 => elgg_echo('todo:label:groups'
+	))		
+));
 													
-$user_picker = elgg_view('input/userpicker', array('internalname' => 'assignee_guids', 'internalid' => 'user_assignee_picker'));
+$user_picker = elgg_view('input/userpicker', array(
+	'name' => 'assignee_guids', 
+	'id' => 'user_assignee_picker'
+));
 
 $group_label = elgg_echo('todo:label:selectgroup');
-$group_picker = elgg_view('input/pulldown', array('internalname' => 'assignee_guids[]', 'internalid' => 'group_assignee_picker', 'options_values' => get_todo_groups_array(), 'class' => 'multiselect', 'js' => 'MULTIPLE'));
+$group_picker = elgg_view('input/pulldown', array(
+	'name' => 'assignee_guids[]', 
+	'id' => 'group_assignee_picker', 
+	'options_values' => get_todo_groups_array(), 
+	'class' => 'multiselect', 
+	'js' => 'MULTIPLE'
+));
 
 $return_label = elgg_echo('todo:label:returnrequired');
 $return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_required ? "checked='checked' ": '' ) .  " name='return_required' id='todo_return_required'>";
 
 
-// Optional content 
+// Optional content
+ 
 $rubric_html = "";
+
 if (TODO_RUBRIC_ENABLED) {
 	$rubric_label = elgg_echo('todo:label:assessmentrubric');
 	$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
-	$rubric_content = elgg_view('input/pulldown', array('internalname' => 'rubric_select', 
-														'internalid' => 'rubric_select', 
-														'options_values' => array(	0 => elgg_echo('todo:label:rubricnone'),
-																		   			1 => elgg_echo('todo:label:rubricselect')),
-														'value' => $is_rubric_selected,
-														));
+	$rubric_content = elgg_view('input/pulldown', array(
+		'name' => 'rubric_select', 
+		'id' => 'rubric_select', 
+		'options_values' => array(
+			0 => elgg_echo('todo:label:rubricnone'),
+			1 => elgg_echo('todo:label:rubricselect'
+		)),
+		'value' => $is_rubric_selected
+	));
 	
-	$rubric_picker = elgg_view('input/pulldown', array('internalname' => 'rubric_guid', 'internal_id' => 'rubric_picker', 'options_values' => get_todo_rubric_array(), 'value' => $rubric_guid));
+	$rubric_picker = elgg_view('input/pulldown', array(
+		'name' => 'rubric_guid', 
+		'internal_id' => 'rubric_picker', 
+		'options_values' => get_todo_rubric_array(), 
+		'value' => $rubric_guid
+	));
 			
 	$rubric_html = <<<HTML
 	
@@ -194,12 +192,17 @@ HTML;
 	
 
 $access_label = elgg_echo('todo:label:accesslevel');
-$access_content = elgg_view('input/pulldown', array('internalname' => 'access_level', 'internalid' => 'todo_access', 'options_values' => get_todo_access_array(), 'value' => $access_id));
+$access_content = elgg_view('input/pulldown', array(
+	'name' => 'access_level', 
+	'id' => 'todo_access', 
+	'options_values' => get_todo_access_array(), 
+	'value' => $access_id
+));
 
 $status_label = elgg_echo('todo:label:status');
 $status_input = elgg_view('input/pulldown', array(
-	'internalname' => 'status',
-	'internalid' => 'todo_status',
+	'name' => 'status',
+	'id' => 'todo_status',
 	'value' => $status,
 	'options_values' => array(
 		TODO_STATUS_DRAFT => elgg_echo('todo:status:draft'),
@@ -263,4 +266,6 @@ $form_body = <<<HTML
 
 HTML;
 
-echo $script . elgg_view('input/form', array('action' => "action/$action", 'body' => $form_body, 'internalid' => 'todo_post_forms', 'internalname' => 'todo_post_forms'));
+$form_body .= $script;
+
+echo $form_body;

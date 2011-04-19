@@ -12,8 +12,8 @@
 // Check if we've got an entity
 if (isset($vars['entity'])) {
 		
-	$container_hidden = elgg_view('input/hidden', array('internalname' => 'container_guid', 'value' => $vars['container_guid']));
-	$entity_hidden  = elgg_view('input/hidden', array('internalname' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
+	$container_hidden = elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $vars['container_guid']));
+	$entity_hidden  = elgg_view('input/hidden', array('name' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
 
 	if (empty($description)) {
 		$description = $vars['user']->todo_description;
@@ -43,8 +43,8 @@ if (isset($vars['entity'])) {
 	$add_link_div = "<div class='content_div' id='add_link_container'>
 						<form id='link_form'>
 							<label>" . elgg_echo('todo:label:addlink') . "</label><br />
-							" . elgg_view('input/text', array('internalid' => 'submission_link', 'internalname' => 'submission_link')) . "<br />
-							" . elgg_view('input/submit', array('internalid' => 'link_submit', 'internalname' => 'link_submit', 'value' => 'Submit')) . "
+							" . elgg_view('input/text', array('id' => 'submission_link', 'name' => 'submission_link')) . "<br />
+							" . elgg_view('input/submit', array('id' => 'link_submit', 'name' => 'link_submit', 'value' => 'Submit')) . "
 						</form>
 					</div>";
 					
@@ -52,8 +52,8 @@ if (isset($vars['entity'])) {
 	$add_file_div = "<div class='content_div' id ='add_file_container'>
 						<form id='file_form' method='POST' enctype='multipart/form-data'>
 							<label>" . elgg_echo('todo:label:addfile') . "</label><br />
-							" . elgg_view("input/file",array('internalname' => 'upload', 'js' => 'id="upload"')) . "<br />
-							" . elgg_view('input/submit', array('internalid' => 'file_submit', 'internalname' => 'file_submit', 'value' => 'Submit')) . "
+							" . elgg_view("input/file",array('name' => 'upload', 'js' => 'id="upload"')) . "<br />
+							" . elgg_view('input/submit', array('id' => 'file_submit', 'name' => 'file_submit', 'value' => 'Submit')) . "
 						</form>
 					</div>";
 	
@@ -63,11 +63,11 @@ if (isset($vars['entity'])) {
 	$content_label = elgg_echo("todo:label:content");
 
 	$description_label = elgg_echo("todo:label:additionalcomments");
-	$description_input = elgg_view("input/plaintext", array('internalname' => 'submission_description', 
-															'internalid' => 'submission_description', 
+	$description_input = elgg_view("input/plaintext", array('name' => 'submission_description', 
+															'id' => 'submission_description', 
 															'value' => $description));
 
-	$submit_input = elgg_view('input/submit', array('internalname' => 'submit', 'value' => elgg_echo('submit')));
+	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('submit')));
 	
 	$ajax_spinner = '<div id="submission_ajax_spinner"><img src="' . elgg_get_site_url() . '_graphics/ajax_loader.gif" /></div>';
 
@@ -190,6 +190,6 @@ HTML;
 	</div>
 
 HTML;
-	echo $script . elgg_view('input/form', array('body' => $form_body, 'internalid' => 'todo_submission_form'));
+	echo $script . elgg_view('input/form', array('body' => $form_body, 'id' => 'todo_submission_form'));
 	
 }

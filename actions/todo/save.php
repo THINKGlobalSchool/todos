@@ -18,10 +18,10 @@ $due_date			= strtotime(get_input('due_date'));
 $assignees			= get_input('assignee_guids');
 $container_guid 	= get_input('container_guid');	
 $status 			= get_input('status');
-
+$guid 				= get_input('todo_guid');
 
 // Sticky form
-elgg_make_sticky_form('todo_post_forms');
+elgg_make_sticky_form('todo_edit');
 
 // If user clicks 'save and new' 
 $forward_new		= get_input('submit_and_new', 0);
@@ -36,7 +36,24 @@ $rubric_select		= get_input('rubric_select');
 $rubric_guid		= get_input('rubric_guid');
 $access_level		= get_input('access_level');
 
-	
+
+/*
+var_dump($title);
+var_dump($description);
+var_dump($tags);
+var_dump($due_date);
+var_dump($assignees);
+var_dump($container_guid);
+var_dump($status);
+var_dump($rubric_select);
+var_dump($rubric_guid);
+var_dump($access_level);
+var_dump($guid);
+die;
+*/
+
+
+
 // Check values
 if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
 	register_error(elgg_echo('todo:error:requiredfields'));
@@ -79,7 +96,7 @@ if ($status == TODO_STATUS_PUBLISHED) {
 	notify_todo_users_assigned($todo);
 }
 
-elgg_clear_sticky_form('todo_post_forms');
+elgg_clear_sticky_form('todo_edit');
 
 // Save successful, forward
 system_message(elgg_echo('todo:success:create'));
