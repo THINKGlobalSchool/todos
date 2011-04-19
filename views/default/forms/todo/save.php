@@ -61,7 +61,7 @@ if (isset($vars['entity'])) {
 		$rubric_guid = $vars['entity']->rubric_guid;
 	}
 	
-	$assignees_url = elgg_get_site_url() . 'mod/todo/pages/ajax/assignees.php';
+	$assignees_url = elgg_get_site_url() . 'todo/loadassignees';
 	
 	$script .= <<<HTML
 		<script type='text/javascript'>

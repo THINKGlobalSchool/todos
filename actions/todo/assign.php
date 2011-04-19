@@ -27,8 +27,8 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 	if ($success) {
 		// Success message
 		system_message(elgg_echo("todo:success:signup"));
-		forward($_SERVER['HTTP_REFERER']);
+		forward(REFERER);
 	}
 }
 register_error(elgg_echo("todo:error:signup"));		
-forward($_SERVER['HTTP_REFERER']);
+forward(REFERER);

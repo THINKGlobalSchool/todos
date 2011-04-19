@@ -34,6 +34,6 @@ if (elgg_instanceof($todo, 'object', 'todo') && $candelete) {
 	}
 	
 	// Forward
-	forward("todo/owned/" . get_entity($container_guid)->username);
-	//forward($_SERVER['HTTP_REFERER']);
+	forward("todo/owner/" . get_entity($container_guid)->username);
+	//forward(REFERER);
 }

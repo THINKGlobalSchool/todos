@@ -24,8 +24,8 @@ $todo = get_entity($todo_guid);
 if ($user && elgg_instanceof($todo, 'object', 'todo') && user_accept_todo($user->getGUID(), $todo_guid)) {
 	// Success message
 	system_message(elgg_echo("todo:success:accepted"));
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }
 
 register_error(elgg_echo("todo:error:accepted"));		
-forward($_SERVER['HTTP_REFERER']);
+forward(REFERER);

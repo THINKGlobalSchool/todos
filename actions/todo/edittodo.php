@@ -34,7 +34,7 @@ $todo = get_entity($guid);
 
 if (!can_write_to_container(elgg_get_logged_in_user_guid(), $container_guid)) {
 	register_error(elgg_echo("todo:error:permission"));		
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }
 
 $can_edit = $todo->canEdit(); 
@@ -47,7 +47,7 @@ if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 	// Check values
 	if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
 		register_error(elgg_echo('todo:error:requiredfields'));
-		forward($_SERVER['HTTP_REFERER']);
+		forward(REFERER);
 	}
 	
 	$todo->title 		= $title;
@@ -74,7 +74,7 @@ if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 	// Save and assign users
 	if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 		register_error(elgg_echo("todo:error:create"));		
-		forward($_SERVER['HTTP_REFERER']);
+		forward(REFERER);
 	}
 		
 	// If the todo was previously a draft and has been changed to published, notify all users and add to river
@@ -110,4 +110,4 @@ if ($todo && $todo->getSubtype() == "todo" && $can_edit) {
 }
 
 register_error(elgg_echo("todo:error:edit"));		
-forward($_SERVER['HTTP_REFERER']);
+forward(REFERER);

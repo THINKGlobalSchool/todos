@@ -1,6 +1,6 @@
 <?php
 /**
- * Todo Helper functions
+ * Todo library
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -9,6 +9,243 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
+
+/** CONTENT FUNCTIONS **/
+
+/**
+ * List todo's content
+ * @param string $type 	Type of listing [owner/assigned/null]
+ * @param int $guid 	Owner guid
+ * @return array
+ */
+function todo_get_page_content_list($type = NULL, $guid = NULL) {
+	// Sort out who owns what we're looking at
+	$page_owner = elgg_get_page_owner_entity();
+	
+	if ($page_owner == elgg_get_logged_in_user_entity()) {
+		$by = elgg_echo('todo:label:me');
+	} else {
+		$by = $page_owner->name;
+	}
+	
+	// Get status
+	$status = get_input('status', 'incomplete');
+	
+	if ($type == 'assigned') {
+		// SHOW ASSIGNED TODOS
+		set_input('todo_main_tab', $type);
+		$params['filter'] = todo_get_filter_content();
+		$title = elgg_echo("todo:label:assignedto", array($by));
+		
+		$test_id = get_metastring_id('manual_complete');
+		$one_id = get_metastring_id(1);
+		$wheres = array();
+
+		$user_id = $page_owner->getGUID();		
+		$relationship = COMPLETED_RELATIONSHIP;
+		
+		global $CONFIG;
+
+		// Build list based on status
+		if ($status == 'complete') {
+			$wheres[] = "(EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+					WHERE r2.guid_one = '$user_id'
+					AND r2.relationship = '$relationship'
+					AND r2.guid_two = e.guid) OR 
+						EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+					WHERE md.entity_guid = e.guid
+						AND md.name_id = $test_id
+						AND md.value_id = $one_id))";
+
+
+		} else if ($status == 'incomplete') {	
+			set_input('display_label', true);
+			// Non existant 'manual complete'
+			$wheres[] = "NOT EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+					WHERE md.entity_guid = e.guid
+						AND md.name_id = $test_id
+						AND md.value_id = $one_id)";
+
+			$wheres[] = "NOT EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+					WHERE r2.guid_one = '$user_id'
+					AND r2.relationship = '$relationship'
+					AND r2.guid_two = e.guid)";
+		}
+
+		$content = elgg_list_entities_from_relationship(array(
+			'type' => 'object',
+			'subtype' => 'todo',
+			'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+			'relationship_guid' => $user_id, 
+			'inverse_relationship' => FALSE,
+			'metadata_name' => 'status',
+			'metadata_value' => TODO_STATUS_PUBLISHED,
+			'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+			'full_view' => FALSE,
+			'wheres' => $wheres,
+		));
+		
+		
+	} else if ($type == 'owner') {
+		// SHOW OWNED TODOS
+		set_input('todo_main_tab', $type);
+		$params['filter'] = todo_get_filter_content(FALSE);
+		$title = elgg_echo("todo:label:assignedby", array($by));
+		
+		$options = array(
+			'types' => 'object', 
+			'subtypes' => 'todo', 
+			'limit' => $limit, 
+			'offset' => $offset, 
+			'full_view' => FALSE,
+			'container_guid' => $guid,
+		);
+		
+		$content = elgg_list_entities($options);
+	} else { 
+		// SHOW ALL TODOS
+		$params['filter'] = todo_get_filter_content();
+		$title = elgg_echo('todo:title:alltodos');
+		
+		$type = 'all';
+		
+		// Show based on status
+		if ($status == 'complete') {
+			$content .= elgg_list_entities_from_metadata(array(
+				'type' => 'object',
+				'subtype' => 'todo',	
+				'metadata_name' => 'status',				// Always check for status
+				'metadata_value' => TODO_STATUS_PUBLISHED,	
+				'metadata_name_value_pairs' => array(array(
+														'name' => 'complete',
+														'value' => 1, 
+														'operand' => '='),
+													array(
+														'name' => 'manual_complete',
+														'value' => 1,
+														'operand' => '=',
+													)),
+				'metadata_name_value_pairs_operator' => 'OR',
+				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+				'full_view' => FALSE,
+			));	
+		} else if ($status == 'incomplete') {
+			set_input('display_label', true);
+			// Creating some magic SQL to grab todos without complete metadata
+			$complete = get_metastring_id('complete');
+			$manual_complete = get_metastring_id('manual_complete');
+			$one_id = get_metastring_id(1);
+			$wheres = array();
+			$wheres[] = "NOT EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+					WHERE md.entity_guid = e.guid
+						AND md.name_id = $complete
+						AND md.value_id = $one_id)";
+
+			$wheres[] = "NOT EXISTS (
+					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+					WHERE md.entity_guid = e.guid
+						AND md.name_id = $manual_complete
+						AND md.value_id = $one_id)";
+
+
+			$content = elgg_list_entities_from_metadata(array(
+				'type' => 'object',
+				'subtype' => 'todo',
+				'metadata_name' => 'status',
+				'metadata_value' => TODO_STATUS_PUBLISHED,
+				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+				'full_view' => FALSE,
+				'wheres' => $wheres,
+			));	
+		}
+	}
+	
+	elgg_push_breadcrumb($title, "todo/{$type}/{$page_owner->username}");
+
+	
+	// Show status breadcrumb if not looking at owned todos
+	if ($type != 'owner') {
+		elgg_push_breadcrumb(elgg_echo('todo:label:' . $status));
+	}
+	
+	$params['title'] = $title;
+	
+	if ($content) {
+		$params['content'] = $content;
+	} else {
+		$params['content'] = "<h3 class='center'>" . elgg_echo('search:no_results') . "</h3>";
+	}
+	
+	return $params;
+}
+
+/**
+ * Get todo view content
+ */
+function todo_get_page_content_view() {
+	
+}
+
+/**
+ * Get todo edit content
+ * @param string $type 	'add' or 'edit
+ * @param int $guid 	object or container
+ */
+function todo_get_page_content_edit($type, $guid) {
+	$params = array(
+		'buttons' => '',
+		'filter' => '',
+	);
+	
+	if ($type == 'edit') {
+		$title = elgg_echo('todo:title:edit');
+	} else {
+		$title = elgg_echo('todo:add');
+
+	}
+	
+	elgg_push_breadcrumb($title);
+	
+	$params['content'] = $content;
+	$params['title'] = $title;
+	return $params;
+}
+
+/**
+ * Helper function to build menu content
+ * @param bool $secondary Show the secondary menu
+ * @return HTML
+ */
+function todo_get_filter_content($secondary = TRUE) {
+	// Not displayed if we're looking at a groups todos
+	if (!elgg_instanceof(elgg_get_page_owner_entity(), 'group')) {
+		// show the main filter menu.
+		$content = elgg_view_menu('todo-listing-main', array(
+			'sort_by' => 'priority',
+			// recycle the menu filter css
+			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
+		));
+	
+		if ($secondary) {
+		// show the secondary filter menu.
+			$content .= elgg_view_menu('todo-listing-secondary', array(
+				'sort_by' => 'priority',
+				'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
+			));
+		}
+	
+		return $content;
+	} else {
+		return ' ';
+	}
+}
+
+/** HELPER FUNCTIONS */
 
 /**
  * Assign users to a todo. 
@@ -535,7 +772,7 @@ function get_todo_content_header($context = 'owned', $new_link = "todo/createtod
 	$tabs = array(
 		'all' => array(
 			'title' => 'All',
-			'url' => elgg_get_site_url() . 'todo/everyone/',
+			'url' => elgg_get_site_url() . 'todo/all/',
 			'selected' => ($context == 'all'),
 		),
 		'assigned' => array(
@@ -545,7 +782,7 @@ function get_todo_content_header($context = 'owned', $new_link = "todo/createtod
 		),
 		'owned' => array(
 			'title' => 'Assigned by me',
-			'url' => elgg_get_site_url() . 'todo/owned',
+			'url' => elgg_get_site_url() . 'todo/owner',
 			'selected' => ($context == 'owned'),
 		)
 	);

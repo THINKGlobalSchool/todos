@@ -9,10 +9,8 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-
-require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))) . "/engine/start.php");
 	
-$guid = get_input('guid');
+$guid = $vars['guid'];
 	
 $assignees = get_todo_assignees($guid);	
 	

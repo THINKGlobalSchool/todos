@@ -35,9 +35,9 @@ if (elgg_instanceof($todo, 'object', 'todo')) {
 		
 		// Success message
 		system_message(elgg_echo("todo:success:flagcomplete"));
-		forward($_SERVER['HTTP_REFERER']);
+		forward(REFERER);
 	}
 }
 
 register_error(elgg_echo("todo:error:flagcomplete"));		
-forward($_SERVER['HTTP_REFERER']);
+forward(REFERER);

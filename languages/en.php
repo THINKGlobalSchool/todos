@@ -15,7 +15,7 @@ $english = array(
 	'todo:title' => 'To Do\'s',
 	'todo:todo' => 'To Do',
 	'todo' => 'To Do\'s',
-	'todo:new' => 'New To Do',
+	'todo:add' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submission',
 	
@@ -40,6 +40,8 @@ $english = array(
 	'todo:menu:groupassignedtodos' => 'Group Assigned To Do\'s', 	
 	'todo:menu:groupcreatetodo' => 'Create Group To Do', 	
 	'todo:menu:admin_stats' => 'To Do Statistics',
+	'todo:menu:assignedtome' => 'Assigned to me',
+	'todo:menu:assignedbyme' => 'Assigned by me',
 	
 	// Labels 
 	'todo:label:noresults' => 'No Results',
@@ -84,6 +86,8 @@ $english = array(
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
+	'todo:label:assignedto' => 'Assigned to %s',
+	'todo:label:me' => 'me',
 	'todo:label:deletesubmission' => 'Delete Submission',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
 	'todo:label:no' => 'No',

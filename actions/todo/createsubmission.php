@@ -34,7 +34,7 @@ $_SESSION['user']->submission_description = $description;
 /*
 if (empty($title)) {
 	register_error(elgg_echo('todo:error:titleblank'));
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }*/
 
 $submission = new ElggObject();
