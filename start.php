@@ -145,7 +145,12 @@ function todo_init() {
 
 	// Handler to prepare secondary todo menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-secondary', 'todo_secondary_menu_setup');
-
+	
+	// Todo entity menu
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_entity_menu_setup');
+	
+	// Interrupt output/access view
+	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 
 	// @TODO clean these up
 	// Register actions
@@ -789,5 +794,90 @@ function todo_secondary_menu_setup($hook, $type, $return, $params) {
 	
 	$return[] = ElggMenuItem::factory($options);
 	
+	return $return;
+}
+
+/**
+ * Add todo specific links/info to entity menu
+ */
+function todo_entity_menu_setup($hook, $type, $return, $params) {
+	if (elgg_in_context('widgets')) {
+		return $return;
+	}
+
+	$handler = elgg_extract('handler', $params, false);
+	if ($handler != 'todo') {
+		return $return;
+	}
+	
+	$entity = $params['entity'];
+	
+	
+	// Add accept button
+	$user_guid = elgg_get_logged_in_user_guid();
+	if (is_todo_assignee($entity->getGUID(), $user_guid)) {
+		if (has_user_accepted_todo($user_guid, $entity->getGUID())) {
+			$text = "<span class='accepted'>✓ Accepted</span>";
+		} else {
+			$text = "<span class='unviewed'>";
+			$text .= "✗ Not Accepted ";
+			$text .= elgg_view("output/confirmlink", array(
+				'href' => elgg_get_site_url() . "action/todo/accepttodo?todo_guid=" . $entity->getGUID(),
+				'text' => 'Accept',
+				'confirm' => elgg_echo('todo:label:acceptconfirm'),
+				'class' => 'elgg-button elgg-button-action'
+			));
+			$text .= "</span>";
+		}
+		$options = array(
+			'name' => 'todo_accept',
+			'text' => $text,
+			'href' => false,
+			'priority' => 1,
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+	
+	// Add due date
+	$due_date = is_int($entity->due_date) ? date("F j, Y", $entity->due_date) : $entity->due_date;
+	$due_date = elgg_echo('todo:label:due', array($due_date));
+	
+	$options = array(
+		'name' => 'todo_due',
+		'text' => "<strong>$due_date</strong>",
+		'href' => false,
+		'priority' => 2,
+	);
+	$return[] = ElggMenuItem::factory($options);
+
+	// Add status
+	if ($entity->canEdit()) {
+		if ($entity->status == TODO_STATUS_DRAFT) {
+			$status_text = elgg_echo('todo:status:draft'); 
+		} else if ($entity->status == TODO_STATUS_PUBLISHED) {
+			$status_text = elgg_echo('todo:status:published');
+		}
+
+		$status_text = elgg_echo('todo:label:status') . ': ' . $status_text;
+		
+		$options = array(
+			'name' => 'todo_status',
+			'text' => "<span>$status_text</span>",
+			'href' => false,
+			'priority' => 150,
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+	
+	return $return;
+}
+
+/**
+ * Hook to allow output/access to display 'Assignees Only'
+ */
+function todo_output_access_handler($hook, $type, $return, $params) {
+	if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+		$return = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
+	}
 	return $return;
 }
