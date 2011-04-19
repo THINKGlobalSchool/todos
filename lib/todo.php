@@ -187,9 +187,33 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 
 /**
  * Get todo view content
+ * @param string $type	Page type
+ * @param int $guid		Object guid
  */
-function todo_get_page_content_view() {
+function todo_get_page_content_view($type, $guid) {
+	$params = array(
+		'buttons' => '',
+		'filter' => '',
+	);
 	
+	if (elgg_entity_exists($guid)) {
+		$entity = get_entity($guid);
+		$owner = $entity->getOwnerEntity();
+		if ($type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
+			$params['title'] = $entity->title;
+			$params['content'] = elgg_view_entity($entity, TRUE);
+			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
+			elgg_push_breadcrumb($entity->title);
+			return $params;
+		} else if ($type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
+			$params['title'] = elgg_echo('todo:label:viewsubmission');
+			$params['content'] = elgg_view_entity($entity, TRUE);
+			return $params;
+		} 
+	} 
+	
+	$params['content'] = elgg_echo('todo:error:invalid');
+	return $params;
 }
 
 /**
@@ -210,13 +234,13 @@ function todo_get_page_content_edit($type, $guid) {
 	$vars['name'] = 'todo_edit';
 	
 	if ($type == 'edit') {
-		$title = elgg_echo('todo:title:edit');
-		
-		$todo = get_entity($guid);
-		
-		if (elgg_instanceof($todo, 'object', 'todo')) {
+		$title = elgg_echo('todo:title:edit', array());
+		if (elgg_entity_exists($guid) && elgg_instanceof($todo = get_entity($guid), 'object', 'todo')) {
+			$title .= ": \"$todo->title\"";
 			$body_vars = todo_prepare_form_vars($todo);
 			$content = elgg_view_form('todo/save', $vars, $body_vars);
+			elgg_push_breadcrumb($todo->title, $todo->getURL());
+			elgg_push_breadcrumb(elgg_echo('edit'));
 		} else {
 			$content = elgg_echo('todo:error:edit');
 		}
@@ -224,9 +248,8 @@ function todo_get_page_content_edit($type, $guid) {
 		$title = elgg_echo('todo:add');
 		$body_vars = todo_prepare_form_vars();
 		$content = elgg_view_form('todo/save', $vars, $body_vars);
+		elgg_push_breadcrumb($title);
 	}
-	
-	elgg_push_breadcrumb($title);
 	
 	$params['content'] = $content;
 	$params['title'] = $title;
