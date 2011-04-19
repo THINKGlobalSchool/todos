@@ -15,10 +15,10 @@
 /**
  * List todo's content
  * @param string $type 	Type of listing [owner/assigned/null]
- * @param int $guid 	Owner guid
+ * @param int $username 	Owner guid
  * @return array
  */
-function todo_get_page_content_list($type = NULL, $guid = NULL) {
+function todo_get_page_content_list($type = NULL, $username = NULL) {
 	// Sort out who owns what we're looking at
 	$page_owner = elgg_get_page_owner_entity();
 	
@@ -92,6 +92,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 		
 	} else if ($type == 'owner') {
 		// SHOW OWNED TODOS
+		$owner = get_user_by_username($username);
 		set_input('todo_main_tab', $type);
 		$params['filter'] = todo_get_filter_content(FALSE);
 		$title = elgg_echo("todo:label:assignedby", array($by));
@@ -99,10 +100,10 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 		$options = array(
 			'types' => 'object', 
 			'subtypes' => 'todo', 
-			'limit' => $limit, 
-			'offset' => $offset, 
+			'limit' => get_input('limit', 10), 
+			'offset' => get_input('offset', 0), 
 			'full_view' => FALSE,
-			'container_guid' => $guid,
+			'container_guid' => $owner->getGUID(),
 		);
 		
 		$content = elgg_list_entities($options);

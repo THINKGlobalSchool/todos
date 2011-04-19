@@ -10,34 +10,27 @@
  * 
  */
 
-// get input
-$guid = get_input('submission_guid');
-
+$guid = get_input('guid');
 $submission = get_entity($guid);
-$todo_guid = $submission->todo_guid;
 
-$candelete = $submission->canEdit();
-
-if (elgg_instanceof($submission, 'object', 'todosubmission') && $candelete) {
-	
+if (elgg_instanceof($submission, 'object', 'todosubmission') && $submission->canEdit()) {
+	// Get todo guid
+	$todo_guid = $submission->todo_guid;
 	
 	// Remove the submission complete relationship stating that the user has completed the todo
-	remove_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submission->todo_guid);
-	
-	// Delete it!
-	$rowsaffected = $submission->delete();
+	remove_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $todo_guid);
 	
 	// This will check and set the complete flag on the todo
 	update_todo_complete($todo_guid);
 	
-	if ($rowsaffected > 0) {
-		// Success message
-		system_message(elgg_echo("todo:success:submissiondelete"));
-		
+	if ($submission->delete()) {
+		system_message(elgg_echo('todo:success:submissiondelete'));
+		forward("todo/view/$todo_guid");
 	} else {
-		register_error(elgg_echo("todo:error:submissiondelete"));
+		register_error(elgg_echo('todo:error:submissiondelete'));
 	}
-	
-	// Forward
-	forward("todo/view/$todo_guid");
+} else {
+	register_error(elgg_echo('todo:error:invalid'));
 }
+
+forward(REFERER);

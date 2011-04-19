@@ -69,7 +69,7 @@ if ($valid) {
 	if ($canedit) {
 			$controls .= elgg_view("output/confirmlink", 
 									array(
-										'href' => elgg_get_site_url() . "action/todo/deletesubmission?submission_guid=" . $vars['entity']->getGUID(),
+										'href' => elgg_get_site_url() . "action/submission/delete?guid=" . $vars['entity']->getGUID(),
 										'text' => elgg_echo('todo:label:deletesubmission'),
 										'confirm' => elgg_echo('deleteconfirm'),
 									)) . "&nbsp;&nbsp;&nbsp;";

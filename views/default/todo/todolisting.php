@@ -10,6 +10,7 @@
  * 	
  */
 
+
 $container = get_entity($vars['entity']->container_guid);
 
 // Determine how we are going to view this todo
@@ -57,7 +58,7 @@ if ($canedit) {
 	
 	$controls .= '<span class="delete_button">' . elgg_view("output/confirmlink", 
 								array(
-									'href' => elgg_get_site_url() . "action/todo/deletetodo?todo_guid=" . $vars['entity']->getGUID(),
+									'href' => elgg_get_site_url() . "action/todo/delete?guid=" . $vars['entity']->getGUID(),
 									'text' => elgg_echo('delete'),
 									'confirm' => elgg_echo('deleteconfirm'),
 								)) . "</span>";
