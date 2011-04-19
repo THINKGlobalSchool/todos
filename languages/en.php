@@ -198,7 +198,7 @@ To view %s's profile, click here:
 You cannot reply to this email.",
 	
 	// Messages
-	'todo:success:create' => 'To Do successfully submitted',
+	'todo:success:save' => 'To Do Saved',
 	'todo:success:edit' => 'To Do successfully edited',
 	'todo:success:delete' => 'To Do successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',

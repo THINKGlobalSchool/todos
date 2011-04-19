@@ -109,7 +109,7 @@ if ($is_assignee) {
 // Owner only Content
 if ($is_owner) {
 		$status_content .= elgg_view('todo/todostatus', $vars);
-		$controls .= "<span class='todo-meta-controls'><a class='action_button' href='todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+		$controls .= "<span class='todo-meta-controls'><a class='action_button' href='" . elgg_get_site_url() . "todo/edit/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 		
 		if ($vars['entity']->manual_complete) {
 			$controls .= "<span class='todo-meta-controls'><b>Closed</b></span>";
