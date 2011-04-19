@@ -152,7 +152,6 @@ function todo_init() {
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
 	elgg_register_action('todo/save', "$action_base/save.php");
 	elgg_register_action('todo/delete', "$action_base/delete.php");
-	elgg_register_action('todo/edittodo', "$action_base/edittodo.php");
 	elgg_register_action('todo/accepttodo', "$action_base/accepttodo.php");
 	elgg_register_action('todo/assign', "$action_base/assign.php");
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
@@ -257,10 +256,9 @@ function todo_page_handler($page) {
 			}
 			break;
 		case 'edit':
-			if ($page[1]) {
-				set_input('todo_guid', $page[1]);
-			}
-			include elgg_get_plugins_path() . 'todo/pages/edittodo.php';
+			gatekeeper();
+			group_gatekeeper();
+			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'owner':
 			gatekeeper();

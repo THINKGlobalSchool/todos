@@ -53,7 +53,7 @@ if ($is_assignee) {
 }	
 	
 if ($canedit) {
-	$controls .= '<span class="entity_edit">' . "<a href='todo/edittodo/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
+	$controls .= "<span class='entity_edit'><a href='" . elgg_get_site_url() . "todo/edit/{$vars['entity']->getGUID()}'>" . elgg_echo("edit") . "</a></span>";
 	
 	$controls .= '<span class="delete_button">' . elgg_view("output/confirmlink", 
 								array(

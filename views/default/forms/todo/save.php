@@ -22,7 +22,7 @@ $is_rubric_selected	= elgg_extract('rubric_select', $vars);
 $rubric_guid		= elgg_extract('rubric_guid', $vars);
 $access_id 			= elgg_extract('access_level', $vars);
 $status				= elgg_extract('status', $vars);
-$guid				= elgg_extract('todo_guid', $vars);
+$guid				= elgg_extract('guid', $vars);
 
 // JS
 $script = <<<HTML
@@ -49,16 +49,15 @@ $script = <<<HTML
 HTML;
 
 // Check if we've got an entity, if so, we're editing.
-if ($guid) {
-	
-	$entity_hidden  = elgg_view('input/hidden', array('name' => 'todo_guid', 'value' => $vars['entity']->getGUID()));
+if ($guid) {	
+	$entity_hidden  = elgg_view('input/hidden', array('name' => 'guid', 'value' => $guid));
 		
 	$assignees_url = elgg_get_site_url() . 'todo/loadassignees';
 	
 	$script .= <<<HTML
 		<script type='text/javascript'>
 			$(document).ready(function() {
-				loadAssignees({$vars['entity']->getGUID()});
+				loadAssignees({$guid});
 			});
 			
 			function loadAssignees(guid) {
