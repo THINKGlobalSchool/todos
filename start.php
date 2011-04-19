@@ -69,17 +69,11 @@ function todo_init() {
 	// Extend Metatags (for js)
 	elgg_extend_view('html_head/extend','todo/metatags');
 	
-	// Add groups menu
-	elgg_extend_view('groups/menu/links', 'todo/menu'); 
-	
 	// Extend groups profile page
 	if (elgg_is_active_plugin('group-extender')) {
 		elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
 	}
-	
-	// Extend profile_ownerblock
-	elgg_extend_view('profile_ownerblock/extend', 'todo/profile_link');
-	
+		
 	// Extend admin view to include some extra styles
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
 	
