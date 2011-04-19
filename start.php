@@ -15,11 +15,14 @@
 // - Prettier everything (Rubric select, view rubric modal popup, etc.. )
 // - File permissions
 
+// MIGRATION TODOS
+// - Examine language file (remove unused strings, clean up)
+
 elgg_register_event_handler('init', 'system', 'todo_init');
 
 function todo_init() {	
-	// Lib
-    include elgg_get_plugins_path() . 'todo/lib/todo.php';
+	// Library
+	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todo/lib/todo.php');
 
 	// Assignment (todo) access levels
 	define('TODO_ACCESS_LEVEL_LOGGED_IN', ACCESS_LOGGED_IN);
@@ -124,7 +127,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'submission_annotate_comments');
 	
 	// Profile hook	
-	elgg_register_plugin_hook_handler('profile_menu', 'profile', 'todo_profile_menu');	
+	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
 	
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('display', 'view', 'todo_submission_river_rewrite');
@@ -135,6 +138,12 @@ function todo_init() {
 	
 	// Hook for site menu
 	elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
+	
+	// Handler to prepare main todo menu
+	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-main', 'todo_main_menu_setup');
+
+	// Handler to prepare secondary todo menu
+	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-secondary', 'todo_secondary_menu_setup');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -158,15 +167,39 @@ function todo_init() {
 
 /**
  * Todo page handler
- * @TODO needs more comments
+ * @TODO SHOULD BE LIKE BELOW
+ * URLs take the form of
+ *  All todos:       todo/all
+ *  User's todos:    todo/owner/<username>
+ *  Assigned todos:  todo/assigned/<username>
+ *  View todo:       todo/view/<guid>/<title>
+ *  View submission	 todo/view/submission/<guid>
+ *  New todo:        todo/add/<guid>
+ *  Edit todo:       todo/edit/<guid>/<revision>
+ *  Group todo:      todo/group/<guid>/owner
+ *  Calendar feed    todo/calendar/<username>
+ *
+ * AJAX:
+ *  todo/loadassignees - get assignee list via ajax
+ *
+ * Title is ignored
+ *
+ * @TODO Check usernames
+ * 
+ * @param array $page
+ * @return NULL
  */
 function todo_page_handler($page) {
-	elgg_push_breadcrumb(elgg_echo('todo:menu:alltodos'), elgg_get_site_url() . "todo/everyone");	
+	elgg_load_library('elgg:todo');
 	
-	switch ($page[0]) {
+	elgg_push_breadcrumb(elgg_echo('todo'), elgg_get_site_url() . "todo/all");	
+	
+	$page_type = $page[0];
+	
+	switch ($page_type) {
+		/* These are admin scripts... put em somewhere else
 		case 'updateusercomplete': // Force a user todo complete update
 			admin_gatekeeper();
-			
 			$entities = elgg_get_entities_from_metadata(array(
 				'owner_guid' => ELGG_ENTITIES_ANY_VALUE,
 				'subtype' => 'todosubmission',
@@ -174,14 +207,10 @@ function todo_page_handler($page) {
 				'limit' => 0,
 				'order_by_metadata' => array('name' => 'todo_guid', 'as' => 'int'),
 			));
-		
-			
 			foreach($entities as $entity) {
 				echo $entity->owner_guid . " - "  . $entity->todo_guid . "</br>"; 
 				add_entity_relationship($entity->owner_guid, COMPLETED_RELATIONSHIP, $entity->todo_guid);
 			}
-			
-			
 			break;
 		case 'updatetodocomplete': // Force a todo complete update
 			admin_gatekeeper(); 
@@ -198,56 +227,73 @@ function todo_page_handler($page) {
 				var_dump($entity->complete);
 			}
 			break;
-		case 'createtodo':
-			include elgg_get_plugins_path() . 'todo/pages/createtodo.php';
+		*/
+		case 'add':
+			gatekeeper();
+			group_gatekeeper();
+			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
-		case 'viewtodo':
-			set_input("todo_guid", $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/viewtodo.php';
+		case 'view':
+			if ($page[1] == 'submission'){
+				set_input("submission_guid", $page[2]);
+				include elgg_get_plugins_path() . 'todo/pages/viewsubmission.php';
+			} else {
+				set_input("todo_guid", $page[1]);
+				include elgg_get_plugins_path() . 'todo/pages/viewtodo.php';
+			}
 			break;
-		case 'edittodo':
+		case 'edit':
 			if ($page[1]) {
 				set_input('todo_guid', $page[1]);
 			}
 			include elgg_get_plugins_path() . 'todo/pages/edittodo.php';
 			break;
-		case 'viewsubmission':
-			set_input("submission_guid", $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/viewsubmission.php';
+		case 'owner':
+			gatekeeper();
+			group_gatekeeper();
+			$user = get_user_by_username($page[1]);
+			elgg_set_page_owner_guid($user->getGUID());
+			set_input('username',$page[1]);
+			$params = todo_get_page_content_list($page_type, $page[1]);
 			break;
-		case 'owned':
-			// Set page owner
-			if (isset($page[1])) {
-				set_input('username',$page[1]);
-			}
-			include elgg_get_plugins_path() . 'todo/pages/ownedtodos.php';
+		case 'group':
+			gatekeeper();
+			group_gatekeeper();
+			$params = todo_get_page_content_list('owner', $page[1]);
 			break;
-		case 'everyone':
-			include elgg_get_plugins_path() . 'todo/pages/alltodos.php';
+		case 'assigned':
+			gatekeeper();
+			group_gatekeeper();
+			$user = get_user_by_username($page[1]);
+			elgg_set_page_owner_guid($user->getGUID());
+			set_input('username',$page[1]);
+			$params = todo_get_page_content_list($page_type, $page[1]);
+			break;
+		case 'all':
+		default:
+			gatekeeper();
+			group_gatekeeper();
+			$params = todo_get_page_content_list();
 			break;
 		case 'calendar':
 			set_input('user', $page[1]);
 			include elgg_get_plugins_path() . 'todo/pages/todocalendar.php';
 			break;
-		case 'admin_stats':
-			admin_gatekeeper();
-			elgg_set_context('admin');
-			elgg_set_page_owner_guid($_SESSION['guid']);
-			$title = elgg_echo('todo:title:admin_stats');
-			$body = elgg_view_title($title);
-			$body .= elgg_view("todo/admin/stats");
-			echo elgg_view_page($title, elgg_view_layout("administration", array('content' => $body)), 'admin');
-			break;
-		case 'assigned':
-		default:
-			if (isset($page[0])) {
-				set_input('username',$page[0]);
-			}
-			include elgg_get_plugins_path() . 'todo/pages/assignedtodos.php';
+			
+		case 'loadassignees':
+			$guid = get_input('guid');
+			echo elgg_view('todo/ajaxassignees', array('guid' => $guid));
+			exit;
 			break;
 	}
 	
-	return true;
+	
+	// Custom sidebar (none at the moment)
+	$params['sidebar'] .= elgg_view('todo/sidebar');
+
+	$body = elgg_view_layout('content', $params);
+
+	echo elgg_view_page($params['title'], $body);
 }
 
 /**
@@ -507,16 +553,29 @@ function submission_comment_event_listener($event, $object_type, $object) {
  * @param unknown_type $params
  * @return unknown
  */
-function todo_profile_menu($hook, $entity_type, $return_value, $params) {	
+function todo_profile_menu($hook, $entity_type, $return, $params) {	
 	// Only display todo link for users or groups with enabled todos
 	if ($params['owner'] instanceof ElggUser || $params['owner']->todo_enable == 'yes') {
-		$return_value[] = array(
+		$return[] = array(
 			'text' => elgg_echo('todo'),
-			'href' => elgg_get_site_url() . "todo/owned/{$params['owner']->username}",
+			'href' => elgg_get_site_url() . "todo/owner/{$params['owner']->username}",
 		);
 	}
+	
+	
+	if (elgg_instanceof($params['entity'], 'user')) {
+		$url = "todo/owner/{$params['entity']->username}";
+		$item = new ElggMenuItem('todo', elgg_echo('todo'), $url);
+		$return[] = $item;
+	} else {
+		if ($params['entity']->todo_enable == "yes") {
+			$url = "todo/group/{$params['entity']->guid}/owner";
+			$item = new ElggMenuItem('todo', elgg_echo('todo:group'), $url);
+			$return[] = $item;
+		}
+	}
 
-	return $return_value;
+	return $return;
 }
 
 /** 
@@ -545,23 +604,29 @@ function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $param
  */
 function todo_submenus() {
 	$page_owner = elgg_get_page_owner_entity();
-			 	
+			 		
 	// Default todo submenus
-	if (elgg_in_context('todo') && !(elgg_instanceof($page_owner, 'group')) && $page_owner == elgg_get_logged_in_user_entity()) {			
-		// Your todos
-		$url =  "todo";
-		$item = new ElggMenuItem('todo:menu:yourtodos', elgg_echo('todo:menu:yourtodos'), $url);
-		elgg_register_menu_item('page', $item);
+	if (elgg_in_context('todo')) {
+
+	 	if (!(elgg_instanceof($page_owner, 'group'))) {
+			$user = elgg_get_logged_in_user_entity();
+			/* Do we really need these?? 		
+			// Your todos
+			$url =  "todo/assigned/" . $user->username;
+			$item = new ElggMenuItem('todo:menu:yourtodos', elgg_echo('todo:menu:yourtodos'), $url);
+			elgg_register_menu_item('page', $item);
 		
-		// Owned todos
-		$url =  "todo/owned";
-		$item = new ElggMenuItem('todo:menu:assignedtodos', elgg_echo('todo:menu:assignedtodos'), $url);
-		elgg_register_menu_item('page', $item);
+			// Owned todos
+			$url =  "todo/owner/" . $user->username;
+			$item = new ElggMenuItem('todo:menu:assignedtodos', elgg_echo('todo:menu:assignedtodos'), $url);
+			elgg_register_menu_item('page', $item);
 		
-		// All todos
-		$url =  "todo/everyone";
-		$item = new ElggMenuItem('todo:menu:alltodos', elgg_echo('todo:menu:alltodos'), $url);
-		elgg_register_menu_item('page', $item);
+			// All todos
+			$url =  "todo/all";
+			$item = new ElggMenuItem('todo:menu:alltodos', elgg_echo('todo:menu:alltodos'), $url);
+			elgg_register_menu_item('page', $item);
+			*/
+		}
 	}
 		
 	// Admin stats
@@ -596,6 +661,9 @@ function todo_url($entity) {
  * - adds the todo icon to the topbar
  */
 function todo_topbar_menu_setup($hook, $type, $return, $params) {	
+	// Need lib here
+	elgg_load_library('elgg:todo');
+	
 	$user = elgg_get_logged_in_user_entity();
 	$todos = get_users_todos($user->getGUID());
 	$count = 0;
@@ -624,3 +692,94 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	return $return;
 }
 
+/**
+ * Todo main menu setup
+ */
+function todo_main_menu_setup($hook, $type, $return, $params) {	
+	// Set up main nav for todo listings
+	$main_tab = get_input('todo_main_tab', 'all');
+	
+	$user = elgg_get_page_owner_entity();
+	
+	if (!elgg_instanceof($user, 'user')) {
+		$user = elgg_get_logged_in_user_entity();
+	}
+	
+	if ($user == elgg_get_logged_in_user_entity()) {
+		$by = elgg_echo('todo:label:me');
+	} else {
+		$by = $user->name;
+	}
+	
+ 	$options = array(
+		'name' => 'all',
+		'text' => elgg_echo("all"),
+		'href' => 'todo/all',
+		'selected' => ($main_tab === 'all'),
+		'priority' => 1,
+	);
+	
+	$return[] = ElggMenuItem::factory($options);
+	
+	$options = array(
+		'name' => 'assignedtome',
+		'text' => elgg_echo("todo:label:assignedto", array($by)),
+		'href' => 'todo/assigned/' . $user->username,
+		'selected' => ($main_tab === 'assigned'),
+		'priority' => 2
+	);
+	
+	$return[] = ElggMenuItem::factory($options);
+	
+ 	$options = array(
+		'name' => 'assignedbyme',
+		'text' => elgg_echo("todo:label:assignedby", array($by)),
+		'href' => 'todo/owner/' . $user->username,
+		'selected' => ($main_tab === 'owner'),
+		'priority' => 3
+	);
+	
+	$return[] = ElggMenuItem::factory($options);
+	
+	return $return;
+}
+
+/**
+ * Todo secondary menu setup
+ */
+function todo_secondary_menu_setup($hook, $type, $return, $params) {
+	// Set up secondary nav for todo listings
+	$secondary_tab = get_input('status', 'incomplete');
+	
+	$direction = get_input('direction', 'ASC');
+
+	if ($direction == 'ASC') {
+		$text = "  &#9660;";
+		$qs = "&direction=DESC";
+	} else if ($direction == 'DESC') {
+		$text = "  &#9650;";
+		$qs = "&direction=ASC";
+	}
+	
+	$options = array(
+		'name' => 'todo_incomplete',
+		'text' => elgg_echo('todo:label:incomplete') . ($secondary_tab === 'incomplete' ? $text : ''),
+		'href' => "?status=incomplete{$qs}",
+		'selected' => ($secondary_tab === 'incomplete'),
+		'priority' => 1
+	);
+	
+	$return[] = ElggMenuItem::factory($options);
+	
+	$options = array(
+		'name' => 'todo_complete',
+		'text' => elgg_echo('todo:label:complete') . ($secondary_tab === 'complete' ? $text : ''),
+		'href' => "?status=complete{$qs}",
+		'selected' => ($secondary_tab === 'complete'),
+		'priority' => 2
+	);
+	
+	$return[] = ElggMenuItem::factory($options);
+	
+	return $return;
+}

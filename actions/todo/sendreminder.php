@@ -49,8 +49,8 @@ foreach ($assignees as $guid) {
 if ($success) {
 	// Success message
 	system_message(elgg_echo("todo:success:reminder"));
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 } else {
 	register_error(elgg_echo("todo:error:reminder"));		
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }

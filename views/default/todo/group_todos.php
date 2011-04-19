@@ -30,7 +30,7 @@ if ($group->todo_enable == 'yes') {
 	}
 ?>
 <div class="group_tool_widget todo todo-sidebar" style='height: auto; margin-bottom: 5px; min-height: 100%;'>
-<span class="group_widget_link"><a href="<?php echo elgg_get_site_url() . "todo/owned/" . elgg_get_page_owner_entity()->username; ?>"><?php echo elgg_echo('link:view:all')?></a></span>
+<span class="group_widget_link"><a href="<?php echo elgg_get_site_url() . "todo/owner/" . elgg_get_page_owner_entity()->username; ?>"><?php echo elgg_echo('link:view:all')?></a></span>
 <h3><?php echo elgg_echo('todo:label:upcomingtodos') ?></h3>
 <?php	
 	if($todos){
@@ -56,7 +56,7 @@ if ($group->todo_enable == 'yes') {
 		} 
 	} 
 	$create_todo = elgg_get_site_url() . "todo/createtodo/?container_guid=" . elgg_get_page_owner_entity()->getGUID();
-	echo "<p class='margin_top'><a class='action_button' href=\"{$create_todo}\">" . elgg_echo("todo:new") . "</a></p>";
+	echo "<p class='margin_top'><a class='action_button' href=\"{$create_todo}\">" . elgg_echo("todo:add") . "</a></p>";
 	echo "</div>";
 
 }

@@ -40,7 +40,7 @@ $access_level		= get_input('access_level');
 // Check values
 if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
 	register_error(elgg_echo('todo:error:requiredfields'));
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }
 
 $todo = new ElggObject();
@@ -63,14 +63,14 @@ if ($rubric_select) {
 // Before saving, check permissions
 if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
 	register_error(elgg_echo("todo:error:permission"));		
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }
 	
 // Save and assign users
 if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 	elgg_set_context($context);
 	register_error(elgg_echo("todo:error:create"));		
-	forward($_SERVER['HTTP_REFERER']);
+	forward(REFERER);
 }
 
 // Don't notify or add todo to the river unless its published
