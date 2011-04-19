@@ -286,10 +286,9 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_list();
 			break;
 		case 'calendar':
-			set_input('user', $page[1]);
 			echo elgg_view('todo/calendar', array(
 				'hash' => get_input('t'), 
-				'username' => get_input('user')
+				'username' => $page[1]
 				));
 			exit;
 			break;
@@ -299,7 +298,6 @@ function todo_page_handler($page) {
 			exit;
 			break;
 	}
-	
 	
 	// Custom sidebar (none at the moment)
 	$params['sidebar'] .= elgg_view('todo/sidebar');
