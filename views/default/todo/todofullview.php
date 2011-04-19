@@ -240,10 +240,6 @@ HTML;
 // Put content together
 $info = <<<HTML
 			<div class='todo' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px;'>
-				<div class='content_header'>
-					<div class='entity_title'><h2><a href='$url'>$title</a></h2></div>
-					<div style='clear:both;'></div>
-				</div>
 				<div class='todo_owner_block'>
 					$strapline 
 				</div>

@@ -217,6 +217,7 @@ You cannot reply to this email.",
 	'todo:error:reminder' => 'There was an error reminding user(s)',
 	'todo:error:flagcomplete' => 'There was an error marking the to do as complete',
 	'todo:error:signup' => 'There was an error signing up for the To Do',
+	'todo:error:invalid' => 'Invalid Entity',
 	
 	// Other content
 	'todo:strapline' => 'Due: %s',

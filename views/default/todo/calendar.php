@@ -1,9 +1,7 @@
 <?php	
-// include the Elgg engine
-include_once dirname(dirname(dirname(dirname(__FILE__)))) . "/engine/start.php";
 
-$hash = get_input('t');
-$username = get_input('user');
+$hash = $vars['hash'];
+$username = $vars['username'];
 
 if (check_todo_user_hash($hash, get_user_by_username($username))) {
 	// Ignore access for scripts

@@ -248,11 +248,9 @@ function todo_page_handler($page) {
 			break;
 		case 'view':
 			if ($page[1] == 'submission'){
-				set_input("submission_guid", $page[2]);
-				include elgg_get_plugins_path() . 'todo/pages/viewsubmission.php';
+				$params = todo_get_page_content_view($page[1], $page[2]);
 			} else {
-				set_input("todo_guid", $page[1]);
-				include elgg_get_plugins_path() . 'todo/pages/viewtodo.php';
+				$params = todo_get_page_content_view('todo', $page[1]);
 			}
 			break;
 		case 'edit':
@@ -289,9 +287,12 @@ function todo_page_handler($page) {
 			break;
 		case 'calendar':
 			set_input('user', $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/todocalendar.php';
+			echo elgg_view('todo/calendar', array(
+				'hash' => get_input('t'), 
+				'username' => get_input('user')
+				));
+			exit;
 			break;
-			
 		case 'loadassignees':
 			$guid = get_input('guid');
 			echo elgg_view('todo/ajaxassignees', array('guid' => $guid));
@@ -665,7 +666,7 @@ function todo_submission_url($entity) {
  * @return string request url
  */
 function todo_url($entity) {	
-	return elgg_get_site_url() . "todo/viewtodo/{$entity->guid}/";
+	return elgg_get_site_url() . "todo/view/{$entity->guid}/";
 }
 
 /**
