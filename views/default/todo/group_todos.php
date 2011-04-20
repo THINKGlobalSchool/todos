@@ -20,11 +20,7 @@ if ($group->todo_enable == 'yes') {
 									
 									
 	foreach ($todos as $idx => $todo) {
-		if (have_assignees_completed_todo($todo->getGUID())) {
-			unset($todos[$idx]);
-		}
-	
-		if ($todo->status == TODO_STATUS_DRAFT) {
+		if (have_assignees_completed_todo($todo->getGUID()) || $todo->status == TODO_STATUS_DRAFT || $todo->manual_complete) {
 			unset($todos[$idx]);
 		}
 	}

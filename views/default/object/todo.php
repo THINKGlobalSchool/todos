@@ -83,9 +83,9 @@ $header
 $todo_info
 $body
 HTML;
-
+	
 } else {
-	// brief view
+	// listing view
 	$params = array(
 		'entity' => $todo,
 		'metadata' => $metadata,
