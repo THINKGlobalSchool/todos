@@ -20,13 +20,9 @@ if ($group->todo_enable == 'yes') {
 									
 									
 	foreach ($todos as $idx => $todo) {
-		if (have_assignees_completed_todo($todo->getGUID())) {
+		if (have_assignees_completed_todo($todo->getGUID()) || $todo->status == TODO_STATUS_DRAFT || $todo->manual_complete) {
 			unset($todos[$idx]);
-		}
-	
-		if ($todo->status == TODO_STATUS_DRAFT) {
-			unset($todos[$idx]);
-		}
+		}	
 	}
 ?>
 <div class="group_tool_widget todo todo-sidebar" style='height: auto; margin-bottom: 5px; min-height: 100%;'>
