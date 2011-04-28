@@ -67,13 +67,11 @@ add_to_river('river/object/todosubmission/create', 'create', elgg_get_logged_in_
 
 // Notify todo owner
 global $CONFIG;
-notify_user($todo->owner_guid, 
-			$CONFIG->site->guid,
-			elgg_echo('todo:email:subjectsubmission'), 
-			sprintf(elgg_echo('todo:email:bodysubmission'), 
-			$user->name, 
-			$todo->title, 
-			$todo->getURL())
+notify_user(
+	$todo->owner_guid, 
+	$CONFIG->site->guid,
+	elgg_echo('todo:email:subjectsubmission', array($user->name, $todo->title)), 
+	elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL()))
 );
 
 // Clear Cached info
