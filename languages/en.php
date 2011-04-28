@@ -137,8 +137,8 @@ $english = array(
 	'todosubmission:river:created' => "%s completed",
 	
 	// Email Notifications 
-	'todo:email:subjectsubmission' => 'To Do Completed Notification',
-	'todo:email:bodysubmission' => "%s has completed a To Do assigned by you titled: %s
+	'todo:email:subjectsubmission' => "%s has completed the To Do titled \"%s\"",
+	'todo:email:bodysubmission' => "%s has completed a To Do assigned by you titled \"%s\"
 	
 ---
 
