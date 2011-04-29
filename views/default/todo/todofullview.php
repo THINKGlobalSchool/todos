@@ -65,7 +65,7 @@ if ($is_assignee) {
 		$controls .= "<span class='unviewed'>";
 		$controls .= elgg_view("output/confirmlink", 
 										array(
-										'href' => elgg_get_site_url() . "action/todo/accepttodo?todo_guid=" . $vars['entity']->getGUID(),
+										'href' => elgg_get_site_url() . "action/todo/accept?guid=" . $vars['entity']->getGUID(),
 										'text' => elgg_echo('todo:label:accept'),
 										'confirm' => elgg_echo('todo:label:acceptconfirm'),
 										'class' => 'action_button'

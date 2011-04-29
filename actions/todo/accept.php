@@ -10,15 +10,9 @@
  * 
  */
 	
-// Logged in check
-gatekeeper();
-
-// must have security token 
-action_gatekeeper();
-
 $user = elgg_get_logged_in_user_entity();
 
-$todo_guid = get_input('todo_guid');
+$todo_guid = get_input('guid');
 $todo = get_entity($todo_guid);
 	
 if ($user && elgg_instanceof($todo, 'object', 'todo') && user_accept_todo($user->getGUID(), $todo_guid)) {

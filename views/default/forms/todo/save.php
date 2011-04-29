@@ -67,12 +67,19 @@ if ($guid) {
 					data: {guid: guid},
 					cache: false,
 					success: function(data){
-						$("#current_assignees_container").html(data);
+						$("#todo-assignees-container").html(data);
 					}
 				});
 			}
 		</script>
 HTML;
+	// Get the actual access id
+	$access_id = elgg_extract('access_id', $vars);
+	
+	// Set it to assignees only if its not ACCESS_LOGGED_IN
+	if ($access_id != ACCESS_LOGGED_IN) {
+		$access_id = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
+	}
 	
 	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));		
 } else {	
@@ -240,8 +247,8 @@ $form_body = <<<HTML
 			<label>$group_label</label><br />
 			$group_picker
 			<br /><br />
-		</div>
-		<div id='current_assignees_container'></div>
+		</div><br />
+		<div id='todo-assignees-container'></div>
 	</div><br />
 	<div>
 		<label>$return_label</label>
@@ -257,6 +264,7 @@ $form_body = <<<HTML
 		$status_input
 	</div>
 	<div>
+		<br />
 		$submit_input
 		$container_hidden
 		$entity_hidden

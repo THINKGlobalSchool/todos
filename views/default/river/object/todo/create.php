@@ -10,20 +10,26 @@
  * 
  */
 
-$performed_by = get_entity($vars['item']->subject_guid); // $statement->getSubject();
-$object = get_entity($vars['item']->object_guid);
-$url = $object->getURL();
-$published = $object->time_published ? $object->time_published : $object->time_created;
+$object = $vars['item']->getObjectEntity();
 
-$url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-$contents = strip_tags($object->txt); //strip tags from the contents to stop large images etc blowing out the river view
-$contents = elgg_view('output/longtext', array('value' => $contents));
-$string = sprintf(elgg_echo("todo:river:created"),$url) . " ";
-$string .= elgg_echo("todo:river:create") . " <a href=\"" . $object->getURL() . "\">" . $object->title  .  "</a>";
-$string .= " <span class='entity_subtext'>" . elgg_echo('todo:status:published') . ": " . friendly_time($published);
-if (elgg_is_logged_in()){
-	$string .= "<a class='river_comment_form_button link'>Comment</a>";
-	$string .= elgg_view('likes/forms/link', array('entity' => $object));
+$params = array(
+	'href' => $object->getURL(),
+	'text' => $object->title,
+);
+
+$link = elgg_view('output/url', $params);
+
+$group_string = '';
+$container = $object->getContainerEntity();
+if ($container instanceof ElggGroup) {
+	$params = array(
+		'href' => $container->getURL(),
+		'text' => $container->name,
+	);
+	$group_link = elgg_view('output/url', $params);
+	$group_string = elgg_echo('river:ingroup', array($group_link));
 }
-$string .= "</span>";
-echo $string;
+
+echo elgg_echo('todo:river:create');
+
+echo " $link $group_string";
