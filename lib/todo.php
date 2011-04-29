@@ -192,27 +192,35 @@ function todo_get_page_content_list($type = NULL, $username = NULL) {
  * @param int $guid		Object guid
  */
 function todo_get_page_content_view($type, $guid) {
+	// Set full view context for menus
+	elgg_push_context('todo_full_view');
+	
 	$params = array(
 		'buttons' => '',
 		'filter' => '',
 		'header' => '',
 	);
-	
+
+	// This is messed up, deleted todo's DO exist.. need to fix this checking
 	if (elgg_entity_exists($guid)) {
 		$entity = get_entity($guid);
-		$owner = $entity->getOwnerEntity();
-		if ($type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
+		if ($entity->enabled && $type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
+			$owner = $entity->getOwnerEntity();
 			$params['title'] = $entity->title;
 			$params['content'] = elgg_view_entity($entity, TRUE);
 			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
 			elgg_push_breadcrumb($entity->title);
 			return $params;
-		} else if ($type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
+		} else if ($entity->enabled && $type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
 			$params['title'] = elgg_echo('todo:label:viewsubmission');
 			$params['content'] = elgg_view_entity($entity, TRUE);
 			return $params;
-		} 
-	} 
+		} else {
+			// Most likely a permission issue here
+			register_error(elgg_echo('todo:error:permissiondenied'));
+			forward();
+		}
+	}
 	
 	$params['content'] = elgg_echo('todo:error:invalid');
 	return $params;
@@ -305,6 +313,7 @@ function todo_prepare_form_vars($todo = NULL) {
 		'assignee_guids' => NULL,
 		'status' => TODO_STATUS_PUBLISHED,
 		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
+		'access_id' => NULL,
 		'tags' => NULL,
 		'container_guid' => NULL,
 		'guid' => NULL,
@@ -441,7 +450,7 @@ function notify_todo_users_assigned($todo) {
  * @return bool 
  */
 function user_accept_todo($user_guid, $todo_guid) {
-	// Check if user is has already accepted
+	// Check if user has already accepted
 	if (!has_user_accepted_todo($todo_guid, $user_guid)) {
 		return add_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED, $todo_guid);
 	} else {
@@ -654,10 +663,9 @@ function get_user_submission($user_guid, $todo_guid) {
  * @return bool
  */
 function has_user_accepted_todo($user_guid, $todo_guid) {
-	
-		$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED , $todo_guid);
+	$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_ACCEPTED , $todo_guid);
 	if ($object) {
-			return true;
+		return true;
 	} else {
 		return false;
 	}

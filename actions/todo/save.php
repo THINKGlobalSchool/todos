@@ -67,6 +67,14 @@ if ($guid) {
 		$previous_status = $todo->status;
 		$todo->time_published = (($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) ? time() : null);
 		
+		// If editing, and assignees only is selected we need to set the access id 
+		// to the existing access collection id
+		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+			$todo->access_id = $todo->assignee_acl;
+		} else {
+			$todo->access_id = $access_level;
+		}
+		
 	} else {
 		register_error(elgg_echo('todo:error:edit'));
 		forward(get_input('forward', REFERER));
@@ -77,11 +85,11 @@ if ($guid) {
 	$todo->subtype 		= "todo";
 	$todo->container_guid = $container_guid;
 	$todo->time_published = ($status == TODO_STATUS_PUBLISHED ? time() : null);
+	$todo->access_id 	= $access_level; 
 }
 
 $todo->title 		= $title;
 $todo->description 	= $description;
-$todo->access_id 	= $access_level; 
 $todo->tags 		= $tags;
 $todo->due_date		= $due_date;
 $todo->return_required = $return_required;

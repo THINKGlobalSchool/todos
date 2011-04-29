@@ -29,7 +29,7 @@ echo <<<HTML
 		var unassign_url = "$unassign_url";
 		function unassignAssignee(assignee_guid) {
 			$.ajax({
-				url: stripJunk(unassign_url),
+				url: unassign_url,
 				type: "POST",
 				data: {assignee_guid: assignee_guid, todo_guid: $guid},
 				cache: false, 

@@ -18,6 +18,20 @@
 // MIGRATION TODOS
 // - Examine language file (remove unused strings, clean up)
 
+// DEFINITELY WORKING ACTIONS:
+// - accept
+// - assign
+// - unassign
+// - delete
+
+// ACTIONS NEEDING TESTING
+// - complete
+// - save (just needs some more testing)
+// - sendreminder
+// - upload
+// - submission/delete
+// - submission/save
+
 elgg_register_event_handler('init', 'system', 'todo_init');
 
 function todo_init() {	
@@ -151,7 +165,7 @@ function todo_init() {
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
 	elgg_register_action('todo/save', "$action_base/save.php");
 	elgg_register_action('todo/delete', "$action_base/delete.php");
-	elgg_register_action('todo/accepttodo', "$action_base/accepttodo.php");
+	elgg_register_action('todo/accept', "$action_base/accept.php");
 	elgg_register_action('todo/assign', "$action_base/assign.php");
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
@@ -246,6 +260,7 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'view':
+			gatekeeper();
 			if ($page[1] == 'submission'){
 				$params = todo_get_page_content_view($page[1], $page[2]);
 			} else {
@@ -798,39 +813,13 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	if (elgg_in_context('widgets')) {
 		return $return;
 	}
-
+	
 	$handler = elgg_extract('handler', $params, false);
 	if ($handler != 'todo') {
 		return $return;
 	}
 	
 	$entity = $params['entity'];
-	
-	
-	// Add accept button
-	$user_guid = elgg_get_logged_in_user_guid();
-	if (is_todo_assignee($entity->getGUID(), $user_guid)) {
-		if (has_user_accepted_todo($user_guid, $entity->getGUID())) {
-			$text = "<span class='accepted'>✓ Accepted</span>";
-		} else {
-			$text = "<span class='unviewed'>";
-			$text .= "✗ Not Accepted ";
-			$text .= elgg_view("output/confirmlink", array(
-				'href' => elgg_get_site_url() . "action/todo/accepttodo?todo_guid=" . $entity->getGUID(),
-				'text' => 'Accept',
-				'confirm' => elgg_echo('todo:label:acceptconfirm'),
-				'class' => 'elgg-button elgg-button-action'
-			));
-			$text .= "</span>";
-		}
-		$options = array(
-			'name' => 'todo_accept',
-			'text' => $text,
-			'href' => false,
-			'priority' => 1,
-		);
-		$return[] = ElggMenuItem::factory($options);
-	}
 	
 	// Add due date
 	$due_date = is_int($entity->due_date) ? date("F j, Y", $entity->due_date) : $entity->due_date;
@@ -863,6 +852,53 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		$return[] = ElggMenuItem::factory($options);
 	}
 	
+	// Different actions depending if user is assignee or not
+	$user_guid = elgg_get_logged_in_user_guid();
+	if (is_todo_assignee($entity->getGUID(), $user_guid)) { 
+		// Add accept button
+		if (has_user_accepted_todo($user_guid, $entity->getGUID())) {
+			$text = "<span class='accepted'>✓ Accepted</span>";
+		} else {
+			$text = "<span class='unviewed'>";
+			$text .= "✗ Not Accepted ";
+			$text .= elgg_view("output/confirmlink", array(
+				'href' => elgg_get_site_url() . "action/todo/accept?guid=" . $entity->getGUID(),
+				'text' => 'Accept',
+				'confirm' => elgg_echo('todo:label:acceptconfirm'),
+				'class' => 'elgg-button elgg-button-action'
+			));
+			$text .= "</span>";
+		}
+		$options = array(
+			'name' => 'todo_accept',
+			'text' => $text,
+			'href' => false,
+			'priority' => 1,
+		);
+		$return[] = ElggMenuItem::factory($options);
+	} else {
+		// Add signup button, only in full view
+		if (elgg_in_context('todo_full_view')) {
+			if ($entity->manual_complete != true && $entity->owner_guid != elgg_get_logged_in_user_guid()) {
+			
+				$text = elgg_view("output/confirmlink", array(
+					'href' => elgg_get_site_url() . "action/todo/assign?todo_guid=" . $entity->getGUID(),
+					'text' => elgg_echo('todo:label:signup'),
+					'confirm' => elgg_echo('todo:label:signupconfirm'),
+					'class' => 'elgg-button elgg-button-action'
+				));
+			
+				$options = array(
+					'name' => 'todo_accept',
+					'text' => $text,
+					'href' => false,
+					'priority' => 999,
+				);
+				$return[] = ElggMenuItem::factory($options);		
+			}
+		}
+	}
+		
 	return $return;
 }
 
@@ -870,7 +906,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
  * Hook to allow output/access to display 'Assignees Only'
  */
 function todo_output_access_handler($hook, $type, $return, $params) {
-	if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+	if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id != ACCESS_LOGGED_IN) {
 		$return = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
 	}
 	return $return;

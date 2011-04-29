@@ -9,8 +9,6 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-// Logged in check
-gatekeeper();
 
 $assignee = elgg_get_logged_in_user_entity();
 
@@ -19,7 +17,6 @@ $todo = get_entity($todo_guid);
 
 // If we've got a todo, sign the user up and accept the todo
 if (elgg_instanceof($todo, 'object', 'todo')) {
-
 	$success = true;
 	$success &= assign_user_to_todo($assignee->getGUID(), $todo_guid);
 	$success &= user_accept_todo($assignee->getGUID(), $todo_guid);

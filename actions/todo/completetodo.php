@@ -9,8 +9,6 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-// Logged in check
-gatekeeper();
 
 $todo_guid = get_input('todo_guid');
 $todo = get_entity($todo_guid);
