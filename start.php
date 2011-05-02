@@ -881,11 +881,23 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'name' => 'todo_accept',
 					'text' => $text,
 					'href' => false,
-					'priority' => 999,
+					'priority' => 998,
 				);
 				$return[] = ElggMenuItem::factory($options);		
 			}
 		}
+	}
+	
+	// Show the duelabel 
+	if (!elgg_in_context('todo_full_view') && get_input('status') != 'complete') {
+		$text = elgg_view('todo/duelabel', array('entity' => $entity));
+		$options = array(
+			'name' => 'todo_duelabel',
+			'text' => $text,
+			'href' => false,
+			'priority' => 999,
+		);
+		$return[] = ElggMenuItem::factory($options);
 	}
 		
 	return $return;
