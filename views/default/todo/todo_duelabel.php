@@ -28,5 +28,5 @@ if (get_input('display_label', false)) {
 		$priority = TODO_PRIORITY_LOW;
 	}
 
-	echo "<span class='todo-priority-label todo_priority_{$priority}'><span class='label-text'>{$label}</span></span>";
+	echo "<span class='todo-priority-label todo-priority-{$priority}'><span class='label-text'>{$label}</span></span>";
 }

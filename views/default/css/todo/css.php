@@ -10,19 +10,6 @@
  * 
  */
 ?>
-.todo {
-	
-}
-
-.todo .right {
-	float: right;
-	text-align: right;
-}
-
-.todo .left {
-	float: left;
-	text-align: left;
-}
 
 .todo .multiselect {
 	border: 2px solid #bbbbbb;
@@ -44,73 +31,8 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-.todo_icon {
-	float:left;
-	margin:3px 0 0 0;
-	padding:0;
-}
 
-
-.todo .listingstrapline {
-	margin: 0 0 0 0px;
-	padding:0;
-	color: #aaa;
-	line-height:1em;
-}
-
-.todo .strapline {
-	padding:10px;
-	height: auto;
-	min-height: 16px;
-	background: #EEEEEE;
-	border: 1px solid #D4DAE6;
-	margin: 0 0 0 0px;
-	-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
-}
-
-.todo .description img[align="left"] {
-	margin: 10px 10px 10px 0;
-	float:left;
-}
-
-.todo p.fulltags {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>_graphics/icon_tag.gif) no-repeat scroll left 2px;
-	margin:0 0 7px 0px;
-	padding:0pt 0pt 0pt 16px;
-	min-height:22px;
-}
-
-.todo p.listingtags {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>_graphics/icon_tag.gif) no-repeat scroll left 2px;
-	margin:0 0 0px 0px;
-	padding:0pt 0pt 0pt 16px;
-	min-height:22px;
-}
-
-.todo p.gallerytags {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>_graphics/icon_tag.gif) no-repeat scroll left 2px;
-	margin:0 0 0 0;
-	padding:0pt 0pt 0pt 16px;
-	min-height:22px;
-}
-
-.todo .todo_header {
-	width: 98%;
-}
-
-.todo .todo_header .todo_header_title {
-	width: 50%;
-	float: left;
-}
-
-.todo .todo_header .todo_header_controls {
-	float: left;
-	width: 50%;
-	text-align: right;
-}
-
-.todo .assignee_table {
+.todo-assignee-table {
 	width: 98%;
 	margin: 4px;
 
@@ -118,36 +40,14 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-.todo .assignee_table td.assignee {
+.todo-assignee-table td {
 	padding: 5px;
 	-moz-border-radius:5px 5px 5px 5px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-.todo .assignee_table td.alt {
+.todo-assignee-table tr:nth-child(even) {
 	background: #eeeeee;
-}
-
-.todo .status_table {
-	width: 100%;
-	margin-top: 4px;
-	border: 1px solid #aaaaaa;
-}
-
-.todo .status_table td {
-	padding: 5px;
-}
-
-.todo .status_table th {
-	padding: 5px;
-	
-	font-weight: bold;
-	color: #666666;
-	border-bottom: 1px solid #aaaaaa;
-}
-
-.todo .status_table td.alt {
-	background: #eeeeee;	
 }
 
 #assign_individual_container {
@@ -162,29 +62,6 @@
 	display: none;
 }
 
-.todo_listing {
-	margin: 4px;
-	width: 98%;
-}
-
-.todo_listing .todo_listing_icon {
-	width: 25px;
-	height: 25px;
-	float: left;
-}
-
-.todo_listing .todo_listing_info {
-	height: 25px;
-	width: auto;
-	padding-left: 10px;
-	float: left;
-}
-
-.todo_listing .todo_listing_options {
-	float: right;
-	width: 100px;
-}
-
 .todo span.complete {
 	color: green;
 	font-weight: bold;
@@ -193,10 +70,6 @@
 .todo span.incomplete {
 	color: red;
 	font-weight: bold;
-}
-
-span.todo-meta-controls {
-	margin-left: 20px;
 }
 
 span.accepted {
@@ -209,35 +82,30 @@ span.unviewed {
 	color: #9D1520 !important;
 }
 
-.todo #add_content_area {
-	width: 100%;
-}
-
-.todo #add_content_area .content_menu {
+#submission-content-container .content_menu {
 	width: 20%;
 	float: left;
 	display: none;
 }
 
-.todo #add_content_area .content_menu  a {
+#submission-content-container .content_menu  a {
 	font-size: 120%;
 }
 
-.todo #add_content_area #content_container {
+#submission-content-container #submission-content {
 	width: 79%;
 	float: left;
 }
 
-.todo .content_div {
+.content_div {
 	display:none;
 }
 
-.todo #submission_error_message {
+#submission-error-message {
 	color: red;
 	font-weight: bold;
 	display:none;
 }
-
 
 .todo-priority-label {
 	width: 100px;
@@ -257,53 +125,29 @@ span.unviewed {
 	margin-left: 0px !important;
 }
 
-.todo_seperator {
-	-webkit-border-radius: 8px; 
-	-moz-border-radius: 8px;
-	-webkit-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* safari v3+ */
-	-moz-box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.50); /* FF v3.5+ */
-	margin-bottom:5px;
-	margin-top: 5px;
-	margin-left: 0px; !important
-	padding: 5px 5px 5px 10px;
-}
 
-.todo_seperator h3 {
-	color: #ffffff;
-	text-shadow: #000 -1px 1px 2px;
-	font-weight: bold;
-}
-
-.todo_priority_1 {
+.todo-priority-1 {
 	/**border: 2px solid #E83131;**/
 	background: #FFECEC;
 	background: #FA2A02;
 }
 
-.todo_priority_2 {
+.todo-priority-2 {
 		/**border: 2px solid #F19F45;**/
 	background: #FFFFCC;
 	background: #FFAB25;
 }
 
-.todo_priority_3 {
+.todo-priority-3 {
 		/**border: 2px solid #438743;**/
 	background: #E1FFE1;
 	background: #71BC17;
 }
 
-#submission_ajax_spinner {
+#submission-ajax-spinner {
 	float: right;
 	margin-right: 340px;
 	display: none;
-}
-
-.todo_owner_block {
-	float: left; 
-	color: black; 
-	margin: 0;
-	font-size: 75%;
-	font-style: italic;
 }
 
 /** POPUP DIALOG **/
@@ -321,18 +165,13 @@ span.unviewed {
 	z-index: 1001 !important;
 }
 
-#submission_dialog  {
+#submission-dialog  {
 	border: 8px solid #555555;
 	background: #ffffff;
 	-moz-border-radius:5px 5px 5px 5px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-/** Top Bar **/
-
-#todo_topbar_link{
-	margin-left:4px !important;
-}
 
 /* messages/new messages icon & counter in elgg_topbar */
 .todo-notifier {
@@ -343,22 +182,6 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
-
-div.todolabel {
-	width: auto;
-	bottom: 2px;
-	left: 0px;
-	position: relative;
-	display: inline;
-}
-
-div.todoexists {
-	width: auto;
-	bottom: 2px;
-	left: 16px;
-	position: relative;
-	display: inline;
-}
 
 /** jQuery UI Stuff **/
 
@@ -393,9 +216,4 @@ div.todoexists {
 	float: right; margin: .5em .4em .5em 0; 
 	padding:2px 6px;
 	width:auto;
-}
-
-/** Tweaks for todo sidebar in groups **/
-.todo-sidebar .entity_listing_info {
-	width: auto;
 }

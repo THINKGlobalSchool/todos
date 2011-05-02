@@ -820,18 +820,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	}
 	
 	$entity = $params['entity'];
-	
-	// Add due date
-	$due_date = is_int($entity->due_date) ? date("F j, Y", $entity->due_date) : $entity->due_date;
-	$due_date = elgg_echo('todo:label:due', array($due_date));
-	
-	$options = array(
-		'name' => 'todo_due',
-		'text' => "<strong>$due_date</strong>",
-		'href' => false,
-		'priority' => 2,
-	);
-	$return[] = ElggMenuItem::factory($options);
+
 
 	// Add status
 	if ($entity->canEdit()) {

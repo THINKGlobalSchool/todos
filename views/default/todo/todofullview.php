@@ -149,7 +149,7 @@ $script = <<<HTML
 <script type='text/javascript'>
 $(function() {
 	/** SET UP DIALOG POPUP **/
-	$('#submission_dialog').dialog({
+	$('#submission-dialog').dialog({
 						autoOpen: false,
 						width: 725,
 						modal: true,
@@ -173,7 +173,7 @@ $(function() {
 	
 	$("a#create_submission").click(
 		function() {
-			$("#submission_dialog").dialog("open");
+			$("#submission-dialog").dialog("open");
 			return false;
 		}
 	);
@@ -186,7 +186,7 @@ $(function() {
 		}
 	);
 	
-	$("form#todo_submission_form").submit(
+	$("form#todo-submission-form").submit(
 		function() {
 			/** May not be tinyMCE **/
 			if (typeof(tinyMCE) !== 'undefined') {
@@ -205,19 +205,19 @@ $(function() {
 				if (typeof(tinyMCE) !== 'undefined') {
 		    		tinyMCE.execCommand('mceRemoveControl', false, 'submission_description');
 				}
-				$("#submission_dialog").dialog("close");
+				$("#submission-dialog").dialog("close");
 				setTimeout ('window.location.reload()', 800);
 		
 			} else {
 				// error
-				$("#submission_error_message").show().html("** Content is required");
+				$("#submission-error-message").show().html("** Content is required");
 			}
 			return false;
 		}
 	);
 	
 	function sendSubmission() {
-		data = $("form#todo_submission_form").serializeArray();
+		data = $("form#todo-submission-form").serializeArray();
 		$.ajax({
 			url: stripJunk("$submission_url"),
 			type: "POST",
@@ -273,7 +273,7 @@ $info = <<<HTML
 					$status_content
 				</div><br />
 			</div>
-		<div id="submission_dialog" style="display: none;" >$submission_form</div>
+		<div id="submission-dialog" style="display: none;" >$submission_form</div>
 HTML;
 
 // Echo content

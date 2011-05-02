@@ -14,35 +14,31 @@
 
 $todo = $vars['entity'];
 
+
 // Get assignees
 $assignees = get_todo_assignees($todo->getGUID());
 
 // Table Headers
-$content = "<div class='todo'>
-				<table class='status_table'>
+$content = "<br /><br/><table class='elgg-table'>
+				<thead>
 					<tr>
-						<th>" . elgg_echo('todo:label:assignee') . "</th>
-						<th>" . elgg_echo('todo:label:accepted') . "</th>
-						<th>" . elgg_echo('todo:label:status') . "</th>
-						<th>" . elgg_echo('todo:label:datecompleted') . "</th>
-						<th>" . elgg_echo('todo:label:submission') . "</th>
-						<th>" . elgg_echo('todo:label:reminder') . "</th>
-					</tr>";
+						<th><strong>" . elgg_echo('todo:label:assignee') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:accepted') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:datecompleted') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>
+					</tr>
+				</thead>
+				</tbody>";
 
 // Array of assignee guids to bulk remind
 $assignee_guids = array();
 
-$count = 0;
 foreach ($assignees as $assignee) {
 	//Populate assignee_guids array for later
 	$assignee_guids[] = $assignee->getGUID();
-	
-	// Zebra
-	$class = '';
-	if ($count % 2 == 0) {
-		$class .= ' alt'; 
-	}
-	
+		
 	// Default values
 	$status = '<span class="incomplete">' . elgg_echo('todo:label:statusincomplete') . '</span>';
 	$date = '-';
@@ -76,14 +72,13 @@ foreach ($assignees as $assignee) {
 	
 	// Build rest of content
 	$content .= '<tr>';
-	$content .= 	"<td class='$class'>$assignee->name</td>";
-	$content .= 	"<td class='$class'>$accepted</td>";
-	$content .= 	"<td class='$class'>$status</td>";
-	$content .= 	"<td class='$class'>$date</td>";
-	$content .= 	"<td class='$class'>$url</td>";
-	$content .= 	"<td class='$class'>$reminder</td>";
+	$content .= 	"<td>$assignee->name</td>";
+	$content .= 	"<td>$accepted</td>";
+	$content .= 	"<td>$status</td>";
+	$content .= 	"<td>$date</td>";
+	$content .= 	"<td>$url</td>";
+	$content .= 	"<td>$reminder</td>";
 	$content .= '</tr>';
-	$count++;
 }
 
 // Build querystring
@@ -98,14 +93,9 @@ $remind_all = elgg_view("output/confirmlink",
 								'confirm' => elgg_echo('todo:label:remindconfirm'),
 							));
 
-$class = '';
-if ($count % 2 == 0) {
-	$class .= ' alt'; 
-}
+$content .= "<td colspan=5 style='text-align: right;'></td>";
+$content .= "<td>$remind_all</td>";
 
-$content .= "<td colspan=5 style='text-align: right;' class='$class'></td>";
-$content .= "<td class='$class'>$remind_all</td>";
-
-$content .= '</table></div>';
+$content .= '</tbody></table>';
 
 echo $content;
