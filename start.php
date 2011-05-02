@@ -169,7 +169,7 @@ function todo_init() {
 	elgg_register_action('todo/assign', "$action_base/assign.php");
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
-	elgg_register_action('todo/completetodo', "$action_base/completetodo.php");
+	elgg_register_action('todo/complete', "$action_base/complete.php");
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
@@ -829,9 +829,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		} else if ($entity->status == TODO_STATUS_PUBLISHED) {
 			$status_text = elgg_echo('todo:status:published');
 		}
-
-		$status_text = elgg_echo('todo:label:status') . ': ' . $status_text;
-		
+				
 		$options = array(
 			'name' => 'todo_status',
 			'text' => "<span>$status_text</span>",
@@ -843,6 +841,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	
 	// Different actions depending if user is assignee or not
 	$user_guid = elgg_get_logged_in_user_guid();
+	// Is assignee
 	if (is_todo_assignee($entity->getGUID(), $user_guid)) { 
 		// Add accept button
 		if (has_user_accepted_todo($user_guid, $entity->getGUID())) {
@@ -865,8 +864,45 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 1,
 		);
 		$return[] = ElggMenuItem::factory($options);
-	} else {
-		// Add signup button, only in full view
+		
+		// Full view only
+		if (elgg_in_context('todo_full_view')) {
+			// If user has submitted
+			if (has_user_submitted($user_guid, $entity->getGUID()) && $submission = get_user_submission($user_guid, $entity->getGUID())) {
+				$options = array(
+					'name' => 'todo_view_submission',
+					'text' => elgg_echo("todo:label:viewsubmission"),
+					'href' => $submission->getURL(),
+					'priority' => 999,
+				);
+				$return[] = ElggMenuItem::factory($options);
+				// @TODO need to view this ^
+			} else { // User has not submitted
+				if ($entity->manual_complete) {
+					$options = array(
+						'name' => 'todo_closed',
+						'text' => '<strong>' . elgg_echo("todo:status:closed") . '</strong>',
+						'href' => false,
+						'priority' => 1000,
+					);
+					$return[] = ElggMenuItem::factory($options);
+				} else {
+					// If we need to return something for this todo, the complete link will point to the submission form
+					$id = $entity->return_required ? 'todo-create-submission' : 'todo-create-empty-submission';
+					$options = array(
+						'name' => 'todo_create_submission',
+						'text' => elgg_echo("todo:label:completetodo"),
+						'href' => '#',
+						'id' => $id,
+						'priority' => 1000,
+						'link_class' => "elgg-button elgg-button-action $id",
+					);
+					$return[] = ElggMenuItem::factory($options);
+				}
+			}
+		}
+	} else { // Not assignee
+		// full view only
 		if (elgg_in_context('todo_full_view')) {
 			if ($entity->manual_complete != true && $entity->owner_guid != elgg_get_logged_in_user_guid()) {
 			
@@ -878,13 +914,40 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				));
 			
 				$options = array(
-					'name' => 'todo_accept',
+					'name' => 'todo_signup',
 					'text' => $text,
 					'href' => false,
-					'priority' => 998,
+					'priority' => 997,
 				);
 				$return[] = ElggMenuItem::factory($options);		
 			}
+		}
+	}
+	
+	// Close todo button, owners only
+	if (elgg_in_context('todo_full_view') && $entity->canEdit()) {
+		if ($entity->manual_complete) {
+            $options = array(
+				'name' => 'todo_closed',
+				'text' => '<strong>' . elgg_echo("todo:status:closed") . '</strong>',
+				'href' => false,
+				'priority' => 1000,
+			);
+			$return[] = ElggMenuItem::factory($options);
+        } else {
+			$text = elgg_view("output/confirmlink", array(
+				'href' => "action/todo/complete?guid=" . $entity->getGUID(),
+				'text' => elgg_echo('todo:label:flagcomplete'),
+				'confirm' => elgg_echo('todo:label:flagcompleteconfirm'),
+				'class' => 'elgg-button elgg-button-action'
+            ));
+			$options = array(
+				'name' => 'todo_complete',
+				'text' => $text,
+				'href' => false,
+				'priority' => 1000,
+			);
+			$return[] = ElggMenuItem::factory($options);
 		}
 	}
 	
@@ -895,7 +958,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'name' => 'todo_duelabel',
 			'text' => $text,
 			'href' => false,
-			'priority' => 999,
+			'priority' => 998,
 		);
 		$return[] = ElggMenuItem::factory($options);
 	}

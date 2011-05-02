@@ -10,7 +10,7 @@
  * 
  */
 
-$todo_guid = get_input('todo_guid');
+$todo_guid = get_input('guid');
 $todo = get_entity($todo_guid);
 	
 if (elgg_instanceof($todo, 'object', 'todo')) {

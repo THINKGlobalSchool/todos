@@ -97,8 +97,8 @@ span.unviewed {
 
 .todo-priority-label {
 	width: 100px;
-	-webkit-border-radius: 8px; 
-	-moz-border-radius: 8px;
+	-webkit-border-radius: 11px; 
+	-moz-border-radius: 11px;
 	padding: 3px;
 	text-align: center;
 	margin-top: 3px;

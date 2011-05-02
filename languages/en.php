@@ -1,6 +1,7 @@
 <?php
 /**
  * Todo English language translation
+ * @TODO Remove unused strings
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -64,8 +65,8 @@ $english = array(
 	'todo:label:assignees' => 'Assignees',
 	'todo:label:currentassignees' => 'Current Assignees',
 	'todo:label:status' => 'Status',
-	'todo:label:completetodo' => 'Complete This To Do',
-	'todo:label:flagcomplete' => 'Close Off To Do',
+	'todo:label:completetodo' => 'Complete To Do',
+	'todo:label:flagcomplete' => 'Close To Do',
 	'todo:label:flagcompleteconfirm' => 'Are you sure you want to close off this To Do?',
 	'todo:label:newsubmission' => 'New Submission',
 	'todo:label:additionalcomments' => 'Additional Comments (Optional)',
@@ -119,6 +120,7 @@ $english = array(
 	'todo:label:status' => 'Status',
 	'todo:status:published' => 'Published', 
 	'todo:status:draft' => 'Draft',
+	'todo:status:closed' => 'Closed',
 	
 	// Admin Labels
 	'todo:label:admin:general' => 'General Statistics',
