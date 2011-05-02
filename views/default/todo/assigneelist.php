@@ -14,21 +14,13 @@
 
 $assignees = $vars['assignees'];
 
+$content = "<div><table class='todo-assignee-table'>";
 
-$content = "<div class='todo'><table class='assignee_table'>";
-
-$count = 0;
 foreach ($assignees as $assignee) {
-	$class = 'assignee';
-	if ($count % 2 == 0) {
-		$class .= ' alt'; 
-	}
-	$content .= "<tr><td class='$class'>";
+	$content .= "<tr><td>";
 	$content .= $assignee->name;		
 	$content .= '</td></tr>';
-	$count++;
 }
-
 
 $content .= '</table></div>';
 

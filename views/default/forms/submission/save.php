@@ -69,7 +69,7 @@ if (isset($vars['entity'])) {
 
 	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('submit')));
 	
-	$ajax_spinner = '<div id="submission_ajax_spinner"><img src="' . elgg_get_site_url() . '_graphics/ajax_loader.gif" /></div>';
+	$ajax_spinner = '<div id="submission-ajax-spinner" class="elgg-ajax-loader"></div>';
 
 	$file_submit_url = elgg_add_action_tokens_to_url(elgg_get_site_url() . 'mod/todo/actions/todo/upload.php');
 	
@@ -98,7 +98,7 @@ if (isset($vars['entity'])) {
 				var options = { 
 						url: stripJunk(file_submit_url), 
 						type: "POST", 
-				        target:        '#submit_output',   // target element(s) to be updated with server response 
+				        target:        '#submission-output',   // target element(s) to be updated with server response 
 						clearForm: true,
 				        beforeSubmit:  showRequest,  // pre-submit callback 
 				        success:       showResponse,  // post-submit callback 
@@ -112,13 +112,13 @@ if (isset($vars['entity'])) {
 		// pre-submit callback 
 		function showRequest(formData, jqForm, options) { 
 		    var queryString = $.param(formData); 
-		    $("#submission_ajax_spinner").show();
+		    $("#submission-ajax-spinner").show();
 		    return true;	
 		} 
 
 		// post-submit callback 
 		function showResponse(data)  { 
-		    $("#submission_ajax_spinner").hide();
+		    $("#submission-ajax-spinner").hide();
 			var file = eval( "(" + data + ")" );
 			$('#submission_content').append(
 				$('<option></option>').attr('selected', 'selected').val(file.guid).html(file.name)
@@ -134,8 +134,8 @@ if (isset($vars['entity'])) {
 		function showDefault() {
 			$("div.content_div").hide();
 			$("div#content_display_div").show();
-			$("div#main_content_menu").show();
-			$("div#back_content_menu").hide();
+			$("div#submission-content-menu").show();
+			$("div#submission-control-back").hide();
 			//$("select#submission_content option:odd").css({'background-color' : '#dedede'});
 		}
 		
@@ -143,8 +143,8 @@ if (isset($vars['entity'])) {
 		{
 			var div_name = "div#" + tab_id;
 			$("div.content_div").hide();
-			$("div#main_content_menu").hide();
-			$("div#back_content_menu").show();
+			$("div#submission-content-menu").hide();
+			$("div#submission-control-back").show();
 			$(div_name).show();
 		}
 		</script>
@@ -153,28 +153,28 @@ HTML;
 	// Build Form Body
 	$form_body = <<<HTML
 
-	<div class='todo' style='padding: 10px;'>
+	<div style='padding: 10px;'>
 		<div>
 			<h3>$title_label</h3><br />
 		</div>
-		<div id='add_content_area'>
+		<div id='submission-content-container'>
 			<h3>$content_label</h3><br />
-			<div id='main_content_menu' class='content_menu'>
+			<div id='submission-content-menu' class='content_menu'>
 				$menu_items
 			</div>
-			<div id='back_content_menu' class='content_menu'>
+			<div id='submission-control-back' class='content_menu'>
 				$back_button
 			</div>
-			<div id='content_container'>
+			<div id='submission-content'>
 				$content_display_div
 				$add_link_div
 				$add_file_div
 				$ajax_spinner
-				<div id='submit_output' style='display: none;'></div>
+				<div id='submission-output' style='display: none;'></div>
 			</div>
 			<div style='clear:both;'></div>
 			<br />
-			<div id="submission_error_message">
+			<div id="submission-error-message">
 			</div>
 		</div>
 		<hr />
@@ -190,6 +190,6 @@ HTML;
 	</div>
 
 HTML;
-	echo $script . elgg_view('input/form', array('body' => $form_body, 'id' => 'todo_submission_form'));
+	echo $script . elgg_view('input/form', array('body' => $form_body, 'id' => 'todo-submission-form'));
 	
 }

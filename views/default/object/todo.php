@@ -51,7 +51,11 @@ $metadata = elgg_view_menu('entity', array(
 	'class' => 'elgg-menu-hz',
 ));
 
-$subtitle = "<p>$author_text $comments_link</p>";
+// Add due date
+$due_date = is_int($todo->due_date) ? date("F j, Y", $todo->due_date) : $todo->due_date;
+$due_date = elgg_echo('todo:label:due', array($due_date));
+
+$subtitle = "<strong>$due_date</strong><p>$author_text $comments_link</p>";
 $subtitle .= $categories;
 
 // do not show the metadata and controls in widget view
@@ -59,11 +63,49 @@ if (elgg_in_context('widgets')) {
 	$metadata = '';
 }
 
-if ($full) {
-	$body = elgg_view('output/longtext', array(
-		'value' => $todo->description,
-		'class' => 'todo-description',
-	));
+
+if ($full) { // Full View
+	// Determine how we are going to view this todo
+	$is_owner = $todo->canEdit();
+	$is_assignee = is_todo_assignee($todo->getGUID(), elgg_get_logged_in_user_guid());
+	
+	// Start putting content together
+	$description_label = elgg_echo("todo:label:description");
+	$description_content = elgg_view('output/longtext', array('value' => $vars['entity']->description));
+
+	$duedate_label = elgg_echo("todo:label:duedate");
+	$duedate_content = elgg_view('output/longtext', array('value' => $due_date));
+
+	$return_label = elgg_echo("todo:label:returnrequired");
+	$return_content = $todo->return_required ? 'Yes' : 'No';
+
+	$status_label = elgg_echo("todo:label:status");
+	
+	// Default status
+	if (have_assignees_completed_todo($todo->getGUID())) {
+		$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+	} else {
+		$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+	}
+	
+	// Assignee
+	if ($is_assignee) {
+		if (has_user_submitted(elgg_get_logged_in_user_guid(), $todo->getGUID())) {
+			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+		} else {
+			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+		}
+	}
+	
+	// Owner
+	if ($is_owner) {
+		$status_content .= elgg_view('todo/status', $vars);
+	} 
+
+	$body = elgg_view_module('info', $description_label, $description_content);
+	$body .= elgg_view_module('info', $duedate_label, $duedate_content);
+	$body .= elgg_view_module('info', $return_label, $return_content);
+	$body .= elgg_view_module('info', $status_label, $status_content);
 
 	$header = elgg_view_title($todo->title);
 
@@ -79,13 +121,14 @@ if ($full) {
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
 
 	echo <<<HTML
-$header
-$todo_info
-$body
+<div class='todo'>
+	$header
+	$todo_info<br />
+	$body
+</div>
 HTML;
 	
-} else {
-	// listing view
+} else { // listing view
 	$params = array(
 		'entity' => $todo,
 		'metadata' => $metadata,
