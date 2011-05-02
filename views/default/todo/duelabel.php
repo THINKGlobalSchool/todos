@@ -11,8 +11,6 @@
  * @uses $vars['entity']
  */
 
-
-
 if (get_input('display_label', false)) {
 	$today = strtotime(date("F j, Y"));
 	$next_week = strtotime("+7 days", $today);
@@ -28,5 +26,5 @@ if (get_input('display_label', false)) {
 		$priority = TODO_PRIORITY_LOW;
 	}
 
-	echo "<span class='todo-priority-label todo-priority-{$priority}'><span class='label-text'>{$label}</span></span>";
+	echo "<div class='todo-priority-label todo-priority-{$priority}'><span class='label-text'>{$label}</span></div>";
 }

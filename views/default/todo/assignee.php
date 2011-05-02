@@ -13,11 +13,9 @@
  */
 
 echo <<<HTML
-	<div class="todo_assignee">
-		<div class="todo_assingee_info">
-		<a href='#' onclick="javascript:unassignAssignee({$vars['entity']->guid});return false;">[Remove]</a>
-		{$vars['entity']->name}
-		</div>
+	<div class="todo-assignee-remove">
+		<a href='#' onclick="javascript:unassignAssignee({$vars['entity']->guid});return false;"><span class="elgg-icon elgg-icon-delete"></span></a>
+		<span>{$vars['entity']->name}</span>
 	</div>
 HTML;
 ?>
