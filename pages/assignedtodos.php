@@ -30,6 +30,7 @@ if (!$page_owner) {
 	}
 }
 
+
 $limit = get_input("limit", 10);
 $offset = get_input("offset", 0);
 
@@ -51,7 +52,7 @@ $test_id = get_metastring_id('manual_complete');
 $one_id = get_metastring_id(1);
 $wheres = array();
 			
-$user_id = get_loggedin_userid();		
+$user_id = $page_owner->getGUID();	
 $relationship = COMPLETED_RELATIONSHIP;
 	
 // Build list based on status
@@ -92,7 +93,7 @@ $list = elgg_list_entities_from_relationship(array(
 	'type' => 'object',
 	'subtype' => 'todo',
 	'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
-	'relationship_guid' => get_loggedin_userid(), 
+	'relationship_guid' => $user_id, 
 	'inverse_relationship' => FALSE,
 	'metadata_name' => 'status',
 	'metadata_value' => TODO_STATUS_PUBLISHED,
