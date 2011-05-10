@@ -316,7 +316,7 @@ function todo_page_handler($page) {
 			break;
 		case 'loadassignees':
 			$guid = get_input('guid');
-			echo elgg_view('todo/ajaxassignees', array('guid' => $guid));
+			echo todo_get_page_content_assignees($guid);
 			exit;
 			break;
 	}

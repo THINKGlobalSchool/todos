@@ -24,53 +24,15 @@ $access_id 			= elgg_extract('access_level', $vars);
 $status				= elgg_extract('status', $vars);
 $guid				= elgg_extract('guid', $vars);
 
-// JS
-$script = <<<HTML
-		<script type='text/javascript'>
-			$(document).ready(function() {
-				$('#assign_individual_container').show();
-				$("#group_assignee_picker").attr("disabled","disabled");
-
-				$('#assignee_picker').change(function() {
-					if ($(this).val() == 0) {
-						$('#assign_individual_container').show();
-						$('#assign_group_container').hide();
-						$("#user_assignee_picker").removeAttr("disabled");
-						$("#group_assignee_picker").attr("disabled","disabled");
-					} else {
-						$('#assign_individual_container').hide();
-						$('#assign_group_container').show();
-						$("#user_assignee_picker").attr("disabled","disabled");
-						$("#group_assignee_picker").removeAttr("disabled");
-					}
-				});
-			});
-		</script>
-HTML;
-
 // Check if we've got an entity, if so, we're editing.
 if ($guid) {	
 	$entity_hidden  = elgg_view('input/hidden', array('name' => 'guid', 'value' => $guid));
-		
-	$assignees_url = elgg_get_site_url() . 'todo/loadassignees';
-	
+
 	$script .= <<<HTML
 		<script type='text/javascript'>
 			$(document).ready(function() {
-				loadAssignees({$guid});
+				elgg.todo.loadAssignees({$guid}, 'todo-assignees-container');
 			});
-			
-			function loadAssignees(guid) {
-				$.ajax({
-					type: "GET",
-					url: "$assignees_url",
-					data: {guid: guid},
-					cache: false,
-					success: function(data){
-						$("#todo-assignees-container").html(data);
-					}
-				});
-			}
 		</script>
 HTML;
 	// Get the actual access id
@@ -118,8 +80,8 @@ $tag_input = elgg_view('input/tags', array(
 
 $assign_label = elgg_echo('todo:label:assignto');
 $assign_content = elgg_view('input/pulldown', array(
-	'name' => 'assignee_picker',
-	'id' => 'assignee_picker',
+	'name' => 'assignee_type_select',
+	'id' => 'todo-assignee-type-select',
 	'options_values' =>	array(
 		0 => elgg_echo('todo:label:individuals'),
 		1 => elgg_echo('todo:label:groups'
@@ -128,16 +90,17 @@ $assign_content = elgg_view('input/pulldown', array(
 													
 $user_picker = elgg_view('input/userpicker', array(
 	'name' => 'assignee_guids', 
-	'id' => 'user_assignee_picker'
+	'id' => 'todo-assignee-userpicker'
 ));
 
 $group_label = elgg_echo('todo:label:selectgroup');
-$group_picker = elgg_view('input/pulldown', array(
+$group_picker = elgg_view('input/dropdown', array(
 	'name' => 'assignee_guids[]', 
-	'id' => 'group_assignee_picker', 
+	'id' => 'todo-group-assignee-select', 
 	'options_values' => get_todo_groups_array(), 
 	'class' => 'multiselect', 
-	'js' => 'MULTIPLE'
+	'multiple' => 'MULTIPLE',
+	'disabled' => 'DISABLED',
 ));
 
 $return_label = elgg_echo('todo:label:returnrequired');
@@ -147,7 +110,7 @@ $return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_
 // Optional content
  
 $rubric_html = "";
-
+// @TODO Test this w/ rubrics
 if (TODO_RUBRIC_ENABLED) {
 	$rubric_label = elgg_echo('todo:label:assessmentrubric');
 	$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
@@ -216,6 +179,8 @@ $status_input = elgg_view('input/pulldown', array(
 	)
 ));
 		
+		
+$assignees_label = elgg_echo('todo:label:currentassignees');
 
 // Build Form Body
 $form_body = <<<HTML
@@ -240,14 +205,15 @@ $form_body = <<<HTML
 	<div>
 		<label>$assign_label</label><br />
 		$assign_content<br /><br />
-		<div id='assign_individual_container'>
+		<div id='todo-assign-individual-container'>
 			$user_picker
 		</div>
-		<div id='assign_group_container'>
+		<div id='todo-assign-group-container'>
 			<label>$group_label</label><br />
 			$group_picker
 			<br /><br />
 		</div><br />
+		<label>$assignees_label</label><br />
 		<div id='todo-assignees-container'></div>
 	</div><br />
 	<div>

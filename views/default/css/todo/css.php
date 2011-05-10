@@ -32,17 +32,12 @@
 }
 
 
-div.todo-assignee-remove {
+div.todo-assignee-container {
 	padding: 5px;
 	margin: 3px;
 }
 
-
-#assign_individual_container {
-	display: none;
-}
-
-#assign_group_container {
+#todo-assign-group-container {
 	display: none;
 }
 
