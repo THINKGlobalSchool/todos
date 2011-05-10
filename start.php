@@ -23,6 +23,7 @@
 // - assign
 // - unassign
 // - delete
+// - submission delete
 
 // ACTIONS NEEDING TESTING
 // - complete
@@ -59,10 +60,6 @@ function todo_init() {
 	// Relationship for complete todos
 	define('COMPLETED_RELATIONSHIP', 'completedtodo');
 	
-	// View Modes
-	define('TODO_MODE_ASSIGNER', 0);
-	define('TODO_MODE_ASSIGNEE', 1);
-	
 	// Priorities (currently just used for a pretty display)
 	define('TODO_PRIORITY_HIGH', 1);
 	define('TODO_PRIORITY_MEDIUM', 2);
@@ -80,9 +77,13 @@ function todo_init() {
 	// Admin CSS
 	elgg_extend_view('css/admin', 'css/todo/admin');
 	
-	// Extend Metatags (for js)
-	elgg_extend_view('html_head/extend','todo/metatags');
+	// Register todo JS
+	$todo_js = elgg_get_simplecache_url('js', 'todo/todo');
+	elgg_register_js('elgg.todo', $todo_js);
 	
+	// Need newer jquery form plugin (temporarily I hope)
+	elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
+		
 	// Extend groups profile page
 	if (elgg_is_active_plugin('group-extender')) {
 		elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
@@ -157,6 +158,9 @@ function todo_init() {
 	// Todo entity menu
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_entity_menu_setup');
 	
+	// Submission entity menu
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'submission_entity_menu_setup');
+	
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 
@@ -170,6 +174,7 @@ function todo_init() {
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
 	elgg_register_action('todo/complete', "$action_base/complete.php");
+	elgg_register_action('todo/upload', "$action_base/upload.php");
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
@@ -219,6 +224,9 @@ function todo_init() {
  */
 function todo_page_handler($page) {	
 	elgg_push_breadcrumb(elgg_echo('todo'), elgg_get_site_url() . "todo/all");	
+	
+	// Load JS lib
+	elgg_load_js('elgg.todo');
 	
 	$page_type = $page[0];
 	
@@ -668,7 +676,7 @@ function todo_submenus() {
  * @return string request url
  */
 function todo_submission_url($entity) {
-	return elgg_get_site_url() . "todo/viewsubmission/{$entity->guid}/";
+	return elgg_get_site_url() . "todo/view/submission/{$entity->guid}/";
 }
 
 /**
@@ -888,14 +896,13 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					$return[] = ElggMenuItem::factory($options);
 				} else {
 					// If we need to return something for this todo, the complete link will point to the submission form
-					$id = $entity->return_required ? 'todo-create-submission' : 'todo-create-empty-submission';
+					$id = $entity->return_required ? '' : 'empty';
 					$options = array(
 						'name' => 'todo_create_submission',
 						'text' => elgg_echo("todo:label:completetodo"),
 						'href' => '#',
-						'id' => $id,
 						'priority' => 1000,
-						'link_class' => "elgg-button elgg-button-action $id",
+						'link_class' => "elgg-button elgg-button-action todo-create-submission $id",
 					);
 					$return[] = ElggMenuItem::factory($options);
 				}
@@ -965,6 +972,40 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		
 	return $return;
 }
+
+
+/**
+ * Customize todo submission entity menu
+ */
+function submission_entity_menu_setup($hook, $type, $return, $params) {
+	if (elgg_in_context('widgets')) {
+		return $return;
+	}
+	
+	$handler = elgg_extract('handler', $params, false);
+	if ($handler != 'submission') {
+		return $return;
+	}
+	
+	$entity = $params['entity'];
+	
+	// Nuke menu
+	$return = array();
+	
+	// Add delete link
+	$options = array(
+		'name' => 'delete',
+		'text' => elgg_view_icon('delete'),
+		'title' => elgg_echo('delete:this'),
+		'href' => "action/$handler/delete?guid={$entity->getGUID()}",
+		'confirm' => elgg_echo('deleteconfirm'),
+		'priority' => 300,
+	);
+	$return[] = ElggMenuItem::factory($options);
+			
+	return $return;
+}
+
 
 /**
  * Hook to allow output/access to display 'Assignees Only'

@@ -10,18 +10,16 @@
  * 
  */
 
-// Start engine as this action is triggered via ajax
-require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/engine/start.php');
-
-// Logged in users only
-gatekeeper();
-
-// must have security token 
+// Manual action check
 action_gatekeeper();
+gatekeeper();
 
 // must have a file if a new file upload
 if (empty($_FILES['upload']['name'])) {
-	echo 0;
+	echo json_encode(array(
+		'status' => 0,
+		'message' => elgg_echo('todo:error:nofile'),
+	));
 	return;
 }
 
@@ -52,12 +50,19 @@ if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {
 } 
 
 // handle results differently for new files and file updates
-if ($guid) {
-	//echo elgg_view('output/url', array('href' => $file->getURL(), 'text' => $file->title));
-	//echo $file->getURL();
-	echo '{"guid": "' . $file->getGUID() . '", "name":"' . $file->title . '", "url": "' . $file->getURL() . '"}';
+if ($guid) {	
+	echo json_encode(array(
+		'status' => 1,
+		'guid' => $file->getGUID(),
+		'name' => $file->title,
+		'url' => $file->getURL()
+	));
+	exit;
 	return;
 } else {
-	echo 0;
+	echo json_encode(array(
+		'status' => 0,
+		'message' => elgg_echo('todo:error:fileupload'),
+	));
 	return;
 }

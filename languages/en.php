@@ -89,6 +89,7 @@ $english = array(
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
 	'todo:label:assignedto' => 'Assigned to %s',
+	'todo:label:submittedby' => 'Submitted by %s',
 	'todo:label:me' => 'me',
 	'todo:label:deletesubmission' => 'Delete Submission',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
@@ -99,6 +100,7 @@ $english = array(
 	'todo:label:submissiontitleprefix' => 'Submission for: %s',
 	'todo:label:signup' => 'Sign Up',
 	'todo:label:signupconfirm' => 'Do you want to assign yourself this To Do?',
+	'todo:label:ownersubmission' => '%s\'s Submission',
 	
 	
 	// Calendar labels
@@ -201,6 +203,7 @@ You cannot reply to this email.",
 	
 	// Messages
 	'todo:success:save' => 'To Do Saved',
+	'todo:success:savesubmission' => 'Submission Saved',
 	'todo:success:edit' => 'To Do successfully edited',
 	'todo:success:delete' => 'To Do successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
@@ -212,6 +215,7 @@ You cannot reply to this email.",
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
 	'todo:error:delete' => 'There was an error deleting the Todo',
+	'todo:error:savesubmission' => 'There was an error saving the submission',
 	'todo:error:submissiondelete' => 'There was an error deleting the submission',
 	'todo:error:permission' => 'You do not have permission to create/edit this object', 
 	'todo:error:permissiondenied' => 'Permission Denied', 
@@ -220,6 +224,8 @@ You cannot reply to this email.",
 	'todo:error:flagcomplete' => 'There was an error marking the to do as complete',
 	'todo:error:signup' => 'There was an error signing up for the To Do',
 	'todo:error:invalid' => 'Invalid Entity',
+	'todo:error:fileupload' => 'There was an error uploading the file',
+	'todo:error:nofile' => 'You need to select at least one file',
 	
 	// Other content
 	'todo:strapline:mode' => '%s',
