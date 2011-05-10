@@ -53,7 +53,9 @@ foreach ($todos as $todo) {
 	}
 	
 	// For counting average
-	$total_completion += ($submissions_count / count($assigned_users)) * 100;
+	if (count($assigned_users) > 0) {
+		$total_completion += ($submissions_count / count($assigned_users)) * 100;
+	}
 
 	// Counting total assigned
 	$assigned_to_users += count($assigned_users);

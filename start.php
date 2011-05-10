@@ -13,10 +13,11 @@
 /*********************** TODO: (Code related) ************************/
 // - Cleaner way to handle different content attachments (views, callbacks.. yadda)
 // - Prettier everything (Rubric select, view rubric modal popup, etc.. )
-// - File permissions
 
 // MIGRATION TODOS
-// - Examine language file (remove unused strings, clean up)
+// - Test/Fix River Entries
+// - Figure out access for file permissions
+// - Fix weirdness in listings (todos showing as complete when they aren't)
 
 // DEFINITELY WORKING ACTIONS:
 // - accept
@@ -24,14 +25,13 @@
 // - unassign
 // - delete
 // - submission delete
+// - submission save
+// - upload 
 
 // ACTIONS NEEDING TESTING
 // - complete
 // - save (just needs some more testing)
 // - sendreminder
-// - upload
-// - submission/delete
-// - submission/save
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -84,10 +84,8 @@ function todo_init() {
 	// Need newer jquery form plugin (temporarily I hope)
 	elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
 		
-	// Extend groups profile page
-	if (elgg_is_active_plugin('group-extender')) {
-		elgg_extend_view('group-extender/sidebar','todo/group_todos', 2);
-	}
+	// Extend groups sidebar
+	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
 		
 	// Extend admin view to include some extra styles
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
@@ -884,7 +882,6 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'priority' => 999,
 				);
 				$return[] = ElggMenuItem::factory($options);
-				// @TODO need to view this ^
 			} else { // User has not submitted
 				if ($entity->manual_complete) {
 					$options = array(
