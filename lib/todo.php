@@ -91,22 +91,25 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 		
 		
 	} else if ($type == 'owner') {
-		// SHOW OWNED TODOS
-		$owner = get_entity($guid);
-		set_input('todo_main_tab', $type);
-		$params['filter'] = todo_get_filter_content(FALSE);
-		$title = elgg_echo("todo:label:assignedby", array($by));
+		if ($guid && $owner = get_entity($guid)) {
+			// SHOW OWNED TODOS
+			set_input('todo_main_tab', $type);
+			$params['filter'] = todo_get_filter_content(FALSE);
+			$title = elgg_echo("todo:label:assignedby", array($by));
 		
-		$options = array(
-			'types' => 'object', 
-			'subtypes' => 'todo', 
-			'limit' => get_input('limit', 10), 
-			'offset' => get_input('offset', 0), 
-			'full_view' => FALSE,
-			'container_guid' => $owner->getGUID(),
-		);
+			$options = array(
+				'types' => 'object', 
+				'subtypes' => 'todo', 
+				'limit' => get_input('limit', 10), 
+				'offset' => get_input('offset', 0), 
+				'full_view' => FALSE,
+				'container_guid' => $owner->getGUID(),
+			);
 		
-		$content = elgg_list_entities($options);
+			$content = elgg_list_entities($options);
+		} else {
+			forward('todo/all');
+		}
 	} else { 
 		// SHOW ALL TODOS
 		$params['filter'] = todo_get_filter_content();
