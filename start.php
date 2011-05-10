@@ -199,7 +199,7 @@ function todo_init() {
 
 /**
  * Todo page handler
- * @TODO SHOULD BE LIKE BELOW
+ *
  * URLs take the form of
  *  All todos:       todo/all
  *  User's todos:    todo/owner/<username>
@@ -215,8 +215,6 @@ function todo_init() {
  *  todo/loadassignees - get assignee list via ajax
  *
  * Title is ignored
- *
- * @TODO Check usernames
  * 
  * @param array $page
  * @return NULL
@@ -283,9 +281,9 @@ function todo_page_handler($page) {
 			gatekeeper();
 			group_gatekeeper();
 			$user = get_user_by_username($page[1]);
-			elgg_set_page_owner_guid($user->getGUID());
+			elgg_set_page_owner_guid($user->guid);
 			set_input('username',$user->username);
-			$params = todo_get_page_content_list($page_type, $user->getGUID());
+			$params = todo_get_page_content_list($page_type, $user->guid);
 			break;
 		case 'group':
 			gatekeeper();
@@ -296,6 +294,9 @@ function todo_page_handler($page) {
 			gatekeeper();
 			group_gatekeeper();
 			$user = get_user_by_username($page[1]);
+			if (!$user) {
+				$user = elgg_get_logged_in_user_entity();
+			}
 			elgg_set_page_owner_guid($user->getGUID());
 			set_input('username',$page[1]);
 			$params = todo_get_page_content_list($page_type, $page[1]);
