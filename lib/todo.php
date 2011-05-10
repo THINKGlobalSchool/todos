@@ -18,7 +18,7 @@
  * @param int $username 	Owner guid
  * @return array
  */
-function todo_get_page_content_list($type = NULL, $username = NULL) {
+function todo_get_page_content_list($type = NULL, $guid = NULL) {
 	// Sort out who owns what we're looking at
 	$page_owner = elgg_get_page_owner_entity();
 	
@@ -92,7 +92,7 @@ function todo_get_page_content_list($type = NULL, $username = NULL) {
 		
 	} else if ($type == 'owner') {
 		// SHOW OWNED TODOS
-		$owner = get_user_by_username($username);
+		$owner = get_entity($guid);
 		set_input('todo_main_tab', $type);
 		$params['filter'] = todo_get_filter_content(FALSE);
 		$title = elgg_echo("todo:label:assignedby", array($by));
