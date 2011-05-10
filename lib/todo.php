@@ -277,6 +277,27 @@ function todo_get_page_content_edit($type, $guid) {
 	return $params;
 }
 
+/** 
+ * Get todo assignees content
+ * @param int $guid 	todo guid
+ */
+function todo_get_page_content_assignees($guid) {
+	$assignees = get_todo_assignees($guid);	
+
+	if ($assignees) {
+		$member_list .= "<div class='todo-assignees' id='$guid'>";
+		foreach ($assignees as $assignee) {
+			$member_list .= elgg_view('todo/assignee', array('entity' => $assignee));	
+		}
+		$member_list .= "<div style='clear: both;'></div></div>";
+	} else {
+		$member_list = 'None';
+	}
+	
+	return $member_list;
+}
+
+
 /**
  * Helper function to build menu content
  * @param bool $secondary Show the secondary menu

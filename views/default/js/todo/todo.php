@@ -15,6 +15,8 @@ elgg.provide('elgg.todo');
 
 elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.php';
 
+elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
+
 elgg.todo.init = function() {	
 	$(function() {
 		/* Remove river comments for submissions, need to fix this
@@ -72,6 +74,14 @@ elgg.todo.init = function() {
 		
 		// Register submit handler for submission file form
 		$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
+		
+		// OTHER
+		
+		// Remove assignee click handler
+		$(".todo-remove-assignee").live('click', elgg.todo.removeAssignee);
+
+		// Assign onchange for the assignee type select input
+		$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
 
 	});
 }
@@ -209,6 +219,61 @@ elgg.todo.submissionContentMenuClick = function(event) {
 	// The id to show is supplied as the items href
 	$($(this).attr('href')).show();
 	
+	event.preventDefault();
+}
+
+// Load todo assignees into container
+elgg.todo.loadAssignees = function(guid, container) {
+	elgg.get(elgg.todo.loadAssigneesURL, {
+		data: {
+			guid: guid
+		},
+		success: function(data){
+			$("#" + container).html(data);
+		}
+	});
+}
+
+/**
+ * Remove assignee from todo action, uses the anchor's HREF for
+ * the assignee guid
+ */
+elgg.todo.removeAssignee = function(event) {
+	console.log($(this).closest('.todo-assignees').parent().attr('id'));
+	
+	var assignee_guid = $(this).attr('href');
+	var todo_guid =  $(this).closest('.todo-assignees').attr('id');
+	
+	var assignee = $(this).closest('.todo-assignee-container');
+		
+	elgg.action('todo/unassign', {
+		data: {
+			assignee_guid: assignee_guid, 
+			todo_guid: todo_guid,
+		}, 
+		success: function() {
+			assignee.remove();
+		}
+	});
+	
+	event.preventDefault();
+}
+
+/**
+ *  Onchange handler for the assignee type select input
+ */
+elgg.todo.assigneeTypeSelectChange = function(event) {
+	if ($(this).val() == 0) {
+		$('#todo-assign-individual-container').show();
+		$('#todo-assign-group-container').hide();
+		$("#todo-assignee-userpicker").removeAttr("disabled");
+		$("#todo-group-assignee-select").attr("disabled","disabled");
+	} else {
+		$('#todo-assign-individual-container').hide();
+		$('#todo-assign-group-container').show();
+		$("#todo-assignee-userpicker").attr("disabled","disabled");
+		$("#todo-group-assignee-select").removeAttr("disabled");
+	}
 	event.preventDefault();
 }
 
