@@ -21,7 +21,7 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-.todo .submission_content_select {
+#submission-content-select {
 	border: 2px solid #bbbbbb;
 	font-size: 120%;
 	width: 100%;
@@ -70,23 +70,22 @@ span.unviewed {
 	color: #9D1520 !important;
 }
 
-#submission-content-container .content_menu {
+#submission-content-container .content-menu {
 	width: 20%;
 	float: left;
+}
+
+#submission-content-container #submission-control-back {
 	display: none;
 }
 
-#submission-content-container .content_menu  a {
+#submission-content-container .content-menu  a {
 	font-size: 120%;
 }
 
 #submission-content-container #submission-content {
 	width: 79%;
 	float: left;
-}
-
-.content_div {
-	display:none;
 }
 
 #submission-error-message {
@@ -133,29 +132,6 @@ span.unviewed {
 	display: none;
 }
 
-/** POPUP DIALOG **/
-
-/** Popups **/
-
-.ui-widget-overlay
-{
-	position: fixed;
-	top: 0px;
-	left: 0px;
-    background-color: #000000 !important;
-    opacity: 0.5;
-	-moz-opacity: 0.5; 
-	z-index: 1001 !important;
-}
-
-#submission-dialog  {
-	border: 8px solid #555555;
-	background: #ffffff;
-	-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
-}
-
-
 /* messages/new messages icon & counter in elgg_topbar */
 .todo-notifier {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left 2px;
@@ -165,10 +141,31 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
+/** POPUP DIALOG **/
+
+.ui-widget-overlay
+{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+    background-color: #000000 !important;
+    opacity: 0.5;
+	-moz-opacity: 0.5; 
+}
+
+#todo-submission-dialog  {
+	border: 8px solid #555555;
+	background: #ffffff;
+	-moz-border-radius:5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+}
+
+
+
+
 
 /** jQuery UI Stuff **/
-
-.ui-dialog .ui-dialog-buttonpane {
+.todo-dialog.ui-dialog .ui-dialog-buttonpane {
 	position: absolute; 
 	right: .3em; 
 	top: 30px; 
@@ -177,17 +174,15 @@ span.unviewed {
 	padding: 1px; height: 18px; 
 }
 
-.ui-dialog .ui-dialog-buttonpane button { 
-	
+.todo-dialog.ui-dialog .ui-dialog-buttonpane button { 
 	cursor: pointer; 
 	padding: .2em .6em .3em .6em; 
 	line-height: 1.4em; 
 	width:auto; 
 	overflow:visible; 
-
 }
 
-.ui-dialog .ui-dialog-buttonpane button {
+.todo-dialog.ui-dialog .ui-dialog-buttonpane button {
 	-moz-border-radius:4px 4px 4px 4px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 	background:none repeat scroll 0 0 #000000;

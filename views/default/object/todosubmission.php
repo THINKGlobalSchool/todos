@@ -13,7 +13,7 @@
 $valid = false;
 
 //Check for valid entity
-if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject) {
+if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 	$todo = get_entity($vars['entity']->todo_guid);
 	$todo_owner = get_entity($todo->owner_guid);
 		
@@ -24,23 +24,54 @@ if (isset($vars['entity']) && $vars['entity'] instanceof ElggObject) {
 }
 
 if ($valid) {
+	$submission = $vars['entity'];
 
-	$url = $vars['entity']->getURL();
-	$owner = $vars['entity']->getOwnerEntity();	
+	$url = $submission->getURL();
+	$owner = $submission->getOwnerEntity();	
 	
-	$canedit = $vars['entity']->canEdit();
-	$title = $vars['entity']->title;
-	$contents = unserialize($vars['entity']->content);
+	$canedit = $submission->canEdit();
+	$title = $submission->title;
+	$contents = unserialize($submission->content);
 	
 	$assignee_label = elgg_echo('todo:label:assignee');
 	$assignee_content = $owner->name;
+	
+	$owner_icon = elgg_view_entity_icon($owner, 'tiny');
+	$owner_link = elgg_view('output/url', array(
+		'href' => "profile/$owner->username",
+		'text' => $owner->name,
+	));
+	
+	$author_text = elgg_echo('todo:label:submittedby', array($owner_link));
 	
 	$todo_title_label = elgg_echo('todo:label:todo');
 	$todo_title_content = elgg_view('output/url', array('href' => $todo->getURL(), 'text' => $todo->title));
 	
 	$date_label = elgg_echo('todo:label:datecompleted');
-	$date_content =  date("F j, Y", $vars['entity']->time_created);
+	$date_content =  date("F j, Y", $submission->time_created);
 	
+	$comments_count = $submission->countComments();
+	//only display if there are commments
+	if ($comments_count != 0) {
+		$text = elgg_echo("comments") . " ($comments_count)";
+		$comments_link = elgg_view('output/url', array(
+			'href' => $submission->getURL() . '#comments',
+			'text' => $text,
+		));
+	} else {
+		$comments_link = '';
+	}
+	
+	$subtitle = "<strong>$date_content</strong><p>$author_text $comments_link</p>";
+	
+	$metadata = elgg_view_menu('entity', array(
+		'entity' => $submission,
+		'handler' => 'submission',
+		'sort_by' => 'priority',
+		'class' => 'elgg-menu-hz',
+	));
+	
+
 	if ($contents) {
 		$work_submitted_label = elgg_echo('todo:label:worksubmitted');
 	
@@ -56,60 +87,38 @@ if ($valid) {
 		}
 	}
 	
-	if ($moreinfo_content = $vars['entity']->description) {
+	if ($submission->description) {
+		$moreinfo_content = elgg_view('output/longtext', array('value' => $submission->description));
 		$moreinfo_label = elgg_echo('todo:label:moreinfo');
 	}
 	
-	
-	// Content
-	$strapline = sprintf(elgg_echo("todo:strapline"), date("F j, Y",$vars['entity']->time_created));
-	$strapline .= " " . elgg_echo('by') . " <a href='todo/{$owner->username}'>{$owner->name}</a> ";
-	$strapline .= sprintf(elgg_echo("comments")) . " (" . $vars['entity']->countComments() . ")";
-	
-	if ($canedit) {
-			$controls .= elgg_view("output/confirmlink", 
-									array(
-										'href' => elgg_get_site_url() . "action/submission/delete?guid=" . $vars['entity']->getGUID(),
-										'text' => elgg_echo('todo:label:deletesubmission'),
-										'confirm' => elgg_echo('deleteconfirm'),
-									)) . "&nbsp;&nbsp;&nbsp;";
-									
-	}
-	
-	$info = <<<HTML
-				<div class='todo margin_top' style='border-bottom:1px dotted #CCCCCC; margin-bottom: 4px; padding-bottom: 10px;'>
-					<div class='strapline'>
-						<div class='entity_metadata' style='float: left; color: black; margin: 0;'>
-							<b>$assignee_label: </b>
-							$assignee_content | 
-							<b>$todo_title_label: </b>
-							$todo_title_content | 
-							<b>$date_label: </b>
-							$date_content
-						</div>
-						<div class='entity_metadata' style='float: right;'>
-							$controls
-						</div>
-						<div style='clear: both;'></div>
-					</div>
-					<div class='work_submitted margin_top'>
-						<label>$work_submitted_label</label><br />
-						<ul>
-						$work_submitted_content
-						</ul>
-					</div><br />
-					<div class='description'>
-						<label>$moreinfo_label</label>
-						$moreinfo_content
-					</div>
-				</div>
+	$content = <<<HTML
+		<div>
+			<label>$todo_title_label</label><br />
+			$todo_title_content
+		</div><br />
+		<div>
+			<label>$work_submitted_label</label><br />
+			<ul>
+			$work_submitted_content
+			</ul>
+		</div><br />
+		<div class='description'>
+			<label>$moreinfo_label</label><br />
+			$moreinfo_content
+		</div>
 HTML;
-	echo $info;
 	
+	$params = array(
+		'entity' => $submission,
+		'metadata' => $metadata,
+		'subtitle' => $subtitle,
+		'content' => $content,
+	);
 	
+	$list_body = elgg_view('page/components/summary', $params);
+
+	echo elgg_view_image_block($owner_icon, $list_body);
 } else {
-	// If were here something went wrong..
-	$owner = $vars['user'];
-	$canedit = false;
 	forward();
 }

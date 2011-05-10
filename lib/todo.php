@@ -208,12 +208,23 @@ function todo_get_page_content_view($type, $guid) {
 			$owner = $entity->getOwnerEntity();
 			$params['title'] = $entity->title;
 			$params['content'] = elgg_view_entity($entity, TRUE);
+			$params['content'] .= elgg_view_comments($entity);
 			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
 			elgg_push_breadcrumb($entity->title);
 			return $params;
 		} else if ($entity->enabled && $type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
 			$params['title'] = elgg_echo('todo:label:viewsubmission');
 			$params['content'] = elgg_view_entity($entity, TRUE);
+			$params['content'] .= elgg_view_comments($entity);
+			
+			$todo = get_entity($entity->todo_guid);
+			$owner = $todo->getOwnerEntity();
+			
+			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
+			elgg_push_breadcrumb($todo->title, $todo->getURL());
+			elgg_push_breadcrumb(elgg_echo('todo:label:ownersubmission', array($entity->getOwnerEntity()->name)));
+			
+			
 			return $params;
 		} else {
 			// Most likely a permission issue here

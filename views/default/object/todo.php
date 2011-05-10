@@ -37,7 +37,7 @@ $comments_count = $todo->countComments();
 if ($comments_count != 0) {
 	$text = elgg_echo("comments") . " ($comments_count)";
 	$comments_link = elgg_view('output/url', array(
-		'href' => $todo->getURL() . '#todo-comments',
+		'href' => $todo->getURL() . '#comments',
 		'text' => $text,
 	));
 } else {
@@ -119,12 +119,21 @@ if ($full) { // Full View
 	$list_body = elgg_view('page/components/summary', $params);
 
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
+	
+	// Submission form vars
+	$vars = array();
+	$vars['id'] = 'todo-submission-form';
+	$vars['name'] = 'todo_submission_form';
+	
+	// View submission form
+	$submission_form = elgg_view_form('submission/save', $vars, array('entity' => $todo));
 
 	echo <<<HTML
 <div class='todo'>
 	$header
 	$todo_info<br />
 	$body
+	<div id="todo-submission-dialog" style="display: none;" >$submission_form</div>
 </div>
 HTML;
 	
