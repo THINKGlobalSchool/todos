@@ -164,7 +164,6 @@ function todo_init() {
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 
-	// @TODO clean these up
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
 	elgg_register_action('todo/save', "$action_base/save.php");
@@ -208,7 +207,7 @@ function todo_init() {
  *  View todo:       todo/view/<guid>/<title>
  *  View submission	 todo/view/submission/<guid>
  *  New todo:        todo/add/<guid>
- *  Edit todo:       todo/edit/<guid>/<revision>
+ *  Edit todo:       todo/edit/<guid>
  *  Group todo:      todo/group/<guid>/owner
  *  Calendar feed    todo/calendar/<username>
  *
@@ -285,8 +284,8 @@ function todo_page_handler($page) {
 			group_gatekeeper();
 			$user = get_user_by_username($page[1]);
 			elgg_set_page_owner_guid($user->getGUID());
-			set_input('username',$page[1]);
-			$params = todo_get_page_content_list($page_type, $page[1]);
+			set_input('username',$user->username);
+			$params = todo_get_page_content_list($page_type, $user->getGUID());
 			break;
 		case 'group':
 			gatekeeper();
