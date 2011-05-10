@@ -24,25 +24,13 @@ $english = array(
 	'admin:statistics:todo' => 'Todo Statistics',
 	
 	// Page titles 
-	'todo:title:yourtodos'	=> 'To Do\'s I\'ve Assigned',
-	'todo:title:assignedtodos' => 'To Do\'s Assigned To me',
-	'todo:title:create' => 'Create New To Do',
 	'todo:title:edit' => 'Edit To Do',
 	'todo:title:alltodos' => 'All Site To Do\'s',
-	'todo:title:ownedtodos' => '%s\'s To Do\'s',
-	'todo:title:admin_stats' => 'To Do Statistics',
 	
 	// Menu items
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
 	'todo:menu:assignedtodos' => 'To Do\'s I\'ve Assigned', 
-	'todo:menu:createtodo' => 'Create To Do',
-	'todo:menu:admin' => 'todo Admin',
-	'todo:menu:alltodos' => 'All Site To Do\'s',	
-	'todo:menu:groupassignedtodos' => 'Group Assigned To Do\'s', 	
-	'todo:menu:groupcreatetodo' => 'Create Group To Do', 	
-	'todo:menu:admin_stats' => 'To Do Statistics',
-	'todo:menu:assignedtome' => 'Assigned to me',
-	'todo:menu:assignedbyme' => 'Assigned by me',
+	'todo:menu:alltodos' => 'All Site To Do\'s',		
 	
 	// Labels 
 	'todo:label:due' => 'Due: %s',
@@ -79,19 +67,17 @@ $english = array(
 	'todo:label:incomplete' => 'Upcoming',
 	'todo:label:statusincomplete' => 'Incomplete',
 	'todo:label:viewsubmission' => 'View Submission',
-	'todo:label:todo' => 'Assignment',
+	'todo:label:assignment' => 'Assignment',
 	'todo:label:moreinfo' => 'Additional Information',
 	'todo:label:worksubmitted' => 'Work Submitted',
 	'todo:label:addlink' => 'Add Link',
 	'todo:label:addfile' => 'Add File',
-	'todo:label:link' => 'Link',
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
 	'todo:label:assignedto' => 'Assigned to %s',
 	'todo:label:submittedby' => 'Submitted by %s',
 	'todo:label:me' => 'me',
-	'todo:label:deletesubmission' => 'Delete Submission',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
 	'todo:label:no' => 'No',
 	'todo:label:yes' => 'Yes',
@@ -125,7 +111,6 @@ $english = array(
 	'todo:status:closed' => 'Closed',
 	
 	// Admin Labels
-	'todo:label:admin:general' => 'General Statistics',
 	'todo:label:admin:totaltodos' => 'To Do\'s',
 	'todo:label:admin:totalsubmissions' => 'To Do Submissions',
 	'todo:label:admin:assignedusers' => 'Total To Do\'s Assigned to Users',
@@ -204,7 +189,6 @@ You cannot reply to this email.",
 	// Messages
 	'todo:success:save' => 'To Do Saved',
 	'todo:success:savesubmission' => 'Submission Saved',
-	'todo:success:edit' => 'To Do successfully edited',
 	'todo:success:delete' => 'To Do successfully deleted',
 	'todo:success:submissiondelete' => 'Submission successfully deleted',
 	'todo:success:accepted' => 'To Do has been accepted',
@@ -230,7 +214,6 @@ You cannot reply to this email.",
 	'todo:error:assigneeremoved' => 'There was an error removing the assignee',
 	
 	// Other content
-	'todo:strapline:mode' => '%s',
 	'groups:enabletodo' => 'Enable group to do\'s',
 	'todo:group' => 'Group to do\'s', 
 

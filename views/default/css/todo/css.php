@@ -156,7 +156,14 @@ span.unviewed {
 }
 
 
+/** Resets and tweaks for todo sidebar in groups **/
+.elgg-todo-sidebar .elgg-image-block {
+	border-bottom: 1px dotted #CCC;
+}
 
+.elgg-todo-sidebar .elgg-button {
+	display: inline-block;
+}
 
 
 /** jQuery UI Stuff **/

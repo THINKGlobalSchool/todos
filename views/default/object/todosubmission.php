@@ -44,7 +44,7 @@ if ($valid) {
 	
 	$author_text = elgg_echo('todo:label:submittedby', array($owner_link));
 	
-	$todo_title_label = elgg_echo('todo:label:todo');
+	$todo_title_label = elgg_echo('todo:label:assignment');
 	$todo_title_content = elgg_view('output/url', array('href' => $todo->getURL(), 'text' => $todo->title));
 	
 	$date_label = elgg_echo('todo:label:datecompleted');

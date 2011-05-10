@@ -52,8 +52,8 @@ $metadata = elgg_view_menu('entity', array(
 ));
 
 // Add due date
-$due_date = is_int($todo->due_date) ? date("F j, Y", $todo->due_date) : $todo->due_date;
-$due_date = elgg_echo('todo:label:due', array($due_date));
+$date = is_int($todo->due_date) ? date("F j, Y", $todo->due_date) : $todo->due_date;
+$due_date = elgg_echo('todo:label:due', array($date));
 
 $subtitle = "<strong>$due_date</strong><p>$author_text $comments_link</p>";
 $subtitle .= $categories;
@@ -74,7 +74,7 @@ if ($full) { // Full View
 	$description_content = elgg_view('output/longtext', array('value' => $vars['entity']->description));
 
 	$duedate_label = elgg_echo("todo:label:duedate");
-	$duedate_content = elgg_view('output/longtext', array('value' => $due_date));
+	$duedate_content = elgg_view('output/longtext', array('value' => $date));
 
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';
