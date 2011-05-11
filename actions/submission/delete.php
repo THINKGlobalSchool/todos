@@ -20,10 +20,10 @@ if (elgg_instanceof($submission, 'object', 'todosubmission') && $submission->can
 	// Remove the submission complete relationship stating that the user has completed the todo
 	remove_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $todo_guid);
 	
-	// This will check and set the complete flag on the todo
-	update_todo_complete($todo_guid);
-	
 	if ($submission->delete()) {
+		// This will check and set the complete flag on the todo
+		update_todo_complete($todo_guid);
+		
 		system_message(elgg_echo('todo:success:submissiondelete'));
 		forward("todo/view/$todo_guid");
 	} else {

@@ -17,7 +17,6 @@
 // MIGRATION TODOS
 // - Test/Fix River Entries
 // - Figure out access for file permissions
-// - Fix weirdness in listings (todos showing as complete when they aren't)
 
 // DEFINITELY WORKING ACTIONS:
 // - accept
