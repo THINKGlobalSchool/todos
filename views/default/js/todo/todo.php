@@ -18,12 +18,7 @@ elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.ph
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
 elgg.todo.init = function() {	
-	$(function() {
-		/* Remove river comments for submissions, need to fix this
-		$('.todo_submission_river_item .river_comments').remove();
-		$('.todo_submission_river_item .river_comments_tabs').remove();
-		*/
-	
+	$(function() {	
 		// Create submission dialog
 		$('#todo-submission-dialog').dialog({
 			autoOpen: false,

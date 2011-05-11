@@ -27,7 +27,7 @@ if ($container instanceof ElggGroup) {
 		'text' => $container->name,
 	);
 	$group_link = elgg_view('output/url', $params);
-	$group_string = elgg_echo('river:ingroup', array($group_link));
+	$group_string = elgg_echo('todo:ingroup', array($group_link));
 }
 
 echo elgg_echo('todo:river:create');
