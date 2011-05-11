@@ -28,7 +28,7 @@ $file = new ElggFile();
 $title = $_FILES['upload']['name'];
 
 $file->title = $title;
-$file->access_id = ACCESS_LOGGED_IN; // something else...
+$file->access_id = ACCESS_PRIVATE; // Set file access to private for now
 
 // we have a file upload, so process it
 if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {

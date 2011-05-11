@@ -15,8 +15,11 @@
 // - Prettier everything (Rubric select, view rubric modal popup, etc.. )
 
 // MIGRATION TODOS
+// - Reminders test (userpicker needs to work)
+// - Notifications test
+// - Test assigning users (when userpicker works)
+// - Test assigning groups
 // - Test/Fix River Entries
-// - Figure out access for file permissions
 
 // DEFINITELY WORKING ACTIONS:
 // - accept
@@ -492,7 +495,20 @@ function submission_create_event_listener($event, $object_type, $object) {
 			add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
 			elgg_set_context($context);
 			$object->access_id = $submission_acl;
-			$object->save();			
+			$object->save();
+			
+			// Set permissions for any attached content (files)
+			$contents = unserialize($object->content);
+			foreach ($contents as $content) {
+				$guid = (int)$content;
+				$entity = get_entity($guid);
+				if (elgg_instanceof($entity, 'object')) {
+					// If content is a valid entitity, set its ACL to that of the submission
+					$entity->access_id = $submission_acl;
+					$entity->save();
+				} 
+			}
+						
 		} else {
 			return false;
 		}
@@ -510,9 +526,22 @@ function submission_delete_event_listener($event, $object_type, $object) {
 		
 		// Make sure we nuke the relationship so the remove event fires
 		remove_entity_relationship($object->getGUID(), SUBMISSION_RELATIONSHIP, $todo->getGUID());
+
+		// Reset permissions for any attached content (files)
+		$contents = unserialize($object->content);
+		foreach ($contents as $content) {
+			$guid = (int)$content;
+			$entity = get_entity($guid);
+			if (elgg_instanceof($entity, 'object')) {
+				// If content is a valid entitity, set its ACL back to private
+				$entity->access_id = ACCESS_PRIVATE;
+				$entity->save();
+			} 
+		}
 		
 		// Nuke the ACL
 		delete_access_collection($submission_acl);
+
 		
 	}
 	return true;
@@ -988,16 +1017,18 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 	// Nuke menu
 	$return = array();
 	
-	// Add delete link
-	$options = array(
-		'name' => 'delete',
-		'text' => elgg_view_icon('delete'),
-		'title' => elgg_echo('delete:this'),
-		'href' => "action/$handler/delete?guid={$entity->getGUID()}",
-		'confirm' => elgg_echo('deleteconfirm'),
-		'priority' => 300,
-	);
-	$return[] = ElggMenuItem::factory($options);
+	if ($entity->canEdit()) {
+		// Add delete link
+		$options = array(
+			'name' => 'delete',
+			'text' => elgg_view_icon('delete'),
+			'title' => elgg_echo('delete:this'),
+			'href' => "action/$handler/delete?guid={$entity->getGUID()}",
+			'confirm' => elgg_echo('deleteconfirm'),
+			'priority' => 300,
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
 			
 	return $return;
 }
