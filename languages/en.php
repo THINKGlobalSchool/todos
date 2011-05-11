@@ -1,7 +1,6 @@
 <?php
 /**
  * Todo English language translation
- * @TODO Remove unused strings
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
