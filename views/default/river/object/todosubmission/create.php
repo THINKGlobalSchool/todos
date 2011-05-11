@@ -10,26 +10,28 @@
  * 
  */
 
-$performed_by = get_entity($vars['item']->subject_guid); // $statement->getSubject();
-$object = get_entity($vars['item']->object_guid);
-
-$url = "<a href=\"{$performed_by->getURL()}\">{$performed_by->name}</a>";
-$string = sprintf(elgg_echo("todosubmission:river:created"),$url) . " ";
+$object = $vars['item']->getObjectEntity();
 
 // Get associated todo object.. may be deleted or disabled
 $access_status = access_get_show_hidden_status();
 access_show_hidden_entities(true);
 $todo = get_entity($object->todo_guid);
-if ($todo->enabled == 'yes'){
-	$string .= elgg_echo("todosubmission:river:create") . " titled <a href=\"" . $todo->getURL() . "\">" . $todo->title  .  "</a>";
-} else if ($todo->enabled == 'no'){
-	$string .= elgg_echo("todosubmission:river:create") . ' titled ' . $todo->title;
-} else if (!$todo){
-	$string .= elgg_echo("todosubmission:river:createdeleted");
-}
 
-$string .= " <span class='entity_subtext'>" . friendly_time($object->time_created) . "</span>";
+if ($todo->enabled == 'yes'){
+	$params = array(
+		'href' => $todo->getURL(),
+		'text' => $todo->title,
+	);
+	
+	$link = elgg_view('output/url', $params);
+	
+	$content = elgg_echo("todosubmission:river:create", array($link));
+} else if ($todo->enabled == 'no'){
+	$content = elgg_echo("todosubmission:river:create", array($todo->title));
+} else if (!$todo){
+	$content = elgg_echo("todosubmission:river:createdeleted");
+}
 
 access_show_hidden_entities($access_status);
 
-echo $string;
+echo $content;

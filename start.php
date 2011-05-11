@@ -18,8 +18,7 @@
 // - Reminders test (userpicker needs to work)
 // - Notifications test
 // - Test assigning users (when userpicker works)
-// - Test assigning groups
-// - Test/Fix River Entries
+// - Test assigning groupss
 
 // DEFINITELY WORKING ACTIONS:
 // - accept
@@ -131,16 +130,12 @@ function todo_init() {
 	
 	// Plugin hook for write access
 	elgg_register_plugin_hook_handler('access:collections:write', 'all', 'submission_write_acl_plugin_hook');
-	
-	// Register an annotation handler for comments etc
-	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'todo_annotate_comments');
-	elgg_register_plugin_hook_handler('entity:annotate', 'object', 'submission_annotate_comments');
-	
+		
 	// Profile hook	
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
 	
 	// Hook into views to post process river/item/wrapper for todo submissions
-	elgg_register_plugin_hook_handler('display', 'view', 'todo_submission_river_rewrite');
+	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
 	
 	// Set up url handlers
 	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
@@ -160,6 +155,9 @@ function todo_init() {
 	
 	// Submission entity menu
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'submission_entity_menu_setup');
+	
+	// Remove comments from todo complete river entries
+	elgg_register_plugin_hook_handler('register', 'menu:river', 'submission_river_menu_setup');
 	
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
@@ -327,57 +325,6 @@ function todo_page_handler($page) {
 	$body = elgg_view_layout('content', $params);
 
 	echo elgg_view_page($params['title'], $body);
-}
-
-/**
- * Hook into the framework and provide comments on submission entities.
- *
- * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
- * @param unknown_type $params
- * @return unknown
- */
-function submission_annotate_comments($hook, $entity_type, $returnvalue, $params)
-{
-	$entity = $params['entity'];
-	$full = $params['full'];
-	
-	if (
-		($entity instanceof ElggEntity) &&	// Is the right type 
-		($entity->getSubtype() == 'todosubmission') &&  // Is the right subtype
-		($full) // This is the full view
-	)
-	{
-		// Display comments
-		return elgg_view_comments($entity);
-	}
-	
-}
-
-/**
- * Hook into the framework and provide comments on todo entities.
- *
- * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
- * @param unknown_type $params
- * @return unknown
- */
-function todo_annotate_comments($hook, $entity_type, $returnvalue, $params) {
-	$entity = $params['entity'];
-	$full = $params['full'];
-	
-	if (
-		($entity instanceof ElggEntity) &&	// Is the right type 
-		($entity->getSubtype() == 'todo') &&  // Is the right subtype
-		($full) // This is the full view
-	)
-	{
-		// Display comments
-		return elgg_view_comments($entity);
-	}
-	
 }
 
 /**
@@ -648,13 +595,9 @@ function todo_profile_menu($hook, $entity_type, $return, $params) {
  */
  
 function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $params) {
-	$view = $params['view'];
-	if ($view == 'river/item/wrapper') {
-		$submission = get_entity($params['vars']['item']->object_guid);
-		if ($submission->getSubtype() == 'todosubmission') {	
-			$new_content = "<div class='todo_submission_river_item'>" . $returnvalue . "</div>";
-			return $new_content;
-		}
+	$entity = get_entity($params['vars']['item']->object_guid);
+	if (elgg_instanceof($entity, 'object', 'todosubmission')) {	
+		return ' ';
 	}
 }
 
@@ -1033,6 +976,20 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 	return $return;
 }
 
+/**
+ * Add the comment and like links to river actions menu
+ */
+function submission_river_menu_setup($hook, $type, $return, $params) {
+	if (elgg_is_logged_in()) {
+		$item = $params['item'];
+		$object = $item->getObjectEntity();
+		if (elgg_instanceof($object, 'object', 'todosubmission')) {
+			return false;
+		}
+	}
+
+	return $return;
+}
 
 /**
  * Hook to allow output/access to display 'Assignees Only'

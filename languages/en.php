@@ -18,6 +18,7 @@ $english = array(
 	'todo:add' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submission',
+	'todo:ingroup' => 'in the group %s',
 	
 	// Admin
 	'admin:statistics:todo' => 'Todo Statistics',
@@ -125,9 +126,10 @@ $english = array(
 	// River
 	'todo:river:annotate' => "a comment on a todo titled",
 	'todo:river:create' => 'created To Do titled',
-	'todosubmission:river:create' => 'a To Do',
-	'todosubmission:river:createdeleted' => 'a To Do that no longer exists.',
-	'todosubmission:river:created' => "%s completed",
+	'todosubmission:river:create' => 'completed a To Do titled %s',
+	'todosubmission:river:createdeleted' => 'completed a To Do that no longer exists.',
+	'river:commented:object:todosubmission' => '',
+	'river:commented:object:todo' => 'a To Do titled',
 	
 	// Email Notifications 
 	'todo:email:subjectsubmission' => "%s has completed the To Do titled \"%s\"",
