@@ -15,24 +15,8 @@
 // - Prettier everything (Rubric select, view rubric modal popup, etc.. )
 
 // MIGRATION TODOS
-// - Reminders test (userpicker needs to work)
-// - Notifications test
 // - Test assigning users (when userpicker works)
-// - Test assigning groupss
-
-// DEFINITELY WORKING ACTIONS:
-// - accept
-// - assign
-// - unassign
-// - delete
-// - submission delete
-// - submission save
-// - upload 
-
-// ACTIONS NEEDING TESTING
-// - complete
-// - save (just needs some more testing)
-// - sendreminder
+// - Test saving/updating w/ rubrics (when up to date)
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
