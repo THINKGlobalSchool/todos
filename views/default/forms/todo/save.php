@@ -49,7 +49,7 @@ HTML;
 	$submit_input .= '&nbsp;' . elgg_view('input/submit', array('name' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
 }
 
-$container_guid = get_input('container_guid', page_owner());
+$container_guid = get_input('container_guid', elgg_get_page_owner_guid());
 
 $container_hidden = elgg_view('input/hidden', array('name' => 'container_guid', 'value' => $container_guid));
 
@@ -67,7 +67,7 @@ $description_input = elgg_view("input/longtext", array(
 ));
 
 $duedate_label = elgg_echo('todo:label:duedate');
-$duedate_content = elgg_view('input/datepicker', array(
+$duedate_content = elgg_view('input/date', array(
 	'name' => 'due_date', 
 	'value' => $due_date
 ));
@@ -79,7 +79,7 @@ $tag_input = elgg_view('input/tags', array(
 ));
 
 $assign_label = elgg_echo('todo:label:assignto');
-$assign_content = elgg_view('input/pulldown', array(
+$assign_content = elgg_view('input/dropdown', array(
 	'name' => 'assignee_type_select',
 	'id' => 'todo-assignee-type-select',
 	'options_values' =>	array(
@@ -114,7 +114,7 @@ $rubric_html = "";
 if (TODO_RUBRIC_ENABLED) {
 	$rubric_label = elgg_echo('todo:label:assessmentrubric');
 	$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
-	$rubric_content = elgg_view('input/pulldown', array(
+	$rubric_content = elgg_view('input/dropdown', array(
 		'name' => 'rubric_select', 
 		'id' => 'rubric_select', 
 		'options_values' => array(
@@ -124,7 +124,7 @@ if (TODO_RUBRIC_ENABLED) {
 		'value' => $is_rubric_selected
 	));
 	
-	$rubric_picker = elgg_view('input/pulldown', array(
+	$rubric_picker = elgg_view('input/dropdown', array(
 		'name' => 'rubric_guid', 
 		'internal_id' => 'rubric_picker', 
 		'options_values' => get_todo_rubric_array(), 
@@ -161,7 +161,7 @@ HTML;
 	
 
 $access_label = elgg_echo('todo:label:accesslevel');
-$access_content = elgg_view('input/pulldown', array(
+$access_content = elgg_view('input/dropdown', array(
 	'name' => 'access_level', 
 	'id' => 'todo_access', 
 	'options_values' => get_todo_access_array(), 
@@ -169,7 +169,7 @@ $access_content = elgg_view('input/pulldown', array(
 ));
 
 $status_label = elgg_echo('todo:label:status');
-$status_input = elgg_view('input/pulldown', array(
+$status_input = elgg_view('input/dropdown', array(
 	'name' => 'status',
 	'id' => 'todo_status',
 	'value' => $status,

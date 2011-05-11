@@ -28,7 +28,7 @@ $todo = get_entity($todo_guid);
 if (elgg_instanceof($todo, 'object', 'todo')) {
 	$success = $assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
 	$success &= $assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_ACCEPTED);
-	$success &= trigger_elgg_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee));
+	$success &= elgg_trigger_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee));
 	
 	if ($success) {
 		system_message(elgg_echo('todo:success:assigneeremoved'));

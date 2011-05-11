@@ -16,7 +16,7 @@ $group = elgg_get_page_owner_entity();
 if (elgg_instanceof($group, 'group') && $group->todo_enable == 'yes') {	
 	// get the groups todo's
 	$todos = elgg_get_entities(array('type' => 'object', 'subtype' => 'todo', 
-										'container_guids' => page_owner(), 'limit' => 6));
+										'container_guids' => elgg_get_page_owner_guid(), 'limit' => 6));
 													
 	foreach ($todos as $idx => $todo) {
 		if (have_assignees_completed_todo($todo->getGUID()) || $todo->status == TODO_STATUS_DRAFT || $todo->manual_complete) {

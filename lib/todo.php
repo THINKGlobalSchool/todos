@@ -210,14 +210,14 @@ function todo_get_page_content_view($type, $guid) {
 		if ($entity->enabled && $type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
 			$owner = $entity->getOwnerEntity();
 			$params['title'] = $entity->title;
-			$params['content'] = elgg_view_entity($entity, TRUE);
+			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
 			$params['content'] .= elgg_view_comments($entity);
 			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
 			elgg_push_breadcrumb($entity->title);
 			return $params;
 		} else if ($entity->enabled && $type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
 			$params['title'] = elgg_echo('todo:label:viewsubmission');
-			$params['content'] = elgg_view_entity($entity, TRUE);
+			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
 			$params['content'] .= elgg_view_comments($entity);
 			
 			$todo = get_entity($entity->todo_guid);
@@ -442,7 +442,7 @@ function assign_user_to_todo($user_guid, $todo_guid) {
 		$todo = get_entity($todo_guid);
 		$owner = get_entity($todo->container_guid);
 		if (add_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP, $todo_guid)) {
-			return trigger_elgg_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
+			return elgg_trigger_event('assign', 'object', array('todo' => get_entity($todo_guid), 'user' => get_entity($user_guid)));
 		} else {
 			return false;
 		}

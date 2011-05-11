@@ -17,11 +17,6 @@ if (elgg_instanceof($todo, 'object', 'todo') && $todo->canEdit()) {
 	$container = get_entity($todo->container_guid);
 	if ($todo->disable()) {
 		system_message(elgg_echo('todo:success:delete'));
-		if (elgg_instanceof($container, 'group')) {
-			forward("todo/group/$container->guid/owner");
-		} else {
-			forward("todo/owner/$container->username");
-		}
 	} else {
 		register_error(elgg_echo('todo:error:delete'));
 	}
