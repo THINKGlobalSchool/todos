@@ -12,7 +12,7 @@
 	<license>GNU Public License version 2</license>
 	<requires>
 		<type>elgg_version</type>
-		<version>2010030101</version>
+		<version>2011032200</version>
 	</requires>
 	<admin_interface>simple</admin_interface>
 	<activate_on_install>true</activate_on_install>
