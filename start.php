@@ -979,8 +979,10 @@ function submission_river_menu_setup($hook, $type, $return, $params) {
  * Hook to allow output/access to display 'Assignees Only'
  */
 function todo_output_access_handler($hook, $type, $return, $params) {
-	if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id != ACCESS_LOGGED_IN) {
-		$return = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
+	if ($params['vars']['entity']) {
+		if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id != ACCESS_LOGGED_IN) {
+			$return = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
+		}
 	}
 	return $return;
 }
