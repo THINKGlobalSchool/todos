@@ -229,8 +229,8 @@ $form_body = <<<HTML
 		<label>$status_label</label><br />
 		$status_input
 	</div>
-	<div>
-		<br />
+	<br />
+	<div class="elgg-form-footer-alt">
 		$submit_input
 		$container_hidden
 		$entity_hidden

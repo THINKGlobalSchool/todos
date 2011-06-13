@@ -108,7 +108,7 @@ if (isset($vars['entity'])) {
 			<label>$description_label</label><br />
 	        $description_input
 		</div><br />
-		<div>
+		<div class="elgg-form-footer-alt">
 			$submit_input
 			$container_hidden
 			$entity_hidden
