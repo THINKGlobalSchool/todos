@@ -116,7 +116,7 @@ if ($full) { // Full View
 		'subtitle' => $subtitle,
 		'tags' => $tags,
 	);
-	$list_body = elgg_view('page/components/summary', $params);
+	$list_body = elgg_view('object/elements/summary', $params);
 
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
 	
@@ -146,7 +146,7 @@ HTML;
 		'content' => '',
 	);
 	
-	$list_body = elgg_view('page/components/summary', $params);
+	$list_body = elgg_view('object/elements/summary', $params);
 
 	echo elgg_view_image_block($owner_icon, $list_body);
 }
