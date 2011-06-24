@@ -30,7 +30,7 @@ function todo_init() {
 	define('TODO_ACCESS_LEVEL_ASSIGNEES_ONLY', -10);
 	
 	// Determine if optional plugins are enabled
-	define('TODO_RUBRIC_ENABLED', elgg_is_active_plugin('rubricbuilder') ? true : false);
+	define('TODO_RUBRIC_ENABLED', elgg_is_active_plugin('rubrics') ? true : false);
 	define('TODO_CHANNELS_ENABLED', elgg_is_active_plugin('shared_access') ? true : false);
 	
 	// Relationship for assignees

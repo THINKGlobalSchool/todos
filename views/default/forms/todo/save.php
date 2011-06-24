@@ -110,7 +110,7 @@ $return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_
 // Optional content
  
 $rubric_html = "";
-// @TODO Test this w/ rubrics
+
 if (TODO_RUBRIC_ENABLED) {
 	$rubric_label = elgg_echo('todo:label:assessmentrubric');
 	$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
