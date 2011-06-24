@@ -104,8 +104,17 @@ if ($full) { // Full View
 
 	$body = elgg_view_module('info', $description_label, $description_content);
 	$body .= elgg_view_module('info', $duedate_label, $duedate_content);
-	$body .= elgg_view_module('info', $return_label, $return_content);
+	
+	// If we have a rubric guid, display its info
+	if ((int)$todo->rubric_guid) {
+		$rubric = get_entity((int)$todo->rubric_guid);
+		$rubric_content = "<a href='{$rubric->getURL()}'>{$rubric->title}</a>";
+		$body .= elgg_view_module('info', elgg_echo('todo:label:assessmentrubric'), $rubric_content);
+	}
+	
+	$body .= elgg_view_module('info', $return_label, $return_content);	
 	$body .= elgg_view_module('info', $status_label, $status_content);
+	
 
 	$header = elgg_view_title($todo->title);
 
