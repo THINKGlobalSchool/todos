@@ -17,6 +17,10 @@ $access_status = access_get_show_hidden_status();
 access_show_hidden_entities(true);
 $todo = get_entity($object->todo_guid);
 
+$owner = $object->getContainerEntity();
+
+$owner_link = "<a href='" . $owner->getURL . "'>" . $owner->name . "</a>";
+
 if ($todo->enabled == 'yes'){
 	$params = array(
 		'href' => $todo->getURL(),
@@ -25,13 +29,19 @@ if ($todo->enabled == 'yes'){
 	
 	$link = elgg_view('output/url', $params);
 	
-	$content = elgg_echo("todosubmission:river:create", array($link));
+	$content = elgg_echo("river:create:object:todosubmission", array($owner_link, $link));
 } else if ($todo->enabled == 'no'){
-	$content = elgg_echo("todosubmission:river:create", array($todo->title));
+	$content = elgg_echo("river:create:object:todosubmission", array($owner_link, $todo->title));
 } else if (!$todo){
-	$content = elgg_echo("todosubmission:river:createdeleted");
+	$content = elgg_echo("river:create:object:todosubmission:deleted", array($owner_link));
 }
 
 access_show_hidden_entities($access_status);
 
-echo $content;
+
+echo elgg_view('river/item', array(
+	'summary' => $content,
+	'item' => $vars['item'],
+));
+
+return;

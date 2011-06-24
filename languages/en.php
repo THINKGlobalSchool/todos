@@ -124,12 +124,10 @@ $english = array(
 	'todo:label:admin:completionaverage' => 'Average User Completion',
 	
 	// River
-	'todo:river:annotate' => "a comment on a todo titled",
-	'todo:river:create' => 'created To Do titled',
-	'todosubmission:river:create' => 'completed a To Do titled %s',
-	'todosubmission:river:createdeleted' => 'completed a To Do that no longer exists.',
-	'river:commented:object:todosubmission' => '',
-	'river:commented:object:todo' => 'a To Do titled',
+	'river:create:object:todo' => '%s created To Do titled %s',
+	'river:create:object:todosubmission' => '%s completed a To Do titled %s',
+	'river:create:object:todosubmission:deleted' => '%s completed a To Do that no longer exists.',
+
 	
 	// Email Notifications 
 	'todo:email:subjectsubmission' => "%s has completed the To Do titled \"%s\"",

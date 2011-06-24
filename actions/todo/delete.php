@@ -24,4 +24,4 @@ if (elgg_instanceof($todo, 'object', 'todo') && $todo->canEdit()) {
 	register_error(elgg_echo('todo:error:invalid'));
 }
 
-forward(REFERER);
+forward('todo');
