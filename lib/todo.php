@@ -24,8 +24,13 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 	
 	if ($page_owner == elgg_get_logged_in_user_entity()) {
 		$by = elgg_echo('todo:label:me');
+		elgg_register_add_button();
 	} else {
 		$by = $page_owner->name;
+	}
+	
+	if (elgg_instanceof($page_owner, 'group')) {
+		elgg_register_add_button();
 	}
 	
 	// Get status
@@ -87,8 +92,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 			'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 			'full_view' => FALSE,
 			'wheres' => $wheres,
-		));
-		
+		));		
 		
 	} else if ($type == 'owner') {
 		if ($guid && $owner = get_entity($guid)) {
@@ -116,6 +120,8 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 		$title = elgg_echo('todo:title:alltodos');
 		
 		$type = 'all';
+		
+		elgg_register_add_button();
 		
 		// Show based on status
 		if ($status == 'complete') {
@@ -199,7 +205,6 @@ function todo_get_page_content_view($type, $guid) {
 	elgg_push_context('todo_full_view');
 	
 	$params = array(
-		'buttons' => '',
 		'filter' => '',
 		'header' => '',
 	);
@@ -248,7 +253,6 @@ function todo_get_page_content_view($type, $guid) {
 function todo_get_page_content_edit($type, $guid) {
 	// No button or filter
 	$params = array(
-		'buttons' => '',
 		'filter' => '',
 	);
 	
