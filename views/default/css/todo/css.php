@@ -130,7 +130,7 @@ span.unviewed {
 /* messages/new messages icon & counter in elgg_topbar */
 .todo-notifier {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left 2px;
-	margin-top: -2px;
+	margin-top: -3px !important;
 }
 .todo-notifier:hover {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
