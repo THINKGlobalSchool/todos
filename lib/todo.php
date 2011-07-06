@@ -24,13 +24,13 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 	
 	if ($page_owner == elgg_get_logged_in_user_entity()) {
 		$by = elgg_echo('todo:label:me');
-		elgg_register_add_button();
+		elgg_register_title_button();
 	} else {
 		$by = $page_owner->name;
 	}
 	
 	if (elgg_instanceof($page_owner, 'group')) {
-		elgg_register_add_button();
+		elgg_register_title_button();
 	}
 	
 	// Get status
@@ -121,7 +121,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 		
 		$type = 'all';
 		
-		elgg_register_add_button();
+		elgg_register_title_button();
 		
 		// Show based on status
 		if ($status == 'complete') {
