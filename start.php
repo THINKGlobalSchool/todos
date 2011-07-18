@@ -124,6 +124,7 @@ function todo_init() {
 	// Set up url handlers
 	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
 	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
+	elgg_register_entity_url_handler('object', 'todosubmissionfile', 'submission_file_url');
 	
 	// Hook for site menu
 	elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
@@ -145,6 +146,9 @@ function todo_init() {
 	
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
+	
+	// Register handler for todo submission files 
+	elgg_register_plugin_hook_handler('entity:icon:url', 'object', 'submission_file_icon_url_override');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -165,17 +169,9 @@ function todo_init() {
 	// Register type
 	elgg_register_entity_type('object', 'todo');		
 
-
+	// Register one once for todos
+	run_function_once("todo_run_once");
 	
-	/*create dummy object for metastrings
-	$dummy = new ElggObject();
-	$dummy->manual_complete = 1;
-	$dummy->complete = 1;
-	$dummy->one = 1;
-	
-	$dummy->save();
-	$dummy->delete();	
-	*/
 	return true;	
 }
 
@@ -632,6 +628,19 @@ function todo_submission_url($entity) {
 	return elgg_get_site_url() . "todo/view/submission/{$entity->guid}/";
 }
 
+/*
+ * Populates the ->getUrl() method for submission file objects
+ *
+ * @param ElggEntity $entity File entity
+ * @return string File URL
+ */
+function submission_file_url($entity) {
+	$title = $entity->title;
+	$title = elgg_get_friendly_title($title);
+	return "file/view/" . $entity->getGUID() . "/" . $title;
+}
+
+
 /**
  * Populates the ->getUrl() method for todo entities
  *
@@ -847,14 +856,17 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					);
 					$return[] = ElggMenuItem::factory($options);
 				} else {
+					elgg_load_js('lightbox');
+					
 					// If we need to return something for this todo, the complete link will point to the submission form
 					$id = $entity->return_required ? '' : 'empty';
 					$options = array(
 						'name' => 'todo_create_submission',
 						'text' => elgg_echo("todo:label:completetodo"),
-						'href' => '#',
+						'href' => '#todo-submission-dialog',
 						'priority' => 1000,
-						'link_class' => "elgg-button elgg-button-action todo-create-submission $id",
+						//'link_class' => "elgg-button elgg-button-action todo-create-submission $id",
+						'link_class' => "elgg-button elgg-button-action todo-lightbox $id",
 					);
 					$return[] = ElggMenuItem::factory($options);
 				}
@@ -985,4 +997,92 @@ function todo_output_access_handler($hook, $type, $return, $params) {
 		}
 	}
 	return $return;
+}
+
+/**
+ * Override the default entity icon for files
+ *
+ * Plugins can override or extend the icons using the plugin hook: 'file:icon:url', 'override'
+ *
+ * @return string Relative URL
+ */
+function submission_file_icon_url_override($hook, $type, $returnvalue, $params) {
+	$file = $params['entity'];
+	$size = $params['size'];
+	if (elgg_instanceof($file, 'object', 'todosubmissionfile')) {
+
+		// thumbnails get first priority
+		if ($file->thumbnail) {
+			return "mod/file/thumbnail.php?file_guid=$file->guid&size=$size";
+		}
+
+		$mapping = array(
+			'application/excel' => 'excel',
+			'application/msword' => 'word',
+			'application/pdf' => 'pdf',
+			'application/powerpoint' => 'ppt',
+			'application/vnd.ms-excel' => 'excel',
+			'application/vnd.ms-powerpoint' => 'ppt',
+			'application/vnd.oasis.opendocument.text' => 'openoffice',
+			'application/x-gzip' => 'archive',
+			'application/x-rar-compressed' => 'archive',
+			'application/x-stuffit' => 'archive',
+			'application/zip' => 'archive',
+
+			'text/directory' => 'vcard',
+			'text/v-card' => 'vcard',
+
+			'application' => 'application',
+			'audio' => 'music',
+			'text' => 'text',
+			'video' => 'video',
+		);
+
+		$mime = $file->mimetype;
+		if ($mime) {
+			$base_type = substr($mime, 0, strpos($mime, '/'));
+		} else {
+			$mime = 'none';
+			$base_type = 'none';
+		}
+
+		if (isset($mapping[$mime])) {
+			$type = $mapping[$mime];
+		} elseif (isset($mapping[$base_type])) {
+			$type = $mapping[$base_type];
+		} else {
+			$type = 'general';
+		}
+
+		if ($size == 'large') {
+			$ext = '_lrg';
+		} else {
+			$exit = '';
+		}
+		
+		$url = "mod/file/graphics/icons/{$type}{$ext}.gif";
+		$url = elgg_trigger_plugin_hook('file:icon:url', 'override', $params, $url);
+		return $url;
+	}
+}
+
+
+/**
+ * Register entity type objects, subtype todosubmissionfile as
+ * ElggFile.
+ *
+ * @return void
+ */
+function todo_run_once() {
+	// Register a class
+	add_subtype("object", "todosubmissionfile", "ElggFile");
+	
+	// Just in case this metadata doesn't exist yet (It should)
+	$dummy = new ElggObject();
+	$dummy->manual_complete = 1;
+	$dummy->complete = 1;
+	$dummy->one = 1;
+	
+	$dummy->save();
+	$dummy->delete();	
 }

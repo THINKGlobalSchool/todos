@@ -41,6 +41,7 @@ if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {
 	$file->setMimeType($_FILES['upload']['type']);
 	$file->originalfilename = $_FILES['upload']['name'];
 	$file->simpletype = "submission";
+	$file->subtype = "todosubmissionfile";
 
 	$file->open("write");
 	$file->write(get_uploaded_file('upload'));

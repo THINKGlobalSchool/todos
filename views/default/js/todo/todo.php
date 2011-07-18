@@ -19,31 +19,22 @@ elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
 elgg.todo.init = function() {	
 	$(function() {	
-		// Create submission dialog
-		$('#todo-submission-dialog').dialog({
-			autoOpen: false,
-			width: 725,
-			modal: true,
-			zIndex: 7002,
-			dialogClass: 'todo-dialog',
-			open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide(); 
-				if (typeof(tinyMCE) !== 'undefined') {
-					tinyMCE.execCommand('mceAddControl', false, 'submission-description');
-				}
-				
+		
+		// Set up submission dialog
+		$(".todo-lightbox").fancybox({
+			//'modal': true,
+			'onComplete': function() {
 				// Set up submission content form
 				elgg.todo.submissionFormDefault();
-			},
-			beforeclose: function(event, ui) {
+				
 				if (typeof(tinyMCE) !== 'undefined') {
-		    		tinyMCE.execCommand('mceRemoveControl', false, 'submission-description');
+					tinyMCE.EditorManager.execCommand('mceAddControl', false, 'submission-description');
 				}
-		    },
-			buttons: {
-				"X": function() { 
-					$(this).dialog("close"); 
-				} 
+			},
+			'onCleanup': function() {
+				if (typeof(tinyMCE) !== 'undefined') {
+		    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, 'submission-description');
+				}
 			}
 		});
 		
@@ -89,8 +80,6 @@ elgg.todo.completeClick = function(event) {
 		var todo_guid = $('#todo-guid').val();
 		// Create empty submission
 		elgg.todo.createSubmission(todo_guid, '', '');
-	} else {
-		$("#todo-submission-dialog").dialog("open");
 	}
 	event.preventDefault();
 }
@@ -144,7 +133,7 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 				}
 				
 				// Close dialog
-				$("#todo-submission-dialog").dialog("close");
+				$.fancybox.close();
 				
 				// Reload
 				setTimeout ('window.location.reload()', 1000);

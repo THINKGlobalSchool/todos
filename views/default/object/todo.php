@@ -142,7 +142,9 @@ if ($full) { // Full View
 	$header
 	$todo_info<br />
 	$body
-	<div id="todo-submission-dialog" style="display: none;" >$submission_form</div>
+	<div style='display: none;'>
+		<div id="todo-submission-dialog">$submission_form</div>
+	</div>
 </div>
 HTML;
 	
