@@ -68,9 +68,11 @@ if (isset($vars['entity'])) {
 	$content_label = elgg_echo("todo:label:content");
 
 	$description_label = elgg_echo("todo:label:additionalcomments");
-	$description_input = elgg_view("input/plaintext", array('name' => 'submission_description', 
-															'id' => 'submission-description', 
-															'value' => $description));
+	$description_input = elgg_view("input/plaintext", array(
+		'name' => 'submission_description', 
+		'id' => 'submission-description', 
+		'value' => $description
+	));
 
 	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('submit')));
 	

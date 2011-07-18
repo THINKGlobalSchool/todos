@@ -93,6 +93,7 @@ if ($valid) {
 	}
 	
 	$content = <<<HTML
+		<br />
 		<div>
 			<label>$todo_title_label</label><br />
 			$todo_title_content

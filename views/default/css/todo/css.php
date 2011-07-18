@@ -138,21 +138,9 @@ span.unviewed {
 
 /** POPUP DIALOG **/
 
-.ui-widget-overlay
-{
-	position: fixed;
-	top: 0px;
-	left: 0px;
-    background-color: #000000 !important;
-    opacity: 0.5;
-	-moz-opacity: 0.5; 
-}
-
 #todo-submission-dialog  {
-	border: 8px solid #555555;
-	background: #ffffff;
-	-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
+	width: 735px;
+	padding: 10px;
 }
 
 
@@ -163,37 +151,4 @@ span.unviewed {
 
 .elgg-todo-sidebar .elgg-button {
 	display: inline-block;
-}
-
-
-/** jQuery UI Stuff **/
-.todo-dialog.ui-dialog .ui-dialog-buttonpane {
-	position: absolute; 
-	right: .3em; 
-	top: 30px; 
-	width: 19px; 
-	margin: -10px 0 0 0; 
-	padding: 1px; height: 18px; 
-}
-
-.todo-dialog.ui-dialog .ui-dialog-buttonpane button { 
-	cursor: pointer; 
-	padding: .2em .6em .3em .6em; 
-	line-height: 1.4em; 
-	width:auto; 
-	overflow:visible; 
-}
-
-.todo-dialog.ui-dialog .ui-dialog-buttonpane button {
-	-moz-border-radius:4px 4px 4px 4px;
-	-webkit-border-radius: 5px 5px 5px 5px;
-	background:none repeat scroll 0 0 #000000;
-	border:1px solid #000000;
-	color:#FFFFFF;
-	cursor:pointer;
-	font:bold 12px/100% Arial,Helvetica,sans-serif;
-	height:25px;
-	float: right; margin: .5em .4em .5em 0; 
-	padding:2px 6px;
-	width:auto;
 }
