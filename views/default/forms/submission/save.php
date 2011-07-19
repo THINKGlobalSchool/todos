@@ -36,37 +36,67 @@ if (isset($vars['entity'])) {
 	// Content Menu Items
 	$menu_items .= "<a href='#submission-add-link-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addlink') . "</a><br />";
 	$menu_items .= "<a href='#submission-add-file-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addfile') . "</a><br />";
+	$menu_items .= "<a href='#submission-add-content-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addcontent') . "</a><br />";
 					
 	$back_button = "<a id='submission-content-back-button'><< Back</a>";
 	
 	// Content Div's
-	$content_list = "<div class='submission-content-pane' id='submission-content-list'>
-								<select id='submission-content-select' name='submission_content[]' MULTIPLE>
-								</select>
-							</div>";
+	$content_list = "<select id='submission-content-select' name='submission_content[]' MULTIPLE></select>";
+	
+	$content_list_module = elgg_view_module('info', elgg_echo("todo:label:content"), $content_list, array(
+		'id' => 'submission-content-list',
+		'class' => 'submission-content-pane',
+	));
 							
-	$add_link_div = "<div class='submission-content-pane' id='submission-add-link-container'>
-						<form id='submission-link-form'>
-							<label>" . elgg_echo('todo:label:addlink') . "</label><br />
-							" . elgg_view('input/text', array('id' => 'submission-link', 'name' => 'submission_link')) . "<br />
-							" . elgg_view('input/submit', array('id' => 'submission-submit-link', 'name' => 'link_submit', 'value' => 'Submit')) . "
-						</form>
-					</div>";
-					
+	$link_content = "<form id='submission-link-form'>" . elgg_view('input/text', array(
+		'id' => 'submission-link', 
+		'name' => 'submission_link'
+	)) . "<br /><br />";
 	
-	$add_file_div = "<div class='submission-content-pane' id ='submission-add-file-container'>
-						<form id='submission-file-form' method='POST' enctype='multipart/form-data'>
-							<label>" . elgg_echo('todo:label:addfile') . "</label><br />
-							" . elgg_view("input/file",array('name' => 'upload', 'js' => 'id="upload"')) . "<br />
-							" . elgg_view('input/submit', array('id' => 'submission-submit-file', 'name' => 'file_submit', 'value' => 'Submit')) . "
-						</form>
-					</div>";
+	$link_content .= elgg_view('input/submit', array(
+		'id' => 'submission-submit-link', 
+		'name' => 'link_submit', 
+		'value' => 'Submit'
+	)) . "</form>";
 	
+	$link_module = elgg_view_module('info', elgg_echo('todo:label:addlink'), $link_content, array(
+		'id' => 'submission-add-link-container', 
+		'class' => 'submission-content-pane',
+	));				
+				
+	$file_content = "<form id='submission-file-form' method='POST' enctype='multipart/form-data'>";
+	$file_content .= elgg_view("input/file",array(
+		'name' => 'upload', 
+		'js' => 'id="upload"'
+	)) . "<br /><br />";
+	
+	$file_content .= elgg_view('input/submit', array(
+		'id' => 'submission-submit-file', 
+		'name' => 'file_submit', 
+		'value' => 'Submit'
+	)) . "</form>";
+	
+	$file_module = elgg_view_module('info', elgg_echo('todo:label:addfile'), $file_content, array(
+		'id' => 'submission-add-file-container', 
+		'class' => 'submission-content-pane',
+	));
+	
+		
+	$content_module = elgg_view('modules/ajaxmodule', array(
+		'title' => elgg_echo('todo:label:addcontent'),
+		'limit' => 5,
+		'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'groupforumtopic'),
+		'container_guid' => elgg_get_logged_in_user_guid(),
+		'listing_type' => 'simpleicon',
+		'module_type' => 'info',
+		'module_class' => 'submission-content-pane',
+		'module_id' => 'submission-add-content-container',
+	));
+	
+		
 	// Labels/Input
-	$title_label = elgg_echo("todo:label:newsubmission");
+	$title_label = elgg_view_title(elgg_echo("todo:label:newsubmission"));
 	
-	$content_label = elgg_echo("todo:label:content");
-
 	$description_label = elgg_echo("todo:label:additionalcomments");
 	$description_input = elgg_view("input/plaintext", array(
 		'name' => 'submission_description', 
@@ -83,10 +113,9 @@ if (isset($vars['entity'])) {
 
 	<div style='padding: 10px;'>
 		<div>
-			<h3>$title_label</h3><br />
+			$title_label<br />
 		</div>
 		<div id='submission-content-container'>
-			<h3>$content_label</h3><br />
 			<div id='submission-content-menu' class='content-menu'>
 				$menu_items
 			</div>
@@ -94,9 +123,10 @@ if (isset($vars['entity'])) {
 				$back_button
 			</div>
 			<div id='submission-content'>
-				$content_list
-				$add_link_div
-				$add_file_div
+				$content_list_module
+				$link_module
+				$file_module
+				$content_module
 				$ajax_spinner
 				<div id='submission-output' style='display: none;'></div>
 			</div>

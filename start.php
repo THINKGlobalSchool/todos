@@ -160,6 +160,7 @@ function todo_init() {
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
 	elgg_register_action('todo/complete', "$action_base/complete.php");
 	elgg_register_action('todo/upload', "$action_base/upload.php");
+	elgg_register_action('todo/checkcontent', "$action_base/checkcontent.php");
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");

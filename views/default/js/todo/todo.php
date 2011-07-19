@@ -17,59 +17,89 @@ elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.ph
 
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
-elgg.todo.init = function() {	
-	$(function() {	
-		
-		// Set up submission dialog
-		$(".todo-lightbox").fancybox({
-			//'modal': true,
-			'onComplete': function() {
-				// Set up submission content form
-				elgg.todo.submissionFormDefault();
-				
-				if (typeof(tinyMCE) !== 'undefined') {
-					tinyMCE.EditorManager.execCommand('mceAddControl', false, 'submission-description');
-				}
-			},
-			'onCleanup': function() {
-				if (typeof(tinyMCE) !== 'undefined') {
-		    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, 'submission-description');
-				}
+elgg.todo.init = function() {			
+	// Set up submission dialog
+	$(".todo-lightbox").fancybox({
+		//'modal': true,
+		'onComplete': function() {
+			// Set up submission content form
+			elgg.todo.submissionFormDefault();
+			
+			if (typeof(tinyMCE) !== 'undefined') {
+				tinyMCE.EditorManager.execCommand('mceAddControl', false, 'submission-description');
 			}
-		});
-		
-		// TODO FORM SETUP
-		
-		// Create submission click handler
-		$('.todo-create-submission').live('click', elgg.todo.completeClick);
-		
-		// Submission form submit handler
-		$("form#todo-submission-form").live('submit', elgg.todo.submissionFormSubmit);
-		
-		
-		// SUBMISSION CONTENT FORM SETUP
-		
-		// Make menu items clickable
-		$(".submission-content-menu-item").live('click', elgg.todo.submissionContentMenuClick);
-		
-		// Make submit link button clickable
-		$("#submission-submit-link").live('click', elgg.todo.submissionSubmitLink);
-		
-		// Back button click action
-		$("#submission-content-back-button").live('click', elgg.todo.submissionFormDefault);
-		
-		// Register submit handler for submission file form
-		$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
-		
-		// OTHER
-		
-		// Remove assignee click handler
-		$(".todo-remove-assignee").live('click', elgg.todo.removeAssignee);
-
-		// Assign onchange for the assignee type select input
-		$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
-
+		},
+		'onCleanup': function() {
+			if (typeof(tinyMCE) !== 'undefined') {
+	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, 'submission-description');
+			}
+		}
 	});
+	
+	// TODO FORM SETUP
+	
+	// Create submission click handler
+	$('.todo-create-submission').live('click', elgg.todo.completeClick);
+	
+	// Submission form submit handler
+	$("form#todo-submission-form").live('submit', elgg.todo.submissionFormSubmit);
+	
+	// Hack modules to add an 'add' button	
+	$("#submission-add-content-container").delegate('.elgg-item', 'mouseenter mouseleave', function(event) {
+		// For some reason the height is only accurate at this point.. 
+		var height = $(this).height();
+		if (event.type == 'mouseenter') {
+			var $addmenu = $(this).data('addmenu') || null;
+
+			if (!$addmenu) {
+				var $addmenu = $("<div class='add-menu'><input type='submit' value='Add' id='xx' class='elgg-button elgg-button-action submission-content-input-add' /></div>");
+				$(this).data('addmenu', $addmenu);
+			}
+
+			$addmenu.appendTo($(this));
+
+			var margin = '-' + height + 'px';
+			
+			$addmenu
+				.css("width", '90px')
+				.css("height", height + 'px')
+				.css("z-index", '100')
+				.fadeIn('fast')
+				.position({
+					my: "right top",
+					at: "right top",
+					of: $(this)
+				}).css("margin-bottom", margin);
+			
+		} else if (event.type == 'mouseleave') {
+			var $addmenu = $(this).data('addmenu');
+			$addmenu.fadeOut();
+		}
+	});
+	
+	// SUBMISSION CONTENT FORM SETUP
+	
+	// Make menu items clickable
+	$(".submission-content-menu-item").live('click', elgg.todo.submissionContentMenuClick);
+	
+	// Make submit link button clickable
+	$("#submission-submit-link").live('click', elgg.todo.submissionSubmitLink);
+	
+	// Back button click action
+	$("#submission-content-back-button").live('click', elgg.todo.submissionFormDefault);
+	
+	// Register submit handler for submission file form
+	$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
+	
+	$('.submission-content-input-add').live('click', elgg.todo.submissionSubmitContent)
+	
+	// OTHER
+	
+	// Remove assignee click handler
+	$(".todo-remove-assignee").live('click', elgg.todo.removeAssignee);
+
+	// Assign onchange for the assignee type select input
+	$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
 }
 
 /**	
@@ -192,6 +222,33 @@ elgg.todo.submissionSubmitFile = function(event) {
 	event.preventDefault();
 }
 
+/** 
+ * Submit handler for submission content form
+ */ 
+elgg.todo.submissionSubmitContent = function(event) {
+	var id = $(this).closest('.elgg-item').attr('id');
+	
+	var guid = id.substring(id.lastIndexOf('-') + 1);
+	
+	elgg.action('todo/checkcontent', {
+		data: {
+			guid: guid
+		},
+		success: function(data) {
+			if (data.status == -1) {
+				$("#submission-error-message").show().html("** Invalid Content");
+			} else {
+				$('#submission-content-select').append(
+					$('<option></option>').attr('selected', 'selected').val(data.output.entity_guid).html(data.output.entity_title)
+				);
+				elgg.todo.submissionFormDefault();	
+			}
+		}
+	});
+
+	event.preventDefault();
+}
+
 /**
  * Submission content menu item click handler
  */
@@ -222,9 +279,7 @@ elgg.todo.loadAssignees = function(guid, container) {
  * Remove assignee from todo action, uses the anchor's HREF for
  * the assignee guid
  */
-elgg.todo.removeAssignee = function(event) {
-	console.log($(this).closest('.todo-assignees').parent().attr('id'));
-	
+elgg.todo.removeAssignee = function(event) {	
 	var assignee_guid = $(this).attr('href');
 	var todo_guid =  $(this).closest('.todo-assignees').attr('id');
 	
