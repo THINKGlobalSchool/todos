@@ -72,6 +72,7 @@ $english = array(
 	'todo:label:worksubmitted' => 'Work Submitted',
 	'todo:label:addlink' => 'Add Link',
 	'todo:label:addfile' => 'Add File',
+	'todo:label:addcontent' => 'Add Spot Content',
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
