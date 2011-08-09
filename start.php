@@ -42,6 +42,8 @@ function todo_init() {
 	// Relationship for submissions 
 	define('SUBMISSION_RELATIONSHIP', 'submittedto');
 	
+	define('TODO_CONTENT_RELATIONSHIP', 'submitted_for_todo');
+	
 	// Relationship for complete todos
 	define('COMPLETED_RELATIONSHIP', 'completedtodo');
 	
@@ -376,7 +378,7 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 		
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
-	
+
 		$context = elgg_get_context();
 		elgg_set_context('todo_acl');
 		remove_user_from_access_collection($user->getGUID(), $acl);
@@ -411,10 +413,10 @@ function submission_create_event_listener($event, $object_type, $object) {
 	if ($object->getSubtype() == 'todosubmission') {
 		// Get the submissions todo
 		$todo = get_entity($object->todo_guid);
-		
+
 		// Create an ACL for the submission, only the todo assigner and assignee can see it
 		$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, $object->getGUID());
-		
+
 		if ($submission_acl) {
 			$object->submission_acl = $submission_acl;
 			$context = elgg_get_context();
@@ -424,15 +426,21 @@ function submission_create_event_listener($event, $object_type, $object) {
 			elgg_set_context($context);
 			$object->access_id = $submission_acl;
 			$object->save();
-			
+
 			// Set permissions for any attached content (files)
 			$contents = unserialize($object->content);
 			foreach ($contents as $content) {
 				$guid = (int)$content;
 				$entity = get_entity($guid);
 				if (elgg_instanceof($entity, 'object')) {
-					// If content is a valid entitity, set its ACL to that of the submission
-					$entity->access_id = $submission_acl;
+					// If content is a todosubmissionfile entitity, set its ACL to that of the submission
+					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+						$entity->access_id = $submission_acl;
+					}
+
+					// Set up a todo content relationship for the entity
+					$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+
 					$entity->save();
 				} 
 			}
@@ -451,7 +459,7 @@ function submission_delete_event_listener($event, $object_type, $object) {
 	if ($object->getSubtype() == 'todosubmission') {
 		// Get the submissions todo
 		$todo = get_entity($object->todo_guid);
-		
+
 		// Make sure we nuke the relationship so the remove event fires
 		remove_entity_relationship($object->getGUID(), SUBMISSION_RELATIONSHIP, $todo->getGUID());
 
@@ -462,15 +470,19 @@ function submission_delete_event_listener($event, $object_type, $object) {
 			$entity = get_entity($guid);
 			if (elgg_instanceof($entity, 'object')) {
 				// If content is a valid entitity, set its ACL back to private
-				$entity->access_id = ACCESS_PRIVATE;
+				if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+					$entity->access_id = ACCESS_PRIVATE;
+				}
+				
+				// Remove todo content relationship
+				remove_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+				
 				$entity->save();
 			} 
 		}
 		
 		// Nuke the ACL
-		delete_access_collection($submission_acl);
-
-		
+		delete_access_collection($submission_acl);		
 	}
 	return true;
 }
@@ -485,7 +497,6 @@ function submission_relationship_event_listener($event, $object_type, $object) {
 	// This will check and set the complete flag on the todo
 	update_todo_complete($todo->getGUID());
 }
-
 
 /**
  * Return the write access for the current todo submission if the user has write access to it.
@@ -574,7 +585,6 @@ function todo_profile_menu($hook, $entity_type, $return, $params) {
  * @param unknown_type $params
  * @return unknown
  */
- 
 function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $params) {
 	$entity = get_entity($params['vars']['item']->object_guid);
 	if (elgg_instanceof($entity, 'object', 'todosubmission')) {	
@@ -587,36 +597,11 @@ function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $param
  */
 function todo_submenus() {
 	$page_owner = elgg_get_page_owner_entity();
-			 		
-	// Default todo submenus
-	if (elgg_in_context('todo')) {
 
-	 	if (!(elgg_instanceof($page_owner, 'group'))) {
-			$user = elgg_get_logged_in_user_entity();
-			/* Do we really need these?? 		
-			// Your todos
-			$url =  "todo/assigned/" . $user->username;
-			$item = new ElggMenuItem('todo:menu:yourtodos', elgg_echo('todo:menu:yourtodos'), $url);
-			elgg_register_menu_item('page', $item);
-		
-			// Owned todos
-			$url =  "todo/owner/" . $user->username;
-			$item = new ElggMenuItem('todo:menu:assignedtodos', elgg_echo('todo:menu:assignedtodos'), $url);
-			elgg_register_menu_item('page', $item);
-		
-			// All todos
-			$url =  "todo/all";
-			$item = new ElggMenuItem('todo:menu:alltodos', elgg_echo('todo:menu:alltodos'), $url);
-			elgg_register_menu_item('page', $item);
-			*/
-		}
-	}
-		
 	// Admin stats
 	if (elgg_in_context('admin')) {
 		elgg_register_admin_menu_item('administer', 'todo', 'statistics');
 	}
-
 }
 
 /**
@@ -640,7 +625,6 @@ function submission_file_url($entity) {
 	$title = elgg_get_friendly_title($title);
 	return "file/view/" . $entity->getGUID() . "/" . $title;
 }
-
 
 /**
  * Populates the ->getUrl() method for todo entities
@@ -1066,7 +1050,6 @@ function submission_file_icon_url_override($hook, $type, $returnvalue, $params) 
 		return $url;
 	}
 }
-
 
 /**
  * Register entity type objects, subtype todosubmissionfile as
