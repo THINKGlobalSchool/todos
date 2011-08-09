@@ -247,6 +247,17 @@ elgg.todo.submissionAddHover = function(event) {
 			$(this).data('addmenu', $addmenu);
 			$addmenu.appendTo($(this));
 		}
+		
+		// Grab guid and check to make sure content is not already selected
+		var id = $(this).closest('.elgg-item').attr('id');
+		var guid = id.substring(id.lastIndexOf('-') + 1);
+		var selected = $('#submission-content-select').val();
+		
+		if (selected && $.inArray(guid, selected) !== -1) {
+			// Update menu data accordingly
+			var added = "<span class='todo-content-added'>Added!</span>";
+			$addmenu.find('input').replaceWith(added);
+		}
 
 		var margin = '-' + height + 'px';
 
