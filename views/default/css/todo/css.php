@@ -169,6 +169,10 @@ span.unviewed {
 	padding: 10px;
 }
 
+.submission-content-pane {
+	display: none;
+}
+
 
 /** Resets and tweaks for todo sidebar in groups **/
 .elgg-todo-sidebar .elgg-image-block {
@@ -198,4 +202,10 @@ span.unviewed {
 .submission-content-input-add {
 	vertical-align: middle;
 	margin-top: 2px;
+}
+
+.todo-content-added {
+	font-weight: bold;
+	margin-top: 4px;
+	margin-right: 8px;
 }

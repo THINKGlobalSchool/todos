@@ -45,37 +45,7 @@ elgg.todo.init = function() {
 	$("form#todo-submission-form").live('submit', elgg.todo.submissionFormSubmit);
 	
 	// Hack modules to add an 'add' button	
-	$("#submission-add-content-container").delegate('.elgg-item', 'mouseenter mouseleave', function(event) {
-		// For some reason the height is only accurate at this point.. 
-		var height = $(this).height();
-		if (event.type == 'mouseenter') {
-			var $addmenu = $(this).data('addmenu') || null;
-
-			if (!$addmenu) {
-				var $addmenu = $("<div class='add-menu'><input type='submit' value='Add' id='xx' class='elgg-button elgg-button-action submission-content-input-add' /></div>");
-				$(this).data('addmenu', $addmenu);
-			}
-
-			$addmenu.appendTo($(this));
-
-			var margin = '-' + height + 'px';
-			
-			$addmenu
-				.css("width", '90px')
-				.css("height", height + 'px')
-				.css("z-index", '100')
-				.fadeIn('fast')
-				.position({
-					my: "right top",
-					at: "right top",
-					of: $(this)
-				}).css("margin-bottom", margin);
-			
-		} else if (event.type == 'mouseleave') {
-			var $addmenu = $(this).data('addmenu');
-			$addmenu.fadeOut();
-		}
-	});
+	$("#submission-add-content-container").delegate('.elgg-item', 'mouseenter mouseleave', elgg.todo.submissionAddHover);
 	
 	// SUBMISSION CONTENT FORM SETUP
 	
@@ -242,11 +212,58 @@ elgg.todo.submissionSubmitContent = function(event) {
 					$('<option></option>').attr('selected', 'selected').val(data.output.entity_guid).html(data.output.entity_title)
 				);
 				elgg.todo.submissionFormDefault();	
+				
+				var $listitem = $('#elgg-object-' + guid);
+				var $addmenu = $listitem.data('addmenu');
+				
+				// Get values from content select, we don't want to show the add button
+				// for already added content
+				var selected = $('#submission-content-select').val();
+				
+				// Check if we've already added this content
+				if (selected && $.inArray(guid, selected) !== -1) {
+					// Update menu data accordingly
+					var added = "<span class='todo-content-added'>Added!</span>";
+					$addmenu.find('input').replaceWith(added);
+					$listitem.find('input').replaceWith(added);
+				}
 			}
 		}
 	});
 
 	event.preventDefault();
+}
+
+// Handler to add an 'add' button to the modules content listing to allow
+// adding spot content to a todo submission
+elgg.todo.submissionAddHover = function(event) {
+	// For some reason the height is only accurate at this point.. 
+	var height = $(this).height();
+	if (event.type == 'mouseenter') {
+		var $addmenu = $(this).data('addmenu') || null;
+
+		if (!$addmenu) {
+			var $addmenu = $("<div class='add-menu'><input type='submit' value='Add'class='elgg-button elgg-button-action submission-content-input-add' /></div>");
+			$(this).data('addmenu', $addmenu);
+			$addmenu.appendTo($(this));
+		}
+
+		var margin = '-' + height + 'px';
+
+		$addmenu
+			.css("width", '90px')
+			.css("height", height + 'px')
+			.css("z-index", '100')
+			.fadeIn('fast')
+			.position({
+				my: "right top",
+				at: "right top",
+				of: $(this)
+			}).css("margin-bottom", margin);
+	} else if (event.type == 'mouseleave') {
+		var $addmenu = $(this).data('addmenu');
+		$addmenu.fadeOut();
+	}
 }
 
 /**
