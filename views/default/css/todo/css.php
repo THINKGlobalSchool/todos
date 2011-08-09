@@ -136,6 +136,32 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
+/** Multi-todo toggler **/
+#multi-todos {
+	display: none;
+	position: absolute;
+	min-height: 18px;
+	z-index: 9000;
+	background: #FFF;
+	padding: 4px;
+	-webkit-box-shadow: 1px 1px 5px #000;
+	-moz-box-shadow: 1px 1px 5px #000;
+	box-shadow: 1px 1px 5px #000;
+}
+
+#multi-todos a {
+	display: block;
+	width: 100%;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+#multi-todos a:hover {
+	background: #DDD;
+	text-decoration: none;
+}
+
+
 /** POPUP DIALOG **/
 
 #todo-submission-dialog  {
@@ -171,5 +197,5 @@ span.unviewed {
 
 .submission-content-input-add {
 	vertical-align: middle;
-	margin-top: 4px;
+	margin-top: 2px;
 }

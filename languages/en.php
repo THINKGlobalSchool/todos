@@ -88,6 +88,8 @@ $english = array(
 	'todo:label:signup' => 'Sign Up',
 	'todo:label:signupconfirm' => 'Do you want to assign yourself this To Do?',
 	'todo:label:ownersubmission' => '%s\'s Submission',
+	'todo:label:submittedforsingle' => 'Submitted for 1 To Do', 
+	'todo:label:submittedformultiple' => 'Submitted for %s To Do\'s',
 	
 	
 	// Calendar labels

@@ -68,6 +68,11 @@ function todo_init() {
 	$todo_js = elgg_get_simplecache_url('js', 'todo/todo');
 	elgg_register_js('elgg.todo', $todo_js);
 	
+	// Register and load global todo JS
+	$g_js = elgg_get_simplecache_url('js', 'todo/global');
+	elgg_register_js('elgg.todo.global', $g_js);
+	elgg_load_js('elgg.todo.global');
+	
 	// Need newer jquery form plugin (temporarily I hope)
 	elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
 		
@@ -142,6 +147,9 @@ function todo_init() {
 	
 	// Submission entity menu
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'submission_entity_menu_setup');
+	
+	// Generic entity menu handler
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_content_entity_menu_setup');
 	
 	// Remove comments from todo complete river entries
 	elgg_register_plugin_hook_handler('register', 'menu:river', 'submission_river_menu_setup');
@@ -954,6 +962,71 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 		$return[] = ElggMenuItem::factory($options);
 	}
 			
+	return $return;
+}
+
+/**
+ * Customize entity menu, display link to todo if entity was submitted as content
+ */
+function todo_content_entity_menu_setup($hook, $type, $return, $params) {
+	if (elgg_in_context('widgets')) {
+		return $return;
+	}
+	
+	if (!elgg_is_logged_in()) {
+		return $return;
+	}
+		
+	$entity = $params['entity'];
+	
+	$options = array(
+		'relationship' => TODO_CONTENT_RELATIONSHIP,
+		'relationship_guid' => $entity->guid,
+		'inverse_relationship' => FALSE,
+		'types' => array('object'),
+		'subtypes' => array('todo'),
+		'limit' => 0,
+		'offset' => 0,
+		'count' => TRUE,
+	);
+	
+	// Grab count
+	$todo_count = elgg_get_entities_from_relationship($options);
+	
+	$options['count'] = FALSE;
+	
+	// Grab todo's
+	$todos = elgg_get_entities_from_relationship($options);
+	
+	// If this item was submitted to at least one todo
+	if ($todo_count) {
+		
+		// If only submitted to one todo
+		if ($todo_count == 1) {
+			$text = elgg_echo('todo:label:submittedforsingle');
+		} else { // Multiple todo's
+			$text = elgg_echo('todo:label:submittedformultiple', array($todo_count));
+		}	
+			
+		$toggle_box = "<div id='multi-todos'>";
+		foreach($todos as $todo) {
+			$toggle_box .= "<a class='multi-todo' href='{$todo->getURL()}'>{$todo->title}</a>";
+		}
+		$toggle_box .= "</div>";
+
+		$options = array(
+			'name' => "submitted_for_multiple_todos",
+			'text' =>  $text . $toggle_box,
+			'href' => '#multi-todos',
+			'id' => 'multi-todo-toggle',
+			//'rel' => 'toggle',
+			'priority' => 2000,
+		);
+		
+			
+		$return[] = ElggMenuItem::factory($options);
+	}
+
 	return $return;
 }
 
