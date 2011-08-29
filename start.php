@@ -668,7 +668,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	// Add logout button
 	$options = array(
 		'name' => 'todo',
-		'text' => $text,
+		'text' => $text . elgg_echo('todo'),
 		'href' =>  'todo',
 		'priority' => 999,
 	);
