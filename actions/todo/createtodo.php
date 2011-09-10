@@ -84,7 +84,11 @@ elgg_clear_sticky_form('todo_post_forms');
 // Save successful, forward
 system_message(elgg_echo('todo:success:create'));
 if ($forward_new) {
-	forward($CONFIG->wwwroot . 'pg/todo/createtodo');
+	// Check for container guid 
+	if ($container_guid) {
+		$container = "/?container_guid={$container_guid}";
+	}
+	forward($CONFIG->wwwroot . 'pg/todo/createtodo' . $container);
 } else {
 	forward($todo->getURL());
 }
