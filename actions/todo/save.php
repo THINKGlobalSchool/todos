@@ -150,7 +150,7 @@ elgg_clear_sticky_form('todo_edit');
 // Save successful, forward
 system_message(elgg_echo('todo:success:save'));
 if ($forward_new) {
-	forward(elgg_get_site_url() . 'todo/createtodo');
+	forward(elgg_get_site_url() . 'todo/add/' . $container_guid);
 } else {
 	forward($todo->getURL());
 }
