@@ -736,7 +736,7 @@ function todo_secondary_menu_setup($hook, $type, $return, $params) {
 	// Set up secondary nav for todo listings
 	$secondary_tab = get_input('status', 'incomplete');
 	
-	$direction = get_input('direction', 'ASC');
+	$direction = get_input('direction', 'DESC');
 
 	if ($direction == 'ASC') {
 		$text = "  &#9660;";
