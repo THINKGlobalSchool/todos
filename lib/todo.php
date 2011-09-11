@@ -89,7 +89,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 			'inverse_relationship' => FALSE,
 			'metadata_name' => 'status',
 			'metadata_value' => TODO_STATUS_PUBLISHED,
-			'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+			'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
 			'full_view' => FALSE,
 			'wheres' => $wheres,
 		));		
@@ -140,7 +140,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 														'operand' => '=',
 													)),
 				'metadata_name_value_pairs_operator' => 'OR',
-				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
 				'full_view' => FALSE,
 			));	
 		} else if ($status == 'incomplete') {
@@ -169,7 +169,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 				'subtype' => 'todo',
 				'metadata_name' => 'status',
 				'metadata_value' => TODO_STATUS_PUBLISHED,
-				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
+				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
 				'full_view' => FALSE,
 				'wheres' => $wheres,
 			));	
