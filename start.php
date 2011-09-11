@@ -811,7 +811,6 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			$text = "<span class='accepted'>✓ Accepted</span>";
 		} else {
 			$text = "<span class='unviewed'>";
-			$text .= "✗ Not Accepted ";
 			$text .= elgg_view("output/confirmlink", array(
 				'href' => elgg_get_site_url() . "action/todo/accept?guid=" . $entity->getGUID(),
 				'text' => 'Accept',
@@ -976,6 +975,9 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 	if (!elgg_is_logged_in()) {
 		return $return;
 	}
+	
+	$ia = elgg_get_ignore_access();
+	elgg_set_ignore_access(TRUE);
 		
 	$entity = $params['entity'];
 	
@@ -998,6 +1000,7 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 	// Grab todo's
 	$todos = elgg_get_entities_from_relationship($options);
 	
+	
 	// If this item was submitted to at least one todo
 	if ($todo_count) {
 		
@@ -1010,7 +1013,8 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 			
 		$toggle_box = "<div id='multi-todos'>";
 		foreach($todos as $todo) {
-			$toggle_box .= "<a class='multi-todo' href='{$todo->getURL()}'>{$todo->title}</a>";
+			$container = $todo->getContainerEntity();
+			$toggle_box .= "<a class='multi-todo' href='{$todo->getURL()}'>{$todo->title} ({$container->name})</a>";
 		}
 		$toggle_box .= "</div>";
 
@@ -1026,6 +1030,7 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 			
 		$return[] = ElggMenuItem::factory($options);
 	}
+	elgg_set_ignore_access($ia);
 
 	return $return;
 }
