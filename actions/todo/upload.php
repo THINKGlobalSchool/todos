@@ -40,7 +40,7 @@ if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {
 	$file->setFilename($prefix.$filestorename);
 	$file->setMimeType($_FILES['upload']['type']);
 	$file->originalfilename = $_FILES['upload']['name'];
-	$file->simpletype = "submission";
+	//$file->simpletype = "submission";
 	$file->subtype = "todosubmissionfile";
 
 	$file->open("write");
