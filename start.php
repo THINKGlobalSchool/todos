@@ -345,7 +345,7 @@ function todo_create_event_listener($event, $object_type, $object) {
  */
 function todo_delete_event_listener($event, $object_type, $object) {
 	if ($object->getSubtype() == 'todo') {
-		$context = elgg_elgg_get_context();
+		$context = elgg_get_context();
 		elgg_set_context('todo_acl');
 		register_error(delete_access_collection($object->assignee_acl));
 		elgg_set_context($context);
