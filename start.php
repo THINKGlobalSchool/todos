@@ -653,7 +653,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$todos = get_users_todos($user->getGUID());
 	$count = 0;
 	foreach ($todos as $todo) {
-		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID())) {
+		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID()) && !$todo->manual_complete) {
 			$count++;
 		}
 	}	
