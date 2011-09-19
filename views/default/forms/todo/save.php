@@ -14,6 +14,7 @@
 $title 				= elgg_extract('title', $vars);
 $description 		= elgg_extract('description', $vars);
 $tags 				= elgg_extract('tags', $vars);
+$suggested_tags		= elgg_extract('suggested_tags', $vars);
 $due_date			= elgg_extract('due_date', $vars);
 $assignees			= elgg_extract('assignee_guids', $vars);
 $container_guid 	= elgg_extract('container_guid', $vars);
@@ -76,6 +77,12 @@ $tag_label = elgg_echo('tags');
 $tag_input = elgg_view('input/tags', array(
 	'name' => 'tags', 
 	'value' => $tags
+));
+
+$suggested_tags_label = elgg_echo('todo:label:suggestedtags');
+$suggested_tags_input = elgg_view('input/tags', array(
+	'name' => 'suggested_tags',
+	'value' => $suggested_tags ? $suggested_tags : ',',
 ));
 
 $assign_label = elgg_echo('todo:label:assignto');
@@ -201,6 +208,10 @@ $form_body = <<<HTML
 	<div>
 		<label>$tag_label</label><br />
         $tag_input
+	</div><br />
+	<div>
+		<label>$suggested_tags_label</label><br />
+        $suggested_tags_input
 	</div><br />
 	<div>
 		<label>$assign_label</label><br />

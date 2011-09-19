@@ -14,6 +14,7 @@
 $title 				= get_input('title');
 $description 		= get_input('description');
 $tags 				= string_to_tag_array(get_input('tags'));
+$suggested_tags 	= string_to_tag_array(get_input('suggested_tags'));
 $due_date			= strtotime(get_input('due_date'));
 $assignees			= get_input('assignee_guids');
 $container_guid 	= get_input('container_guid');	
@@ -91,6 +92,7 @@ if ($guid) {
 $todo->title 		= $title;
 $todo->description 	= $description;
 $todo->tags 		= $tags;
+$todo->suggested_tags = $suggested_tags;
 $todo->due_date		= $due_date;
 $todo->return_required = $return_required;
 $todo->status = $status;

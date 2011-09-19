@@ -354,6 +354,7 @@ function todo_prepare_form_vars($todo = NULL) {
 		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
 		'access_id' => NULL,
 		'tags' => NULL,
+		'suggested_tags' => NULL,
 		'container_guid' => NULL,
 		'guid' => NULL,
 		'return_required' => 0,
