@@ -169,6 +169,7 @@ function todo_init() {
 	elgg_register_action('todo/unassign', "$action_base/unassign.php");
 	elgg_register_action('todo/sendreminder', "$action_base/sendreminder.php");
 	elgg_register_action('todo/complete', "$action_base/complete.php");
+	elgg_register_action('todo/open', "$action_base/open.php");
 	elgg_register_action('todo/upload', "$action_base/upload.php");
 	elgg_register_action('todo/checkcontent', "$action_base/checkcontent.php");
 	
@@ -890,9 +891,23 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	// Close todo button, owners only
 	if (elgg_in_context('todo_full_view') && $entity->canEdit()) {
 		if ($entity->manual_complete) {
+			/*
             $options = array(
 				'name' => 'todo_closed',
 				'text' => '<strong>' . elgg_echo("todo:status:closed") . '</strong>',
+				'href' => false,
+				'priority' => 1000,
+			);
+			*/
+			$text = elgg_view("output/confirmlink", array(
+				'href' => "action/todo/open?guid=" . $entity->getGUID(),
+				'text' => elgg_echo('todo:label:flagopen'),
+				'confirm' => elgg_echo('todo:label:flagopenconfirm'),
+				'class' => 'elgg-button elgg-button-action'
+            ));
+			$options = array(
+				'name' => 'todo_open',
+				'text' => $text,
 				'href' => false,
 				'priority' => 1000,
 			);
