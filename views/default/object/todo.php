@@ -78,6 +78,9 @@ if ($full) { // Full View
 
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';
+	
+	$suggested_tags_label = elgg_echo("todo:label:suggestedtags");
+	$suggested_tags_content = elgg_view('output/tags', array('value' => $todo->suggested_tags));
 
 	$status_label = elgg_echo("todo:label:status");
 	
@@ -112,6 +115,7 @@ if ($full) { // Full View
 		$body .= elgg_view_module('info', elgg_echo('todo:label:assessmentrubric'), $rubric_content);
 	}
 	
+	$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
 	$body .= elgg_view_module('info', $return_label, $return_content);	
 	$body .= elgg_view_module('info', $status_label, $status_content);
 	

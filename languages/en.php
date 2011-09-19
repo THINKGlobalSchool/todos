@@ -92,6 +92,7 @@ $english = array(
 	'todo:label:ownersubmission' => '%s\'s Submission',
 	'todo:label:submittedforsingle' => 'Submitted for 1 To Do', 
 	'todo:label:submittedformultiple' => 'Submitted for %s To Do\'s',
+	'todo:label:suggestedtags' => 'Suggested Tags (For To Do content submissions)',
 	
 	
 	// Calendar labels
