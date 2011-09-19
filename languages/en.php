@@ -134,6 +134,7 @@ $english = array(
 	'river:create:object:todosubmission:deleted' => '%s completed a To Do that no longer exists.',
 	'river:comment:object:todo' => '%s commented on a To Do titled %s',
 	'river:comment:object:todosubmission' => '%s commented on %s', 
+	'river:comment:object:todosubmissionfile' => '%s commented on %s',
 
 	
 	// Email Notifications 
