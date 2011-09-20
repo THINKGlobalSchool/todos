@@ -162,6 +162,12 @@ span.unviewed {
 }
 
 
+/** Help popups */
+.todo-help-popup { 
+    width: 200px;
+	padding: 5px;
+}
+
 /** POPUP DIALOG **/
 
 #todo-submission-dialog  {
