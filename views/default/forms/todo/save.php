@@ -189,9 +189,19 @@ $status_input = elgg_view('input/dropdown', array(
 		
 $assignees_label = elgg_echo('todo:label:currentassignees');
 
+$submission_popup_label = elgg_echo('todo:label:suggestedtagswhat');
+$submission_popup_title = elgg_echo('todo:label:suggestedtagstitle');
+$submission_popup_info = elgg_echo('todo:label:suggestedtagsinfo');			
+
+$popup_content = elgg_view_module('popup', $submission_popup_title, $submission_popup_info, array(
+	'id' => 'info',
+	'class' => 'hidden todo-help-popup',
+));
+
+$popup = "<a style='font-size: 10px;' rel='popup' href='#info'>$submission_popup_label</a>" . $popup_content;
+
 // Build Form Body
 $form_body = <<<HTML
-
 <div class='margin_top todo'>
 	<div>
 		<label>$title_label</label><br />
@@ -210,7 +220,7 @@ $form_body = <<<HTML
         $tag_input
 	</div><br />
 	<div>
-		<label>$suggested_tags_label</label><br />
+		<label>$suggested_tags_label</label>&nbsp;&nbsp;$popup<br />
         $suggested_tags_input
 	</div><br />
 	<div>

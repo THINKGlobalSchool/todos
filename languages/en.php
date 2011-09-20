@@ -92,8 +92,10 @@ $english = array(
 	'todo:label:ownersubmission' => '%s\'s Submission',
 	'todo:label:submittedforsingle' => 'Submitted for 1 To Do', 
 	'todo:label:submittedformultiple' => 'Submitted for %s To Do\'s',
-	'todo:label:suggestedtags' => 'Suggested Tags (For To Do content submissions)',
-	
+	'todo:label:suggestedtags' => 'To Do Submission Tags',
+	'todo:label:suggestedtagswhat' => 'What is this?',
+	'todo:label:suggestedtagstitle' => 'Submission Tags',
+	'todo:label:suggestedtagsinfo' => 'To do submission tags are the tags that students should use for any content they post related to this to do.',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
