@@ -166,6 +166,7 @@ span.unviewed {
 .todo-help-popup { 
     width: 200px;
 	padding: 5px;
+	position: absolute;
 }
 
 /** POPUP DIALOG **/

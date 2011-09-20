@@ -70,6 +70,18 @@ elgg.todo.init = function() {
 
 	// Assign onchange for the assignee type select input
 	$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
+	
+	// What is this rollover for submission tags
+	$('#todo-suggested-what').click(function(e){e.preventDefault();});
+	$('#todo-suggested-what').hover(function() {
+		var options = {
+			my: 'center top',
+			at: 'center bottom',
+			of: $(this),
+			collision: 'fit fit'
+		}
+		$('.todo-help-popup').toggle().position(options);
+	});
 }
 
 /**	

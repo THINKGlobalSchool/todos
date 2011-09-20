@@ -198,7 +198,7 @@ $popup_content = elgg_view_module('popup', $submission_popup_title, $submission_
 	'class' => 'hidden todo-help-popup',
 ));
 
-$popup = "<a style='font-size: 10px;' rel='popup' href='#info'>$submission_popup_label</a>" . $popup_content;
+$popup = "<a style='font-size: 10px;' id='todo-suggested-what' href='#info'>$submission_popup_label</a>" . $popup_content;
 
 // Build Form Body
 $form_body = <<<HTML
