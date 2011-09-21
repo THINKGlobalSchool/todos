@@ -113,6 +113,7 @@ elgg.todo.submissionFormSubmit = function(event) {
 		
 	// If we have content (content is required)
 	if (content) {
+		$('#submit-create-submission').attr('disabled', 'disabled');
 		// Create submission
 		elgg.todo.createSubmission(todo_guid, content, comment);
 	} else {
@@ -124,6 +125,11 @@ elgg.todo.submissionFormSubmit = function(event) {
 }
 
 elgg.todo.createSubmission = function(todo_guid, content, comment) {
+	
+	// Replace submit button with spinner
+	$('#submit-create-submission').replaceWith("<div class='elgg-ajax-loader'></div>");
+	
+	
 	elgg.action('submission/save', {
 		data: {
 			submission_description: comment,
@@ -180,7 +186,7 @@ elgg.todo.submissionSubmitLink = function(event) {
 /** 
  * Submit handler for submission file form
  */ 
-elgg.todo.submissionSubmitFile = function(event) {
+elgg.todo.submissionSubmitFile = function(event) {	
 	var options = { 
 			url: 			elgg.security.addToken(elgg.todo.fileUploadURL), 
 			type: 			"POST", 
