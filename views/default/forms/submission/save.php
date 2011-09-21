@@ -104,7 +104,11 @@ if (isset($vars['entity'])) {
 		'value' => $description
 	));
 
-	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('submit')));
+	$submit_input = elgg_view('input/submit', array(
+		'name' => 'submit', 
+		'id' => 'submit-create-submission',
+		'value' => elgg_echo('submit'),
+	));
 	
 	$ajax_spinner = '<div id="submission-ajax-spinner" class="elgg-ajax-loader"></div>';
 	
