@@ -1029,7 +1029,8 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 			$text = elgg_echo('todo:label:submittedformultiple', array($todo_count));
 		}	
 			
-		$toggle_box = "<div id='multi-todos'>";
+		$toggle_box = "<div id='todo-entity-info-{$entity->guid}' class='todo-entity-info'>";
+		
 		foreach($todos as $todo) {
 			$container = $todo->getContainerEntity();
 			$toggle_box .= "<a class='multi-todo' href='{$todo->getURL()}'>{$todo->title} ({$container->name})</a>";
@@ -1039,8 +1040,9 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 		$options = array(
 			'name' => "submitted_for_multiple_todos",
 			'text' =>  $text . $toggle_box,
-			'href' => '#multi-todos',
-			'id' => 'multi-todo-toggle',
+			'href' => '#todo-entity-info-' . $entity->guid,
+			'id' => 'todo-entity-' . $entity->guid,
+			'class' => 'todo-show-info',
 			//'rel' => 'toggle',
 			'priority' => 2000,
 		);
