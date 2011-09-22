@@ -756,6 +756,43 @@ function update_todo_complete($todo_guid) {
 	}
 }
 
+/**
+ * Add todo submission tags to given entity
+ * @param ElggEntity $entity
+ * @param ElggEntity $todo
+ * @return bool
+ */
+function todo_set_content_tags($entity, $todo) {
+	$suggested_tags = $todo->suggested_tags;
+	
+	if (!$suggested_tags || !is_array($suggested_tags)) {
+		return false; // Nothing to do here
+	}
+	
+	// Get entity tags
+	$tags = $entity->tags;
+	
+	// If no tags, create new array
+	if (!$tags) {
+		$tags = array();
+	}
+
+	if (!is_array($tags)) {
+		$tags = array($tags);
+	}
+
+	// Merge array
+	$tags = array_merge($tags, $suggested_tags);
+	
+	$tags = array_unique($tags);
+	
+	// Set tags
+	$entity->tags = $tags;
+	
+	return true;
+}
+
+
 
 /**
  * Return todos with a due date before givin date

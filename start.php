@@ -449,6 +449,9 @@ function submission_create_event_listener($event, $object_type, $object) {
 
 					// Set up a todo content relationship for the entity
 					$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+					
+					// Set content tags to todo suggested tags
+					todo_set_content_tags($entity, $todo);
 
 					$entity->save();
 				} 
