@@ -136,8 +136,8 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
-/** Multi-todo toggler **/
-#multi-todos {
+/** Todo info toggler **/
+.todo-entity-info {
 	display: none;
 	position: absolute;
 	min-height: 18px;
@@ -149,18 +149,17 @@ span.unviewed {
 	box-shadow: 1px 1px 5px #000;
 }
 
-#multi-todos a {
+.todo-entity-info a {
 	display: block;
 	width: 100%;
 	padding-left: 2px;
 	padding-right: 2px;
 }
 
-#multi-todos a:hover {
+.todo-entity-info a:hover {
 	background: #DDD;
 	text-decoration: none;
 }
-
 
 /** Help popups */
 .todo-help-popup { 

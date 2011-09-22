@@ -108,9 +108,9 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 				'offset' => get_input('offset', 0), 
 				'full_view' => FALSE,
 				'container_guid' => $owner->getGUID(),
+				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
 			);
-		
-			$content = elgg_list_entities($options);
+			$content = elgg_list_entities_from_metadata($options);
 		} else {
 			forward('todo/all');
 		}

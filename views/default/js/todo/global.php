@@ -15,30 +15,28 @@
 elgg.provide('elgg.todo.global');
 
 elgg.todo.global.init = function() {			
-	$("#multi-todo-toggle").live('click', elgg.todo.global.multiToggleClick);
+	$(".todo-show-info").live('hover', elgg.todo.global.showEntityInfo);
 	
 	// Hide multi-todo's when clicking outside box
 	$('body').live('click', function(event) {
-		if (event.target.id !== "multi-todo-toggle" && event.target.className !== "multi-todo") {
-			$("#multi-todos").fadeToggle();
+		if (!$(event.target).hasClass('todo-show-info') && event.target.className !== "todo-entity-info") {
+			$(".todo-entity-info").fadeOut();
 		}
 	});
 }
 
-// Function to handle click events for the multi todo toggler
-elgg.todo.global.multiToggleClick = function(event) {
-	$div = $(".elgg-menu-item-submitted-for-multiple-todos").find("#multi-todos");
-		
-	if ($div) {
-		$div.appendTo('body')
-			.position({
-				my: "left top",
-				at: "left bottom",
-				of: $(this)
-			});
-	}
+// Function to handle click events for the todo show info link
+elgg.todo.global.showEntityInfo = function(event) {
+	$id = $($(this).attr('href'));
+
+	$id.fadeIn();
 	
-	$("#multi-todos").fadeToggle();
+	$id.appendTo('body').position({
+		my: "right top",
+		at: "right top",
+		of: $(this),
+		offset: "0 25",
+	})
 	
 	event.preventDefault();
 }
