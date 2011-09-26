@@ -265,7 +265,9 @@ function todo_page_handler($page) {
 				elgg_register_title_button();
 			}
 			
-			elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
+			if ($user) {
+				elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
+			}
 			
 			$params['content'] = elgg_view('todo/dashboard');
 			break;
@@ -848,14 +850,16 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 	
 	$return[] = ElggMenuItem::factory($options);
 	
- 	$options = array(
-		'name' => 'owned',
-		'text' => elgg_echo("todo:label:assignedby", array($by)),
-		'class' => 'todo-ajax-list',
-		'item_class' => 'todo-ajax-list-item',
-		'href' => 'ajax/view/todo/list?type=owned&u=' . $user->guid,
-		'priority' => 3
-	);
+	if (elgg_is_logged_in()) {
+	 	$options = array(
+			'name' => 'owned',
+			'text' => elgg_echo("todo:label:assignedby", array($by)),
+			'class' => 'todo-ajax-list',
+			'item_class' => 'todo-ajax-list-item',
+			'href' => 'ajax/view/todo/list?type=owned&u=' . $user->guid,
+			'priority' => 3
+		);
+	}
 	
 	$return[] = ElggMenuItem::factory($options);
 	

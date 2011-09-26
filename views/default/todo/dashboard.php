@@ -6,6 +6,10 @@ $status = get_input('status', 'incomplete');
 
 if (elgg_instanceof(elgg_get_page_owner_entity(), 'group')) {
 	$tab = 'owned';
+} 
+
+if (!elgg_is_logged_in()) {
+	$tab = 'all';
 }
 
 switch($tab) {
