@@ -96,6 +96,8 @@ $english = array(
 	'todo:label:suggestedtagswhat' => 'What is this?',
 	'todo:label:suggestedtagstitle' => 'Submission Tags',
 	'todo:label:suggestedtagsinfo' => 'To do submission tags are the tags that students should use for any content they post related to this to do.',
+	'todo:label:sortasc' => 'Sort Ascending &#9650;',
+	'todo:label:sortdesc' => 'Sort Descending &#9660;',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
