@@ -704,7 +704,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$options = array(
 		'name' => 'todo',
 		'text' => $text . elgg_echo('todo'),
-		'href' =>  'todo/assigned/' . elgg_get_logged_in_user_entity()->username,
+		'href' =>  'todo/dashboard/' . elgg_get_logged_in_user_entity()->username,
 		'priority' => 999,
 	);
 	$return[] = ElggMenuItem::factory($options);
