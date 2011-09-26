@@ -82,6 +82,36 @@ elgg.todo.init = function() {
 		}
 		$('.todo-help-popup').toggle().position(options);
 	});
+	
+	// Todo dashboard nav items
+	$('.todo-ajax-list').live('click', function(e){
+		$('#todo-dashboard').html("<div class='elgg-ajax-loader'></div>");
+		$('#todo-dashboard').load($(this).attr('href'));
+		$('.todo-ajax-list-item').removeClass('elgg-state-selected');
+		$(this).closest('.todo-ajax-list-item').addClass('elgg-state-selected');
+		e.preventDefault();
+	});
+	
+	// Todo dashboard filter nav items
+	$('.todo-ajax-list-complete').live('click', function(e){
+		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
+		$('#todo-dashboard').load($(this).attr('href'));
+		e.preventDefault();
+	});
+	
+	// Todo dashboard sort nav items
+	$('.todo-ajax-sort').live('click', function(e){
+		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
+		$('#todo-dashboard').load($(this).attr('href'));
+		e.preventDefault();
+	});
+
+	// Special pagination helper for todo content
+	$('#todo-dashboard .elgg-pagination a').live('click', function(e) {
+		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
+		$('#todo-dashboard').load($(this).attr('href'));
+		e.preventDefault();
+	});
 }
 
 /**	

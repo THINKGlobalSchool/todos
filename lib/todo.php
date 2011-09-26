@@ -112,7 +112,7 @@ function todo_get_page_content_list($type = NULL, $guid = NULL) {
 			);
 			$content = elgg_list_entities_from_metadata($options);
 		} else {
-			forward('todo/all');
+			forward('todo/dashboard');
 		}
 	} else { 
 		// SHOW ALL TODOS
@@ -304,6 +304,185 @@ function todo_get_page_content_assignees($guid) {
 	return $member_list;
 }
 
+/**
+ * List todo's based on critera
+ * @param array $params:
+ * 
+ * context  	     => NULL|STRING which context we're viewing (all, assigned, owned)
+ *
+ * status            => NULL|STRING complete|incomplete
+ * 
+ * container_guid    => NULL|INT who's todos 
+ * 
+ * sort_order        => STRING ASC|DESC
+ * 
+ * order_by_metadata => STRING which metadata to order by (ie: due_date)
+ */
+function list_todos(array $params) {
+	// Default container guid if not supplied
+	if (!$params['container_guid']) {
+		$params['container_guid'] = elgg_get_logged_in_user_guid();
+	}
+	
+	$user_id = $params['container_guid'];
+	
+	// Default order by if not supplies
+	if (!$params['order_by_metadata']) {
+		$params['order_by_metadata'] = 'due_date';
+	}
+	
+	// Default sort order
+	if (!$params['sort_order']) {
+		$params['sort_order'] = "DESC";
+	}
+	
+	// Default status
+	if (!$params['status']) {
+		$params['status'] = 'incomplete';
+	}
+	
+	// Common options
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'full_view' => FALSE,
+		'order_by_metadata' => array('name' => $params['order_by_metadata'], 'as' => 'int', 'direction' => $params['sort_order']),
+		'limit' => get_input('limit', 10), 
+		'offset' => get_input('offset', 0),
+	);
+	
+	// Published status options
+	$published_options = array(
+		'metadata_name' => 'status',
+		'metadata_value' => TODO_STATUS_PUBLISHED,	
+	);
+	
+	$complete_or_manual = array(
+		'metadata_name_value_pairs' => array(
+			array(
+				'name' => 'complete',
+				'value' => 1, 
+				'operand' => '='),
+			array(
+				'name' => 'manual_complete',
+				'value' => 1,
+				'operand' => '=',
+			)),
+		'metadata_name_value_pairs_operator' => 'OR',
+	);
+	
+	global $CONFIG;
+		
+	switch($params['context']) {
+		case 'all':
+		default: 
+		/********************* ALL ************************/
+			// Show based on status
+			if ($params['status'] == 'complete') {
+				// Use params, defaults and publshed and complete or manual
+				$options = array_merge($options, $published_options, $complete_or_manual);
+				$content = elgg_list_entities_from_metadata($options);	
+				
+			} else if ($params['status'] == 'incomplete') {
+				set_input('display_label', true);
+				// Creating some magic SQL to grab todos without complete metadata
+				$complete = get_metastring_id('complete');
+				$manual_complete = get_metastring_id('manual_complete');
+				$one_id = get_metastring_id(1);
+									
+				$wheres = array();
+				$wheres[] = "NOT EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						WHERE md.entity_guid = e.guid
+							AND md.name_id = $complete
+							AND md.value_id = $one_id)";
+
+				$wheres[] = "NOT EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						WHERE md.entity_guid = e.guid
+							AND md.name_id = $manual_complete
+							AND md.value_id = $one_id)";
+				
+				$options = array_merge($options, $published_options);
+				$options['wheres'] = $wheres;
+
+				$content = elgg_list_entities_from_metadata($options);	
+			}
+			break;
+		case 'owned':
+		/********************* OWNED **********************/			
+		
+			$container = get_entity($params['container_guid']);
+			
+			if (elgg_instanceof($container, 'group')) {
+				$options['container_guid'] = $params['container_guid'];
+			} else if (elgg_instanceof($container, 'user')) {
+				$options['owner_guid'] = $params['container_guid'];
+			}
+
+			$content = elgg_list_entities_from_metadata($options);
+			break;
+		case 'assigned':
+		/********************* ASSIGNED ********************/
+			$test_id = get_metastring_id('manual_complete');
+			$one_id = get_metastring_id(1);
+			$wheres = array();
+
+			$relationship = COMPLETED_RELATIONSHIP;
+			
+			// Container guid in this case is the user to whom the todo's are assigned
+			$user_id = $params['container_guid'];
+			
+			if (!$user_id) {
+				$user_id = elgg_get_logged_in_user_guid();
+			}
+			
+			// Build list based on status
+			if ($params['status'] == 'complete') {
+				$wheres[] = "(EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+						WHERE r2.guid_one = '$user_id'
+						AND r2.relationship = '$relationship'
+						AND r2.guid_two = e.guid) OR 
+							EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						WHERE md.entity_guid = e.guid
+							AND md.name_id = $test_id
+							AND md.value_id = $one_id))";
+
+
+			} else if ($params['status'] == 'incomplete') {	
+				set_input('display_label', true);
+				// Non existant 'manual complete'
+				$wheres[] = "NOT EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						WHERE md.entity_guid = e.guid
+							AND md.name_id = $test_id
+							AND md.value_id = $one_id)";
+
+				$wheres[] = "NOT EXISTS (
+						SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+						WHERE r2.guid_one = '$user_id'
+						AND r2.relationship = '$relationship'
+						AND r2.guid_two = e.guid)";
+			}
+			
+			$options = array_merge($options, $published_options);
+			$options['wheres'] = $wheres;
+			$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
+			$options['relationship_guid'] = $user_id;
+			$options['inverse_relationship'] = FALSE;
+			
+
+			$content = elgg_list_entities_from_relationship($options);
+			break;
+	}
+	if (!$content) {
+		echo "<h3 class='center' style='border-top: 1px dotted #CCCCCC; padding-top: 4px; margin-top: 5px;'>" . elgg_echo('todo:label:noresults') . "</h3>"; 
+	}
+	echo $content;
+}
+
 
 /**
  * Helper function to build menu content
@@ -333,8 +512,6 @@ function todo_get_filter_content($secondary = TRUE) {
 		return ' ';
 	}
 }
-
-/** HELPER FUNCTIONS */
 
 /**
  * Pull together todo variables for the save form

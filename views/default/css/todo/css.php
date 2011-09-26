@@ -179,6 +179,35 @@ span.unviewed {
 	display: none;
 }
 
+/** Todo sort menu **/
+
+.elgg-menu-todo-sort {
+	text-align: center;
+}
+
+.elgg-menu-todo-sort li {
+	margin-right: 5px;
+	font-size: 10px;
+	text-transform: uppercase;
+}
+
+.elgg-menu-todo-sort li a {
+	color: #999;
+}
+
+.elgg-menu-todo-sort li.elgg-state-selected a {
+	font-weight: bold;
+	color: inherit;
+}
+
+/** Todo dashboard controls **/
+
+.todo-dashboard {
+}
+
+.todo-dashboard > .ui-tabs-panel {
+
+}
 
 /** Resets and tweaks for todo sidebar in groups **/
 .elgg-todo-sidebar .elgg-image-block {
