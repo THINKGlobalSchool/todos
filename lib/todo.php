@@ -11,7 +11,6 @@
  */
 
 /** CONTENT FUNCTIONS **/
-
 /**
  * List todo's content
  * @param string $type 	Type of listing [owner/assigned/null]
