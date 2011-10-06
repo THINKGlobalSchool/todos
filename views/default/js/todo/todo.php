@@ -205,12 +205,74 @@ elgg.todo.submissionFormDefault = function() {
  */
 elgg.todo.submissionSubmitLink = function(event) {
 	var link = $('#submission-link').val();
-	$('#submission-content-select').append(
-		$('<option></option>').attr('selected', 'selected').val(link).html(link)
-	);
-	elgg.todo.submissionFormDefault();
-	$('#submission-link').val('');
+	
+	if (link) {
+		// Get a protocol trimmed version of the link, and site url
+		var trimmed_link = elgg.todo.trimProtocol(link);
+		var trimmed_site = elgg.todo.trimProtocol(elgg.get_site_url());
+	
+		// Check is given url comes from this site
+		if (trimmed_link.indexOf(trimmed_site) !== -1) {
+			// This url did come from this site, parse out the first number we come across
+			var regex = ".*?(\\d+)";
+			var p = new RegExp(regex,["i"]);
+			var m = p.exec(trimmed_link);
+		
+			// If we have a match, try to find the elgg object 
+			if (m != null) {
+				var guid = m[1];
+				console.log(guid);
+			
+				elgg.action('todo/checkcontent', {
+					data: {
+						guid: guid,
+						show_error: 0,
+					},
+					success: function(data) {
+						if (data.status == -1) {
+							elgg.todo.confirmLocalLink(link);
+						} else {
+							$('#submission-content-select').append(
+								$('<option></option>').attr('selected', 'selected').val(data.output.entity_guid).html(data.output.entity_title)
+							);
+							elgg.todo.submissionFormDefault();	
+						}
+					}
+				});
+			} else {
+				elgg.todo.confirmLocalLink(link);
+			} 
+		} else {
+			$('#submission-content-select').append(
+				$('<option></option>').attr('selected', 'selected').val(link).html(link)
+			);
+			elgg.todo.submissionFormDefault();
+			$('#submission-link').val('');
+		}
+	}
 	event.preventDefault();
+}
+
+/**
+ * Confirm that the user wants to submit a local link
+ */
+elgg.todo.confirmLocalLink = function(link) {
+	// If the object doesn't check out, show a confirmation
+	var response = confirm(elgg.echo('todo:label:linkspotcontent'));
+	
+	// If 'ok' is clicked, add the link anyway
+	if (response) {
+		$('#submission-content-select').append(
+			$('<option></option>').attr('selected', 'selected').val(link).html(link)
+		);
+		elgg.todo.submissionFormDefault();
+	} else {
+		// Reset the form and click the contenet menu item
+		elgg.todo.submissionFormDefault();
+		$('#add-content').click();
+	}	
+	
+	$('#submission-link').val('');
 }
 
 /** 
@@ -390,6 +452,19 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 		$("#todo-group-assignee-select").removeAttr("disabled");
 	}
 	event.preventDefault();
+}
+
+// Trim HTTP or HTTPS from a url string
+elgg.todo.trimProtocol = function(str) {
+	if (str) {
+		if (str.startsWith("http://"))
+			return str.substr(7);
+		else if (str.startsWith("https://"))
+			return str.substr(8);
+		else 
+			return str;
+	}
+	return false;
 }
 
 elgg.register_hook_handler('init', 'system', elgg.todo.init);

@@ -98,6 +98,7 @@ $english = array(
 	'todo:label:suggestedtagsinfo' => 'To do submission tags are the tags that students should use for any content they post related to this to do.',
 	'todo:label:sortasc' => 'Sort Ascending &#9650;',
 	'todo:label:sortdesc' => 'Sort Descending &#9660;',
+	'todo:label:linkspotcontent' => 'You are submitting a link to Spot. You should be using Add Spot Content for this. Do you want to continue?',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',

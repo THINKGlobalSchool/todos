@@ -11,11 +11,12 @@
  */
 
 $guid = get_input('guid');
+$show_error = get_input('show_error', TRUE);
 
 $entity = get_entity($guid);
 
-// Check for valid entity
-if (elgg_instanceof($entity, 'object')) {
+// Check for valid entity (exists and user is the owner)
+if (elgg_instanceof($entity, 'object') && $entity->getOwnerEntity() == elgg_get_logged_in_user_entity()) {
 	// Get a title for the entity
 	if ($entity->title) {
 		$title = $entity->title;
@@ -33,6 +34,10 @@ if (elgg_instanceof($entity, 'object')) {
 	forward(REFERER);
 } else {
 	// Something is wrong, display error
-	register_error(elgg_echo('todo:error:invalid'));
+	if ($show_error) {
+		register_error(elgg_echo('todo:error:invalid'));
+	} else {
+		register_error();
+	}
 	forward(REFERER);
 }
