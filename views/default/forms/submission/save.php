@@ -34,10 +34,10 @@ if (isset($vars['entity'])) {
 	}
 
 	// Content Menu Items
-	$menu_items .= "<a href='#submission-add-link-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addlink') . "</a><br />";
-	$menu_items .= "<a href='#submission-add-file-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addfile') . "</a><br />";
-	$menu_items .= "<a href='#submission-add-content-container' class='submission-content-menu-item'>" . elgg_echo('todo:label:addcontent') . "</a><br />";
-					
+	$menu_items .= "<a href='#submission-add-content-container' class='submission-content-menu-item' id='add-content'>" . elgg_echo('todo:label:addcontent') . "</a><br />";
+	$menu_items .= "<a href='#submission-add-file-container' class='submission-content-menu-item' id='add-file'>" . elgg_echo('todo:label:addfile') . "</a><br />";
+	$menu_items .= "<a href='#submission-add-link-container' class='submission-content-menu-item' id='add-link'>" . elgg_echo('todo:label:addlink') . "</a><br />";
+
 	$back_button = "<a id='submission-content-back-button'><< Back</a>";
 	
 	// Content Div's
