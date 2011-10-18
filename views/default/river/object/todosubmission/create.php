@@ -19,7 +19,7 @@ $todo = get_entity($object->todo_guid);
 
 $owner = $object->getContainerEntity();
 
-$owner_link = "<a href='" . $owner->getURL . "'>" . $owner->name . "</a>";
+$owner_link = "<a href='" . $owner->getURL() . "'>" . $owner->name . "</a>";
 
 if ($todo->enabled == 'yes'){
 	$params = array(
