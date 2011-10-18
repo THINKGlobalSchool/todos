@@ -227,6 +227,7 @@ You cannot reply to this email.",
 	'todo:error:fileupload' => 'There was an error uploading the file',
 	'todo:error:nofile' => 'You need to select at least one file',
 	'todo:error:assigneeremoved' => 'There was an error removing the assignee',
+	'todo:error:invalidurl' => 'Invalid URL',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

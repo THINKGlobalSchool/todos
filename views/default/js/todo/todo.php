@@ -17,7 +17,11 @@ elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.ph
 
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
-elgg.todo.init = function() {			
+elgg.todo.init = function() {
+	
+	// Create submission click handler
+	$('.todo-submit-empty').live('click', elgg.todo.completeClick);
+				
 	// Set up submission dialog
 	$(".todo-lightbox").fancybox({
 		//'modal': true,
@@ -37,10 +41,6 @@ elgg.todo.init = function() {
 	});
 	
 	// TODO FORM SETUP
-	
-	// Create submission click handler
-	$('.todo-create-submission').live('click', elgg.todo.completeClick);
-	
 	// Submission form submit handler
 	$("form#todo-submission-form").live('submit', elgg.todo.submissionFormSubmit);
 	
@@ -115,14 +115,14 @@ elgg.todo.init = function() {
 }
 
 /**	
- * Click handler for the complete/create submission buttons
+ * Click handler for creating an empty submission
  */
 elgg.todo.completeClick = function(event) {
-	if ($(this).hasClass('empty')) {
-		var todo_guid = $('#todo-guid').val();
-		// Create empty submission
-		elgg.todo.createSubmission(todo_guid, '', '');
-	}
+	var todo_guid = $('#todo-guid').val();
+
+	// Create empty submission
+	elgg.todo.createSubmission(todo_guid, '', '');
+
 	event.preventDefault();
 }
 
@@ -207,6 +207,13 @@ elgg.todo.submissionSubmitLink = function(event) {
 	var link = $('#submission-link').val();
 	
 	if (link) {
+		
+		// Check for valid link
+		if (!elgg.todo.isValidURL(link)) {
+			elgg.register_error(elgg.echo('todo:error:invalidurl'));
+			return false;
+		}
+
 		// Get a protocol trimmed version of the link, and site url
 		var trimmed_link = elgg.todo.trimProtocol(link);
 		var trimmed_site = elgg.todo.trimProtocol(elgg.get_site_url());
@@ -221,8 +228,7 @@ elgg.todo.submissionSubmitLink = function(event) {
 			// If we have a match, try to find the elgg object 
 			if (m != null) {
 				var guid = m[1];
-				console.log(guid);
-			
+							
 				elgg.action('todo/checkcontent', {
 					data: {
 						guid: guid,
@@ -465,6 +471,26 @@ elgg.todo.trimProtocol = function(str) {
 			return str;
 	}
 	return false;
+}
+
+elgg.todo.isValidURL = function(url) {
+	
+	if (url.length == 0) { 
+		return false; 
+	}
+	
+	// if user has not entered http:// https:// or ftp:// assume they mean http://
+	if(!(/^(https?|ftp):\/\//i.test(url))) {
+		url = 'http://' + url; // set both the value
+	}
+	
+	// Here begins the most horrible regex ever
+	// From: http://stackoverflow.com/questions/2723140/validating-url-with-jquery-without-the-validate-plugin
+	if(/^([a-z]([a-z]|\d|\+|-|\.)*):(\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?((\[(|(v[\da-f]{1,}\.(([a-z]|\d|-|\.|_|~)|[!\$&'\(\)\*\+,;=]|:)+))\])|((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=])*)(:\d*)?)(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*|(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)|((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)){0})(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(url)) {
+		  return true;
+		} else {
+		  return false;
+		}
 }
 
 elgg.register_hook_handler('init', 'system', elgg.todo.init);

@@ -16,6 +16,9 @@ elgg.provide('elgg.todo.global');
 
 elgg.todo.global.init = function() {			
 	$(".todo-show-info").live('hover', elgg.todo.global.showEntityInfo);
+	$(".todo-show-info").live('click', function(event) {
+		event.preventDefault();
+	});
 	
 	// Hide multi-todo's when clicking outside box
 	$('body').live('click', function(event) {
