@@ -66,10 +66,12 @@ function todo_init() {
 	
 	// Register todo JS
 	$todo_js = elgg_get_simplecache_url('js', 'todo/todo');
+	elgg_register_simplecache_view('js/todo/todo');
 	elgg_register_js('elgg.todo', $todo_js);
 	
 	// Register and load global todo JS
 	$g_js = elgg_get_simplecache_url('js', 'todo/global');
+	elgg_register_simplecache_view('js/todo/global');
 	elgg_register_js('elgg.todo.global', $g_js);
 	elgg_load_js('elgg.todo.global');
 	
