@@ -20,6 +20,9 @@ elgg.todo.global.init = function() {
 		event.preventDefault();
 	});
 	
+	// Ajaxify todo accept button
+	$(".todo-accept-ajax").live('click', elgg.todo.global.acceptTodo)
+	
 	// Hide multi-todo's when clicking outside box
 	$('body').live('click', function(event) {
 		if (!$(event.target).hasClass('todo-show-info') && event.target.className !== "todo-entity-info") {
@@ -41,6 +44,27 @@ elgg.todo.global.showEntityInfo = function(event) {
 		offset: "0 25",
 	})
 	
+	event.preventDefault();
+}
+
+// Accept a todo
+elgg.todo.global.acceptTodo = function(event) {
+	var todo_guid = $(this).attr('name');
+	$_this = $(this);
+	
+	elgg.action('todo/accept', {
+		data: {
+			guid: todo_guid,
+		},
+		success: function(data) {
+			if (data.status != -1) {
+				$_this.closest('.unviewed')
+					.removeClass('unviewed')
+					.addClass('accepted')
+					.html('✓ Accepted');
+			}
+		}
+	});
 	event.preventDefault();
 }
 

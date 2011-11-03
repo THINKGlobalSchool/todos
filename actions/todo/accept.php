@@ -9,7 +9,7 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-	
+
 $user = elgg_get_logged_in_user_entity();
 
 $todo_guid = get_input('guid');

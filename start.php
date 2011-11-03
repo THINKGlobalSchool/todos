@@ -911,11 +911,11 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			$text = "<span class='accepted'>✓ Accepted</span>";
 		} else {
 			$text = "<span class='unviewed'>";
-			$text .= elgg_view("output/confirmlink", array(
+			$text .= elgg_view("input/button", array(
 				'href' => elgg_get_site_url() . "action/todo/accept?guid=" . $entity->getGUID(),
-				'text' => 'Accept',
-				'confirm' => elgg_echo('todo:label:acceptconfirm'),
-				'class' => 'elgg-button elgg-button-action'
+				'class' => 'elgg-button elgg-button-action todo-accept-ajax',
+				'name' => $entity->getGUID(),
+				'value' => 'Accept'
 			));
 			$text .= "</span>";
 		}
