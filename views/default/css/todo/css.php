@@ -136,6 +136,34 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
+.elgg-menu-item-todo {
+	height: 40px;
+}
+
+.elgg-menu-item-todo .unaccepted {
+
+}
+
+.elgg-menu-item-todo .incomplete {
+	background-color: #ff0000;
+}
+
+.elgg-menu-item-todo:hover #todo-hover-stats {
+	display: block;
+}
+
+#todo-hover-stats {
+	position: absolute;
+	top: 32px;
+	left: 0;
+	display: none;
+	background: #ffffff;
+	padding: 5px;
+	-webkit-border-radius: 0 0 4px 4px;
+	-moz-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}
+
 /** Todo info toggler **/
 .todo-entity-info {
 	display: none;

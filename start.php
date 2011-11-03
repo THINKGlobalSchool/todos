@@ -690,24 +690,48 @@ function todo_url($entity) {
 function todo_topbar_menu_setup($hook, $type, $return, $params) {		
 	$user = elgg_get_logged_in_user_entity();
 	$todos = get_users_todos($user->getGUID());
-	$count = 0;
+	$assigned_count = 0;
+	$incomplete_count = 0;
+	$complete_count = 0;
+
 	foreach ($todos as $todo) {
-		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID()) && !$todo->manual_complete) {
-			$count++;
+		// Skip manual complete todos
+		if ($todo->manual_complete) {
+			continue;
+		}
+
+		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID())) {
+			$assigned_count++;
+		}
+
+		if (!has_user_submitted($user->getGUID(), $todo->getGUID())) {
+			$incomplete_count++;
+		} else {
+			$complete_count++;
 		}
 	}	
 	
 	$class = "elgg-icon todo-notifier";
 	$text = "<span class='$class'></span>";
 
-	if ($count != 0) {
-		$text .= "<span class=\"messages-new\">$count</span>";
+	if ($assigned_count != 0) {
+		$text .= "<span class='messages-new unaccepted'>$assigned_count</span>";
+	} else if ($incomplete_count != 0) {
+		$text .= "<span class='messages-new incomplete'>$incomplete_count</span>";
 	}
+
+	$text .= elgg_echo('todo');
+
+	$text .= elgg_view('todo/hoverstats', array(
+		'unaccepted' => $assigned_count,
+		'incomplete' => $incomplete_count,
+		'complete' => $complete_count,
+	));
 
 	// Add logout button
 	$options = array(
 		'name' => 'todo',
-		'text' => $text . elgg_echo('todo'),
+		'text' => $text,
 		'href' =>  'todo/dashboard/' . elgg_get_logged_in_user_entity()->username,
 		'priority' => 999,
 	);
