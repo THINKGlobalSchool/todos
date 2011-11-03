@@ -66,6 +66,7 @@ $english = array(
 	'todo:label:complete' => 'Complete',
 	'todo:label:accept' => 'Accept',
 	'todo:label:accepted' => 'Accepted', 
+	'todo:label:unaccepted' => 'Unaccepted',
 	'todo:label:incomplete' => 'Upcoming',
 	'todo:label:statusincomplete' => 'Incomplete',
 	'todo:label:viewsubmission' => 'View Submission',
