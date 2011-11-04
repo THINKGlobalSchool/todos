@@ -141,11 +141,11 @@ span.unviewed {
 }
 
 .elgg-menu-item-todo .unaccepted {
-
+	background-color: #cc0000;
 }
 
 .elgg-menu-item-todo .incomplete {
-	background-color: #ff0000;
+	background-color: #000099;
 }
 
 .elgg-menu-item-todo:hover #todo-hover-stats {
