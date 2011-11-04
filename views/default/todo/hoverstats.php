@@ -12,34 +12,33 @@
  * 
  */
 
-$incomplete = $vars['incomplete'];
-$complete = $vars['complete'];
-$unaccepted = $vars['unaccepted'];
+$upcoming = $vars['upcoming'];
+$past_due = $vars['past_due'];
+$new = $vars['new'];
 
-$incomplete_label = elgg_echo('todo:label:statusincomplete');
-$complete_label = elgg_echo('todo:label:complete');
-$unaccepted_label = elgg_echo('todo:label:unaccepted');
+$past_due_label = elgg_echo('todo:label:pastdue');
+$upcoming_label = elgg_echo('todo:label:incomplete');
+$new_label = elgg_echo('todo:label:new');
 
 $user = elgg_get_logged_in_user_entity();
 
-$incomplete_url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&status=incomplete&u={$user->guid}";
-$complete_url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&status=complete&u={$user->guid}";
+$url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&status=incomplete&u={$user->guid}";
 
 $content = <<<HTML
 	<span id='todo-hover-stats'>
 		<table class='elgg-table'>
 			<tbody>
 				<tr>
-					<td><a href='$incomplete_url'>$unaccepted_label</a></td>
-					<td>$unaccepted</td>
+					<td><a href='$url'>$new_label</a></td>
+					<td>$new</td>
 				</tr>
 				<tr>
-					<td><a href='$incomplete_url'>$incomplete_label</a></td>
-					<td>$incomplete</td>
+					<td><a href='$url'>$upcoming_label</a></td>
+					<td>$upcoming</td>
 				</tr>
 				<tr>
-					<td><a href='$complete_url'>$complete_label</a></td>
-					<td>$complete</td>
+					<td><a href='$url'>$past_due_label</a></td>
+					<td>$past_due</td>
 				</tr>
 			</tbody>
 		</table>

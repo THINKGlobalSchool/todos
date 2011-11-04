@@ -692,7 +692,10 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$todos = get_users_todos($user->getGUID());
 	$assigned_count = 0;
 	$incomplete_count = 0;
-	$complete_count = 0;
+	$upcoming_count = 0;
+	$past_due_count = 0;
+
+	$today = strtotime(date("F j, Y"));
 
 	foreach ($todos as $todo) {
 		// Skip manual complete todos
@@ -706,8 +709,14 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 
 		if (!has_user_submitted($user->getGUID(), $todo->getGUID())) {
 			$incomplete_count++;
-		} else {
-			$complete_count++;
+
+			if ($todo->due_date <= $today) {
+				// Count past due
+				$past_due_count++;
+			} else if ($todo->due_date > $today) {
+				// Count upcoming
+				$upcoming_count++;
+			}
 		}
 	}	
 	
@@ -723,9 +732,9 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$text .= elgg_echo('todo');
 
 	$text .= elgg_view('todo/hoverstats', array(
-		'unaccepted' => $assigned_count,
-		'incomplete' => $incomplete_count,
-		'complete' => $complete_count,
+		'new' => $assigned_count,
+		'upcoming' => $upcoming_count,
+		'past_due' => $past_due_count,
 	));
 
 	// Add logout button
