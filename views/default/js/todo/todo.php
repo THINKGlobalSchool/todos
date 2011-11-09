@@ -18,7 +18,6 @@ elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.ph
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
 elgg.todo.init = function() {
-	
 	// Create submission click handler
 	$('.todo-submit-empty').live('click', elgg.todo.completeClick);
 				
@@ -118,6 +117,9 @@ elgg.todo.init = function() {
  * Click handler for creating an empty submission
  */
 elgg.todo.completeClick = function(event) {
+	// Replace with spinner
+	$(this).replaceWith("<div class='elgg-ajax-loader'></div>");
+
 	var todo_guid = $('#todo-guid').val();
 
 	// Create empty submission
@@ -184,7 +186,7 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 				$.fancybox.close();
 				
 				// Reload
-				setTimeout ('window.location.reload()', 1000);
+				setTimeout('window.location.reload()', 1000);
 			}
 		}
 	});
