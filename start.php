@@ -985,10 +985,12 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					
 					// If we need to return something for this todo, the complete link will point to the submission form
 					$class = $entity->return_required ? 'todo-lightbox' : 'todo-submit-empty';
+					$href = $entity->return_required ? '#todo-submission-dialog' : '#';
+					
 					$options = array(
 						'name' => 'todo_create_submission',
 						'text' => elgg_echo("todo:label:completetodo"),
-						'href' => '#todo-submission-dialog',
+						'href' => $href,
 						'priority' => 1000,
 						'link_class' => "elgg-button elgg-button-action $class",
 					);
