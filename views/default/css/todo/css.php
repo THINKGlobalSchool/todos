@@ -136,19 +136,19 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
 }
 
-.elgg-menu-item-todo {
+.todo-topbar-item {
 	height: 40px;
 }
 
-.elgg-menu-item-todo .unaccepted {
+.todo-topbar-item .unaccepted {
 	background-color: #cc0000;
 }
 
-.elgg-menu-item-todo .incomplete {
+.todo-topbar-item .incomplete {
 	background-color: #000099;
 }
 
-.elgg-menu-item-todo:hover #todo-hover-stats {
+.todo-topbar-item:hover #todo-hover-stats {
 	display: block;
 }
 
