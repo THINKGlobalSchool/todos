@@ -737,12 +737,13 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 		'past_due' => $past_due_count,
 	));
 
-	// Add logout button
+	// Add todo item
 	$options = array(
 		'name' => 'todo',
 		'text' => $text,
 		'href' =>  'todo/dashboard/' . elgg_get_logged_in_user_entity()->username,
 		'priority' => 999,
+		'item_class' => 'todo-topbar-item',
 	);
 	$return[] = ElggMenuItem::factory($options);
 

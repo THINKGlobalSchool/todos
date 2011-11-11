@@ -24,7 +24,7 @@ elgg.todo.global.init = function() {
 	$(".todo-accept-ajax").live('click', elgg.todo.global.acceptTodo);
 	
 	// Todo hover menu item
-	$(".elgg-menu-item-todo").mouseenter(function(event) {
+	$(".todo-topbar-item").mouseenter(function(event) {
 		$('#todo-hover-stats').appendTo($(this)).position({
 			my: "left top",
 			at: "left bottom",
