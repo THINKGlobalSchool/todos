@@ -134,12 +134,12 @@ if ($full) { // Full View
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
 	
 	// Submission form vars
-	$vars = array();
-	$vars['id'] = 'todo-submission-form';
-	$vars['name'] = 'todo_submission_form';
+	$submission_form_vars = array();
+	$submission_form_vars['id'] = 'todo-submission-form';
+	$submission_form_vars['name'] = 'todo_submission_form';
 	
 	// View submission form
-	$submission_form = elgg_view_form('submission/save', $vars, array('entity' => $todo));
+	$submission_form = elgg_view_form('submission/save', $submission_form_vars, array('entity' => $todo));
 
 	echo <<<HTML
 <div class='todo'>
@@ -151,7 +151,6 @@ if ($full) { // Full View
 	</div>
 </div>
 HTML;
-	
 } else { // listing view
 	$params = array(
 		'entity' => $todo,
