@@ -1194,7 +1194,7 @@ function submission_river_menu_setup($hook, $type, $return, $params) {
 		$item = $params['item'];
 		$object = $item->getObjectEntity();
 		if (elgg_instanceof($object, 'object', 'todosubmission')) {
-			return false;
+			return array();
 		}
 	}
 
