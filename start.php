@@ -136,7 +136,9 @@ function todo_init() {
 	elgg_register_entity_url_handler('object', 'todosubmissionfile', 'submission_file_url');
 	
 	// Hook for site menu
-	elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
+	if (elgg_is_logged_in()) {
+		elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
+	}
 	
 	// Handler to prepare main todo menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-main', 'todo_main_menu_setup');
