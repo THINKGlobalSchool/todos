@@ -121,8 +121,8 @@ if ($guid) { // Existing
 		add_to_river('river/object/todo/create', 'create', elgg_get_logged_in_user_guid(), $todo->getGUID());	
 		notify_todo_users_assigned($todo);
 	} else if ($previous_status == TODO_STATUS_PUBLISHED && $status == TODO_STATUS_DRAFT) {
-		// Remove from river if being set back to draft from published
-		remove_from_river_by_object($todo->getGUID());
+		// Remove from river if being set back to draft from published;
+		elgg_delete_river(array('object_guid' => $todo->getGUID()));
 	}
 	
 	// If we have new assignees, notify them if status is published
