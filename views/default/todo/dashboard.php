@@ -33,9 +33,13 @@ echo elgg_view_menu('todo-dashboard-listing-main', array(
 ?>
 <div id='todo-dashboard'></div>
 <script>
-	$(document).ready(function() {
-		$link = $('.<?php echo $click; ?> a');
+	// Function to click default tab
+	todo_click_tab = function() {
+		$link = $('.<?php echo $click; ?> > a.todo-ajax-list');
 		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; ?>");
-		$link.click();
-	});
+		console.log($link);
+		console.log($link.click());	
+	}
+	// Need to click AFTER elgg is initted
+	elgg.register_hook_handler('ready', 'system', todo_click_tab);
 </script>

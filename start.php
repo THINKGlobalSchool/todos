@@ -167,6 +167,9 @@ function todo_init() {
 	// Register handler for todo submission files 
 	elgg_register_plugin_hook_handler('entity:icon:url', 'object', 'submission_file_icon_url_override');
 
+	// Whitelist ajax views
+	elgg_register_ajax_view('todo/list');
+
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
 	elgg_register_action('todo/save', "$action_base/save.php");
