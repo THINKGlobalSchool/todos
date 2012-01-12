@@ -39,7 +39,7 @@ if ($todo->enabled == 'yes'){
 access_show_hidden_entities($access_status);
 
 
-echo elgg_view('river/item', array(
+echo elgg_view('river/elements/layout', array(
 	'summary' => $content,
 	'item' => $vars['item'],
 ));
