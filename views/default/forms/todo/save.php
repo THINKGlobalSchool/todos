@@ -16,7 +16,6 @@ $description 		= elgg_extract('description', $vars);
 $tags 				= elgg_extract('tags', $vars);
 $suggested_tags		= elgg_extract('suggested_tags', $vars);
 $due_date			= elgg_extract('due_date', $vars);
-$assignees			= elgg_extract('assignee_guids', $vars);
 $container_guid 	= elgg_extract('container_guid', $vars);
 $return_required	= elgg_extract('return_required', $vars);
 $is_rubric_selected	= elgg_extract('rubric_select', $vars);
@@ -96,13 +95,12 @@ $assign_content = elgg_view('input/dropdown', array(
 ));
 													
 $user_picker = elgg_view('input/userpicker', array(
-	'name' => 'assignee_guids', 
 	'id' => 'todo-assignee-userpicker'
 ));
 
 $group_label = elgg_echo('todo:label:selectgroup');
 $group_picker = elgg_view('input/dropdown', array(
-	'name' => 'assignee_guids[]', 
+	'name' => 'members[]', 
 	'id' => 'todo-group-assignee-select', 
 	'options_values' => get_todo_groups_array(), 
 	'class' => 'multiselect', 

@@ -13,7 +13,7 @@
 //<script>
 elgg.provide('elgg.todo');
 
-elgg.todo.fileUploadURL = elgg.get_site_url() + 'mod/todo/actions/todo/upload.php';
+elgg.todo.fileUploadURL = elgg.get_site_url() + 'action/todo/upload';
 
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
