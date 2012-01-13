@@ -26,11 +26,10 @@ $todo_guid = get_input('todo_guid');
 $todo = get_entity($todo_guid);
 
 if (elgg_instanceof($todo, 'object', 'todo')) {
-	$success = $assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
-	$success &= $assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_ACCEPTED);
-	$success &= elgg_trigger_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee));
+	$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
+	$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_ACCEPTED);
 	
-	if ($success) {
+	if (elgg_trigger_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee))) {
 		system_message(elgg_echo('todo:success:assigneeremoved'));
 		forward(REFERER);
 	}

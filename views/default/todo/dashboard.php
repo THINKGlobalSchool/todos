@@ -37,8 +37,7 @@ echo elgg_view_menu('todo-dashboard-listing-main', array(
 	todo_click_tab = function() {
 		$link = $('.<?php echo $click; ?> > a.todo-ajax-list');
 		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; ?>");
-		console.log($link);
-		console.log($link.click());	
+		$link.click();	
 	}
 	// Need to click AFTER elgg is initted
 	elgg.register_hook_handler('ready', 'system', todo_click_tab);
