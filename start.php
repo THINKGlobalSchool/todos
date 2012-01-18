@@ -368,7 +368,11 @@ function todo_create_event_listener($event, $object_type, $object) {
 		if ($todo_acl) {
 			$object->assignee_acl = $todo_acl;
 			elgg_set_context('todo_acl');
-			add_user_to_access_collection($object->owner_guid, $todo_acl);
+			try {
+				add_user_to_access_collection($object->owner_guid, $todo_acl);
+			} catch (DatabaseException $e) {
+				//
+			}
 			elgg_set_context($context);
 			if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
 				$object->access_id = $todo_acl;
@@ -409,7 +413,11 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 		
 		$context = elgg_get_context();
 		elgg_set_context('todo_acl');
-		$result = add_user_to_access_collection($user->getGUID(), $acl);
+		try {
+			$result = add_user_to_access_collection($user->getGUID(), $acl);
+		} catch (DatabaseException $e) {
+			//
+		}
 		elgg_set_context($context);			
 	}
 	return true;
@@ -470,8 +478,16 @@ function submission_create_event_listener($event, $object_type, $object) {
 			$object->submission_acl = $submission_acl;
 			$context = elgg_get_context();
 			elgg_set_context('submission_acl');
-			add_user_to_access_collection($todo->owner_guid, $submission_acl);
-			add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
+			try {
+				add_user_to_access_collection($todo->owner_guid, $submission_acl);
+			} catch (DatabaseException $e) {
+			}
+			
+			try {
+				add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
+			} catch (DatabaseException $e) {
+			}
+			
 			elgg_set_context($context);
 			$object->access_id = $submission_acl;
 			$object->save();
