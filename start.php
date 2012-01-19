@@ -74,9 +74,6 @@ function todo_init() {
 	elgg_register_simplecache_view('js/todo/global');
 	elgg_register_js('elgg.todo.global', $g_js);
 	elgg_load_js('elgg.todo.global');
-	
-	// Need newer jquery form plugin (temporarily I hope)
-	//elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
 		
 	// Extend groups sidebar
 	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
