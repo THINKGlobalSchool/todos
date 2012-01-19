@@ -76,7 +76,7 @@ function todo_init() {
 	elgg_load_js('elgg.todo.global');
 	
 	// Need newer jquery form plugin (temporarily I hope)
-	elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
+	//elgg_register_js('jquery.form', 'mod/todo/vendors/jquery/jquery.form.js');
 		
 	// Extend groups sidebar
 	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
@@ -284,6 +284,7 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'view':
+			elgg_load_js('jquery.form');
 			gatekeeper();
 			if ($page[1] == 'submission'){
 				$params = todo_get_page_content_view($page[1], $page[2]);
