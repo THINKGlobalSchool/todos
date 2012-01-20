@@ -304,7 +304,7 @@ function todo_get_page_content_assignees($guid) {
 }
 
 /**
- * List todo's based on critera
+ * Get/list todo's based on critera
  * @param array $params:
  * 
  * context  	     => NULL|STRING which context we're viewing (all, assigned, owned)
@@ -316,8 +316,27 @@ function todo_get_page_content_assignees($guid) {
  * sort_order        => STRING ASC|DESC
  * 
  * order_by_metadata => STRING which metadata to order by (ie: due_date)
+ * 
+ * list              => BOOL list todo's instead of get (default FALSE)
+ * 
+ * count             => BOOL count todos (only works with list => FALSE)
+ * 
+ * due_date          => int due date timestamp
+ *
+ * due_operand       => string due date operand
  */
-function list_todos(array $params) {
+function get_todos(array $params) {
+	// Set list action
+	if (!$params['list']) {
+		$get_from_metadata = 'elgg_get_entities_from_metadata';
+		$get_from_relationship = 'elgg_get_entities_from_relationship';
+		$count = $params['count'] ? TRUE : FALSE;
+	} else {
+		$get_from_metadata = 'elgg_list_entities_from_metadata';
+		$get_from_relationship = 'elgg_list_entities_from_relationship';
+		$count = FALSE;
+	}
+	
 	// Default container guid if not supplied
 	if (!$params['container_guid']) {
 		$params['container_guid'] = elgg_get_logged_in_user_guid();
@@ -348,6 +367,7 @@ function list_todos(array $params) {
 		'order_by_metadata' => array('name' => $params['order_by_metadata'], 'as' => 'int', 'direction' => $params['sort_order']),
 		'limit' => get_input('limit', 10), 
 		'offset' => get_input('offset', 0),
+		'count' => $count,
 	);
 	
 	// Published status options
@@ -368,10 +388,29 @@ function list_todos(array $params) {
 				'operand' => '=',
 			)),
 		'metadata_name_value_pairs_operator' => 'OR',
-	);
+	);	
 	
 	global $CONFIG;
-		
+	
+	// Without complete/manual wheres (for owned/all)
+	$complete = get_metastring_id('complete');
+	$manual_complete = get_metastring_id('manual_complete');
+	$one_id = get_metastring_id(1);
+						
+	$without_complete_manual_wheres = array();
+	$without_complete_manual_wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $complete
+				AND md.value_id = $one_id)";
+
+	$without_complete_manual_wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $manual_complete
+				AND md.value_id = $one_id)";
+	
+	// Display by context
 	switch($params['context']) {
 		case 'all':
 		default: 
@@ -380,37 +419,17 @@ function list_todos(array $params) {
 			if ($params['status'] == 'complete') {
 				// Use params, defaults and publshed and complete or manual
 				$options = array_merge($options, $published_options, $complete_or_manual);
-				$content = elgg_list_entities_from_metadata($options);	
-				
+				$content = $get_from_metadata($options);	
 			} else if ($params['status'] == 'incomplete') {
 				set_input('display_label', true);
-				// Creating some magic SQL to grab todos without complete metadata
-				$complete = get_metastring_id('complete');
-				$manual_complete = get_metastring_id('manual_complete');
-				$one_id = get_metastring_id(1);
-									
-				$wheres = array();
-				$wheres[] = "NOT EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-						WHERE md.entity_guid = e.guid
-							AND md.name_id = $complete
-							AND md.value_id = $one_id)";
 
-				$wheres[] = "NOT EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-						WHERE md.entity_guid = e.guid
-							AND md.name_id = $manual_complete
-							AND md.value_id = $one_id)";
-				
 				$options = array_merge($options, $published_options);
-				$options['wheres'] = $wheres;
-
-				$content = elgg_list_entities_from_metadata($options);	
+				$options['wheres'] = $without_complete_manual_wheres;
+				$content = $get_from_metadata($options);	
 			}
 			break;
 		case 'owned':
 		/********************* OWNED **********************/			
-		
 			$container = get_entity($params['container_guid']);
 			
 			if (elgg_instanceof($container, 'group')) {
@@ -418,8 +437,18 @@ function list_todos(array $params) {
 			} else if (elgg_instanceof($container, 'user')) {
 				$options['owner_guid'] = $params['container_guid'];
 			}
-
-			$content = elgg_list_entities_from_metadata($options);
+			
+			// Show based on status
+			if ($params['status'] == 'complete') {
+				// Use params, defaults and complete or manual
+				$options = array_merge($options, $complete_or_manual);
+				$content = $get_from_metadata($options);	
+				
+			} else if ($params['status'] == 'incomplete') {				
+				$options = array_merge($options, $published_options);
+				$options['wheres'] = $without_complete_manual_wheres;
+				$content = $get_from_metadata($options);	
+			}
 			break;
 		case 'assigned':
 		/********************* ASSIGNED ********************/
@@ -473,13 +502,16 @@ function list_todos(array $params) {
 			$options['inverse_relationship'] = FALSE;
 			
 
-			$content = elgg_list_entities_from_relationship($options);
+			$content = $get_from_relationship($options);
 			break;
 	}
-	if (!$content) {
-		echo "<h3 class='center' style='border-top: 1px dotted #CCCCCC; padding-top: 4px; margin-top: 5px;'>" . elgg_echo('todo:label:noresults') . "</h3>"; 
+
+	// If we have nothing, and we're listing, return a nice no results message
+	if (!$content && $params['list']) {
+		return "<h3 class='center' style='border-top: 1px dotted #CCCCCC; padding-top: 4px; margin-top: 5px;'>" . elgg_echo('todo:label:noresults') . "</h3>"; 
+	} else {
+		return $content;
 	}
-	echo $content;
 }
 
 
@@ -887,6 +919,156 @@ function has_user_accepted_todo($user_guid, $todo_guid) {
 }
 
 /**
+ * Count user's unaccepted todo's
+ * 
+ * @param $user_guid int
+ * @return int
+ */
+function count_unaccepted_todos($user_guid) {
+
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+		'relationship_guid' => $user_guid, 
+		'inverse_relationship' => FALSE,
+		'metadata_name' => 'status',
+		'metadata_value' => TODO_STATUS_PUBLISHED,
+		'count' => TRUE,
+	);
+	
+	$accepted = TODO_ASSIGNEE_ACCEPTED;
+	$dbprefix = elgg_get_config('dbprefix');
+
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$dbprefix}entity_relationships r2 
+			WHERE r2.guid_one = '$user_guid'
+			AND r2.relationship = '$accepted'
+			AND r2.guid_two = e.guid)";
+			
+	$completed = COMPLETED_RELATIONSHIP;
+			
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$dbprefix}entity_relationships r3
+			WHERE r3.guid_one = '$user_id'
+			AND r3.relationship = '$completed'
+			AND r3.guid_two = e.guid)";
+
+	$options['wheres'] = $wheres;
+	
+	return elgg_get_entities_from_relationship($options);
+}
+
+/**
+ * Count user's complete todo's
+ *
+ * @param $user_guid int
+ * @return int
+ */
+function count_complete_todos($user_guid) {
+	return get_todos(array(
+		'context' => 'assigned',
+		'status' => 'complete',
+		'container_guid' => $user_guid,
+		'list' => FALSE,
+		'count' => TRUE,
+	));
+}
+
+/** 
+ * Count user's incomplete todo's
+ *
+ * @param $user_guid int
+ * @return int
+ */
+function count_incomplete_todos($user_guid) {
+	return get_todos(array(
+		'context' => 'assigned',
+		'status' => 'incomplete',
+		'container_guid' => $user_guid,
+		'list' => FALSE,
+		'count' => TRUE,
+	));
+}
+
+/**
+ * Count user todo's by due date
+ *
+ * @param $user_guid   int    user's guid
+ * @param $date        int    timestamp
+ * @param $due_operand string operand for due date (>, <, =)
+ * @param $status      string (incomplete|complete) 
+ */
+function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $status = 'incomplete') {
+	// Common options
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'count' => TRUE,
+		'metadata_name_value_pairs' => array(
+			array(
+				'name' => 'status',
+				'value' => TODO_STATUS_PUBLISHED, 
+				'operand' => '='),
+			array(
+				'name' => 'due_date',
+				'value' => $date,
+				'operand' => $due_operand,
+			))
+	);
+
+	$test_id = get_metastring_id('manual_complete');
+	$one_id = get_metastring_id(1);
+	$dbprefix = elgg_get_config('dbprefix');
+	
+	$wheres = array();
+
+	$relationship = COMPLETED_RELATIONSHIP;
+
+	if (!$user_guid) {
+		$user_guid = elgg_get_logged_in_user_guid();
+	}
+	
+	// Count based on status
+	if ($status == 'complete') {
+		$wheres[] = "(EXISTS (
+				SELECT 1 FROM {$dbprefix}entity_relationships r2 
+				WHERE r2.guid_one = '$user_guid'
+				AND r2.relationship = '$relationship'
+				AND r2.guid_two = e.guid) OR 
+					EXISTS (
+				SELECT 1 FROM {$dbprefix}metadata md
+				WHERE md.entity_guid = e.guid
+					AND md.name_id = $test_id
+					AND md.value_id = $one_id))";
+
+
+	} else if ($status == 'incomplete') {	
+		// Non existant 'manual complete'
+		$wheres[] = "NOT EXISTS (
+				SELECT 1 FROM {$dbprefix}metadata md
+				WHERE md.entity_guid = e.guid
+					AND md.name_id = $test_id
+					AND md.value_id = $one_id)";
+
+		$wheres[] = "NOT EXISTS (
+				SELECT 1 FROM {$dbprefix}entity_relationships r2 
+				WHERE r2.guid_one = '$user_guid'
+				AND r2.relationship = '$relationship'
+				AND r2.guid_two = e.guid)";
+	}
+
+	$options['wheres'] = $wheres;
+ 	$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
+	$options['relationship_guid'] = $user_guid;
+	$options['inverse_relationship'] = FALSE;
+	elgg_push_context('todo_db');
+	$count = elgg_get_entities_from_relationship($options);
+	elgg_pop_context();
+	return $count;
+}
+
+/**
  * Determine if all users for a given todo have submiited to
  * or complete the todo
  *
@@ -965,69 +1147,6 @@ function todo_set_content_tags($entity, $todo) {
 	$entity->tags = $tags;
 	
 	return true;
-}
-
-
-
-/**
- * Return todos with a due date before givin date
- *
- * @param array $todos
- * @param int $date (Timestamp)
- * @return array
- */
-function get_todos_due_before($todos, $date) {
-	if ($todos) {
-		foreach($todos as $idx => $todo) {
-			if ($todo->due_date <= $date) {
-				continue;
-			} else {
-				unset($todos[$idx]);
-			}
-		}
-	}
-	return $todos;
-}
-
-/**
- * Return todos with a due date after givin dates
- *
- * @param array $todos
- * @param int $date (Timestamp)
- * @return array
- */
-function get_todos_due_after($todos, $date) {
-	if ($todos) {
-		foreach($todos as $idx => $todo) {
-			if ($todo->due_date > $date) {
-				continue;
-			} else {
-				unset($todos[$idx]);
-			}
-		}
-	}
-	return $todos;
-}
-
-/**
- * Return todos with a due date between givin dates
- *
- * @param array $todos
- * @param int $start_date Timestamp
- * @param int $end_date Timestamp, default null for no end date
- * @return array
- */
-function get_todos_due_between($todos, $start_date, $end_date) {
-	if ($todos) {
-		foreach($todos as $idx => $todo) {
-			if (($todo->due_date > $start_date) && ($todo->due_date <= $end_date)) {
-				continue;
-			} else {
-				unset($todos[$idx]);
-			}
-		}
-	}
-	return $todos;
 }
 
 /**
