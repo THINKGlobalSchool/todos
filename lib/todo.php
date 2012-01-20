@@ -939,6 +939,8 @@ function count_unaccepted_todos($user_guid) {
 	
 	$accepted = TODO_ASSIGNEE_ACCEPTED;
 	$dbprefix = elgg_get_config('dbprefix');
+	
+	$wheres = array();
 
 	$wheres[] = "NOT EXISTS (
 			SELECT 1 FROM {$dbprefix}entity_relationships r2 
@@ -953,6 +955,15 @@ function count_unaccepted_todos($user_guid) {
 			WHERE r3.guid_one = '$user_id'
 			AND r3.relationship = '$completed'
 			AND r3.guid_two = e.guid)";
+			
+	$test_id = get_metastring_id('manual_complete');
+	$one_id = get_metastring_id(1);
+	
+	$wheres[] = "NOT EXISTS (
+			SELECT 1 FROM {$dbprefix}metadata md
+			WHERE md.entity_guid = e.guid
+				AND md.name_id = $test_id
+				AND md.value_id = $one_id)";
 
 	$options['wheres'] = $wheres;
 	
