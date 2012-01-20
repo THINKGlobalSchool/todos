@@ -449,7 +449,6 @@ function todo_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) 
 	if (elgg_in_context('todo_acl')) {
 		// get all todos if logged in
 		if ($loggedin = elgg_get_logged_in_user_entity()) {
-			//$todos = get_users_todos($loggedin->getGUID());
 			$todos = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo'));
 			if (is_array($todos)) {
 				foreach ($todos as $todo) {
@@ -708,37 +707,13 @@ function todo_url($entity) {
  */
 function todo_topbar_menu_setup($hook, $type, $return, $params) {		
 	$user = elgg_get_logged_in_user_entity();
-	$todos = get_users_todos($user->getGUID());
-	$assigned_count = 0;
-	$incomplete_count = 0;
-	$upcoming_count = 0;
-	$past_due_count = 0;
+	$assigned_count = count_unaccepted_todos($user->guid);
+	$incomplete_count = count_incomplete_todos($user->guid);
 
 	$today = strtotime(date("F j, Y"));
+	$upcoming_count = count_assigned_todos_by_due_date($user_guid, $today, '>', 'incomplete');
+	$past_due_count = count_assigned_todos_by_due_date($user_guid, $today, '<=', 'incomplete');
 
-	foreach ($todos as $todo) {
-		// Skip manual complete todos
-		if ($todo->manual_complete) {
-			continue;
-		}
-
-		if (!has_user_accepted_todo($user->getGUID(), $todo->getGUID())) {
-			$assigned_count++;
-		}
-
-		if (!has_user_submitted($user->getGUID(), $todo->getGUID())) {
-			$incomplete_count++;
-
-			if ($todo->due_date <= $today) {
-				// Count past due
-				$past_due_count++;
-			} else if ($todo->due_date > $today) {
-				// Count upcoming
-				$upcoming_count++;
-			}
-		}
-	}	
-	
 	$class = "elgg-icon todo-notifier";
 	$text = "<span class='$class'></span>";
 
