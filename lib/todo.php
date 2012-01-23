@@ -952,7 +952,7 @@ function count_unaccepted_todos($user_guid) {
 			
 	$wheres[] = "NOT EXISTS (
 			SELECT 1 FROM {$dbprefix}entity_relationships r3
-			WHERE r3.guid_one = '$user_id'
+			WHERE r3.guid_one = '$user_guid'
 			AND r3.relationship = '$completed'
 			AND r3.guid_two = e.guid)";
 			
