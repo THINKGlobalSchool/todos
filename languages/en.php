@@ -18,6 +18,7 @@ $english = array(
 	'todo:add' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submission',
+	'item:object:todosubmissionfile' => 'To Do Submission File',
 	'todo:ingroup' => 'in the group %s',
 	
 	// Admin
