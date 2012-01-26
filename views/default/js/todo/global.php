@@ -79,4 +79,3 @@ elgg.todo.global.acceptTodo = function(event) {
 }
 
 elgg.register_hook_handler('init', 'system', elgg.todo.global.init);
-//</script>
