@@ -496,4 +496,3 @@ elgg.todo.isValidURL = function(url) {
 }
 
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
-//</script>

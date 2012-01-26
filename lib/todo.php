@@ -967,7 +967,7 @@ function count_unaccepted_todos($user_guid) {
 
 	$options['wheres'] = $wheres;
 	
-	return elgg_get_entities_from_relationship($options);
+	return (int)elgg_get_entities_from_relationship($options);
 }
 
 /**
@@ -1076,7 +1076,7 @@ function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $stat
 	elgg_push_context('todo_db');
 	$count = elgg_get_entities_from_relationship($options);
 	elgg_pop_context();
-	return $count;
+	return (int)$count;
 }
 
 /**
