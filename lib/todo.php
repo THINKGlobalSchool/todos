@@ -807,8 +807,6 @@ function get_todo_assignees($guid) {
 		}
 	}
 	
-	elgg_dump($assignees);
-	
 	return $assignees;
 }
 
