@@ -774,35 +774,40 @@ function get_todo_rubric_array() {
  * @return array
  */
 function get_todo_assignees($guid) {
+	$db_prefix = elgg_get_config('dbprefix');
 	
-
+	$options = array(
+		'relationship' => TODO_ASSIGNEE_RELATIONSHIP,
+		'relationship_guid' => $guid,
+		'inverse_relationship' => TRUE,
+		'types' => array('user', 'group'),
+		'limit' => 9999,
+		'offset' => 0,
+		'count' => false,
+		// Order by user name
+		'joins' => array("JOIN {$db_prefix}users_entity ue on ue.guid = e.guid"),
+		'order_by' => 'ue.name ASC',
+	);
 	
-	$entities = elgg_get_entities_from_relationship(array(
-														'relationship' => TODO_ASSIGNEE_RELATIONSHIP,
-														'relationship_guid' => $guid,
-														'inverse_relationship' => TRUE,
-														'types' => array('user', 'group'),
-														'limit' => 9999,
-														'offset' => 0,
-														'count' => false,
-													));
-			
-								
+	$entities = elgg_get_entities_from_relationship($options);
+		
 	$assignees = array();
 	
 	// Need to be flexible, most likely will have either just users, or just 
 	// groups, but will take into account both just in case
 	if ($entities) {
 		foreach($entities as $entity) {
-			if ($entity instanceof ElggUser) {
+			if (elgg_instanceof($entity, 'user')) {
 				$assignees[] = $entity;
-			} else if ($entity instanceof ElggGroup) {
+			} else if (elgg_instanceof($entity, 'group')) {
 				foreach ($entity->getMembers() as $member) {
 					$assignees[] = $member;
 				}
 			}
 		}
 	}
+	
+	elgg_dump($assignees);
 	
 	return $assignees;
 }
