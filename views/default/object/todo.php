@@ -110,9 +110,11 @@ if ($full) { // Full View
 	
 	// If we have a rubric guid, display its info
 	if ((int)$todo->rubric_guid) {
-		$rubric = get_entity((int)$todo->rubric_guid);
-		$rubric_content = "<a href='{$rubric->getURL()}'>{$rubric->title}</a>";
-		$body .= elgg_view_module('info', elgg_echo('todo:label:assessmentrubric'), $rubric_content);
+		$rubric = get_entity($todo->rubric_guid);
+		if (elgg_instanceof($rubric, 'object', 'rubric')) {
+			$rubric_content = "<a href='{$rubric->getURL()}'>{$rubric->title}</a>";
+			$body .= elgg_view_module('info', elgg_echo('todo:label:assessmentrubric'), $rubric_content);
+		}
 	}
 	
 	$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
