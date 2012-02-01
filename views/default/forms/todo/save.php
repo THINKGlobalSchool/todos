@@ -131,11 +131,12 @@ if (TODO_RUBRIC_ENABLED) {
 	
 	$rubric_picker = elgg_view('input/dropdown', array(
 		'name' => 'rubric_guid', 
-		'internal_id' => 'rubric_picker', 
+		'id' => 'rubric_picker', 
 		'options_values' => get_todo_rubric_array(), 
-		'value' => $rubric_guid
+		'value' => $rubric_guid,
+		'disabled' => 'DISABLED',
 	));
-			
+
 	$rubric_html = <<<HTML
 	
 		<script type='text/javascript'>
@@ -143,13 +144,16 @@ if (TODO_RUBRIC_ENABLED) {
 				var rubric_guid = '$rubric_guid';
 				if (rubric_guid) {
 					$('#rubric_picker_container').show();
+					$('#rubric_picker').removeAttr('disabled');
 					$('#rubric_select').val(1);
 				}
 				$('#rubric_select').change(function() {
 					if ($(this).val() == 1) {
 						$('#rubric_picker_container').show();
+						$('#rubric_picker').removeAttr('disabled');
 					} else {
 						$('#rubric_picker_container').hide();
+						$('#rubric_picker').attr('disabled', 'DISABLED');
 					}
 				});
 			});	
