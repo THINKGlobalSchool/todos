@@ -9,6 +9,8 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
+
+
 		
 // get input
 $title 				= get_input('title');
@@ -36,7 +38,6 @@ if (get_input('return_required', false)) {
 $rubric_select		= get_input('rubric_select');
 $rubric_guid		= get_input('rubric_guid');
 $access_level		= get_input('access_level');
-
 
 /*
 var_dump($title);
@@ -96,11 +97,8 @@ $todo->suggested_tags = $suggested_tags;
 $todo->due_date		= $due_date;
 $todo->return_required = $return_required;
 $todo->status = $status;
+$todo->rubric_guid = $rubric_guid;
 
-
-if ($rubric_select) {
-	$todo->rubric_guid = $rubric_guid;
-}
 
 // Before saving, check permissions
 if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
