@@ -272,3 +272,20 @@ span.unviewed {
 	margin-top: 4px;
 	margin-right: 8px;
 }
+
+/* Entity Menu Items */
+.elgg-menu-item-todo-complete {
+	margin-top: -3px;
+}
+
+.elgg-menu-item-todo-open {
+	margin-top: -3px;
+}
+
+.elgg-menu-item-todo-create-submission {
+	margin-top: -3px;	
+}
+
+.elgg-menu-item-todo-accept input {
+	margin-top: -3px;
+}
