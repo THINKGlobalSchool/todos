@@ -16,6 +16,11 @@ $todo = get_entity($guid);
 if (elgg_instanceof($todo, 'object', 'todo') && $todo->canEdit()) {
 	$container = get_entity($todo->container_guid);
 	if ($todo->disable()) {
+		// Remove from river
+		elgg_delete_river(array(
+			'object_guid' => $guid,
+			'action_type' => 'create',
+		));
 		system_message(elgg_echo('todo:success:delete'));
 	} else {
 		register_error(elgg_echo('todo:error:delete'));
