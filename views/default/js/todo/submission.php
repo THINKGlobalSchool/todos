@@ -19,16 +19,34 @@ elgg.todo.submission.init = function() {
 
 	// Set up a handler for ajax comment delete clicks
 	$(document).delegate('.todo-ajax-submission .elgg-list-annotation li.elgg-menu-item-delete a', 'click', elgg.todo.submission.deleteCommentClick);
+
+	// Click handler for previous 
+	$(document).delegate('.todo-ajax-submission-navigation-prev', 'click', function(event) {
+		$.fancybox.prev();
+		event.preventDefault();
+	});
+
+	// Click handler for next 
+	$(document).delegate('.todo-ajax-submission-navigation-next', 'click', function(event) {
+		$.fancybox.next();
+		event.preventDefault();
+	});
 	
 	// Set up submission dialog
 	$(".todo-submission-lightbox").fancybox({
 		//'modal': true,
-		'onStart' : function() {
-			
-		},
 		'onComplete': function() {						
 			$('.todo-ajax-submission').closest('#fancybox-outer').addClass('todo-ajax-submission-navigation');
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
+			
+			if ($('#fancybox-right').is(':visible')) {
+				$('.todo-ajax-submission-navigation-next').fadeIn();
+			}
+
+			if ($('#fancybox-left').is(':visible')) {
+				$('.todo-ajax-submission-navigation-prev').fadeIn();
+			}
+
 			if (typeof(tinyMCE) !== 'undefined') {
 				tinyMCE.EditorManager.execCommand('mceAddControl', false, id);
 			}

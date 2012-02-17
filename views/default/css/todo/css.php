@@ -296,30 +296,24 @@ span.unviewed {
 	overflow: hidden;
 }
 
-.todo-ajax-submission-navigation #fancybox-left-ico {
-	left: -8px;
-}
-
-.todo-ajax-submission-navigation #fancybox-right-ico {
-	right: -8px;
-	left: auto;
-}
-
-.todo-ajax-submission-navigation #fancybox-left:hover span {
-	left: -8px;
-}
-
-.todo-ajax-submission-navigation #fancybox-right:hover span {
-	left: auto;
-	right: -8px;
-}
-
 .todo-ajax-submission-navigation #fancybox-left {
-	width: 20px;
-	left: -20px;
-} 
-.todo-ajax-submission-navigation #fancybox-right {
-	width: 20px;
-	right: -20px;
-	left: auto;
+	left: -9999px;
+	width: 0px;
 }
+
+.todo-ajax-submission-navigation #fancybox-right {
+	left: -9999px;
+	width: 0px;
+}
+
+.todo-ajax-submission-navigation-prev,
+.todo-ajax-submission-navigation-next {
+	font-weight: bold;
+	display: none;
+	text-decoration: none;
+}
+
+.todo-ajax-submission-navigation-next:hover,
+.todo-ajax-submission-navigation-prev:hover {
+	text-decoration: none;
+} 

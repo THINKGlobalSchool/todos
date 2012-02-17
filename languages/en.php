@@ -101,6 +101,8 @@ $english = array(
 	'todo:label:sortasc' => 'Sort Ascending &#9650;',
 	'todo:label:sortdesc' => 'Sort Descending &#9660;',
 	'todo:label:linkspotcontent' => 'You are submitting a link to Spot. You should be using Add Spot Content for this. Do you want to continue?',
+	'todo:label:prev' => 'Prev',
+	'todo:label:next' => 'Next',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
