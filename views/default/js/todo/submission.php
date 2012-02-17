@@ -13,15 +13,12 @@
 //<script>
 elgg.provide('elgg.todo.submission');
 
-elgg.todo.submission.submissions = [];
-
 elgg.todo.submission.init = function() {
 	// Set up a handler for ajax comment clicks
 	$(document).delegate('.todo-ajax-submission form.elgg-form-comments-add input.elgg-button', 'click', elgg.todo.submission.commentClick);
 
 	// Set up a handler for ajax comment delete clicks
 	$(document).delegate('.todo-ajax-submission .elgg-list-annotation li.elgg-menu-item-delete a', 'click', elgg.todo.submission.deleteCommentClick);
-	
 	
 	// Set up submission dialog
 	$(".todo-submission-lightbox").fancybox({
@@ -42,14 +39,7 @@ elgg.todo.submission.init = function() {
 	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
 			}
 		}
-	});	
-
-	// Grab completed submissions from status page
-	$('input[name="todo_submissions[]"]').each(function() {
-		elgg.todo.submission.submissions.push($(this).val());
 	});
-
-	console.log(elgg.todo.submission.submissions);
 }
 
 // Click handler for comment submit
