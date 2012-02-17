@@ -42,7 +42,7 @@ foreach ($assignees as $assignee) {
 	// Default values
 	$status = '<span class="incomplete">' . elgg_echo('todo:label:statusincomplete') . '</span>';
 	$date = '-';
-	$url = '-';
+	$submission_info = '-';
 	$reminder = elgg_view("output/confirmlink", 
 									array(
 									'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . "&a=" . $assignee->getGUID(),
@@ -64,7 +64,12 @@ foreach ($assignees as $assignee) {
 		// Check if theres a submission, may have been manually completed
 		if ($submission = get_user_submission($assignee->guid, $vars['entity']->getGUID())) {
 			$date = date("F j, Y", $submission->time_created);
-			$url = "<a href='{$submission->getURL()}'>View</a>";
+			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
+			$submission_info = "<a rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
+			$submission_info .= elgg_view('input/hidden', array(
+				'name' => 'todo_submissions[]',
+				'value' => $submission->guid,
+			));
 		}
 		
 		$reminder = '<span style="color: #bbbbbb;">-</span>';
@@ -76,7 +81,7 @@ foreach ($assignees as $assignee) {
 	$content .= 	"<td>$accepted</td>";
 	$content .= 	"<td>$status</td>";
 	$content .= 	"<td>$date</td>";
-	$content .= 	"<td>$url</td>";
+	$content .= 	"<td>$submission_info</td>";
 	$content .= 	"<td>$reminder</td>";
 	$content .= '</tr>';
 }
