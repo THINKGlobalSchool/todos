@@ -69,6 +69,11 @@ function todo_init() {
 	elgg_register_simplecache_view('js/todo/todo');
 	elgg_register_js('elgg.todo', $todo_js);
 	
+	// Submission JS
+	$s_js = elgg_get_simplecache_url('js', 'todo/submission');
+	elgg_register_simplecache_view('js/todo/submission');
+	elgg_register_js('elgg.todo.submission', $s_js);
+	
 	// Register and load global todo JS
 	$g_js = elgg_get_simplecache_url('js', 'todo/global');
 	elgg_register_simplecache_view('js/todo/global');
@@ -166,6 +171,8 @@ function todo_init() {
 
 	// Whitelist ajax views
 	elgg_register_ajax_view('todo/list');
+	elgg_register_ajax_view('todo/ajax_submission');
+	elgg_register_ajax_view('todo/ajax_comments');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -225,37 +232,6 @@ function todo_page_handler($page) {
 	$page_type = $page[0];
 	
 	switch ($page_type) {
-		/* These are admin scripts... put em somewhere else
-		case 'updateusercomplete': // Force a user todo complete update
-			admin_gatekeeper();
-			$entities = elgg_get_entities_from_metadata(array(
-				'owner_guid' => ELGG_ENTITIES_ANY_VALUE,
-				'subtype' => 'todosubmission',
-				'type' => 'object',
-				'limit' => 0,
-				'order_by_metadata' => array('name' => 'todo_guid', 'as' => 'int'),
-			));
-			foreach($entities as $entity) {
-				echo $entity->owner_guid . " - "  . $entity->todo_guid . "</br>"; 
-				add_entity_relationship($entity->owner_guid, COMPLETED_RELATIONSHIP, $entity->todo_guid);
-			}
-			break;
-		case 'updatetodocomplete': // Force a todo complete update
-			admin_gatekeeper(); 
-			
-			$entities = elgg_get_entities(array(
-				'type' => 'object',
-				'subtype' => 'todo',
-				'limit' => 0
-			));
-			
-			foreach($entities as $entity) {
-				var_dump(have_assignees_completed_todo($entity->getGUID()));
-				update_todo_complete($entity->getGUID());
-				var_dump($entity->complete);
-			}
-			break;
-		*/
 		case 'dashboard':
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
@@ -281,6 +257,8 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'view':
+			elgg_load_js('lightbox');
+			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('jquery.form');
 			gatekeeper();
 			if ($page[1] == 'submission'){

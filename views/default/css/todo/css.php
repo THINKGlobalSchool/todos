@@ -289,3 +289,37 @@ span.unviewed {
 .elgg-menu-item-todo-accept input {
 	margin-top: -3px;
 }
+
+/* Ajax submissions */
+.todo-ajax-submission {
+	width: 550px;
+	overflow: hidden;
+}
+
+.todo-ajax-submission-navigation #fancybox-left-ico {
+	left: -8px;
+}
+
+.todo-ajax-submission-navigation #fancybox-right-ico {
+	right: -8px;
+	left: auto;
+}
+
+.todo-ajax-submission-navigation #fancybox-left:hover span {
+	left: -8px;
+}
+
+.todo-ajax-submission-navigation #fancybox-right:hover span {
+	left: auto;
+	right: -8px;
+}
+
+.todo-ajax-submission-navigation #fancybox-left {
+	width: 20px;
+	left: -20px;
+} 
+.todo-ajax-submission-navigation #fancybox-right {
+	width: 20px;
+	right: -20px;
+	left: auto;
+}

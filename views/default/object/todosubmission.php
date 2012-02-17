@@ -83,7 +83,7 @@ if ($valid) {
 			} else {
 				$href = $text = $content;
 			}
-			$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text)). "</li>";
+			$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text, 'target' => '_blank')). "</li>";
 		}
 	}
 	
