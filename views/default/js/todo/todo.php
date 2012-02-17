@@ -24,6 +24,9 @@ elgg.todo.init = function() {
 	// Set up submission dialog
 	$(".todo-lightbox").fancybox({
 		//'modal': true,
+		'onStart' : function() {
+			$('.tgstheme-entity-menu-actions').fadeOut();
+		},
 		'onComplete': function() {
 			// Set up submission content form
 			elgg.todo.submissionFormDefault();
@@ -465,9 +468,9 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 // Trim HTTP or HTTPS from a url string
 elgg.todo.trimProtocol = function(str) {
 	if (str) {
-		if (str.startsWith("http://"))
+		if (this.indexOf("http://") === 0)
 			return str.substr(7);
-		else if (str.startsWith("https://"))
+		else if (this.indexOf("https://") === 0)
 			return str.substr(8);
 		else 
 			return str;
