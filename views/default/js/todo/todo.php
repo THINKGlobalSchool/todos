@@ -468,9 +468,9 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 // Trim HTTP or HTTPS from a url string
 elgg.todo.trimProtocol = function(str) {
 	if (str) {
-		if (this.indexOf("http://") === 0)
+		if (str.indexOf("http://") === 0)
 			return str.substr(7);
-		else if (this.indexOf("https://") === 0)
+		else if (str.indexOf("https://") === 0)
 			return str.substr(8);
 		else 
 			return str;
