@@ -88,7 +88,13 @@ HTML;
 			foreach ($contents as $content) {
 				$guid = (int)$content;
 				if (is_int($guid) && $entity = get_entity($guid)) {
-					$href = $entity->getURL();
+					// If this is a 'downloadable' file (file or todosubmission file)
+					if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+						// Url should point directly to the file, not the view
+						$href = "file/download/{$entity->guid}";
+					} else {
+						$href = $entity->getURL();
+					}
 					$text = $entity->title;
 				} else {
 					$href = $text = $content;

@@ -13,9 +13,16 @@
  * 
  */
 
+
 $guid = elgg_extract('guid', $vars);
 
 $entity = get_entity($guid);
+
+// Just in case this view isn't loaded via AJAX
+if (!elgg_is_xhr()) {
+	// Forward to regular view
+	forward($entity->getURL());
+}
 
 $owner = $entity->getOwnerEntity();
 
