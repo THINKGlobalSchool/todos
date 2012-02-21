@@ -142,6 +142,9 @@ if ($full) { // Full View
 	
 	// View submission form
 	$submission_form = elgg_view_form('submission/save', $submission_form_vars, array('entity' => $todo));
+	
+	// For hash submissions
+	$hash_todo = $todo->guid;
 
 	echo <<<HTML
 <div class='todo'>
@@ -151,6 +154,14 @@ if ($full) { // Full View
 	<div style='display: none;'>
 		<div id="todo-submission-dialog">$submission_form</div>
 	</div>
+	<script type='text/javascript'>
+		hash_check = function() {
+			// Trigger hash check
+			var todo_guid = "{$hash_todo}";
+			elgg.todo.submission.processHash(todo_guid);
+		}
+		elgg.register_hook_handler('ready', 'system', hash_check);
+	</script>
 </div>
 HTML;
 } else { // listing view

@@ -66,10 +66,6 @@ foreach ($assignees as $assignee) {
 			$date = date("F j, Y", $submission->time_created);
 			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 			$submission_info = "<a rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
-			$submission_info .= elgg_view('input/hidden', array(
-				'name' => 'todo_submissions[]',
-				'value' => $submission->guid,
-			));
 		}
 		
 		$reminder = '<span style="color: #bbbbbb;">-</span>';

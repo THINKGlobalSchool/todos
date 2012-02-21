@@ -176,5 +176,37 @@ elgg.todo.submission.deleteCommentClick = function(event) {
 	event.preventDefault();
 }
 
+/**
+ * Check for and process any supplied hash paramaters
+ * 
+ * - This doesn't do any kind of validation, it simple tries to click 
+ * the link that would be on the page if a submission exists. If there's no 
+ * match, nothing happens. (Desired behaviour)
+ */
+elgg.todo.submission.processHash = function(todo_guid) {
+	// Check for hash
+	if (window.location.hash) {
+		// Try to grab submission guid
+		var submission_guid = window.location.hash.replace('#submission:', '');	
+	
+		// Make sure we have an integer
+		if ((parseFloat(submission_guid) == parseInt(submission_guid)) && !isNaN(submission_guid)) {
+
+			// Loop over each todo submission lightbox (if any)
+			$('a.todo-submission-lightbox').each(function() {
+
+				// If we have a submission on the page matching the given hash
+				if($(this).attr('href').indexOf('guid=' + submission_guid) != -1) {
+
+					// Trigger the click
+					$(this).trigger('click');
+
+					// Break out of each
+					return false;
+				}
+			});
+		}
+	}
+}
 
 elgg.register_hook_handler('init', 'system', elgg.todo.submission.init);

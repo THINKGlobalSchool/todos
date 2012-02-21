@@ -155,6 +155,10 @@ $english = array(
 
 To view this To Do, click here:
 
+%s
+
+To view the submission, click here:
+
 %s",
 
 	'todo:email:subjectassign' => 'You have been assigned a To Do',
