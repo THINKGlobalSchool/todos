@@ -939,10 +939,12 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		if (elgg_in_context('todo_full_view')) {
 			// If user has submitted
 			if (has_user_submitted($user_guid, $entity->getGUID()) && $submission = get_user_submission($user_guid, $entity->getGUID())) {
+				$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 				$options = array(
 					'name' => 'todo_view_submission',
 					'text' => elgg_echo("todo:label:viewsubmission"),
-					'href' => $submission->getURL(),
+					'href' => $ajax_url,
+					'class' => 'todo-submission-lightbox',
 					'priority' => 999,
 					'section' => 'info',
 				);
