@@ -65,7 +65,7 @@ HTML;
 		if ($comments_count != 0) {
 			$text = elgg_echo("comments") . " ($comments_count)";
 			$comments_link = elgg_view('output/url', array(
-				'href' => $submission->getURL() . '#comments',
+				'href' => '#comments',
 				'text' => $text,
 			));
 		} else {

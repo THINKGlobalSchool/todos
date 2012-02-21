@@ -69,6 +69,11 @@ $content = <<<HTML
 	<div class='todo-ajax-submission'>
 		$module
 	</div>
+	<script type='text/javascript'> 
+		// Set window hash
+		var hash = "#submission:{$entity->guid}";
+		window.location.hash = hash;
+	</script>
 HTML;
 
 echo $content;

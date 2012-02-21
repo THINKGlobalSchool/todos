@@ -51,7 +51,7 @@ notify_user(
 	$todo->owner_guid, 
 	$CONFIG->site->guid,
 	elgg_echo('todo:email:subjectsubmission', array($user->name, $todo->title)), 
-	elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL()))
+	elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL(), $todo->getURL() . "#submission:{$submission->guid}"))
 );
 
 

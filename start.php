@@ -573,12 +573,12 @@ function submission_comment_event_listener($event, $object_type, $object) {
 		notify_user($todo->owner_guid, 
 					$user->getGUID(),
 					elgg_echo('generic_comment:email:subject'), 
-					sprintf(elgg_echo('todo:email:bodysubmissioncomment'), 
+					elgg_echo('todo:email:bodysubmissioncomment', array( 
 							$todo->title,
-							$object->getURL(),
+							$todo->getURL() . "#submission:{$object->guid}",
 							$user->name,
 							$user->getURL()
-					)
+					))
 		);
 		
 	}
