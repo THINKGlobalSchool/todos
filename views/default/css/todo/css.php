@@ -293,7 +293,8 @@ span.unviewed {
 /* Ajax submissions */
 .todo-ajax-submission {
 	width: 550px;
-	overflow: hidden;
+	max-height: 750px;
+	overflow-x: hidden;
 }
 
 .todo-ajax-submission-navigation #fancybox-left {
