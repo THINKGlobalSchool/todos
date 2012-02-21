@@ -99,6 +99,12 @@ elgg.todo.submission.commentClick = function(event) {
 				// Error
 				$_this.removeAttr('disabled');
 			} else {
+				// Clear tinymce
+				var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
+				if (typeof(tinyMCE) !== 'undefined') {
+		    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
+				}
+
 				// Load in new comments
 				load_url = elgg.get_site_url() + 'ajax/view/todo/ajax_comments?guid=' + entity_guid;
 				$form.closest('.elgg-comments')
@@ -145,6 +151,12 @@ elgg.todo.submission.deleteCommentClick = function(event) {
 					// Error
 					$_this.removeClass('disabled');
 				} else {
+					// Clear tinymce
+					var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
+					if (typeof(tinyMCE) !== 'undefined') {
+			    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
+					}
+
 					// Load in new comments
 					load_url = elgg.get_site_url() + 'ajax/view/todo/ajax_comments?guid=' + entity_guid;
 					$form.closest('.elgg-comments')
