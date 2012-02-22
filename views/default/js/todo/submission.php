@@ -56,6 +56,9 @@ elgg.todo.submission.init = function() {
 			if (typeof(tinyMCE) !== 'undefined') {
 	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
 			}
+		},
+		'onClosed': function() {
+			window.location.hash = '';
 		}
 	});
 }
