@@ -202,6 +202,7 @@ elgg.todo.submission.processHash = function(todo_guid) {
 				if($(this).attr('href').indexOf('guid=' + submission_guid) != -1) {
 
 					// Trigger the click
+					$.fancybox.init();
 					$(this).trigger('click');
 
 					// Break out of each

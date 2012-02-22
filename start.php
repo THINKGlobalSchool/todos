@@ -575,7 +575,7 @@ function submission_comment_event_listener($event, $object_type, $object) {
 					elgg_echo('generic_comment:email:subject'), 
 					elgg_echo('todo:email:bodysubmissioncomment', array( 
 							$todo->title,
-							$todo->getURL() . "#submission:{$object->guid}",
+							$object->getURL(),
 							$user->name,
 							$user->getURL()
 					))
@@ -654,7 +654,8 @@ function todo_submenus() {
  * @return string request url
  */
 function todo_submission_url($entity) {
-	return elgg_get_site_url() . "todo/view/submission/{$entity->guid}/";
+	$todo = get_entity($entity->todo_guid);
+	return $todo->getURL() . "#submission:{$entity->guid}";
 }
 
 /*
@@ -947,6 +948,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'class' => 'todo-submission-lightbox',
 					'priority' => 999,
 					'section' => 'info',
+					'onclick' => "javascript:return false;",
 				);
 				$return[] = ElggMenuItem::factory($options);
 			} else { // User has not submitted
