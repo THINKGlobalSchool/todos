@@ -39,8 +39,9 @@ foreach ($submission_batch as $submission) {
 
 		// Check if we have a downloadable entity (file, todosubmission file)
 		if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-			// Add to files array (username => file_location)
-			$files[$entity->getOwnerEntity()->username] = $entity->getFilenameOnFilestore();
+			// Add to files array (guid => {'username' => username, 'filename' => file_location})
+			$files[$entity->guid]['filename'] = $entity->getFilenameOnFilestore();
+			$files[$entity->guid]['username'] = $entity->getOwnerEntity()->username;
 		}
 	}
 }
@@ -70,23 +71,23 @@ if (count($files) > 0) {
 	}
 
 	// Add files to zip
-	foreach ($files as $username => $filename) {
+	foreach ($files as $guid => $file) {
 		// Double-check that file exists
-		if (file_exists($filename)) {
+		if (file_exists($file['filename'])) {
 
 			// Get file info
-			$file_info = pathinfo($filename);
+			$file_info = pathinfo($file['filename']);
 			$file_extension = $file_info['extension'];
 
 			// Set a friendlier file output name
-			$file_out = "{$todo_title}_{$username}.{$file_extension}";
+			$file_out = "{$todo_title}_{$file['username']}_{$guid}.{$file_extension}";
 
 			// Add to zip
-			$zip->addFile($filename, $file_out);
+			$zip->addFile($file['filename'], $file_out);
 
 			// Check for errors
 			if (!$zip->status == ZIPARCHIVE::ER_OK) {
-				register_error(elgg_echo('todo:error:zipfileerror', array($filename)));
+				register_error(elgg_echo('todo:error:zipfileerror', array($file['filename'])));
 			}
 		}
 	}
