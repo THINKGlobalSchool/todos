@@ -103,6 +103,7 @@ $english = array(
 	'todo:label:linkspotcontent' => 'You are submitting a link to Spot. You should be using Add Spot Content for this. Do you want to continue?',
 	'todo:label:prev' => 'Prev',
 	'todo:label:next' => 'Next',
+	'todo:label:downloadfiles' => 'Download Files',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
@@ -236,6 +237,8 @@ You cannot reply to this email.",
 	'todo:error:nofile' => 'You need to select at least one file',
 	'todo:error:assigneeremoved' => 'There was an error removing the assignee',
 	'todo:error:invalidurl' => 'Invalid URL',
+	'todo:error:zipcreate' => 'There was an error creating the To Do zip file',
+	'todo:error:zipfileerror' => 'There was an error adding the file "%s" to zip',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

@@ -87,14 +87,20 @@ foreach ($assignee_guids as $idx => $guid) {
 	$qs .= "&a[]=" . $assignee_guids[$idx];
 }
 
-$remind_all = elgg_view("output/confirmlink", 
-								array(
-								'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
-								'text' => elgg_echo('todo:label:remindall'),
-								'confirm' => elgg_echo('todo:label:remindconfirm'),
-							));
+$remind_all = elgg_view("output/confirmlink", array(
+	'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
+	'text' => elgg_echo('todo:label:remindall'),
+	'confirm' => elgg_echo('todo:label:remindconfirm'),
+));
 
-$content .= "<td colspan=5 style='text-align: right;'></td>";
+$download_files = elgg_view('output/url', array(
+	'href' => 'todo/download/' . $todo->guid,
+	'text' => elgg_echo('todo:label:downloadfiles'),
+	//'class' => 'elgg-button elgg-button-action',
+));
+
+$content .= "<td colspan=4 style='text-align: right;'></td>";
+$content .= "<td>$download_files</td>";
 $content .= "<td>$remind_all</td>";
 
 $content .= '</tbody></table>';
