@@ -65,9 +65,9 @@ foreach ($assignees as $assignee) {
 		if ($submission = get_user_submission($assignee->guid, $vars['entity']->getGUID())) {
 			$date = date("F j, Y", $submission->time_created);
 			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
-			$submission_info = "<a rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
+			$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
 		}
-		
+
 		$reminder = '<span style="color: #bbbbbb;">-</span>';
 	}
 	
