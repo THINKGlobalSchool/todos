@@ -325,6 +325,11 @@ function todo_page_handler($page) {
 			echo todo_get_page_content_assignees($guid);
 			exit;
 			break;
+		case 'download':
+			set_input('guid', $page[1]);
+			include elgg_get_plugins_path() . 'todo/pages/todo/download.php';
+			return TRUE;
+			break;
 	}
 	
 	// Custom sidebar (none at the moment)

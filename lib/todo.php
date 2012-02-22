@@ -611,7 +611,7 @@ function assign_users_to_todo($assignee_guids, $todo_guid) {
 				$success &= assign_user_to_todo($assignee, $todo_guid);
 			} else if ($entity instanceof ElggGroup) {
 				// If we've got a group, we need to assign each member of that group
-				foreach ($entity->getMembers(9999) as $member) {
+				foreach ($entity->getMembers(0) as $member) {
 					if ($member->getGUID() == $todo->owner_guid) {
 						continue;
 					}
@@ -625,7 +625,7 @@ function assign_users_to_todo($assignee_guids, $todo_guid) {
 																		'relationship_guid' => $entity->getGUID(),
 																		'inverse_relationship' => TRUE,
 																		'types' => 'user',
-																		'limit' => 9999
+																		'limit' => 0
 																	));
 
 				foreach($channel_members as $member) {
@@ -739,7 +739,7 @@ function get_todo_groups_array() {
 											'inverse_relationship' => FALSE,
 											'types' => 'object',
 											'subtypes' => 'shared_access',
-											'limit' => 9999
+											'limit' => 0
 									  		));
 									
 		foreach ($channels as $channel) {
@@ -781,7 +781,7 @@ function get_todo_assignees($guid) {
 		'relationship_guid' => $guid,
 		'inverse_relationship' => TRUE,
 		'types' => array('user', 'group'),
-		'limit' => 9999,
+		'limit' => 0,
 		'offset' => 0,
 		'count' => false,
 		// Order by user name
@@ -811,28 +811,29 @@ function get_todo_assignees($guid) {
 }
 
 /**
- * Return an array submissions for given todo
+ * Return an elgg batch of submissions for given todo
  *
- * @param int $guid todo_guid
+ * @param int $todo_guid todo_guid
  * @return array
  */
-function get_todo_submissions($guid) {
-	$entities = elgg_get_entities_from_relationship(array(
-														'relationship' => SUBMISSION_RELATIONSHIP,
-														'relationship_guid' => $guid,
-														'inverse_relationship' => TRUE,
-														'types' => array('object'),
-														'limit' => 9999,
-														'offset' => 0,
-														'count' => false,
-													));
-	
+function get_todo_submissions_batch($todo_guid, $limit = 10) {
+	$options = array(
+		'relationship' => SUBMISSION_RELATIONSHIP,
+		'relationship_guid' => $todo_guid,
+		'inverse_relationship' => TRUE,
+		'type' => 'object',
+		'subtype' => 'todosubmission',
+		'limit' => $limit,
+	);
+
+	$entities = new ElggBatch('elgg_get_entities_from_relationship', $options);
+
 	return $entities;
 }
 
 /**
  * Return all todos a user has been assigned
- *
+ * @TODO this should go away..
  * @param int 
  * @return array 
  */
@@ -879,7 +880,6 @@ function is_todo_assignee($todo_guid, $user_guid) {
 function has_user_submitted($user_guid, $todo_guid) {
 	$todo = get_entity($todo_guid);
 	if (get_user_submission($user_guid, $todo_guid)) {
-				
 		return true;
 	} else {
 		return false;
@@ -894,15 +894,23 @@ function has_user_submitted($user_guid, $todo_guid) {
  * @return mixed
  */
 function get_user_submission($user_guid, $todo_guid) {
-	$submissions = get_todo_submissions($todo_guid);
-	if ($submissions) {
-		foreach ($submissions as $submission) {
-			if ($user_guid == $submission->owner_guid) {
-				return $submission;
-			}
-		}
+	$options = array(
+		'relationship' => SUBMISSION_RELATIONSHIP,
+		'relationship_guid' => $todo_guid,
+		'owner_guid' => $user_guid,
+		'inverse_relationship' => TRUE,
+		'type' => 'object',
+		'subtype' => 'todosubmission',
+		'limit' => 1,
+	);
+
+	$entities = elgg_get_entities_from_relationship($options);
+
+	if ($entities) {
+		return $entities[0];
 	}
-	return false;
+
+	return FALSE;
 }
 
 /** 
