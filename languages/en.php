@@ -239,6 +239,7 @@ You cannot reply to this email.",
 	'todo:error:invalidurl' => 'Invalid URL',
 	'todo:error:zipcreate' => 'There was an error creating the To Do zip file',
 	'todo:error:zipfileerror' => 'There was an error adding the file "%s" to zip',
+	'todo:error:nofiles' => 'There are no files available to download',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

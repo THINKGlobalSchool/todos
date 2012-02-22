@@ -110,4 +110,7 @@ if (count($files) > 0) {
 	flush();
 	readfile($zip_location);
 	exit;
+} else {
+	register_error(elgg_echo('todo:error:nofiles'));
+	forward(REFERER);
 }
