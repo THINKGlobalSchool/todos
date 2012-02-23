@@ -104,6 +104,7 @@ $english = array(
 	'todo:label:prev' => 'Prev',
 	'todo:label:next' => 'Next',
 	'todo:label:downloadfiles' => 'Download Files',
+	'todo:label:upload' => 'Upload',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
