@@ -73,7 +73,7 @@ if (isset($vars['entity'])) {
 	$file_content .= elgg_view('input/submit', array(
 		'id' => 'submission-submit-file', 
 		'name' => 'file_submit', 
-		'value' => 'Submit'
+		'value' => elgg_echo('todo:label:upload'),
 	)) . "</form>";
 	
 	$file_module = elgg_view_module('info', elgg_echo('todo:label:addfile'), $file_content, array(
