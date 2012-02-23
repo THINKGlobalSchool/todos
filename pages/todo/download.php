@@ -46,12 +46,12 @@ foreach ($submission_batch as $submission) {
 	}
 }
 
+// Create a hash for the files array (to check for changes)
+$zip_hash = md5(serialize($files));
+
 // If we have files, proceed with zip
 if (count($files) > 0) {
 	$dataroot = elgg_get_config('dataroot');
-	
-	// Create a new zip
-	$zip = new ZipArchive;
 
 	// File friendly todo title
 	$todo_title = str_replace("-", "_", elgg_get_friendly_title($todo->title));
@@ -64,36 +64,45 @@ if (count($files) > 0) {
 
 	// Set zip location/name
 	$zip_location = "{$todo_export_dir}/{$todo_title}.zip";
+	
+	// Only create new zips if the file doesn't exist, or the hash has changed
+	if (!file_exists($zip_location) || $zip_hash != $todo->zip_hash) {
+		// Create a new zip
+		$zip = new ZipArchive;
 
-	// Try opening
-	if ($zip->open($zip_location, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE) !== TRUE) {
-		register_error(elgg_echo('todo:error:zipcreate'));
-	}
+		// Try opening
+		if ($zip->open($zip_location, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE) !== TRUE) {
+			register_error(elgg_echo('todo:error:zipcreate'));
+		}
 
-	// Add files to zip
-	foreach ($files as $guid => $file) {
-		// Double-check that file exists
-		if (file_exists($file['filename'])) {
+		// Add files to zip
+		foreach ($files as $guid => $file) {
+			// Double-check that file exists
+			if (file_exists($file['filename'])) {
 
-			// Get file info
-			$file_info = pathinfo($file['filename']);
-			$file_extension = $file_info['extension'];
+				// Get file info
+				$file_info = pathinfo($file['filename']);
+				$file_extension = $file_info['extension'];
 
-			// Set a friendlier file output name
-			$file_out = "{$todo_title}_{$file['username']}_{$guid}.{$file_extension}";
+				// Set a friendlier file output name
+				$file_out = "{$todo_title}_{$file['username']}_{$guid}.{$file_extension}";
 
-			// Add to zip
-			$zip->addFile($file['filename'], $file_out);
+				// Add to zip
+				$zip->addFile($file['filename'], $file_out);
 
-			// Check for errors
-			if (!$zip->status == ZIPARCHIVE::ER_OK) {
-				register_error(elgg_echo('todo:error:zipfileerror', array($file['filename'])));
+				// Check for errors
+				if (!$zip->status == ZIPARCHIVE::ER_OK) {
+					register_error(elgg_echo('todo:error:zipfileerror', array($file['filename'])));
+				}
 			}
 		}
-	}
 
-	// Close zip
-	$zip->close();
+		// Close zip
+		$zip->close();
+
+		// Set hash
+		$todo->zip_hash = $zip_hash;
+	}
 
 	$zip_base = basename($zip_location);
 
