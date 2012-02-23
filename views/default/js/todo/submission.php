@@ -35,29 +35,40 @@ elgg.todo.submission.init = function() {
 	// Set up submission dialog
 	$(".todo-submission-lightbox").fancybox({
 		//'modal': true,
-		'onComplete': function() {						
+		'onComplete': function() {		
+			// Add todo navigation class to the fancybox container				
 			$('.todo-ajax-submission').closest('#fancybox-outer').addClass('todo-ajax-submission-navigation');
-			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
+
+			// Fix duplicate menu items
+			var menu_id = $('.todo-ajax-submission .tgstheme-entity-menu-actions').attr('id');
+			$('body > #' + menu_id).remove();
 			
+			// Show todo navigation right if the fancybox right control is visible
 			if ($('#fancybox-right').is(':visible')) {
 				$('.todo-ajax-submission-navigation-next').fadeIn();
 			}
 
+			// Show todo navigation left if the fancybox left control is visible
 			if ($('#fancybox-left').is(':visible')) {
 				$('.todo-ajax-submission-navigation-prev').fadeIn();
 			}
+	
+			// Fix tinymce control for submission text field
+			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 
 			if (typeof(tinyMCE) !== 'undefined') {
 				tinyMCE.EditorManager.execCommand('mceAddControl', false, id);
 			}
 		},
 		'onCleanup': function() {
+			// Fix tinymce control for submission text field
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 			if (typeof(tinyMCE) !== 'undefined') {
 	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
 			}
 		},
 		'onClosed': function() {
+			// Reset location hash
 			window.location.hash = '';
 		}
 	});
