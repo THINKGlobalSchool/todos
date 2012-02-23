@@ -8,6 +8,8 @@
  * @copyright THINK Global School 2010
  * @link http://www.thinkglobalschool.com/
  * 
+ * This plugin requires the apache2 zip module
+ * 
  */
 
 /*********************** TODO: (Code related) ************************/
@@ -55,9 +57,7 @@ function todo_init() {
 	// Todo status's 
 	define('TODO_STATUS_DRAFT', 0);
 	define('TODO_STATUS_PUBLISHED', 1);
-	
-	//get_todo_groups_array();
-	
+
 	// Extend CSS
 	elgg_extend_view('css/elgg','css/todo/css');
 	
@@ -132,11 +132,6 @@ function todo_init() {
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
 	
-	// Set up url handlers
-	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
-	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
-	elgg_register_entity_url_handler('object', 'todosubmissionfile', 'submission_file_url');
-	
 	// Hook for site menu
 	if (elgg_is_logged_in()) {
 		elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
@@ -168,6 +163,20 @@ function todo_init() {
 	
 	// Register handler for todo submission files 
 	elgg_register_plugin_hook_handler('entity:icon:url', 'object', 'submission_file_icon_url_override');
+
+	// Cron hook for todo zip cleanup
+	$delete_period = elgg_get_plugin_setting('zipdelete', 'todo');
+	
+	if (!$delete_period) {
+		$delete_period = 'daily';
+	}
+
+	elgg_register_plugin_hook_handler('cron', $delete_period, 'todo_cleanup_cron');
+
+	// Set up url handlers
+	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
+	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
+	elgg_register_entity_url_handler('object', 'todosubmissionfile', 'submission_file_url');
 
 	// Whitelist ajax views
 	elgg_register_ajax_view('todo/list');
@@ -1269,6 +1278,49 @@ function submission_file_icon_url_override($hook, $type, $returnvalue, $params) 
 		$url = elgg_trigger_plugin_hook('file:icon:url', 'override', $params, $url);
 		return $url;
 	}
+}
+
+/**
+ * Cron to clean up the todo export directory
+ */
+function todo_cleanup_cron($hook, $type, $value, $params) {
+	// Get data root
+	$dataroot = elgg_get_config('dataroot');
+
+	$todo_export_dir = "{$dataroot}todo_export";
+	
+	// Make sure export directory exists
+	if (file_exists($todo_export_dir)) {
+		// Open directory
+		$directory = opendir($todo_export_dir);
+		
+		// Loop over files in export directory
+		while(false !== ($file = readdir($directory))) {
+			
+			// Don't include . or ..
+			if($file != "." && $file != "..") {
+				
+				// Set file to delete
+				$delfile = "{$todo_export_dir}/{$file}";
+				
+				// Make sure it exists (double-check)
+				if (file_exists($delfile)) {
+					
+					// Nuke it
+					$result = unlink($delfile);
+					
+					// Display error if any
+					if (!$result) {
+						error_log('TODO CRON CLEANUP - Could not delete: ' . $delfile);
+					}
+				}
+			}
+		}
+		// Close directory
+		closedir($directory);
+	}
+
+	return $value;
 }
 
 /**

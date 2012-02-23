@@ -57,7 +57,7 @@ if (count($files) > 0) {
 	$todo_title = str_replace("-", "_", elgg_get_friendly_title($todo->title));
 
 	// Try to create todo export directory
-	$todo_export_dir = "{$dataroot}/todo_export";
+	$todo_export_dir = "{$dataroot}todo_export";
 	if (!file_exists($todo_export_dir)) {
 		mkdir($todo_export_dir);
 	}
