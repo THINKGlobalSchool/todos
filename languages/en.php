@@ -105,6 +105,7 @@ $english = array(
 	'todo:label:next' => 'Next',
 	'todo:label:downloadfiles' => 'Download Files',
 	'todo:label:upload' => 'Upload',
+	'todo:label:zipdelete' => 'Delete Todo Submission Zip Files (Cron period)',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
