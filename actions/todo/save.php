@@ -39,21 +39,6 @@ $rubric_select		= get_input('rubric_select');
 $rubric_guid		= get_input('rubric_guid');
 $access_level		= get_input('access_level');
 
-/*
-var_dump($title);
-var_dump($description);
-var_dump($tags);
-var_dump($due_date);
-var_dump($assignees);
-var_dump($container_guid);
-var_dump($status);
-var_dump($rubric_select);
-var_dump($rubric_guid);
-var_dump($access_level);
-var_dump($guid);
-die;
-*/
-
 // Check values
 if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
 	register_error(elgg_echo('todo:error:requiredfields'));

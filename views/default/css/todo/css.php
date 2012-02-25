@@ -292,7 +292,8 @@ span.unviewed {
 
 /* Ajax submissions */
 .todo-ajax-submission {
-	width: 550px;
+	width: 650px;
+	padding-right: 10px;
 	max-height: 750px;
 	overflow-x: hidden;
 }
@@ -318,3 +319,77 @@ span.unviewed {
 .todo-ajax-submission-navigation-prev:hover {
 	text-decoration: none;
 } 
+
+/* Submission attachments */
+.todo-submission-dropzone {
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #CCCCCC;
+	display: block;
+	margin-top: 5px;
+	padding: 10px;
+	height: 18px;
+}
+
+.todo-submission-dropzone-background {
+	background-image: url('<?php echo elgg_get_site_url() . 'mod/todo/graphics/submissiondropzone.png' ?>');
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+.todo-submission-dropzone-drag {
+	box-shadow: 0px 0px 5px Green;
+}
+
+.todo-submission-attachment-upload {
+	display: none;
+}
+
+.todo-submission-hidden-form {
+	display: none;
+}
+
+.todo-submission-drop-info .file-size {
+	color: #666666;
+	font-size: 1.2em;
+	margin-left: 20px;
+}
+
+.todo-submission-drop-info .file-name {
+	color: #333333;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+.todo-submission-drop-info .file-replace {
+	font-size: 1.2em;
+	color: #AAAAAA;
+	float: right;
+}
+
+.todo-submission-attachment {
+	background: none repeat scroll 0 0 white;
+	border: 1px solid #BBBBBB;
+	margin-right: 10px;
+	margin-top: 3px;
+	padding-right: 10px;
+	display: inline-block;
+	min-height: 26px;
+}
+
+.todo-submission-attachment .todo-submission-attachment-title {
+	font-size: 11px;
+	font-weight: bold;
+	padding: 6px 4px;
+}
+
+.todo-submission-attachment .todo-submission-attachment-icon {
+	width: 26px;
+}
+
+.todo-submission-attachment .todo-submission-attachment-icon img {
+	width: 24px;
+	height: 24px;
+	padding: 3px 0 0 2px;
+}

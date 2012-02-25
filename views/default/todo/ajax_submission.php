@@ -61,7 +61,7 @@ elgg_push_context('ajax_submission');
 $object_view = elgg_view_entity($entity, array('full_view' => TRUE));
 elgg_pop_context();
 
-$comments = elgg_view_comments($entity);
+$comments = elgg_view('todo/submission_annotations', array('entity' => $entity));
 
 $module = elgg_view_module('info', $navigation, $object_view . $comments);
 
@@ -72,7 +72,7 @@ $content = <<<HTML
 	<script type='text/javascript'> 
 		// Set window hash
 		var hash = "#submission:{$entity->guid}";
-		window.location.hash = hash;
+		window.location.hash = hash;	
 	</script>
 HTML;
 
