@@ -106,6 +106,7 @@ $english = array(
 	'todo:label:downloadfiles' => 'Download Files',
 	'todo:label:upload' => 'Upload',
 	'todo:label:zipdelete' => 'Delete Todo Submission Zip Files (Cron period)',
+	'todo:label:attached' => 'File Attached',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
@@ -209,6 +210,40 @@ To view %s's profile, click here:
 %s
 
 You cannot reply to this email.",
+
+	// Submission Annotations
+	'riveraction:annotation:submission_annotation' => '%s commented on %s',
+
+	'submission_annotations:add' => "Leave a comment",
+	'submission_annotations:attach' => "Attach a file (Optional)",
+	'submission_annotations:post' => "Post comment",
+	'submission_annotations:text' => "Comment",
+	'submission_annotations:latest' => "Latest comments",
+	'submission_annotation:posted' => "Your comment was successfully posted.",
+	'submission_annotation:deleted' => "The comment was successfully deleted.",
+	'submission_annotation:blank' => "Sorry, you need to actually put something in your comment before we can save it.",
+	'submission_annotation:notfound' => "Sorry, we could not find the specified item.",
+	'submission_annotation:notdeleted' => "Sorry, we could not delete this comment.",
+	'submission_annotation:failure' => "An unexpected error occurred when adding your comment. Please try again.",
+	'submission_annotation:none' => 'No comments',
+	'submission_annotation:title' => 'Comment by %s',
+
+	'submission_annotation:email:subject' => 'You have a new comment!',
+	'submission_annotation:email:body' => "You have a new comment on your item \"%s\" from %s. It reads:
+
+
+%s
+
+
+To reply or view the original item, click here:
+
+%s
+
+To view %s's profile, click here:
+
+%s
+
+You cannot reply to this email.",
 	
 	// Messages
 	'todo:success:save' => 'To Do Saved',
@@ -242,6 +277,10 @@ You cannot reply to this email.",
 	'todo:error:zipcreate' => 'There was an error creating the To Do zip file',
 	'todo:error:zipfileerror' => 'There was an error adding the file "%s" to zip',
 	'todo:error:nofiles' => 'There are no files available to download',
+	'todo:error:toomanyfiles' => 'You can only attach one file at a time',
+	'todo:error:filetoolarge' => 'File size must be less than 8MB',
+	'todo:error:uploadfailed' => 'File upload failed',
+	'todo:error:deletefile' => 'Failed to delete comment attachement',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

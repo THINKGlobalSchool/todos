@@ -222,7 +222,9 @@ function todo_get_page_content_view($type, $guid) {
 		} else if ($entity->enabled && $type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
 			$params['title'] = elgg_echo('todo:label:viewsubmission');
 			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
-			$params['content'] .= elgg_view_comments($entity);
+			
+			// Show custom submission annotations
+			$params['content'] .= elgg_view('todo/submission_annotations', array('entity' => $entity));
 			
 			$todo = get_entity($entity->todo_guid);
 			$owner = $todo->getOwnerEntity();

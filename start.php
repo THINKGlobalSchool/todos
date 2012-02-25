@@ -12,13 +12,10 @@
  * 
  */
 
-/*********************** TODO: (Code related) ************************/
-// - Cleaner way to handle different content attachments (views, callbacks.. yadda)
-// - Prettier everything (Rubric select, view rubric modal popup, etc.. )
-
-// MIGRATION TODOS
-// - Test assigning users (when userpicker works)
-// - Test saving/updating w/ rubrics (when up to date)
+/*********************** @TODO: (Code related) ************************/
+// - Improve rubric selection interface
+// - Improve libs (cleanup gross/unused)
+// - Dream up some unit tests
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -79,7 +76,12 @@ function todo_init() {
 	elgg_register_simplecache_view('js/todo/global');
 	elgg_register_js('elgg.todo.global', $g_js);
 	elgg_load_js('elgg.todo.global');
-		
+	
+	// Register JS File Upload
+	$j_js = elgg_get_simplecache_url('js', 'jquery_file_upload');
+	elgg_register_simplecache_view('js/jquery_file_upload');
+	elgg_register_js('jQuery-File-Upload', $j_js);
+
 	// Extend groups sidebar
 	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
 		
@@ -173,6 +175,12 @@ function todo_init() {
 
 	elgg_register_plugin_hook_handler('cron', $delete_period, 'todo_cleanup_cron');
 
+	// Handler to add delete button to submission annotations
+	elgg_register_plugin_hook_handler('register', 'menu:annotation', 'todo_submission_annotation_menu_setup');
+
+	// Override comment counting for todo submissions
+	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');
+
 	// Set up url handlers
 	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
 	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
@@ -181,7 +189,6 @@ function todo_init() {
 	// Whitelist ajax views
 	elgg_register_ajax_view('todo/list');
 	elgg_register_ajax_view('todo/ajax_submission');
-	elgg_register_ajax_view('todo/ajax_comments');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -199,7 +206,8 @@ function todo_init() {
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
 	elgg_register_action('submission/delete', "$action_base/delete.php");
-
+	elgg_register_action('submission/annotate', "$action_base/annotate.php");
+	elgg_register_action('submission/delete_annotation', "$action_base/delete_annotation.php");
 
 	// Register type
 	elgg_register_entity_type('object', 'todo');		
@@ -269,6 +277,7 @@ function todo_page_handler($page) {
 			elgg_load_js('lightbox');
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('jquery.form');
+			elgg_load_js('jQuery-File-Upload');
 			gatekeeper();
 			if ($page[1] == 'submission'){
 				$params = todo_get_page_content_view($page[1], $page[2]);
@@ -583,17 +592,30 @@ function submission_comment_event_listener($event, $object_type, $object) {
 		$todo = get_entity($object->todo_guid);
 		$user = get_entity($object->owner_guid);
 		
-		// Notify todo owner that the submission was commented on
-		notify_user($todo->owner_guid, 
-					$user->getGUID(),
-					elgg_echo('generic_comment:email:subject'), 
-					elgg_echo('todo:email:bodysubmissioncomment', array( 
-							$todo->title,
-							$object->getURL(),
-							$user->name,
-							$user->getURL()
-					))
-		);
+		if (elgg_in_context('create_submission_annotation')) {
+			notify_user($todo->owner_guid, 
+						$user->getGUID(),
+						elgg_echo('submission_annotation:email:subject'), 
+						elgg_echo('todo:email:bodysubmissioncomment', array( 
+								$todo->title,
+								$object->getURL(),
+								$user->name,
+								$user->getURL()
+						))
+			);
+		} else {
+			// Notify todo owner that the submission was commented on
+			notify_user($todo->owner_guid, 
+						$user->getGUID(),
+						elgg_echo('generic_comment:email:subject'), 
+						elgg_echo('todo:email:bodysubmissioncomment', array( 
+								$todo->title,
+								$object->getURL(),
+								$user->name,
+								$user->getURL()
+						))
+			);
+		}
 		
 	}
 	return true;
@@ -1043,7 +1065,6 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'section' => 'actions',
 			);
 			$return[] = ElggMenuItem::factory($options);
-			elgg_dump($return);
         } else {
 			$text = elgg_view("output/confirmlink", array(
 				'href' => "action/todo/complete?guid=" . $entity->getGUID(),
@@ -1223,11 +1244,12 @@ function todo_output_access_handler($hook, $type, $return, $params) {
 function submission_file_icon_url_override($hook, $type, $returnvalue, $params) {
 	$file = $params['entity'];
 	$size = $params['size'];
-	if (elgg_instanceof($file, 'object', 'todosubmissionfile')) {
+	if (elgg_instanceof($file, 'object', 'todosubmissionfile') || elgg_instanceof($file, 'object', 'submissionannotationfile')) {
 
 		// thumbnails get first priority
 		if ($file->thumbnail) {
-			return "mod/file/thumbnail.php?file_guid=$file->guid&size=$size";
+			$ts = (int)$file->icontime;
+			return "mod/todo/thumbnail.php?file_guid=$file->guid&size=$size&icontime=$ts";
 		}
 
 		$mapping = array(
@@ -1324,14 +1346,61 @@ function todo_cleanup_cron($hook, $type, $value, $params) {
 }
 
 /**
+ * Adds a delete link to "submission_annotation" annotations
+ */
+function todo_submission_annotation_menu_setup($hook, $type, $return, $params) {
+	$annotation = $params['annotation'];
+
+	if ($annotation->name == 'submission_annotation' && $annotation->canEdit()) {
+		$url = elgg_http_add_url_query_elements('action/submission/delete_annotation', array(
+			'annotation_id' => $annotation->id,
+		));
+
+		$options = array(
+			'name' => 'delete',
+			'href' => $url,
+			'text' => "<span class=\"elgg-icon elgg-icon-delete\"></span>",
+			'encode_text' => false
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+
+	return $return;
+}
+
+/**
+ * Override comment comment counting for todo submissions to include both 
+ * generic_comment and submission_annotation types
+ */
+function todo_submission_comment_count($hook, $type, $return, $params) {
+	$entity = $params['entity'];
+
+	if ($entity->getSubtype() == 'todosubmission') {
+
+		$options = array(
+			'guid' => $entity->getGUID(),
+			'annotation_names' => array('generic_comment', 'submission_annotation'),
+			'annotation_calculation' => 'count',
+		);
+		
+		$count = elgg_get_annotations($options);
+		
+		return (int)$count;
+	}
+
+	return $return;
+}
+
+/**
  * Register entity type objects, subtype todosubmissionfile as
  * ElggFile.
  *
  * @return void
  */
 function todo_run_once() {
-	// Register a class
+	// Register todo submission file class
 	add_subtype("object", "todosubmissionfile", "ElggFile");
+	add_subtype("object", "submissionannotationfile", "ElggFile");
 	
 	// Just in case this metadata doesn't exist yet (It should)
 	$dummy = new ElggObject();

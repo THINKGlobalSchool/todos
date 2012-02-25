@@ -61,6 +61,7 @@ HTML;
 		$date_content =  date("F j, Y", $submission->time_created);
 	
 		$comments_count = $submission->countComments();
+		
 		//only display if there are commments
 		if ($comments_count != 0) {
 			$text = elgg_echo("comments") . " ($comments_count)";

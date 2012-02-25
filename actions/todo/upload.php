@@ -48,8 +48,7 @@ if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {
 	$file->close();
 	
 	$guid = $file->save();
-	
-	/* @TODO Re-work how todo files are displayed so it works
+
 	// if image, we need to create thumbnails (this should be moved into a function)
 	if ($guid && file_get_simple_type($file->getMimeType()) == "image") {
 		$file->icontime = time();
@@ -88,7 +87,6 @@ if (isset($_FILES['upload']['name']) && !empty($_FILES['upload']['name'])) {
 			unset($thumblarge);
 		}
 	}
-	*/
 } 
 
 // handle results differently for new files and file updates
