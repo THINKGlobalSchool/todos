@@ -834,6 +834,23 @@ function get_todo_submissions_batch($todo_guid, $limit = 10) {
 }
 
 /**
+ * Return a count of submissions for a given todo
+ */
+function get_todo_submissions_count($todo_guid) {
+	$options = array(
+		'relationship' => SUBMISSION_RELATIONSHIP,
+		'relationship_guid' => $todo_guid,
+		'inverse_relationship' => TRUE,
+		'type' => 'object',
+		'subtype' => 'todosubmission',
+		'limit' => 0,
+		'count' => TRUE,
+	);
+	
+	return elgg_get_entities_from_relationship($options);
+}
+
+/**
  * Return all todos a user has been assigned
  * @TODO this should go away..
  * @param int 
