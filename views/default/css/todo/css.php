@@ -393,3 +393,44 @@ span.unviewed {
 	height: 24px;
 	padding: 3px 0 0 2px;
 }
+
+/* Dashboard user submissions */
+.todo-submission-listing {
+	font-size: 12px;
+}
+
+.todo-submission-listing .todo-submission-listing-left {
+	float: left;
+	width: 60%;
+}
+
+.todo-submission-listing .todo-submission-listing-right {
+	float: right;
+	text-align: right;
+	color: #999999;
+	width: 38%;
+}
+
+
+/* Dashboard group user submissions */
+.todo-group-user-submissions-container .todo-user-submissions-container {
+	float: left;
+	width: 69%;
+}
+
+.todo-group-user-submissions-container .todo-group-members-container {
+	float: left;
+	width: 30%;
+	margin-right: 6px;
+}
+
+.todo-group-member {
+	display: block;
+	margin: 2px 0;
+	padding: 4px;
+	font-weight: bold;
+}
+
+.todo-group-member:hover {
+	background: #CCCCCC;
+}

@@ -24,12 +24,12 @@ if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 }
 
 if ($valid) {
-	if ($vars['full_view']) {
-		$submission = $vars['entity'];
-
-		$url = $submission->getURL();
-		$owner = $submission->getOwnerEntity();	
+	// General submission info
+	$submission = $vars['entity'];
+	$url = $submission->getURL();
+	$owner = $submission->getOwnerEntity();
 	
+	if ($vars['full_view']) {
 		$canedit = $submission->canEdit();
 		$title = $submission->title;
 		$contents = unserialize($submission->content);
@@ -133,6 +133,47 @@ HTML;
 	
 		$list_body = elgg_view('object/elements/summary', $params);
 
+		echo elgg_view_image_block($owner_icon, $list_body);
+	} else if (!$vars['full_view'] && elgg_is_xhr()) {
+		// XHR Brief view
+
+		// Todo Link
+		$todo_link = elgg_view('output/url', array(
+			'text' => $todo->title,
+			'href' => $todo->getURL(),
+		));
+		
+		// Display comments (if any)
+		$comments_count = $submission->countComments();
+		if ($comments_count) {
+			$comments_text = elgg_echo("comments") . ": $comments_count";
+		}
+	
+		// Was a return required for this submission?
+		$return_text = elgg_echo('todo:label:return') . ": ";
+		$return_text .= $todo->return_required ? 'yes' : 'no';
+		
+		// Submission details
+		$metadata = <<<HTML
+			<div class='todo-submission-listing'>
+				<div class='todo-submission-listing-left'>
+					$todo_link
+				</div>
+				<div class='todo-submission-listing-right'>
+					 $comments_text $return_text
+				</div>
+			</div>
+HTML;
+
+		// Content params
+		$params = array(
+			'title' => FALSE,
+			'metadata' => $metadata,
+			'entity' => $submission,
+		);
+
+		// Build and echo content
+		$list_body = elgg_view('object/elements/summary', $params);
 		echo elgg_view_image_block($owner_icon, $list_body);
 	}
 } else {

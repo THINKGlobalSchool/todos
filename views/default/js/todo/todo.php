@@ -109,11 +109,17 @@ elgg.todo.init = function() {
 	});
 
 	// Special pagination helper for todo content
-	$('#todo-dashboard .elgg-pagination a').live('click', function(e) {
+	$('#todo-dashboard #todo-dashboard-content .elgg-pagination a').live('click', function(e) {
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
 		$('#todo-dashboard').load($(this).attr('href'));
 		e.preventDefault();
 	});
+	
+	
+	// GROUP USER SUBMISSIONS
+	
+	// Group member click handler
+	$(document).delegate('a.todo-group-member', 'click', elgg.todo.groupMemberClick);
 }
 
 /**	
@@ -462,6 +468,25 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 		$("#todo-assignee-userpicker").attr("disabled","disabled");
 		$("#todo-group-assignee-select").removeAttr("disabled");
 	}
+	event.preventDefault();
+}
+
+/**
+ *  Click handler for todo group member click
+ */
+elgg.todo.groupMemberClick = function(event) {
+	// Main container
+	var $container = $(this).closest('div.todo-group-user-submissions-container');
+
+	// Submissions content container
+	var $submissions_content = $container.find('.todo-user-submissions-content');
+
+	// Show spinner
+	$submissions_content.html("<div class='elgg-ajax-loader'></div>");
+
+	// Load content
+	$submissions_content.load($(this).attr('href'));
+
 	event.preventDefault();
 }
 

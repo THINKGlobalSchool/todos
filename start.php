@@ -189,6 +189,9 @@ function todo_init() {
 	// Whitelist ajax views
 	elgg_register_ajax_view('todo/list');
 	elgg_register_ajax_view('todo/ajax_submission');
+	elgg_register_ajax_view('todo/submissions');
+	elgg_register_ajax_view('todo/user_submissions');
+	elgg_register_ajax_view('todo/group_user_submissions');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -864,13 +867,13 @@ function todo_secondary_menu_setup($hook, $type, $return, $params) {
 function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {	
 	// Set up main nav for todo listings
 	$main_tab = get_input('todo_main_tab', 'all');
-	
+
 	$user = elgg_get_page_owner_entity();
-		
+	
 	if (!elgg_instanceof($user, 'user') && !elgg_instanceof($user, 'group')) {
 		$user = elgg_get_logged_in_user_entity();
 	}
-	
+
 	if ($user == elgg_get_logged_in_user_entity()) {
 		$by = elgg_echo('todo:label:me');
 		
@@ -887,8 +890,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 	} else {
 		$by = $user->name;
 	}
-	
-	
+
 	if (elgg_instanceof($user, 'user')) {
 		$options = array(
 			'name' => 'assigned',
@@ -898,9 +900,10 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			'href' => 'ajax/view/todo/list?type=assigned&u=' . $user->guid,
 			'priority' => 2
 		);
+		$return[] = ElggMenuItem::factory($options);
 	}
 	
-	$return[] = ElggMenuItem::factory($options);
+
 	
 	if (elgg_is_logged_in()) {
 	 	$options = array(
@@ -911,9 +914,21 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			'href' => 'ajax/view/todo/list?type=owned&u=' . $user->guid,
 			'priority' => 3
 		);
-	}
+		$return[] = ElggMenuItem::factory($options);
 	
-	$return[] = ElggMenuItem::factory($options);
+		// Add group submissions item
+		if (elgg_instanceof($user, 'group') && $user->canEdit()) {
+			$options = array(
+				'name' => 'group_user_submissions',
+				'text' => elgg_echo("todo:label:groupusersubmissions", array($by)),
+				'class' => 'todo-ajax-list',
+				'item_class' => 'todo-ajax-list-item',
+				'href' => 'ajax/view/todo/group_user_submissions?group=' . $user->guid,
+				'priority' => 4
+			);
+			$return[] = ElggMenuItem::factory($options);
+		}
+	}
 	
 	return $return;
 }

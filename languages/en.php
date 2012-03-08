@@ -39,6 +39,7 @@ $english = array(
 	'todo:label:description' => 'Instructions',
 	'todo:label:duedate' => 'Due Date',
 	'todo:label:assignto' => 'Assign To', 
+	'todo:label:return' => 'Return',
 	'todo:label:returnrequired' => 'Return Required', 
 	'todo:label:individuals' => 'Individual(s)',
 	'todo:label:groups' => 'Group(s)',
@@ -64,6 +65,7 @@ $english = array(
 	'todo:label:assignee' => 'Assignee',
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
+	'todo:label:submissions' => 'Submissions',
 	'todo:label:complete' => 'Complete',
 	'todo:label:accept' => 'Accept',
 	'todo:label:accepted' => 'Accepted', 
@@ -107,6 +109,10 @@ $english = array(
 	'todo:label:upload' => 'Upload',
 	'todo:label:zipdelete' => 'Delete Todo Submission Zip Files (Cron period)',
 	'todo:label:attached' => 'File Attached',
+	'todo:label:groupusersubmissions' => 'User Submissions',
+	'todo:label:selectmember' => 'Select Member',
+	'todo:label:selectamember' => 'Select a member',
+
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
@@ -281,6 +287,8 @@ You cannot reply to this email.",
 	'todo:error:filetoolarge' => 'File size must be less than 8MB',
 	'todo:error:uploadfailed' => 'File upload failed',
 	'todo:error:deletefile' => 'Failed to delete comment attachement',
+	'todo:error:invalidgroup' => 'Invalid Group',
+	'todo:error:invaliduser' => 'Invalid User',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',
