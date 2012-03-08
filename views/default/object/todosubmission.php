@@ -140,7 +140,7 @@ HTML;
 		// Todo Link
 		$todo_link = elgg_view('output/url', array(
 			'text' => $todo->title,
-			'href' => $todo->getURL(),
+			'href' => $submission->getURL(),
 		));
 		
 		// Display comments (if any)
