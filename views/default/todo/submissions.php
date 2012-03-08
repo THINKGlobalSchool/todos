@@ -50,4 +50,10 @@ if ($group_guid) {
 	);
 }
 
-echo elgg_list_entities($options);
+$content = elgg_list_entities($options);
+
+if (!$content) {
+	echo "<h3 class='center' style='border-top: 1px dotted #CCCCCC; padding-top: 4px; margin-top: 5px;'>" . elgg_echo('todo:label:noresults') . "</h3>"; 
+} else {
+	echo $content;
+} 
