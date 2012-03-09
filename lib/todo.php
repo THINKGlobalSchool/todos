@@ -1296,3 +1296,34 @@ function get_todo_content_header($context = 'owned', $new_link = "todo/createtod
 					
 	return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => elgg_get_site_url() . $new_link));
 }	
+
+/**
+ * Alternative viewer function to output simple entity views
+ *
+ * @see elgg_view_entity_list()
+ */
+function todo_view_entities_simple($entities, $vars = array(), $offset = 0, $limit = 10, $full_view = true,
+$list_type_toggle = true, $pagination = true) {
+
+	if (!is_int($offset)) {
+		$offset = (int)get_input('offset', 0);
+	}
+
+	if (is_array($vars)) {
+		// new function
+		$defaults = array(
+			'items' => $entities,
+			'list_class' => 'elgg-list-entity',
+			'full_view' => true,
+			'pagination' => true,
+			'list_type' => $list_type,
+			'list_type_toggle' => false,
+			'offset' => $offset,
+		);
+
+		$vars = array_merge($defaults, $vars);
+
+	} 
+
+	return elgg_view('page/components/submission_table', $vars);
+}

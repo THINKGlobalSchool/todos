@@ -116,10 +116,16 @@ elgg.todo.init = function() {
 	});
 	
 	
-	// GROUP USER SUBMISSIONS
-	
+	// GROUP/USER SUBMISSIONS
+
 	// Group member click handler
 	$(document).delegate('a.todo-group-member', 'click', elgg.todo.groupMemberClick);
+	
+	// Sort order click handler
+	$(document).delegate('.todo-user-submissions-sort', 'click', elgg.todo.userSubmissionsSortClick);
+	
+	// Return filter change handler
+	$(document).delegate('.todo-user-submission-return-dropdown', 'change', elgg.todo.returnFilterChange);
 }
 
 /**	
@@ -488,6 +494,127 @@ elgg.todo.groupMemberClick = function(event) {
 	$submissions_content.load($(this).attr('href'));
 
 	event.preventDefault();
+}
+
+/**
+ * Click handler for user submissions sort click
+ */
+elgg.todo.userSubmissionsSortClick = function(event) {
+	// Get order
+	var order = $(this).attr('href').substr(1);
+
+	// Get container
+	var $container = $(this).closest('.todo-user-submissions-content').find('.genericmodule-container');
+
+	// Add option and change label based on sort order
+	if (order == 'ASC') {
+		$(this).html(elgg.echo('todo:label:sortdesc'));
+		$(this).attr('href', '#' + 'DESC');
+		elgg.modules.addOption($container, 'sort_order', 'ASC');
+	} else {
+		$(this).html(elgg.echo('todo:label:sortasc'));
+		$(this).attr('href', '#' + 'ASC');
+		elgg.modules.addOption($container, 'sort_order', 'DESC');
+	}
+
+	// Re-init module
+	elgg.modules.genericmodule.destroy();
+	elgg.modules.genericmodule.init();
+	
+	event.preventDefault();
+}
+
+/**
+ * Change handler for return filter change
+ */
+elgg.todo.returnFilterChange = function(event) {
+	var value = $(this).val();
+	// Get container
+	var $container = $(this).closest('.todo-user-submissions-content').find('.genericmodule-container');
+
+	// Add option to container based on value
+	if (value == 'all') {
+		elgg.modules.removeOption($container, 'filter_return');
+	} else if (value == 0) {
+		elgg.modules.addOption($container, 'filter_return', 0);
+	} else if (value == 1) {
+		elgg.modules.addOption($container, 'filter_return', 1);
+	}
+	
+	// Re-init module
+	elgg.modules.genericmodule.destroy();
+	elgg.modules.genericmodule.init();
+
+	event.preventDefault();
+}
+
+/**
+ * Init submissions filter daterangepicker
+ */
+elgg.todo.initDateRangePicker = function(selector) {
+	var $input = $(selector);
+	
+	// Init daterange picker
+	$input.daterangepicker({
+		posX: "0",
+		posY: "25",
+		onOpen: function() {
+			$('.ui-daterangepickercontain')
+				.position({
+					my: "right top",
+					at: "right bottom",
+					of: $('input.todo-user-submissions-date-input'),
+					offset: "0 0",
+				})
+			.addClass('todo-user-submissions-datepicker');
+		},
+		onClose: function() {
+			elgg.todo.dateRangePickerChange($input);
+		},
+	});
+}
+
+/** 
+ * Handle daterangepicker change events (not an event)
+ */
+elgg.todo.dateRangePickerChange = function($input) {
+	// Get the date values
+	var value = $input.val();
+	
+	// Date value will always be like 3/1/2012 - 3/9/2012
+	var dates = value.split(" - "); // Split on ' - '
+	
+	// Get module container
+	var $container = $input.closest('.todo-user-submissions-content').find('.genericmodule-container');
+
+	var upper, lower;
+
+	// If only have one date
+	if (dates.length == 1) {
+		// Get lower date
+		var lower_date = Date.parse(dates[0]);
+		
+		// Lower timestamp
+		lower = lower_date.getTime() / 1000;
+
+		// Add a day for upper date
+		var upper_date = lower_date.add({hours:23, minutes:59, seconds:59});
+		
+		// Upper timestamp
+		upper = upper_date.getTime() / 1000;
+
+	} else if (dates.length == 2) { // Date range
+		// Use datejs (included with daterangepicker) to get timestamps
+		lower = Date.parse(dates[0]).getTime() / 1000;
+		upper = Date.parse(dates[1]).getTime() / 1000;
+	}
+	
+	elgg.modules.addOption($container, 'time_lower', lower);
+	elgg.modules.addOption($container, 'time_upper', upper);
+
+	// Re-init module
+	elgg.modules.genericmodule.destroy();
+	elgg.modules.genericmodule.init();
 }
 
 // Check if string starts with str

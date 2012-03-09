@@ -28,6 +28,7 @@ if ($valid) {
 	$submission = $vars['entity'];
 	$url = $submission->getURL();
 	$owner = $submission->getOwnerEntity();
+	$date_content =  date("F j, Y", $submission->time_created);
 	
 	if ($vars['full_view']) {
 		$canedit = $submission->canEdit();
@@ -56,9 +57,6 @@ if ($valid) {
 				</div><br />
 HTML;
 		}
-
-		$date_label = elgg_echo('todo:label:datecompleted');
-		$date_content =  date("F j, Y", $submission->time_created);
 	
 		$comments_count = $submission->countComments();
 		
@@ -140,7 +138,15 @@ HTML;
 		// Todo Link
 		$todo_link = elgg_view('output/url', array(
 			'text' => $todo->title,
+			'href' => $todo->getURL(),
+			'target' => '_blank',
+		));
+		
+		// Submission link
+		$submission_link = elgg_view('output/url', array(
+			'text' => elgg_echo('todo:label:viewsubmission'),
 			'href' => $submission->getURL(),
+			'target' => '_blank',
 		));
 		
 		// Display comments (if any)
@@ -151,30 +157,38 @@ HTML;
 	
 		// Was a return required for this submission?
 		$return_text = elgg_echo('todo:label:return') . ": ";
-		$return_text .= $todo->return_required ? 'yes' : 'no';
+		$has_return = $todo->return_required ? 'yes' : 'no';
+		$return_text .= "<span class='todo-submission-return-meta'>{$has_return}</span>";
 		
 		// Submission details
 		$metadata = <<<HTML
 			<div class='todo-submission-listing'>
-				<div class='todo-submission-listing-left'>
-					$todo_link
-				</div>
 				<div class='todo-submission-listing-right'>
 					 $comments_text $return_text
 				</div>
 			</div>
 HTML;
 
-		// Content params
-		$params = array(
-			'title' => FALSE,
-			'metadata' => $metadata,
-			'entity' => $submission,
-		);
+		$completed_content = elgg_echo('todo:label:completed', array($date_content));
 
-		// Build and echo content
-		$list_body = elgg_view('object/elements/summary', $params);
-		echo elgg_view_image_block($owner_icon, $list_body);
+		$content = <<<HTML
+			<tr>
+				<td>
+					<strong>$todo_link</strong><br />
+				</td>
+				<td>
+					$submission_link
+				</td>
+				<td>
+					<span class='elgg-subtext'>
+						<strong>$completed_content</strong>
+						$return_text
+						$comments_text
+					</span>
+				</td>
+			</tr>
+HTML;
+		echo $content;
 	}
 } else {
 	forward();

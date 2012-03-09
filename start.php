@@ -81,6 +81,18 @@ function todo_init() {
 	$j_js = elgg_get_simplecache_url('js', 'jquery_file_upload');
 	elgg_register_simplecache_view('js/jquery_file_upload');
 	elgg_register_js('jQuery-File-Upload', $j_js);
+	
+	// Register datepicker JS
+	$daterange_js = elgg_get_site_url(). 'mod/todo/vendors/daterangepicker.jQuery.js';
+	elgg_register_js('jquery.daterangepicker', $daterange_js);
+	
+	// Register custom theme CSS
+	$ui_url = elgg_get_site_url() . 'mod/todo/vendors/smoothness/jquery-ui-1.7.3.custom.css';
+	elgg_register_css('jquery.ui.smoothness', $ui_url);
+
+	// Register datepicker css
+	$daterange_css = elgg_get_site_url(). 'mod/todo/vendors/ui.daterangepicker.css';
+	elgg_register_css('jquery.daterangepicker', $daterange_css);
 
 	// Extend groups sidebar
 	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
@@ -253,6 +265,10 @@ function todo_page_handler($page) {
 	
 	switch ($page_type) {
 		case 'dashboard':
+			elgg_load_css('jquery.daterangepicker');
+			elgg_load_css('jquery.ui.smoothness');	
+			elgg_load_js('jquery.daterangepicker');
+		
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
 			$user = get_user_by_username($page[1]);
@@ -302,6 +318,10 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_list($page_type, $user->guid);
 			break;
 		case 'group':
+			elgg_load_css('jquery.daterangepicker');
+			elgg_load_css('jquery.ui.smoothness');	
+			elgg_load_js('jquery.daterangepicker');
+
 			gatekeeper();
 			group_gatekeeper();
 			//$params = todo_get_page_content_list('owner', $page[1]);
