@@ -63,6 +63,7 @@ $english = array(
 	'todo:label:newsubmission' => 'New Submission',
 	'todo:label:additionalcomments' => 'Additional Comments (Optional)',
 	'todo:label:assignee' => 'Assignee',
+	'todo:label:completed' => 'Completed: %s',
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:submissions' => 'Submissions',
@@ -112,6 +113,9 @@ $english = array(
 	'todo:label:groupusersubmissions' => 'User Submissions',
 	'todo:label:selectmember' => 'Select Member',
 	'todo:label:selectamember' => 'Select a member',
+	'todo:label:show' => 'Show',
+	'todo:label:date' => 'Date',
+	'todo:label:info' => 'Info',
 
 	
 	// Calendar labels

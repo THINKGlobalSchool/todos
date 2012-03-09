@@ -52,7 +52,7 @@ elgg.todo.global.showEntityInfo = function(event) {
 		at: "right top",
 		of: $(this),
 		offset: "0 25",
-	})
+	});
 
 	event.preventDefault();
 }

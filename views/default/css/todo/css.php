@@ -207,23 +207,27 @@ span.unviewed {
 	display: none;
 }
 
-/** Todo sort menu **/
+/** Todo sort menus **/
 
 .elgg-menu-todo-sort {
 	text-align: center;
 }
 
-.elgg-menu-todo-sort li {
+.elgg-menu-submissions-sort {
+	text-align: left;
+}
+
+.elgg-menu-todo-sort li, .elgg-menu-submissions-sort li {
 	margin-right: 5px;
 	font-size: 10px;
 	text-transform: uppercase;
 }
 
-.elgg-menu-todo-sort li a {
+.elgg-menu-todo-sort li a, .elgg-menu-submissions-sort li a {
 	color: #999;
 }
 
-.elgg-menu-todo-sort li.elgg-state-selected a {
+.elgg-menu-todo-sort li.elgg-state-selected a, .elgg-menu-submissions-sort li.elgg-state-selected a {
 	font-weight: bold;
 	color: inherit;
 }
@@ -399,18 +403,50 @@ span.unviewed {
 	font-size: 12px;
 }
 
-.todo-submission-listing .todo-submission-listing-left {
-	float: left;
-	width: 60%;
+.todo-user-submission-return-dropdown {
+	font-size: 10px;
 }
 
-.todo-submission-listing .todo-submission-listing-right {
+.todo-user-submissions-content {
+	min-height: 400px;
+}
+
+#todo-user-submissions-filter-menu {
+	position: relative;
+}
+
+.todo-user-submissions-datepicker {
+	font-size: 10px;
+}
+
+.todo-submission-return-meta {
+	width: 22px;
+	display: inline-block;
+}
+
+.todo-user-submissions-date-input {
+	display: inline;
+	font-size: 11px;
+	width: 140px;
+}
+
+.elgg-menu-item-todo-user-submissions-sort {
 	float: right;
-	text-align: right;
-	color: #999999;
-	width: 38%;
 }
 
+.todo-submissions-table {
+	width: 100%;
+	margin-top: 10px;
+}
+
+.todo-submissions-table th {
+	font-weight: bold;
+	color: #666666;
+}
+
+.todo-submissions-table td, th {
+	width: 33%;
+}
 
 /* Dashboard group user submissions */
 .todo-group-user-submissions-container .todo-user-submissions-container {
