@@ -13,7 +13,7 @@
 // get input
 $description = get_input('submission_description');
 $todo_guid = get_input('todo_guid');
-$content = get_input('submission_content');
+$content = get_input('submission_content', FALSE);
 	
 $todo = get_entity($todo_guid);
 $user = elgg_get_logged_in_user_entity();
@@ -22,9 +22,15 @@ $submission = new ElggObject();
 $submission->title = sprintf(elgg_echo('todo:label:submissiontitleprefix'), $todo->title);
 $submission->subtype = "todosubmission";
 $submission->description = $description;
-$submission->content = serialize($content);
 $submission->owner_id = $user->getGUID();
 $submission->todo_guid = $todo_guid;
+
+// Set content
+if ($content) {
+	$submission->content = serialize($content);
+} else {
+	$submission->content = 0;
+}
 
 // NOTE: Access ID and ACL's handled by an event listener
 
