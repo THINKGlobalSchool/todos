@@ -428,11 +428,6 @@ span.unviewed {
 	font-size: 10px;
 }
 
-.todo-submission-return-meta {
-	width: 22px;
-	display: inline-block;
-}
-
 .todo-user-submissions-date-input {
 	display: inline;
 	font-size: 11px;
@@ -454,8 +449,43 @@ span.unviewed {
 }
 
 .todo-submissions-table td, todo-submissions-table th {
-	width: 33%;
+	
 }
+
+.todo-submissions-table td.todo-submission-info-column {
+	padding: 0px;
+	width: 40%
+}
+
+.todo-submission-info-table {
+	width: 100%;
+} 
+
+.todo-submission-info-table td {
+	border: 0px;
+	padding: 2px 2px 2px 4px;
+}
+
+.todo-submission-info-table td:first-child {
+	border-right: 1px solid #CCCCCC;
+}
+
+.todo-submission-info-table td.submission-info-label,
+.todo-submission-info-table td.submission-info-value {
+	color: #555555;
+	font-size: 10px;
+}
+
+.todo-submission-info-table td.submission-info-label {
+	font-weight: bold;
+	width: 40%;
+}
+
+.todo-submission-info-table td.submission-info-value {
+	
+}
+
+
 
 /* Dashboard group user submissions */
 .todo-group-user-submissions-container .todo-user-submissions-container {

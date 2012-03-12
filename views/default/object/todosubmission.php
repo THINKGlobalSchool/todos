@@ -153,27 +153,23 @@ HTML;
 			'rel' => 'todo-submission-lightboxen',
 		));
 		
-		// Display comments (if any)
+		// Display comments
 		$comments_count = $submission->countComments();
-		if ($comments_count) {
-			$comments_text = elgg_echo("comments") . ": $comments_count";
-		}
-	
-		// Was a return required for this submission?
-		$return_text = elgg_echo('todo:label:return') . ": ";
-		$has_return = $submission->content ? 'yes' : 'no';
-		$return_text .= "<span class='todo-submission-return-meta'>{$has_return}</span>";
-		
-		// Submission details
-		$metadata = <<<HTML
-			<div class='todo-submission-listing'>
-				<div class='todo-submission-listing-right'>
-					 $comments_text $return_text
-				</div>
-			</div>
-HTML;
+		$comments_label = elgg_echo("comments");
 
-		$completed_content = elgg_echo('todo:label:completed', array($date_content));
+		// Was a return required for this submission?
+		$return_label = elgg_echo('todo:label:return');
+		$has_return = $submission->content ? 'yes' : 'no';
+
+		$completed_label = elgg_echo('todo:label:completed');
+		
+		// Determine if submitted on time
+		$ontime_label = elgg_echo('todo:label:ontime');
+		
+		$submission_created_day = strtotime(date('Y-m-d', $submission->time_created));
+		$todo_due_day = strtotime(date('Y-m-d', $todo->due_date));
+		
+		$ontime = $submission_created_day <= $todo_due_day ? 'yes' : 'no';
 
 		$content = <<<HTML
 			<tr>
@@ -183,7 +179,27 @@ HTML;
 				<td>
 					$submission_link
 				</td>
-				<td>
+				<td class='todo-submission-info-column'>
+					<table class='todo-submission-info-table'>
+						<tbody>
+							<tr>
+								<td class='submission-info-label'>$completed_label</td>
+								<td class='submission-info-value'>$date_content</td>
+							</tr>
+							<tr>
+								<td class='submission-info-label'>$ontime_label</td>
+								<td class='submission-info-value'>$ontime</td>
+							</tr>
+							<tr>
+								<td class='submission-info-label'>$return_label</td>
+								<td class='submission-info-value'>$has_return</td>
+							</tr>
+							<tr>
+								<td class='submission-info-label'>$comments_label</td>
+								<td class='submission-info-value'>$comments_count</td>
+							</tr>
+						</tbody>
+					</table>
 					<span class='elgg-subtext'>
 						<strong>$completed_content</strong>
 						$return_text

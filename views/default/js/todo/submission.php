@@ -54,7 +54,6 @@ elgg.todo.submission.destroy = function() {
 elgg.todo.submission.initFancybox = function() {
 	// Set up submission dialog
 	$(".todo-submission-lightbox").fancybox({
-		//'modal': true,
 		'onComplete': function() {		
 			// Add todo navigation class to the fancybox container				
 			$('.todo-ajax-submission').closest('#fancybox-outer').addClass('todo-ajax-submission-navigation');
@@ -62,7 +61,7 @@ elgg.todo.submission.initFancybox = function() {
 			// Fix duplicate menu items
 			var menu_id = $('.todo-ajax-submission .tgstheme-entity-menu-actions').attr('id');
 			$('body > #' + menu_id).remove();
-			
+
 			// Show todo navigation right if the fancybox right control is visible
 			if ($('#fancybox-right').is(':visible')) {
 				$('.todo-ajax-submission-navigation-next').fadeIn();
@@ -72,14 +71,14 @@ elgg.todo.submission.initFancybox = function() {
 			if ($('#fancybox-left').is(':visible')) {
 				$('.todo-ajax-submission-navigation-prev').fadeIn();
 			}
-	
+
 			// Fix tinymce control for submission text field
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 
 			if (typeof(tinyMCE) !== 'undefined') {
 				tinyMCE.EditorManager.execCommand('mceAddControl', false, id);
 			}
-			
+
 			// Init drag and drop input
 			elgg.todo.submission.initDragDrop();
 		},
@@ -113,7 +112,7 @@ elgg.todo.submission.initDragDrop = function() {
 				elgg.register_error(elgg.echo('todo:error:toomanyfiles'));
 				e.preventDefault();
 			}
-			
+
 			if (data.files[0].size > 8388607) {
 				elgg.register_error(elgg.echo('todo:error:filetoolarge'));
 				e.preventDefault();
