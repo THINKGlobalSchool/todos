@@ -398,6 +398,12 @@ span.unviewed {
 	padding: 3px 0 0 2px;
 }
 
+#submit-empty-loader {
+	min-width: 30px;
+	min-height: 27px;
+	background-size: 27px;
+}
+
 /* Dashboard user submissions */
 .todo-submission-listing {
 	font-size: 12px;
@@ -444,7 +450,7 @@ span.unviewed {
 	color: #666666;
 }
 
-.todo-submissions-table td, th {
+.todo-submissions-table td, todo-submissions-table th {
 	width: 33%;
 }
 

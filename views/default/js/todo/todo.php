@@ -133,12 +133,16 @@ elgg.todo.init = function() {
  */
 elgg.todo.completeClick = function(event) {
 	// Replace with spinner
-	$(this).replaceWith("<div class='elgg-ajax-loader'></div>");
+	var $button = $(this).clone(); // Store original button
+	$(this).replaceWith("<div id='submit-empty-loader' class='elgg-ajax-loader'></div>");
 
 	var todo_guid = $('#todo-guid').val();
 
 	// Create empty submission
-	elgg.todo.createSubmission(todo_guid, '', '');
+	if (!elgg.todo.createSubmission(todo_guid, '', '')) {
+		// Display button again (retry)
+		$('#submit-empty-loader').replaceWith($button);
+	}
 
 	event.preventDefault();
 }
@@ -162,7 +166,10 @@ elgg.todo.submissionFormSubmit = function(event) {
 	if (content) {
 		$('#submit-create-submission').attr('disabled', 'disabled');
 		// Create submission
-		elgg.todo.createSubmission(todo_guid, content, comment);
+		if (!elgg.todo.createSubmission(todo_guid, content, comment)) {
+			// Re-enable button (try again)
+			$('#submit-create-submission').removeAttr('disabled');
+		}
 	} else {
 		// error
 		$("#submission-error-message").show().html("** Content is required");
@@ -171,12 +178,11 @@ elgg.todo.submissionFormSubmit = function(event) {
 	event.preventDefault();
 }
 
-elgg.todo.createSubmission = function(todo_guid, content, comment) {
-	
-	// Replace submit button with spinner
-	$('#submit-create-submission').replaceWith("<div class='elgg-ajax-loader'></div>");
-	
-	
+elgg.todo.createSubmission = function(todo_guid, content, comment) {	
+	// Replace submit button with spinner	
+	var $button = $('#submit-create-submission').clone(); // Store original button
+	$('#submit-create-submission').replaceWith("<div id='submit-create-loader' class='elgg-ajax-loader'></div>");
+
 	elgg.action('submission/save', {
 		data: {
 			submission_description: comment,
@@ -186,11 +192,17 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 		error: function(e) {
 			// Display error (will probably look gross)
 			$("#submission-error-message").show().html(e);
+			elgg.register_error(e);
+			$('#submit-create-loader').replaceWith($button);
+			return false;
 		},
 		success: function(json) {
 			// Check for bad status 
 			if (json.status == -1) {
-				$("#submission-error-message").show().html(json.output());
+				$("#submission-error-message").show().html(json.output);
+				$('#submit-create-loader').replaceWith($button);
+				$button.removeAttr('disabled');
+				return false;
 			} else {
 				// Remove tinymce
 				if (typeof(tinyMCE) !== 'undefined') {
@@ -202,6 +214,8 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 				
 				// Reload
 				setTimeout('window.location.reload()', 1000);
+				
+				return true;
 			}
 		}
 	});

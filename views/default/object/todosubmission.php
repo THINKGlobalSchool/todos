@@ -157,7 +157,7 @@ HTML;
 	
 		// Was a return required for this submission?
 		$return_text = elgg_echo('todo:label:return') . ": ";
-		$has_return = $todo->return_required ? 'yes' : 'no';
+		$has_return = $submission->content ? 'yes' : 'no';
 		$return_text .= "<span class='todo-submission-return-meta'>{$has_return}</span>";
 		
 		// Submission details
