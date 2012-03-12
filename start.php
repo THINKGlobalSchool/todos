@@ -268,6 +268,9 @@ function todo_page_handler($page) {
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
+			elgg_load_js('tinymce');
+			elgg_load_js('elgg.tinymce');
+			//elgg_load_js('elgg.todo.submission');
 		
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
@@ -321,10 +324,14 @@ function todo_page_handler($page) {
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
+			elgg_load_js('jQuery-File-Upload');
+			elgg_load_js('elgg.todo.submission');
+			elgg_load_js('tinymce');
+			elgg_load_js('elgg.tinymce');
 
 			gatekeeper();
 			group_gatekeeper();
-			//$params = todo_get_page_content_list('owner', $page[1]);
+
 			$group = get_entity($page[2]);
 			if (elgg_instanceof($group, 'group')) {
 				elgg_push_breadcrumb($group->name, 'todo/group/dashboard/' . $group->guid);

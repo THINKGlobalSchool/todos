@@ -34,9 +34,20 @@ elgg.todo.submission.init = function() {
 	
 	// Init submission fancyboxen
 	elgg.todo.submission.initFancybox();
+}
+
+/**
+ * Undelegate/teardown
+ */
+elgg.todo.submission.destroy = function() {
+	// Destroy fileupload
+	$('.todo-submission-attachment-upload').fileupload('destroy');
 	
-	// Init drag and drop uploader for submission attachments
-	elgg.todo.submission.initDragDrop();
+	// Undelegate events
+	$(document).undelegate('#todo-submission-annotations form.elgg-form-submission-annotate input.elgg-button', 'click');
+	$(document).undelegate('#todo-submission-annotations .elgg-list-annotation li.elgg-menu-item-delete a', 'click');
+	$(document).undelegate('.todo-ajax-submission-navigation-prev', 'click');
+	$(document).undelegate('.todo-ajax-submission-navigation-next', 'click');
 }
 
 // Init the fancybox
