@@ -498,6 +498,7 @@ elgg.todo.groupMemberClick = function(event) {
 	// Main container
 	var $container = $(this).closest('div.todo-group-user-submissions-container');
 
+
 	// Submissions content container
 	var $submissions_content = $container.find('.todo-user-submissions-content');
 
@@ -506,6 +507,11 @@ elgg.todo.groupMemberClick = function(event) {
 
 	// Load content
 	$submissions_content.load($(this).attr('href'));
+	
+	// Show user name in submissions module
+	var name = $(this).html();
+	
+	$('.todo-user-submissions-header').html(name + "'s " + elgg.echo('todo:label:submissions'));
 
 	event.preventDefault();
 }
