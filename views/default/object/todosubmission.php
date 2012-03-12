@@ -142,11 +142,15 @@ HTML;
 			'target' => '_blank',
 		));
 		
+		$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
+		
 		// Submission link
 		$submission_link = elgg_view('output/url', array(
 			'text' => elgg_echo('todo:label:viewsubmission'),
-			'href' => $submission->getURL(),
+			'href' => $ajax_url,
 			'target' => '_blank',
+			'class' => 'todo-submission-lightbox',
+			'rel' => 'todo-submission-lightboxen',
 		));
 		
 		// Display comments (if any)

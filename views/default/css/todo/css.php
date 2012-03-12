@@ -334,6 +334,9 @@ span.unviewed {
 	margin-top: 5px;
 	padding: 10px;
 	height: 18px;
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .todo-submission-dropzone-background {

@@ -84,3 +84,11 @@ if ($time_upper) {
 
 // Get content
 echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_simple');
+
+echo <<<JAVASCRIPT
+	<script type='text/javascript'>
+		elgg.tinymce.init();
+		elgg.todo.submission.destroy();
+		elgg.todo.submission.init();
+	</script>
+JAVASCRIPT;
