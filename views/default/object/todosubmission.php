@@ -146,7 +146,7 @@ HTML;
 		
 		// Submission link
 		$submission_link = elgg_view('output/url', array(
-			'text' => elgg_echo('todo:label:viewsubmission'),
+			'text' => elgg_echo('todo:label:view'),
 			'href' => $ajax_url,
 			'target' => '_blank',
 			'class' => 'todo-submission-lightbox',
@@ -158,10 +158,11 @@ HTML;
 		$comments_label = elgg_echo("comments");
 
 		// Was a return required for this submission?
-		$return_label = elgg_echo('todo:label:return');
+		$return_label = elgg_echo('todo:label:returnrequired');
 		$has_return = $submission->content ? 'yes' : 'no';
 
 		$completed_label = elgg_echo('todo:label:completed');
+		$completed_content = date('m/d/y', $submission->time_created);
 		
 		// Determine if submitted on time
 		$ontime_label = elgg_echo('todo:label:ontime');
@@ -176,7 +177,7 @@ HTML;
 				<td>
 					<strong>$todo_link</strong><br />
 				</td>
-				<td>
+				<td class='todo-submission-column'>
 					$submission_link
 				</td>
 				<td class='todo-submission-info-column'>
@@ -184,7 +185,7 @@ HTML;
 						<tbody>
 							<tr>
 								<td class='submission-info-label'>$completed_label</td>
-								<td class='submission-info-value'>$date_content</td>
+								<td class='submission-info-value'>$completed_content</td>
 							</tr>
 							<tr>
 								<td class='submission-info-label'>$ontime_label</td>
@@ -200,11 +201,6 @@ HTML;
 							</tr>
 						</tbody>
 					</table>
-					<span class='elgg-subtext'>
-						<strong>$completed_content</strong>
-						$return_text
-						$comments_text
-					</span>
 				</td>
 			</tr>
 HTML;

@@ -51,6 +51,7 @@ $english = array(
 	'todo:label:rubricnew' => 'Create New',
 	'todo:label:rubricselect' => 'Select Existing',
 	'todo:label:selectgroup' => 'Select Group',
+	'todo:label:view' => 'View',
 	'todo:label:viewrubric' => 'View Rubric',
 	'todo:label:assignees' => 'Assignees',
 	'todo:label:currentassignees' => 'Current Assignees',
