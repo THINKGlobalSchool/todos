@@ -27,29 +27,37 @@ $db_prefix = elgg_get_config('dbprefix');
 $n1_suffix = get_access_sql_suffix("n_table1");
 $t1_suffix = get_access_sql_suffix("t1");
 
-$wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix}) AND ({$t1_suffix})";
 $joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
 $joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";
 $joins[] = "JOIN {$db_prefix}metastrings msv1 on n_table1.value_id = msv1.id";
-$joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
+
 
 // If we were provided with a return filter
 if ($filter_return !== NULL) {
 	// Access SQL
 	$n2_suffix = get_access_sql_suffix("n_table2");
 	
-	// Wheres for return required
-	$wheres[] = "((msn2.string IN ('return_required')) AND ({$n2_suffix}))";
-	$wheres[] = "((msv2.string IN ('{$filter_return}')) AND ({$n2_suffix}))";
-
 	// Joins for return required
-	$joins[] = "JOIN {$db_prefix}metadata n_table2 on t1.guid = n_table2.entity_guid";
+	$joins[] = "JOIN {$db_prefix}metadata n_table2 on e.guid = n_table2.entity_guid";
 	$joins[] = "JOIN {$db_prefix}metastrings msn2 on n_table2.name_id = msn2.id";
 	$joins[] = "JOIN {$db_prefix}metastrings msv2 on n_table2.value_id = msv2.id";
+
+	// Wheres for return required
+	$wheres[] = "((msn2.string IN ('content')) AND ({$n2_suffix}))";
+	
+	if ($filter_return) {
+		$wheres[] = "((msv2.string != '0') AND ({$n2_suffix}))";
+	} else {
+		$wheres[] = "((msv2.string IN ('0')) AND ({$n2_suffix}))";
+	}
+	
+	
 }
 
 // Check for a group guid, include another where clause
 if ($group_guid) {
+	$joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
+	$wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix}) AND ({$t1_suffix})";
 	$wheres[] = "((t1.container_guid = {$group_guid}))";	
 }
 
