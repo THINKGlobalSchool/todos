@@ -11,11 +11,12 @@
 
 // Get inputs
 $user_guid = get_input('user_guid');
-$group_guid = get_input('group_guid');
+$group_guid = get_input('group_guid', NULL);
 $sort_order = get_input('sort_order', 'DESC');
 $filter_return = get_input('filter_return');
 $time_lower = get_input('time_lower', FALSE);
 $time_upper = get_input('time_upper', FALSE);
+$limit = get_input('limit', 10);
 
 // Empty wheres/joins arrays
 $wheres = array();
@@ -30,7 +31,10 @@ $t1_suffix = get_access_sql_suffix("t1");
 $joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
 $joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";
 $joins[] = "JOIN {$db_prefix}metastrings msv1 on n_table1.value_id = msv1.id";
+$joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
 
+$wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix})";
+$wheres[] = "{$t1_suffix}";
 
 // If we were provided with a return filter
 if ($filter_return !== NULL) {
@@ -56,8 +60,6 @@ if ($filter_return !== NULL) {
 
 // Check for a group guid, include another where clause
 if ($group_guid) {
-	$joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
-	$wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix}) AND ({$t1_suffix})";
 	$wheres[] = "((t1.container_guid = {$group_guid}))";	
 }
 
@@ -69,7 +71,7 @@ $options = array(
 	'order_by' => "e.time_created {$sort_order}",
 	'wheres' => $wheres,
 	'joins' => $joins,
-	'limit' => 15,
+	'limit' => $limit,
 );
 
 // Add time lower if supplied
@@ -83,7 +85,7 @@ if ($time_upper) {
 }
 
 // Get content
-echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_simple');
+echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_table');
 
 echo <<<JAVASCRIPT
 	<script type='text/javascript'>
@@ -92,3 +94,5 @@ echo <<<JAVASCRIPT
 		elgg.todo.submission.init();
 	</script>
 JAVASCRIPT;
+
+?>

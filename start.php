@@ -133,12 +133,6 @@ function todo_init() {
 	
 	// Register a handler for submission comments so that the todo owner is notified
 	elgg_register_event_handler('annotate', 'all', 'submission_comment_event_listener');
-	
-	// Plugin hook for write access
-	elgg_register_plugin_hook_handler('access:collections:write', 'all', 'todo_write_acl_plugin_hook');
-	
-	// Plugin hook for write access
-	elgg_register_plugin_hook_handler('access:collections:write', 'all', 'submission_write_acl_plugin_hook');
 		
 	// Profile hook	
 	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
@@ -270,7 +264,10 @@ function todo_page_handler($page) {
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
-			//elgg_load_js('elgg.todo.submission');
+			elgg_load_js('jQuery-File-Upload');
+			elgg_load_js('elgg.todo.submission');
+			elgg_load_js('tinymce');
+			elgg_load_js('elgg.tinymce');
 		
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
@@ -396,13 +393,11 @@ function todo_create_event_listener($event, $object_type, $object) {
 		$todo_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $object->title, $object->getGUID());
 		if ($todo_acl) {
 			$object->assignee_acl = $todo_acl;
-			elgg_set_context('todo_acl');
 			try {
 				add_user_to_access_collection($object->owner_guid, $todo_acl);
 			} catch (DatabaseException $e) {
 				//
 			}
-			elgg_set_context($context);
 			if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
 				$object->access_id = $todo_acl;
 				$object->save();
@@ -419,10 +414,7 @@ function todo_create_event_listener($event, $object_type, $object) {
  */
 function todo_delete_event_listener($event, $object_type, $object) {
 	if ($object->getSubtype() == 'todo') {
-		$context = elgg_get_context();
-		elgg_set_context('todo_acl');
-		register_error(delete_access_collection($object->assignee_acl));
-		elgg_set_context($context);
+		delete_access_collection($object->assignee_acl);
 	}
 	return true;
 }
@@ -436,18 +428,15 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 		$todo = $object['todo'];
 		$user = $object['user'];
 		$acl = $todo->assignee_acl;
-		
+
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
-		
-		$context = elgg_get_context();
-		elgg_set_context('todo_acl');
+
 		try {
 			$result = add_user_to_access_collection($user->getGUID(), $acl);
 		} catch (DatabaseException $e) {
 			//
-		}
-		elgg_set_context($context);			
+		}		
 	}
 	return true;
 }
@@ -461,34 +450,13 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 		$todo = $object['todo'];
 		$user = $object['user'];
 		$acl = $todo->assignee_acl;
-		
+
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
 
-		$context = elgg_get_context();
-		elgg_set_context('todo_acl');
-		remove_user_from_access_collection($user->getGUID(), $acl);
-		elgg_set_context($context);	
+		$result = remove_user_from_access_collection($user->getGUID(), $acl);
 	}
 	return true;
-}
-
-/**
- * Return the write access for the current todo if the user has write access to it.
- */
-function todo_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) {
-	if (elgg_in_context('todo_acl')) {
-		// get all todos if logged in
-		if ($loggedin = elgg_get_logged_in_user_entity()) {
-			$todos = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todo'));
-			if (is_array($todos)) {
-				foreach ($todos as $todo) {
-					$returnvalue[$todo->assignee_acl] = elgg_echo('todo:todo') . ': ' . $todo->title;
-				}
-			}
-		}
-	}
-	return $returnvalue;
 }
 
 /**
@@ -504,19 +472,17 @@ function submission_create_event_listener($event, $object_type, $object) {
 
 		if ($submission_acl) {
 			$object->submission_acl = $submission_acl;
-			$context = elgg_get_context();
-			elgg_set_context('submission_acl');
+
 			try {
-				add_user_to_access_collection($todo->owner_guid, $submission_acl);
+				$result = add_user_to_access_collection($todo->owner_guid, $submission_acl);
 			} catch (DatabaseException $e) {
 			}
 			
 			try {
-				add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
+				$result = add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
 			} catch (DatabaseException $e) {
 			}
-			
-			elgg_set_context($context);
+
 			$object->access_id = $submission_acl;
 			$object->save();
 
@@ -578,7 +544,7 @@ function submission_delete_event_listener($event, $object_type, $object) {
 		}
 		
 		// Nuke the ACL
-		delete_access_collection($submission_acl);		
+		$result = delete_access_collection($object->submission_acl);
 	}
 	return true;
 }
@@ -592,25 +558,6 @@ function submission_relationship_event_listener($event, $object_type, $object) {
 	
 	// This will check and set the complete flag on the todo
 	update_todo_complete($todo->getGUID());
-}
-
-/**
- * Return the write access for the current todo submission if the user has write access to it.
- */
-function submission_write_acl_plugin_hook($hook, $entity_type, $returnvalue, $params) {
-	if (elgg_in_context('submission_acl')) {
-		// get all todos if logged in
-		if ($loggedin = elgg_get_logged_in_user_entity()) {
-			$submissions = elgg_get_entities(array('types' => 'object', 'subtypes' => 'todosubmission'));
-			if (is_array($submissions)) {
-				foreach ($submissions as $submission) {
-					$todo = get_entity($submission->todo_guid);
-					$returnvalue[$submission->submission_acl] = elgg_echo('todo:todo') . ': ' . $todo->title;
-				}
-			}
-		}
-	}
-	return $returnvalue;
 }
 
 /**
@@ -674,6 +621,14 @@ function todo_profile_menu($hook, $entity_type, $return, $params) {
 		$url = "todo/dashboard/{$params['entity']->username}";
 		$item = new ElggMenuItem('todo', elgg_echo('todo'), $url);
 		$return[] = $item;
+		
+		// Add submissions (depends on access)
+		if (submissions_gatekeeper($params['entity']->guid)) {
+			$url = "todo/dashboard/{$params['entity']->username}?type=assigned&status=submissions";
+			$item = new ElggMenuItem('todosubmissions', elgg_echo('item:object:todosubmission'), $url);
+			$return[] = $item;
+		}
+		
 	} else {
 		if ($params['entity']->todo_enable == "yes") {
 			$url = "todo/group/dashboard/{$params['entity']->guid}/owner";
@@ -944,7 +899,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 		$return[] = ElggMenuItem::factory($options);
 	
 		// Add group submissions item
-		if (elgg_instanceof($user, 'group') && $user->canEdit()) {
+		if (elgg_instanceof($user, 'group') && ($user->canEdit() /*|| @TODO Submissions Role*/ )) {
 			$options = array(
 				'name' => 'group_user_submissions',
 				'text' => elgg_echo("todo:label:groupusersubmissions", array($by)),
