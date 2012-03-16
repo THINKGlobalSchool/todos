@@ -21,6 +21,16 @@ if (elgg_instanceof($todo, 'object', 'todo') && $todo->canEdit()) {
 			'object_guid' => $guid,
 			'action_type' => 'create',
 		));
+
+		// Remove submissions from river as well
+		$submissions = get_todo_submissions_batch($guid, 0);
+		foreach ($submissions as $submission) {
+			elgg_delete_river(array(
+				'object_guid' => $submission->guid,
+				'action_type' => 'create',
+			));
+		}
+
 		system_message(elgg_echo('todo:success:delete'));
 	} else {
 		register_error(elgg_echo('todo:error:delete'));
