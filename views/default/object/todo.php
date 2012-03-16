@@ -105,13 +105,26 @@ if ($full) { // Full View
 	if ($is_parent) {
 		$children = parentportal_get_parents_children(elgg_get_logged_in_user_guid());
 		$status_content = '';
+		
+		// Ignore access here..
+		$ia = elgg_get_ignore_access();
+		elgg_set_ignore_access(TRUE);
+
+		// Loop over parents children
 		foreach ($children as $child) {
-			if (has_user_submitted($child->guid, $todo->getGUID())) {
-				$status_content .= "<strong>{$child->name}: </strong><span class='complete'>" . elgg_echo('todo:label:complete') . "</span><br />";
-			} else {
-				$status_content .= "<strong>{$child->name}: </strong><span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span><br />";
+			
+			// Make sure they are an assignee
+			if (is_todo_assignee($todo->guid, $child->guid)) {
+
+				// Display wether or not child has submitted
+				if (has_user_submitted($child->guid, $todo->getGUID())) {
+					$status_content .= "<strong>{$child->name}: </strong><span class='complete'>" . elgg_echo('todo:label:complete') . "</span><br />";
+				} else {
+					$status_content .= "<strong>{$child->name}: </strong><span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span><br />";
+				}
 			}
 		}
+		elgg_set_ignore_access($ia);
 	}
 	
 	// Owner
