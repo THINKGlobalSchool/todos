@@ -68,7 +68,8 @@ if ($full) { // Full View
 	// Determine how we are going to view this todo
 	$is_owner = $todo->canEdit();
 	$is_assignee = is_todo_assignee($todo->getGUID(), elgg_get_logged_in_user_guid());
-	
+	$is_parent = elgg_get_logged_in_user_entity()->is_parent;
+
 	// Start putting content together
 	$description_label = elgg_echo("todo:label:description");
 	$description_content = elgg_view('output/longtext', array('value' => $vars['entity']->description));
@@ -97,6 +98,19 @@ if ($full) { // Full View
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
 		} else {
 			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+		}
+	} 
+	
+	// If we're viewing as a parent
+	if ($is_parent) {
+		$children = parentportal_get_parents_children(elgg_get_logged_in_user_guid());
+		$status_content = '';
+		foreach ($children as $child) {
+			if (has_user_submitted($child->guid, $todo->getGUID())) {
+				$status_content .= "<strong>{$child->name}: </strong><span class='complete'>" . elgg_echo('todo:label:complete') . "</span><br />";
+			} else {
+				$status_content .= "<strong>{$child->name}: </strong><span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span><br />";
+			}
 		}
 	}
 	
