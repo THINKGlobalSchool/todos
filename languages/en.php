@@ -17,7 +17,7 @@ $english = array(
 	'todo' => 'To Do\'s',
 	'todo:add' => 'New To Do',
 	'item:object:todo' => 'To Do\'s',
-	'item:object:todosubmission' => 'To Do Submission',
+	'item:object:todosubmission' => 'To Do Submissions',
 	'item:object:todosubmissionfile' => 'To Do Submission File',
 	'todo:ingroup' => 'in the group %s',
 	
@@ -118,6 +118,8 @@ $english = array(
 	'todo:label:show' => 'Show',
 	'todo:label:date' => 'Date',
 	'todo:label:info' => 'Info',
+	'todo:label:submissionsadmin' => 'Submission Admin Role',
+
 
 	
 	// Calendar labels
@@ -295,6 +297,7 @@ You cannot reply to this email.",
 	'todo:error:deletefile' => 'Failed to delete comment attachement',
 	'todo:error:invalidgroup' => 'Invalid Group',
 	'todo:error:invaliduser' => 'Invalid User',
+	'todo:error:access' => 'Access Denied',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

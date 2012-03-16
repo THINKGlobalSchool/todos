@@ -95,7 +95,7 @@ elgg.todo.init = function() {
 	});
 	
 	// Todo dashboard filter nav items
-	$('.todo-ajax-list-complete').live('click', function(e){
+	$('.todo-ajax-filter').live('click', function(e){
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
 		$('#todo-dashboard').load($(this).attr('href'));
 		e.preventDefault();
@@ -109,10 +109,10 @@ elgg.todo.init = function() {
 	});
 
 	// Special pagination helper for todo content
-	$('#todo-dashboard #todo-dashboard-content .elgg-pagination a').live('click', function(e) {
+	$('#todo-dashboard #todo-dashboard-content.todo-dashboard-content-pagination-helper .elgg-pagination a').live('click', function(event) {
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
 		$('#todo-dashboard').load($(this).attr('href'));
-		e.preventDefault();
+		event.preventDefault();
 	});
 	
 	

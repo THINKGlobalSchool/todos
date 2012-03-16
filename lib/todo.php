@@ -1302,7 +1302,7 @@ function get_todo_content_header($context = 'owned', $new_link = "todo/createtod
  *
  * @see elgg_view_entity_list()
  */
-function todo_view_entities_simple($entities, $vars = array(), $offset = 0, $limit = 10, $full_view = true,
+function todo_view_entities_table($entities, $vars = array(), $offset = 0, $limit = 10, $full_view = true,
 $list_type_toggle = true, $pagination = true) {
 
 	if (!is_int($offset)) {
@@ -1326,4 +1326,44 @@ $list_type_toggle = true, $pagination = true) {
 	} 
 
 	return elgg_view('page/components/submission_table', $vars);
+}
+
+/**
+ * Helper function to determine is viewing user can view a user's list of submissions
+ * 
+ * @param int $user_guid  User guid of submissions to view
+ * @param int $group_guid (Optional) Check if logged in user is the owner of the group
+ */
+function submissions_gatekeeper($user_guid, $group_guid = FALSE) {
+	// Logged in only
+	if (!elgg_is_logged_in()) {
+		return FALSE;
+	}
+	
+	// Admins, no prob
+	if (elgg_is_admin_logged_in()) {
+		return TRUE;
+	}
+	
+	// Logged in user can view their own submissions
+	if (elgg_get_logged_in_user_guid() == $user_guid) {
+		return TRUE;
+	}
+
+	 //@TODO roles, parents
+	/* Not yet implemented
+	// Check if we're a member of the submissions role
+	$role = get_entity(elgg_get_plugin_setting('todosubmissionsrole', 'todo'));
+	if (elgg_instanceof($role, 'object', 'role') && $role->isMember(elgg_get_logged_in_user_entity())) {
+		return TRUE;
+	}
+	*/
+
+	// Check for valid group, and if we can edit
+	if ($group_guid) {
+		$group = get_entity($group_guid);
+		if (elgg_instanceof($group, 'group') && $group->canEdit()) {
+			return TRUE;
+		}
+	}
 }

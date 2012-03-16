@@ -20,6 +20,12 @@
 		<version>1.8</version>
 		<comparison>ge</comparison>
 	</requires>
+	<requires>
+		<type>plugin</type>
+		<name>roles</name>
+		<version>1.8</version>
+		<comparison>ge</comparison>
+	</requires>
 	<admin_interface>simple</admin_interface>
 	<activate_on_install>true</activate_on_install>
 </plugin_manifest>

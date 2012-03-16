@@ -1,6 +1,6 @@
 <?php
 /**
- * User submissions ajax view
+ * User submissions view
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -9,8 +9,15 @@
  * @link http://www.thinkglobalschool.com/
  */
 
-$user_guid = get_input('user_guid');
-$group_guid = get_input('group_guid');
+$user_guid = get_input('user_guid', elgg_extract('user_guid', $vars, NULL));
+$group_guid = get_input('group_guid', elgg_extract('user_guid', $vars, NULL));
+
+// Make sure we can view the list
+if (!submissions_gatekeeper($user_guid, $group_guid)) {
+	echo elgg_echo('todo:error:access');
+	return;
+}
+
 
 $user = get_entity($user_guid);
 
@@ -24,8 +31,10 @@ $view_vars = array('user_guid' => $user_guid);
 // Check for a group
 if (elgg_instanceof(get_entity($group_guid), 'group')) {
 	$view_vars['group_guid'] = $group_guid;
-	$view_vars['filter_return'] = 1; // Default to return
+	$view_vars['limit'] = 15;
 }
+
+$view_vars['filter_return'] = 1; // Default to return
 
 // Create submissions module				
 $module = elgg_view('modules/genericmodule', array(
@@ -35,7 +44,7 @@ $module = elgg_view('modules/genericmodule', array(
 ));
 
 // Register filter menu items
-elgg_register_menu_item('todo-sort-menu', array(
+elgg_register_menu_item('todo-submission-sort-menu', array(
 	'name' => 'todo_user_submissions_return_filter',
 	'text' => elgg_echo('todo:label:show') . ": " . elgg_view('input/dropdown', array(
 		'name' => 'todo_user_submission_return_dropdown',
@@ -53,7 +62,7 @@ elgg_register_menu_item('todo-sort-menu', array(
 	'priority' => 1,
 ));
 
-elgg_register_menu_item('todo-sort-menu', array(
+elgg_register_menu_item('todo-submission-sort-menu', array(
 	'name' => 'todo_user_submissions_sort',
 	'text' => elgg_echo('todo:label:sortasc'),
 	'class' => 'todo-user-submissions-sort',
@@ -62,7 +71,7 @@ elgg_register_menu_item('todo-sort-menu', array(
 	'priority' => 2,
 ));
 
-elgg_register_menu_item('todo-sort-menu', array(
+elgg_register_menu_item('todo-submission-sort-menu', array(
 	'name' => 'todo_user_submissions_date_range',
 	'text' => elgg_echo('todo:label:date') . ": " . elgg_view('input/text', array(
 		'name' => 'todo_user_submissions_date_input',
@@ -75,7 +84,7 @@ elgg_register_menu_item('todo-sort-menu', array(
 	'priority' => 3,
 ));
 
-$filter_menu = elgg_view_menu('todo-sort-menu', array(
+$filter_menu = elgg_view_menu('todo-submission-sort-menu', array(
 	'class' => 'elgg-menu-hz elgg-menu-submissions-sort',
 ));
 

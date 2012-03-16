@@ -18,8 +18,8 @@ $container_guid = get_input('u', elgg_get_logged_in_user_guid());
 elgg_register_menu_item('todo-dashboard-secondary', array(
 	'name' => 'todo_incomplete',
 	'text' => $type == 'owned' ? elgg_echo('todo:label:statusincomplete') : elgg_echo('todo:label:incomplete'),
-	'class' => 'todo-ajax-list-complete',
-	'item_class' => 'todo-ajax-list-complete-item',
+	'class' => 'todo-ajax-filter',
+	'item_class' => 'todo-ajax-filter-item',
 	'selected' => $status === 'incomplete',
 	'href' => "ajax/view/todo/list?type={$type}&status=incomplete&u={$container_guid}",
 	'priority' => 1
@@ -28,12 +28,24 @@ elgg_register_menu_item('todo-dashboard-secondary', array(
 elgg_register_menu_item('todo-dashboard-secondary', array(
 	'name' => 'todo_complete',
 	'text' => elgg_echo('todo:label:complete'),
-	'class' => 'todo-ajax-list-complete',
-	'item_class' => 'todo-ajax-list-complete-item',
+	'class' => 'todo-ajax-filter',
+	'item_class' => 'todo-ajax-filter-item',
 	'selected' => $status === 'complete',
 	'href' => "ajax/view/todo/list?type={$type}&status=complete&u={$container_guid}",
 	'priority' => 2
 ));
+
+if ($type == 'assigned' && submissions_gatekeeper($container_guid)) {
+	elgg_register_menu_item('todo-dashboard-secondary', array(
+		'name' => 'todo_submissions',
+		'text' => elgg_echo('todo:label:submissions'),
+		'class' => 'todo-ajax-filter',
+		'item_class' => 'todo-ajax-filter-item',
+		'selected' => $status === 'submissions',
+		'href' => "ajax/view/todo/list?type={$type}&status=submissions&u={$container_guid}",
+		'priority' => 3
+	));	
+}
 
 elgg_register_menu_item('todo-sort-menu', array(
 	'name' => 'todo_sort_asc',
@@ -61,14 +73,29 @@ $secondary_menu = elgg_view_menu('todo-dashboard-secondary', array(
 ));
 
 echo $secondary_menu;
-echo $sort_menu;
 
-echo "<div id='todo-dashboard-content'>";
-echo get_todos(array(
-	'context' => $type,
-	'status' => $status,
-	'sort_order' => $sort_order,
-	'container_guid' => $container_guid,
-	'list' => TRUE,
-));
-echo "</div>";
+if ($status != 'submissions') {
+	echo "<div id='todo-dashboard-content' class='todo-dashboard-content-pagination-helper'>";
+	echo $sort_menu;
+	echo get_todos(array(
+		'context' => $type,
+		'status' => $status,
+		'sort_order' => $sort_order,
+		'container_guid' => $container_guid,
+		'list' => TRUE,
+	));
+} else {
+	echo "<div id='todo-dashboard-content'>";
+	if (submissions_gatekeeper($container_guid)) {
+		echo "<div class='todo-user-submissions-content'>";
+		echo elgg_view('todo/user_submissions', array(
+			'user_guid' => $container_guid,
+		));
+		echo "</div>";
+	} else {
+		echo elgg_echo('todo:error:access');
+	}
+
+}
+
+echo "</div>";	

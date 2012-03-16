@@ -16,11 +16,21 @@ if (!$delete) {
 	$delete = 'daily';
 }
 
+$submissions_role_label = elgg_echo('todo:label:submissionsadmin');
+$submissions_role_input = elgg_view('input/roledropdown', array(
+	'name' => 'params[todosubmissionsrole]',
+	'value' => $vars['entity']->todosubmissionsrole,
+	'show_hidden' => TRUE,
+));
+
 ?>
 <div>
 	<br />
 	<?php echo elgg_echo('todo:label:calendarsalt'); ?>
 	<input type='text' size='60' name='params[calsalt]' value="<?php echo $vars['entity']->calsalt; ?>" />
+</div>
+<div>
+	<?php echo $submissions_role_label; echo ': ' . $submissions_role_input; ?>
 </div>
 <div>
 <?php

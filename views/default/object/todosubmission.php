@@ -26,6 +26,7 @@ if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 if ($valid) {
 	// General submission info
 	$submission = $vars['entity'];
+	
 	$url = $submission->getURL();
 	$owner = $submission->getOwnerEntity();
 	$date_content =  date("F j, Y", $submission->time_created);
@@ -206,6 +207,4 @@ HTML;
 HTML;
 		echo $content;
 	}
-} else {
-	forward();
 }
