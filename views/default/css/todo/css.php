@@ -489,7 +489,15 @@ span.unviewed {
 	width: 30%;
 }
 
+.submission-complete-info {
+	margin-top: 5px;
+	margin-bottom: 8px;
+}
 
+.submission-complete-info span {
+	margin-right: 10px;
+	font-size: 90%;
+}
 
 /* Dashboard group user submissions */
 .todo-group-user-submissions-container .todo-user-submissions-container {

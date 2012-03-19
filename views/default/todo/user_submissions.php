@@ -10,7 +10,7 @@
  */
 
 $user_guid = get_input('user_guid', elgg_extract('user_guid', $vars, NULL));
-$group_guid = get_input('group_guid', elgg_extract('user_guid', $vars, NULL));
+$group_guid = get_input('group_guid', elgg_extract('group_guid', $vars, NULL));
 
 // Make sure we can view the list
 if (!submissions_gatekeeper($user_guid, $group_guid)) {
@@ -18,6 +18,11 @@ if (!submissions_gatekeeper($user_guid, $group_guid)) {
 	return;
 }
 
+// Submission stats
+$submission_stats = elgg_view('todo/submission_stats', array(
+	'user_guid' => $user_guid,
+	'group_guid' => $group_guid
+));
 
 $user = get_entity($user_guid);
 
@@ -100,6 +105,7 @@ $js = <<<JAVASCRIPT
 JAVASCRIPT;
 
 $content = <<<HTML
+	$submission_stats
 	<div id='todo-user-submissions-filter-menu'>
 		$filter_menu
 	</div>

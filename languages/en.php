@@ -43,6 +43,7 @@ $english = array(
 	'todo:label:returnrequired' => 'Return Required', 
 	'todo:label:individuals' => 'Individual(s)',
 	'todo:label:groups' => 'Group(s)',
+	'todo:label:group' => 'Group',
 	'todo:label:loggedin' => 'Logged In Users', 
 	'todo:label:assigneesonly' => 'Assignees Only',
 	'todo:label:accesslevel' => 'View Access Level',
@@ -66,10 +67,12 @@ $english = array(
 	'todo:label:assignee' => 'Assignee',
 	'todo:label:completed' => 'Completed',
 	'todo:label:ontime' => 'On Time',
+	'todo:label:ontimeincludingclosed' => 'On Time (Including Closed)',
 	'todo:label:datecompleted' => 'Date Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:submissions' => 'Submissions',
 	'todo:label:complete' => 'Complete',
+	'todo:label:completeincludingclosed' => 'Complete (Including Closed)',
 	'todo:label:accept' => 'Accept',
 	'todo:label:accepted' => 'Accepted', 
 	'todo:label:new' => 'New',
@@ -119,8 +122,6 @@ $english = array(
 	'todo:label:date' => 'Date',
 	'todo:label:info' => 'Info',
 	'todo:label:submissionsadmin' => 'Submission Admin Role',
-
-
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',

@@ -949,6 +949,18 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		);
 		$return[] = ElggMenuItem::factory($options);
 	}
+
+	// Show closed
+	if ($entity->manual_complete) {
+		$options = array(
+			'name' => 'todo_closed',
+			'text' => '<strong>' . elgg_echo("todo:status:closed") . '</strong>',
+			'href' => false,
+			'priority' => 2,
+			'section' => 'info',
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
 	
 	// Different actions depending if user is assignee or not
 	$user_guid = elgg_get_logged_in_user_guid();
@@ -992,16 +1004,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				);
 				$return[] = ElggMenuItem::factory($options);
 			} else { // User has not submitted
-				if ($entity->manual_complete) {
-					$options = array(
-						'name' => 'todo_closed',
-						'text' => '<strong>' . elgg_echo("todo:status:closed") . '</strong>',
-						'href' => false,
-						'priority' => 2,
-						'section' => 'info',
-					);
-					$return[] = ElggMenuItem::factory($options);
-				} else {
+				if (!$entity->manual_complete) {
 					elgg_load_js('lightbox');
 					
 					// If we need to return something for this todo, the complete link will point to the submission form
