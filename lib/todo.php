@@ -309,23 +309,25 @@ function todo_get_page_content_assignees($guid) {
  * Get/list todo's based on critera
  * @param array $params:
  * 
- * context  	     => NULL|STRING which context we're viewing (all, assigned, owned)
+ * context  	       => NULL|STRING which context we're viewing (all, assigned, owned)
  *
- * status            => NULL|STRING complete|incomplete
+ * status              => NULL|STRING complete|incomplete|any
  * 
- * container_guid    => NULL|INT who's todos 
+ * container_guid      => NULL|INT who's todos @todo change this to something else
  * 
- * sort_order        => STRING ASC|DESC
+ * todo_container_guid => NULL|INT todo container guid (optional)
  * 
- * order_by_metadata => STRING which metadata to order by (ie: due_date)
+ * sort_order          => STRING ASC|DESC
  * 
- * list              => BOOL list todo's instead of get (default FALSE)
+ * order_by_metadata   => STRING which metadata to order by (ie: due_date)
  * 
- * count             => BOOL count todos (only works with list => FALSE)
+ * list                => BOOL list todo's instead of get (default FALSE)
  * 
- * due_date          => int due date timestamp
+ * count               => BOOL count todos (only works with list => FALSE)
+ * 
+ * due_date            => int due date timestamp
  *
- * due_operand       => string due date operand
+ * due_operand         => string due date operand
  */
 function get_todos(array $params) {
 	// Set list action
@@ -371,6 +373,11 @@ function get_todos(array $params) {
 		'offset' => get_input('offset', 0),
 		'count' => $count,
 	);
+	
+	// Show only todo's with container_guid (for groups)
+	if ($params['todo_container_guid']) {
+		$options['container_guid'] = $params['todo_container_guid'];
+	}
 	
 	// Published status options
 	$published_options = array(
@@ -496,7 +503,7 @@ function get_todos(array $params) {
 						AND r2.relationship = '$relationship'
 						AND r2.guid_two = e.guid)";
 			}
-			
+
 			$options = array_merge($options, $published_options);
 			$options['wheres'] = $wheres;
 			$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
@@ -1003,14 +1010,16 @@ function count_unaccepted_todos($user_guid) {
 /**
  * Count user's complete todo's
  *
- * @param $user_guid int
+ * @param $user_guid      int
+ * @param $container_guid int (optional) todos assigned by group
  * @return int
  */
-function count_complete_todos($user_guid) {
+function count_complete_todos($user_guid, $container_guid = NULL) {
 	return get_todos(array(
 		'context' => 'assigned',
 		'status' => 'complete',
 		'container_guid' => $user_guid,
+		'todo_container_guid' => $container_guid,
 		'list' => FALSE,
 		'count' => TRUE,
 	));
@@ -1019,14 +1028,34 @@ function count_complete_todos($user_guid) {
 /** 
  * Count user's incomplete todo's
  *
- * @param $user_guid int
+ * @param $user_guid      int
+ * @param $container_guid int (optional) todos assigned by group
  * @return int
  */
-function count_incomplete_todos($user_guid) {
+function count_incomplete_todos($user_guid, $container_guid = NULL) {
 	return get_todos(array(
 		'context' => 'assigned',
 		'status' => 'incomplete',
 		'container_guid' => $user_guid,
+		'todo_container_guid' => $container_guid,
+		'list' => FALSE,
+		'count' => TRUE,
+	));
+}
+
+/** 
+ * Count user's assigned todos
+ *
+ * @param $user_guid int
+ * @param $container_guid int (optional) todos assigned by group
+ * @return int
+ */
+function count_assigned_todos($user_guid, $container_guid = NULL) {
+	return get_todos(array(
+		'context' => 'assigned',
+		'status' => 'any',
+		'container_guid' => $user_guid,
+		'todo_container_guid' => $container_guid,
 		'list' => FALSE,
 		'count' => TRUE,
 	));
@@ -1039,6 +1068,7 @@ function count_incomplete_todos($user_guid) {
  * @param $date        int    timestamp
  * @param $due_operand string operand for due date (>, <, =)
  * @param $status      string (incomplete|complete) 
+ * @return int
  */
 function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $status = 'incomplete') {
 	// Common options
@@ -1107,6 +1137,60 @@ function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $stat
 	$count = elgg_get_entities_from_relationship($options);
 	elgg_pop_context();
 	return (int)$count;
+}
+
+/**
+ * Count user submissions
+ *
+ * @param $user_guid      int  user's guid
+ * @param $container_guid int  container guid for groups (optional) 
+ * @param $ontime         bool include only on time submissions
+ */
+function count_submissions($user_guid, $container_guid = NULL, $ontime = FALSE) {
+	// Empty wheres/joins arrays
+	$wheres = array();
+	$joins = array();
+
+	$db_prefix = elgg_get_config('dbprefix');
+	
+	// Access suffixen
+	$n1_suffix = get_access_sql_suffix("n_table1");
+	$n2_suffix = get_access_sql_suffix("n_table2");
+	$t1_suffix = get_access_sql_suffix("t1");
+
+	$joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
+	$joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";
+	$joins[] = "JOIN {$db_prefix}metastrings msv1 on n_table1.value_id = msv1.id";
+	$joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
+
+	$wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix})";
+	$wheres[] = "{$t1_suffix}";
+	
+	// On time wheres/joins
+	if ($ontime) {
+		$joins[] = "JOIN {$db_prefix}metadata n_table2 on t1.guid = n_table2.entity_guid";
+		$joins[] = "JOIN {$db_prefix}metastrings msn2 on n_table2.name_id = msn2.id";
+		$joins[] = "JOIN {$db_prefix}metastrings msv2 on n_table2.value_id = msv2.id";
+		$wheres[] = "(msn2.string IN ('due_date')) AND ({$n2_suffix})";
+		$wheres[] = "(UNIX_TIMESTAMP(FROM_UNIXTIME(e.time_created, '%Y%m%d')) <= UNIX_TIMESTAMP(FROM_UNIXTIME(msv2.string, '%Y%m%d')))";
+	}
+	
+	// Check for a group guid, include another where clause
+	if ($container_guid) {
+		$wheres[] = "((t1.container_guid = {$container_guid}))";
+	}
+
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'todosubmission',
+		'owner_guid' => $user_guid,
+		'wheres' => $wheres,
+		'joins' => $joins,
+		'limit' => 0,
+		'count' => TRUE,
+	);
+
+	return elgg_get_entities($options);
 }
 
 /**

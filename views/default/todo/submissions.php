@@ -61,6 +61,7 @@ if ($filter_return !== NULL) {
 // Check for a group guid, include another where clause
 if ($group_guid) {
 	$wheres[] = "((t1.container_guid = {$group_guid}))";	
+	elgg_push_context('group_todo_submissions'); // Display slightly different for groups
 }
 
 $options = array(
@@ -84,8 +85,15 @@ if ($time_upper) {
 	$options['created_time_upper'] = $time_upper;
 }
 
+
+
 // Get content
 echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_table');
+
+if ($group_guid) {
+	// Pop group submissions context
+	elgg_pop_context();
+}
 
 echo <<<JAVASCRIPT
 	<script type='text/javascript'>

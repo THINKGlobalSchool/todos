@@ -172,11 +172,46 @@ HTML;
 		$todo_due_day = strtotime(date('Y-m-d', $todo->due_date));
 		
 		$ontime = $submission_created_day <= $todo_due_day ? 'yes' : 'no';
+		
+		// Display more info if not looking at a groups submissions
+		if (!elgg_in_context('group_todo_submissions')) {	
+			// Get container/owner		
+			$container_entity = $todo->getContainerEntity();
+			$owner_entity = $todo->getOwnerEntity();
+
+			// Owner link
+			$owner_link = elgg_view('output/url', array(
+				'href' => "profile/$owner_entity->username",
+				'text' => $owner_entity->name,
+			));
+
+			$assigned_by = $owner_link;
+
+			// If container is a group, display both group and owner
+			if (elgg_instanceof($container_entity, 'group')) {
+				$group_link = elgg_view('output/url', array(
+					'text' => $container_entity->name,
+					'href' => $container_entity->getURL(),
+				));
+
+				$owner_link = elgg_view('output/url', array(
+					'href' => "profile/$owner_entity->username",
+					'text' => "({$owner_entity->name})",
+				));
+
+				$assigned_by = $group_link . " - {$owner_link}";
+			} 
+			
+			$subtext_content = elgg_echo('todo:label:assignedby', array($assigned_by));
+			
+			$todo_subtext = "<p class='elgg-subtext'>{$subtext_content}</p>";
+		}
 
 		$content = <<<HTML
 			<tr>
 				<td>
 					<strong>$todo_link</strong><br />
+					$todo_subtext
 				</td>
 				<td class='todo-submission-column'>
 					$submission_link
