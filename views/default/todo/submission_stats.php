@@ -28,7 +28,7 @@ if ($assigned_todos_count > 0) {
 	$complete_percentage = $submissions_count / $assigned_todos_count;
 	$complete_percentage = number_format($complete_percentage * 100, 1) . "%";
 	
-	$ontime_percentage = $ontime_submissions_count / $assigned_todos_count;
+	$ontime_percentage = $ontime_submissions_count / $submissions_count;
 	$ontime_percentage = number_format($ontime_percentage * 100, 1) . "%";
 	
 } else { // No dividing by zero!
