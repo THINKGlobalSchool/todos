@@ -126,6 +126,9 @@ elgg.todo.init = function() {
 	
 	// Return filter change handler
 	$(document).delegate('.todo-user-submission-return-dropdown', 'change', elgg.todo.returnFilterChange);
+
+	// On time filter change handler
+	$(document).delegate('.todo-user-submission-ontime-dropdown', 'change', elgg.todo.ontimeFilterChange);
 }
 
 /**	
@@ -559,6 +562,30 @@ elgg.todo.returnFilterChange = function(event) {
 		elgg.modules.addOption($container, 'filter_return', 0);
 	} else if (value == 1) {
 		elgg.modules.addOption($container, 'filter_return', 1);
+	}
+	
+	// Re-init module
+	elgg.modules.genericmodule.destroy();
+	elgg.modules.genericmodule.init();
+
+	event.preventDefault();
+}
+
+/**
+ * Change handler for on time filter change
+ */
+elgg.todo.ontimeFilterChange = function(event) {
+	var value = $(this).val();
+	// Get container
+	var $container = $(this).closest('.todo-user-submissions-content').find('.genericmodule-container');
+
+	// Add option to container based on value
+	if (value == 'all') {
+		elgg.modules.removeOption($container, 'filter_ontime');
+	} else if (value == 0) {
+		elgg.modules.addOption($container, 'filter_ontime', 0);
+	} else if (value == 1) {
+		elgg.modules.addOption($container, 'filter_ontime', 1);
 	}
 	
 	// Re-init module

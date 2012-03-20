@@ -412,8 +412,10 @@ span.unviewed {
 	font-size: 12px;
 }
 
-.todo-user-submission-return-dropdown {
+.todo-user-submission-return-dropdown,
+.todo-user-submission-ontime-dropdown {
 	font-size: 10px;
+	width: 100px;
 }
 
 .todo-user-submissions-content {

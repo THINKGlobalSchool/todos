@@ -14,6 +14,7 @@ $user_guid = get_input('user_guid');
 $group_guid = get_input('group_guid', NULL);
 $sort_order = get_input('sort_order', 'DESC');
 $filter_return = get_input('filter_return');
+$filter_ontime = get_input('filter_ontime');
 $time_lower = get_input('time_lower', FALSE);
 $time_upper = get_input('time_upper', FALSE);
 $limit = get_input('limit', 10);
@@ -36,7 +37,8 @@ $joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
 $wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix})";
 $wheres[] = "{$t1_suffix}";
 
-// If we were provided with a return filter
+
+// If we were provided a return filter
 if ($filter_return !== NULL) {
 	// Access SQL
 	$n2_suffix = get_access_sql_suffix("n_table2");
@@ -54,8 +56,21 @@ if ($filter_return !== NULL) {
 	} else {
 		$wheres[] = "((msv2.string IN ('0')) AND ({$n2_suffix}))";
 	}
-	
-	
+}
+
+
+// If we were provided an on time filter
+if ($filter_ontime !== NULL) {
+		$n3_suffix = get_access_sql_suffix("n_table3");
+		$joins[] = "JOIN {$db_prefix}metadata n_table3 on t1.guid = n_table3.entity_guid";
+		$joins[] = "JOIN {$db_prefix}metastrings msn3 on n_table3.name_id = msn3.id";
+		$joins[] = "JOIN {$db_prefix}metastrings msv3 on n_table3.value_id = msv3.id";
+		$wheres[] = "(msn3.string IN ('due_date')) AND ({$n3_suffix})";
+
+		// Determine operator (less than/equal to or greater than)
+		$operator = (int)$filter_ontime ? "<=" : ">";
+
+		$wheres[] = "(UNIX_TIMESTAMP(FROM_UNIXTIME(e.time_created, '%Y%m%d')) {$operator} UNIX_TIMESTAMP(FROM_UNIXTIME(msv3.string, '%Y%m%d')))";
 }
 
 // Check for a group guid, include another where clause
@@ -84,8 +99,6 @@ if ($time_lower) {
 if ($time_upper) {
 	$options['created_time_upper'] = $time_upper;
 }
-
-
 
 // Get content
 echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_table');
