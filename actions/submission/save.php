@@ -1,6 +1,6 @@
 <?php
 /**
- * Todo Create Action
+ * Submission Create Action
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -17,6 +17,18 @@ $content = get_input('submission_content', FALSE);
 	
 $todo = get_entity($todo_guid);
 $user = elgg_get_logged_in_user_entity();
+
+// Make sure we don't create more than one submission per todo
+if (has_user_submitted($user_guid, $todo_guid)) {
+	register_error(elgg_echo('todo:error:duplicatesubmission'));
+	forward(REFERER);
+}
+
+// Make sure we can't submit to a manually completed (closed) todo
+if ($todo->manual_complete) {
+	register_error(elgg_echo('todo:error:closedsubmission'));
+	forward(REFERER);
+}
 
 $submission = new ElggObject();
 $submission->title = sprintf(elgg_echo('todo:label:submissiontitleprefix'), $todo->title);

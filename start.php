@@ -931,7 +931,6 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	
 	$entity = $params['entity'];
 
-
 	// Add status
 	if ($entity->canEdit()) {
 		if ($entity->status == TODO_STATUS_DRAFT) {

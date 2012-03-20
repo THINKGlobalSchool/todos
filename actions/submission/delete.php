@@ -1,6 +1,6 @@
 <?php
 /**
- * Todo Delete Submission Action
+ * Delete Submission Action
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
