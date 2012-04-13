@@ -441,6 +441,9 @@ function get_todos(array $params) {
 		/********************* OWNED **********************/			
 			$container = get_entity($params['container_guid']);
 			
+			// Show both published and drafts when viewing owned
+			$published_options = array(); // Nuke it
+			
 			if (elgg_instanceof($container, 'group')) {
 				$options['container_guid'] = $params['container_guid'];
 			} else if (elgg_instanceof($container, 'user')) {
@@ -458,6 +461,7 @@ function get_todos(array $params) {
 				$options['wheres'] = $without_complete_manual_wheres;
 				$content = $get_from_metadata($options);	
 			}
+
 			break;
 		case 'assigned':
 		/********************* ASSIGNED ********************/
