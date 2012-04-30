@@ -85,7 +85,8 @@ if (isset($vars['entity'])) {
 	$content_module = elgg_view('modules/ajaxmodule', array(
 		'title' => elgg_echo('todo:label:addcontent'),
 		'limit' => 5,
-		'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'groupforumtopic'),
+		'types' => array('object'),
+		'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'forum_reply', 'forum_topic'),
 		'container_guid' => elgg_get_logged_in_user_guid(),
 		'listing_type' => 'simpleicon',
 		'module_type' => 'info',
