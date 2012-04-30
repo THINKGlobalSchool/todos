@@ -134,8 +134,10 @@ function todo_init() {
 	// Register a handler for submission comments so that the todo owner is notified
 	elgg_register_event_handler('annotate', 'all', 'submission_comment_event_listener');
 		
-	// Profile hook	
-	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
+	// Owner block hook (for logged in users)
+	if (elgg_is_logged_in()) {
+		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
+	}
 	
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
@@ -259,6 +261,7 @@ function todo_page_handler($page) {
 	
 	switch ($page_type) {
 		case 'dashboard':
+			gatekeeper();
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
