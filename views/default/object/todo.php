@@ -102,7 +102,7 @@ if ($full) { // Full View
 	} 
 	
 	// If we're viewing as a parent
-	if ($is_parent) {
+	if ($is_parent && elgg_is_active_plugin('parentportal')) {
 		$children = parentportal_get_parents_children(elgg_get_logged_in_user_guid());
 		$status_content = '';
 		
