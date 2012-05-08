@@ -76,8 +76,8 @@ elgg.todo.submission.initFancybox = function() {
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 
 			// Init lightbox embed if it exists
-			if (typeof(elgg.embedimage) != 'undefined') {
-				elgg.embedimage.initLightbox();
+			if (typeof(elgg.tgsembed) != 'undefined') {
+				elgg.tgsembed.initLightbox();
 			}
 
 			if (typeof(tinyMCE) !== 'undefined') {
