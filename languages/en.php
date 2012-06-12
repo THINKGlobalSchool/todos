@@ -128,6 +128,7 @@ $english = array(
 	'todo:label:calendarurl' => 'Todo Calendar URL',
 	
 	// Time frame labels
+	'todo:label:today' => 'Due Today',
 	'todo:label:pastdue' => 'Past Due',
 	'todo:label:nextweek' => 'Due This Week', 
 	'todo:label:future' => 'Future To Do\'s',

@@ -12,6 +12,11 @@ if (!elgg_is_logged_in()) {
 	$tab = 'all';
 }
 
+if ($status == 'incomplete' && get_input('filter_priority')) {
+	$priority = get_input('filter_priority');
+	$filter_priority = "&filter_priority={$priority}";
+}
+
 switch($tab) {
 	case 'all':
 		$click = 'elgg-menu-item-all';
@@ -36,7 +41,7 @@ echo elgg_view_menu('todo-dashboard-listing-main', array(
 	// Function to click default tab
 	todo_click_tab = function() {
 		$link = $('.<?php echo $click; ?> > a.todo-ajax-list');
-		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; ?>");
+		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; echo $filter_priority; ?>");
 		$link.click();	
 	}
 	// Need to click AFTER elgg is initted

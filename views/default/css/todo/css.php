@@ -93,6 +93,7 @@ span.unviewed {
 	width: 100px;
 	-webkit-border-radius: 11px; 
 	-moz-border-radius: 11px;
+	border-radius: 11px;
 	padding: 3px;
 	text-align: center;
 	margin-top: 3px;
@@ -104,20 +105,18 @@ span.unviewed {
 }
 
 .todo-priority-1 {
-	/**border: 2px solid #E83131;**/
-	background: #FFECEC;
 	background: #FA2A02;
 }
 
 .todo-priority-2 {
-	/**border: 2px solid #F19F45;**/
-	background: #FFFFCC;
-	background: #FFAB25;
+	background: #F87217;
 }
 
 .todo-priority-3 {
-	/**border: 2px solid #438743;**/
-	background: #E1FFE1;
+	background: #FBB917;
+}
+
+.todo-priority-4 {
 	background: #71BC17;
 }
 
@@ -162,6 +161,7 @@ span.unviewed {
 	-webkit-border-radius: 0 0 4px 4px;
 	-moz-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
+	width: 125px;
 }
 
 /** Todo info toggler **/

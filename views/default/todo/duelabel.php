@@ -15,9 +15,12 @@ if (get_input('display_label', false)) {
 	$today = strtotime(date("F j, Y"));
 	$next_week = strtotime("+7 days", $today);
 
-	if ($vars['entity']->due_date <= $today) {
+	if ($vars['entity']->due_date < $today) {
 		$label = elgg_echo("todo:label:pastdue");
 		$priority = TODO_PRIORITY_HIGH;
+	} else if ($vars['entity']->due_date == $today) {
+		$label = elgg_echo("todo:label:today");
+		$priority = TODO_PRIORITY_TODAY;
 	} else if ($vars['entity']->due_date > $today && $vars['entity']->due_date <= $next_week) {	
 		$label = elgg_echo("todo:label:nextweek");
 		$priority = TODO_PRIORITY_MEDIUM;
