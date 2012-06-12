@@ -12,189 +12,6 @@
 
 /** CONTENT FUNCTIONS **/
 /**
- * List todo's content
- * @param string $type 	Type of listing [owner/assigned/null]
- * @param int $username 	Owner guid
- * @return array
- */
-function todo_get_page_content_list($type = NULL, $guid = NULL) {
-	// Sort out who owns what we're looking at
-	$page_owner = elgg_get_page_owner_entity();
-	
-	if ($page_owner == elgg_get_logged_in_user_entity()) {
-		$by = elgg_echo('todo:label:me');
-		elgg_register_title_button();
-	} else {
-		$by = $page_owner->name;
-	}
-	
-	if (elgg_instanceof($page_owner, 'group')) {
-		elgg_register_title_button();
-	}
-	
-	// Get status
-	$status = get_input('status', 'incomplete');
-		
-	global $CONFIG;
-	
-	if ($type == 'assigned') {
-		// SHOW ASSIGNED TODOS
-		set_input('todo_main_tab', $type);
-		$params['filter'] = todo_get_filter_content();
-		$title = elgg_echo("todo:label:assignedto", array($by));
-		
-		$test_id = get_metastring_id('manual_complete');
-		$one_id = get_metastring_id(1);
-		$wheres = array();
-
-		$user_id = $page_owner->getGUID();		
-		$relationship = COMPLETED_RELATIONSHIP;
-
-		// Build list based on status
-		if ($status == 'complete') {
-			$wheres[] = "(EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
-					WHERE r2.guid_one = '$user_id'
-					AND r2.relationship = '$relationship'
-					AND r2.guid_two = e.guid) OR 
-						EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-					WHERE md.entity_guid = e.guid
-						AND md.name_id = $test_id
-						AND md.value_id = $one_id))";
-
-
-		} else if ($status == 'incomplete') {	
-			set_input('display_label', true);
-			// Non existant 'manual complete'
-			$wheres[] = "NOT EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-					WHERE md.entity_guid = e.guid
-						AND md.name_id = $test_id
-						AND md.value_id = $one_id)";
-
-			$wheres[] = "NOT EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
-					WHERE r2.guid_one = '$user_id'
-					AND r2.relationship = '$relationship'
-					AND r2.guid_two = e.guid)";
-		}
-
-		$content = elgg_list_entities_from_relationship(array(
-			'type' => 'object',
-			'subtype' => 'todo',
-			'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
-			'relationship_guid' => $user_id, 
-			'inverse_relationship' => FALSE,
-			'metadata_name' => 'status',
-			'metadata_value' => TODO_STATUS_PUBLISHED,
-			'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
-			'full_view' => FALSE,
-			'wheres' => $wheres,
-		));		
-		
-	} else if ($type == 'owner') {
-		if ($guid && $owner = get_entity($guid)) {
-			// SHOW OWNED TODOS
-			set_input('todo_main_tab', $type);
-			$params['filter'] = todo_get_filter_content(FALSE);
-			$title = elgg_echo("todo:label:assignedby", array($by));
-		
-			$options = array(
-				'types' => 'object', 
-				'subtypes' => 'todo', 
-				'limit' => get_input('limit', 10), 
-				'offset' => get_input('offset', 0), 
-				'full_view' => FALSE,
-				'container_guid' => $owner->getGUID(),
-				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'ASC')),
-			);
-			$content = elgg_list_entities_from_metadata($options);
-		} else {
-			forward('todo/dashboard');
-		}
-	} else { 
-		// SHOW ALL TODOS
-		$params['filter'] = todo_get_filter_content();
-		$title = elgg_echo('todo:title:alltodos');
-		
-		$type = 'all';
-		
-		elgg_register_title_button();
-		
-		// Show based on status
-		if ($status == 'complete') {
-			$content .= elgg_list_entities_from_metadata(array(
-				'type' => 'object',
-				'subtype' => 'todo',	
-				'metadata_name' => 'status',				// Always check for status
-				'metadata_value' => TODO_STATUS_PUBLISHED,	
-				'metadata_name_value_pairs' => array(array(
-														'name' => 'complete',
-														'value' => 1, 
-														'operand' => '='),
-													array(
-														'name' => 'manual_complete',
-														'value' => 1,
-														'operand' => '=',
-													)),
-				'metadata_name_value_pairs_operator' => 'OR',
-				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
-				'full_view' => FALSE,
-			));	
-		} else if ($status == 'incomplete') {
-			set_input('display_label', true);
-			// Creating some magic SQL to grab todos without complete metadata
-			$complete = get_metastring_id('complete');
-			$manual_complete = get_metastring_id('manual_complete');
-			$one_id = get_metastring_id(1);
-									
-			$wheres = array();
-			$wheres[] = "NOT EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-					WHERE md.entity_guid = e.guid
-						AND md.name_id = $complete
-						AND md.value_id = $one_id)";
-
-			$wheres[] = "NOT EXISTS (
-					SELECT 1 FROM {$CONFIG->dbprefix}metadata md
-					WHERE md.entity_guid = e.guid
-						AND md.name_id = $manual_complete
-						AND md.value_id = $one_id)";
-
-
-			$content = elgg_list_entities_from_metadata(array(
-				'type' => 'object',
-				'subtype' => 'todo',
-				'metadata_name' => 'status',
-				'metadata_value' => TODO_STATUS_PUBLISHED,
-				'order_by_metadata' => array('name' => 'due_date', 'as' => 'int', 'direction' => get_input('direction', 'DESC')),
-				'full_view' => FALSE,
-				'wheres' => $wheres,
-			));	
-		}
-	}
-	
-	elgg_push_breadcrumb($title, "todo/{$type}/{$page_owner->username}");
-
-	
-	// Show status breadcrumb if not looking at owned todos
-	if ($type != 'owner') {
-		elgg_push_breadcrumb(elgg_echo('todo:label:' . $status));
-	}
-	
-	$params['title'] = $title;
-	
-	if ($content) {
-		$params['content'] = $content;
-	} else {
-		$params['content'] = "<h3 class='center'>" . elgg_echo('search:no_results') . "</h3>";
-	}
-	
-	return $params;
-}
-
-/**
  * Get todo view content
  * @param string $type	Page type
  * @param int $guid		Object guid
@@ -327,7 +144,11 @@ function todo_get_page_content_assignees($guid) {
  * 
  * due_date            => int due date timestamp
  *
- * due_operand         => string due date operand
+ * due_operand         => string due date operand for use with due date
+ * 
+ * due_start           => due start date
+ *
+ * due_end             => due end date
  */
 function get_todos(array $params) {
 	// Set list action
@@ -373,7 +194,7 @@ function get_todos(array $params) {
 		'offset' => get_input('offset', 0),
 		'count' => $count,
 	);
-	
+
 	// Show only todo's with container_guid (for groups)
 	if ($params['todo_container_guid']) {
 		$options['container_guid'] = $params['todo_container_guid'];
@@ -418,6 +239,38 @@ function get_todos(array $params) {
 			WHERE md.entity_guid = e.guid
 				AND md.name_id = $manual_complete
 				AND md.value_id = $one_id)";
+			
+	// Include due date and operand if set 
+	if ($params['due_date']) {
+		if (!$params['due_operand']) {
+			$params['due_operand'] = '=';
+		}
+		
+		$due_date = $params['due_date'];
+		$due_operand = $params['due_operand'];
+
+		$suffix = get_access_sql_suffix("mf_table");
+		$due_joins = array();
+		
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
+
+	 	$due_where = "(mf_name.string = 'due_date' AND mf_value.string {$due_operand} {$due_date})";
+	} else if ($params['due_start'] && $params['due_end']) {
+		// Due between start and end date
+		$due_start = $params['due_start'];
+		$due_end = $params['due_end'];
+		
+		$suffix = get_access_sql_suffix("mf_table");
+		$due_joins = array();
+		
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
+		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
+
+	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string < {$due_end}))";
+	}
 	
 	// Display by context
 	switch($params['context']) {
@@ -434,6 +287,12 @@ function get_todos(array $params) {
 
 				$options = array_merge($options, $published_options);
 				$options['wheres'] = $without_complete_manual_wheres;
+
+				// Due filter
+				$joins = $due_joins;
+				$options['wheres'][] = $due_where;
+				$options['joins'] = $joins;
+
 				$content = $get_from_metadata($options);	
 			}
 			break;
@@ -456,9 +315,15 @@ function get_todos(array $params) {
 				$options = array_merge($options, $complete_or_manual);
 				$content = $get_from_metadata($options);	
 				
-			} else if ($params['status'] == 'incomplete') {				
+			} else if ($params['status'] == 'incomplete') {
 				$options = array_merge($options, $published_options);
 				$options['wheres'] = $without_complete_manual_wheres;
+
+				// Due filter
+				$joins = $due_joins;
+				$options['wheres'][] = $due_where;
+				$options['joins'] = $joins;
+
 				$content = $get_from_metadata($options);	
 			}
 
@@ -506,15 +371,20 @@ function get_todos(array $params) {
 						WHERE r2.guid_one = '$user_id'
 						AND r2.relationship = '$relationship'
 						AND r2.guid_two = e.guid)";
+						
+				// Due filter
+				$joins = $due_joins;
+				$wheres[] = $due_where;
 			}
 
 			$options = array_merge($options, $published_options);
 			$options['wheres'] = $wheres;
+			$options['joins'] = $joins;
 			$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
 			$options['relationship_guid'] = $user_id;
 			$options['inverse_relationship'] = FALSE;
 			
-
+			//set_input('dump', 'dump');
 			$content = $get_from_relationship($options);
 			break;
 	}

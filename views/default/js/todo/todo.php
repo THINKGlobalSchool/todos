@@ -108,6 +108,15 @@ elgg.todo.init = function() {
 		e.preventDefault();
 	});
 
+	// Todo dashboard filter due date
+	$('#todo-filter-due').live('change', function(e) {
+		var priority = $(this).val();
+		var href = $(this).parent().find('a').attr('href');
+		href = elgg.get_site_url() + href + "&filter_priority=" + priority;
+		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
+		$('#todo-dashboard').load(href);
+	});
+
 	// Special pagination helper for todo content
 	$('#todo-dashboard #todo-dashboard-content.todo-dashboard-content-pagination-helper .elgg-pagination a').live('click', function(event) {
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");

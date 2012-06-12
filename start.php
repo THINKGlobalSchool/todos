@@ -48,8 +48,9 @@ function todo_init() {
 	
 	// Priorities (currently just used for a pretty display)
 	define('TODO_PRIORITY_HIGH', 1);
-	define('TODO_PRIORITY_MEDIUM', 2);
-	define('TODO_PRIORITY_LOW', 3);
+	define('TODO_PRIORITY_TODAY', 2);
+	define('TODO_PRIORITY_MEDIUM', 3);
+	define('TODO_PRIORITY_LOW', 4);
 	
 	// Todo status's 
 	define('TODO_STATUS_DRAFT', 0);
@@ -233,9 +234,7 @@ function todo_init() {
  * Todo page handler
  *
  * URLs take the form of
- *  All todos:       todo/all
- *  User's todos:    todo/owner/<username>
- *  Assigned todos:  todo/assigned/<username>
+ *  Dashboard:       todo/dashboard
  *  View todo:       todo/view/<guid>/<title>
  *  View submission	 todo/view/submission/<guid>
  *  New todo:        todo/add/<guid>
@@ -261,6 +260,7 @@ function todo_page_handler($page) {
 	
 	switch ($page_type) {
 		case 'dashboard':
+		default:
 			gatekeeper();
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');	
@@ -312,14 +312,6 @@ function todo_page_handler($page) {
 			group_gatekeeper();
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
-		case 'owner':
-			gatekeeper();
-			group_gatekeeper();
-			$user = get_user_by_username($page[1]);
-			elgg_set_page_owner_guid($user->guid);
-			set_input('username',$user->username);
-			$params = todo_get_page_content_list($page_type, $user->guid);
-			break;
 		case 'group':
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');	
@@ -343,23 +335,6 @@ function todo_page_handler($page) {
 			} else {
 				forward('todo/dashboard');
 			}
-			break;
-		case 'assigned':
-			gatekeeper();
-			group_gatekeeper();
-			$user = get_user_by_username($page[1]);
-			if (!$user) {
-				$user = elgg_get_logged_in_user_entity();
-			}
-			elgg_set_page_owner_guid($user->getGUID());
-			set_input('username',$page[1]);
-			$params = todo_get_page_content_list($page_type, $page[1]);
-			break;
-		case 'all':
-		default:
-			gatekeeper();
-			group_gatekeeper();
-			$params = todo_get_page_content_list();
 			break;
 		case 'calendar':
 			echo elgg_view('todo/calendar', array(
@@ -721,6 +696,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$incomplete_count = count_incomplete_todos($user->guid);
 
 	$today = strtotime(date("F j, Y"));
+	$due_today_count = count_assigned_todos_by_due_date($user_guid, $today, '=', 'incomplete');
 	$upcoming_count = count_assigned_todos_by_due_date($user_guid, $today, '>', 'incomplete');
 	$past_due_count = count_assigned_todos_by_due_date($user_guid, $today, '<=', 'incomplete');
 
@@ -739,6 +715,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 		'new' => $assigned_count,
 		'upcoming' => $upcoming_count,
 		'past_due' => $past_due_count,
+		'today' => $due_today_count,
 	));
 
 	// Add todo item
