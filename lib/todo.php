@@ -297,7 +297,8 @@ function get_todos(array $params) {
 			}
 			break;
 		case 'owned':
-		/********************* OWNED **********************/			
+		/********************* OWNED **********************/
+			set_input('display_label', true);			
 			$container = get_entity($params['container_guid']);
 			
 			// Show both published and drafts when viewing owned
