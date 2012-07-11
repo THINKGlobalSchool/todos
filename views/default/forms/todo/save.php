@@ -22,6 +22,8 @@ $is_rubric_selected	= elgg_extract('rubric_select', $vars);
 $rubric_guid		= elgg_extract('rubric_guid', $vars);
 $access_id 			= elgg_extract('access_level', $vars);
 $status				= elgg_extract('status', $vars);
+$grade_required		= elgg_extract('grade_required', $vars);
+$grade_total		= elgg_extract('grade_total', $vars);
 $guid				= elgg_extract('guid', $vars);
 
 // Check if we've got an entity, if so, we're editing.
@@ -111,6 +113,19 @@ $group_picker = elgg_view('input/dropdown', array(
 $return_label = elgg_echo('todo:label:returnrequired');
 $return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_required ? "checked='checked' ": '' ) .  " name='return_required' id='todo_return_required'>";
 
+$grade_required_label = elgg_echo('todo:label:graderequired');
+$grade_required_input = "<input type='checkbox' class='input-checkboxes' " . ($grade_required ? "checked='checked' ": '' ) .  " name='grade_required' id='todo-grade-required-input'>";
+
+if (!$grade_required) {
+	$grade_required_display = "display: none;";
+}
+
+$grade_total_label = elgg_echo('todo:label:gradetotal');
+$grade_total_input = elgg_view('input/text', array(
+	'name' => 'grade_total',
+	'id' => 'todo-grade-total-input',
+	'value' => $grade_total,
+));
 
 // Optional content
  
@@ -138,7 +153,6 @@ if (TODO_RUBRIC_ENABLED) {
 	));
 
 	$rubric_html = <<<HTML
-	
 		<script type='text/javascript'>
 			$(document).ready(function() {
 				var rubric_guid = '$rubric_guid';
@@ -243,6 +257,14 @@ $form_body = <<<HTML
 		<label>$return_label</label>
 		$return_content
 	</div><br />
+	<div>
+		<label>$grade_required_label</label>
+		$grade_required_input
+	</div><br />
+	<div id='todo-grade-total-container' style='$grade_required_display'>
+		<label>$grade_total_label</label>
+		$grade_total_input<br /><br />
+	</div>
 	$rubric_html<br />
 	<div>
 		<label>$access_label</label><br />

@@ -13,6 +13,9 @@
 //<script>
 elgg.provide('elgg.todo.submission');
 
+// Store the last submitted grade
+elgg.todo.submission.last_grade = null;
+
 elgg.todo.submission.init = function() {
 	// Set up a handler for ajax comment clicks
 	$(document).delegate('#todo-submission-annotations form.elgg-form-submission-annotate input.elgg-button', 'click', elgg.todo.submission.commentClick);
@@ -23,14 +26,29 @@ elgg.todo.submission.init = function() {
 	// Click handler for previous 
 	$(document).delegate('.todo-ajax-submission-navigation-prev', 'click', function(event) {
 		$.fancybox.prev();
+		elgg.todo.submission.last_grade = null;
 		event.preventDefault();
 	});
 
 	// Click handler for next 
 	$(document).delegate('.todo-ajax-submission-navigation-next', 'click', function(event) {
 		$.fancybox.next();
+		elgg.todo.submission.last_grade = null;
 		event.preventDefault();
 	});
+
+	// Grade focus event handler
+	$(document).delegate('.submission-grade-input', 'focus', function(event) {
+		if ($(this).val() != typeof undefined) {
+			elgg.todo.submission.last_grade = $(this).val();
+		}
+	});
+
+	// Grade blur event handler
+	$(document).delegate('.submission-grade-input', 'blur', elgg.todo.submission.submitGrade);
+	
+	// Override grade form submission
+	$(document).delegate('form.elgg-form-submission-grade', 'submit', elgg.todo.submission.submitGrade);
 	
 	// Init submission fancyboxen
 	elgg.todo.submission.initFancybox();
@@ -48,6 +66,8 @@ elgg.todo.submission.destroy = function() {
 	$(document).undelegate('#todo-submission-annotations .elgg-list-annotation li.elgg-menu-item-delete a', 'click');
 	$(document).undelegate('.todo-ajax-submission-navigation-prev', 'click');
 	$(document).undelegate('.todo-ajax-submission-navigation-next', 'click');
+	$(document).undelegate('.submission-grade-input', 'blur');
+	$(document).undelegate('form.elgg-form-submission-grade', 'submit');
 }
 
 // Init the fancybox
@@ -97,6 +117,7 @@ elgg.todo.submission.initFancybox = function() {
 		'onClosed': function() {
 			// Reset location hash
 			window.location.hash = '';
+			elgg.todo.submission.last_grade = null;
 		}
 	});
 }
@@ -382,6 +403,42 @@ elgg.todo.submission.pushComment = function(content) {
 
 	// Slide it in
 	$new_comment.slideDown();
+}
+
+// Submit Grade Action
+elgg.todo.submission.submitGrade = function(event) {
+	var submission_grade = $('form.elgg-form-submission-grade').find('input[name=submission_grade]').val();
+	var submission_guid = $('form.elgg-form-submission-grade').find('input[name=submission_guid]').val();
+
+	// If we have a value, set the grade!
+	if (submission_grade && submission_grade != elgg.todo.submission.last_grade) {
+			var numberRegex = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+			if (numberRegex.test(submission_grade)) {
+				// Post comment with a regular elgg action
+				elgg.action('submission/grade', {
+					data: {
+						submission_guid: submission_guid, 
+						submission_grade: submission_grade,
+					}, 
+					success: function(data) {
+						// Check for bad status 
+						if (data.status == -1) {
+							// Error
+						} else {
+							// Set grade in status table
+							var owner_guid = data.output;
+							$(document).find('#assignee-grade-' + owner_guid).html(submission_grade);
+							elgg.todo.submission.last_grade = submission_grade;
+						}
+					}
+				});	
+			} else {
+				elgg.register_error(elgg.echo('todo:error:gradevalue'));
+			}
+
+	}
+
+	event.preventDefault();
 }
 
 // Calculate file size for display

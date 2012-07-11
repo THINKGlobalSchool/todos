@@ -16,9 +16,13 @@ $valid = false;
 if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 	$todo = get_entity($vars['entity']->todo_guid);
 	$todo_owner = get_entity($todo->owner_guid);
+	$can_grade = $todo->canEdit();
 		
 	// Hacky way to check security on todo submissions
-	if (elgg_get_logged_in_user_entity() == $todo_owner || elgg_get_logged_in_user_entity() == get_entity($vars['entity']->owner_guid) || elgg_is_admin_logged_in()) {
+	if (elgg_get_logged_in_user_entity() == $todo_owner 
+		|| elgg_get_logged_in_user_entity() == get_entity($vars['entity']->owner_guid) 
+		|| elgg_is_admin_logged_in()) 
+	{
 		$valid = true;
 	}
 }
@@ -107,7 +111,22 @@ HTML;
 			$moreinfo_content = elgg_view('output/longtext', array('value' => $submission->description));
 			$moreinfo_label = elgg_echo('todo:label:moreinfo');
 		}
-	
+		
+		if ($can_grade) {
+			$grade_content = elgg_view_form('submission/grade', array('name' => 'submission_grade_form'), array(
+				'todo' => $todo,
+				'submission' => $submission,
+			));
+		} else {
+			$grade_content = "<span class='todo-submission-grade-label'>";
+			if ($submission->grade !== NULL) {
+				$grade_content .= $submission->grade . "&nbsp;&#47;&nbsp;" . $todo->grade_total;
+			} else {
+				$grade_content .= elgg_echo('todo:label:notyetgraded');
+			}
+			$grade_content .= "</span>";
+		}
+
 		$content = <<<HTML
 			<br />
 			$assignment_content
@@ -120,6 +139,9 @@ HTML;
 			<div class='description'>
 				<label>$moreinfo_label</label><br />
 				$moreinfo_content
+			</div>
+			<div class='todo-submission-grade-container'>
+				$grade_content
 			</div>
 HTML;
 	

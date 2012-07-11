@@ -19,7 +19,7 @@ $todo = get_entity($todo_guid);
 $user = elgg_get_logged_in_user_entity();
 
 // Make sure we don't create more than one submission per todo
-if (has_user_submitted($user_guid, $todo_guid)) {
+if (has_user_submitted($user->guid, $todo_guid)) {
 	register_error(elgg_echo('todo:error:duplicatesubmission'));
 	forward(REFERER);
 }
@@ -61,7 +61,7 @@ add_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submis
 user_accept_todo($user->getGUID(), $todo_guid);
 
 // River
-add_to_river('river/object/todosubmission/create', 'create', elgg_get_logged_in_user_guid(), $submission->getGUID());	
+add_to_river('river/object/todosubmission/create', 'create', $user->guid, $submission->getGUID());	
 
 // Notify todo owner
 global $CONFIG;

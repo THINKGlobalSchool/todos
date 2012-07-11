@@ -13,7 +13,7 @@
 $full = elgg_extract('full_view', $vars, FALSE);
 $todo = elgg_extract('entity', $vars, FALSE);
 
-if (!$todo) {
+if (!elgg_instanceof($todo, 'object', 'todo')) {
 	return TRUE;
 }
 
@@ -28,7 +28,6 @@ $owner_link = elgg_view('output/url', array(
 ));
 
 $author_text = elgg_echo('todo:label:assignedby', array($owner_link));
-
 
 $tags = elgg_view('output/tags', array('tags' => $todo->tags));
 
@@ -80,6 +79,14 @@ if ($full) { // Full View
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';
 	
+	$grade_label = elgg_echo("todo:label:grade");
+
+	if ($todo->grade_required) {
+		$grade_content = elgg_echo("todo:label:gradedoutof", array($todo->grade_total));
+	} else {
+		$grade_content = elgg_echo("todo:label:notgraded");
+	}
+	
 	$suggested_tags_label = elgg_echo("todo:label:suggestedtags");
 	$suggested_tags_content = elgg_view('output/tags', array('value' => $todo->suggested_tags));
 
@@ -87,7 +94,7 @@ if ($full) { // Full View
 	
 	// Default status
 	if (have_assignees_completed_todo($todo->getGUID())) {
-		$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+		$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";		
 	} else {
 		$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 	}
@@ -96,6 +103,18 @@ if ($full) { // Full View
 	if ($is_assignee) {
 		if (has_user_submitted(elgg_get_logged_in_user_guid(), $todo->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
+
+			$submission = get_user_submission($user->guid, $todo->guid);
+
+			$status_content .= "<span class='todo-grade-status'>";
+
+			if ($submission->grade !== NULL) {
+				$status_content .= $submission->grade . "/" . $todo->grade_total;
+			} else {
+				$status_content .= "(" . elgg_echo('todo:label:notyetgraded') . ")";
+			}
+
+			$status_content .= "</span>";
 		} else {
 			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 		}
@@ -103,28 +122,14 @@ if ($full) { // Full View
 	
 	// If we're viewing as a parent
 	if ($is_parent && elgg_is_active_plugin('parentportal')) {
-		$children = parentportal_get_parents_children(elgg_get_logged_in_user_guid());
-		$status_content = '';
+		$child_content = elgg_view('todo/children_status', array(
+			'todo' => $todo,
+			'parent' => elgg_get_logged_in_user_entity(),
+		));
 		
-		// Ignore access here..
-		$ia = elgg_get_ignore_access();
-		elgg_set_ignore_access(TRUE);
-
-		// Loop over parents children
-		foreach ($children as $child) {
-			
-			// Make sure they are an assignee
-			if (is_todo_assignee($todo->guid, $child->guid)) {
-
-				// Display wether or not child has submitted
-				if (has_user_submitted($child->guid, $todo->getGUID())) {
-					$status_content .= "<strong>{$child->name}: </strong><span class='complete'>" . elgg_echo('todo:label:complete') . "</span><br />";
-				} else {
-					$status_content .= "<strong>{$child->name}: </strong><span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span><br />";
-				}
-			}
+		if ($child_content) {
+			$status_content = $child_content;
 		}
-		elgg_set_ignore_access($ia);
 	}
 	
 	// Owner
@@ -146,6 +151,7 @@ if ($full) { // Full View
 	
 	$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
 	$body .= elgg_view_module('info', $return_label, $return_content);	
+	$body .= elgg_view_module('info', $grade_label, $grade_content);	
 	$body .= elgg_view_module('info', $status_label, $status_content);
 	
 
