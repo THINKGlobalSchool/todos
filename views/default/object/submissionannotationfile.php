@@ -11,10 +11,5 @@
  * 
  */
 
-elgg_dump($vars['entity']->getFilenameOnFilestore());
-elgg_dump($vars['entity']->thumbnail);
-elgg_dump($vars['entity']->smallthumb);
-elgg_dump($vars['entity']->largethumb);
-
 $contents = elgg_view("object/file", $vars);
 echo $contents; 

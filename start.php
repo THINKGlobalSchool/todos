@@ -219,6 +219,7 @@ function todo_init() {
 	elgg_register_action('submission/save', "$action_base/save.php");
 	elgg_register_action('submission/delete', "$action_base/delete.php");
 	elgg_register_action('submission/annotate', "$action_base/annotate.php");
+	elgg_register_action('submission/grade', "$action_base/grade.php");
 	elgg_register_action('submission/delete_annotation', "$action_base/delete_annotation.php");
 
 	// Register type

@@ -55,6 +55,11 @@ div.todo-assignee-container {
 	font-weight: bold;
 }
 
+.todo span.todo-grade-status {
+	margin-left: 15px;
+	font-weight: bold;
+}
+
 span.accepted {
 	font-weight: bold !important;
 	color: green !important;
@@ -522,4 +527,27 @@ span.unviewed {
 
 .todo-group-member:hover {
 	background: #CCCCCC;
+}
+
+/** Submission Grade Form **/
+div.todo-submission-grade-container {
+	text-align: right;
+	float: right;
+}
+
+.todo-submission-grade-label {
+	color: #666666;
+	font-size: 1.1em;
+	font-weight: bold;
+	line-height: 2.2em;
+}
+
+form.elgg-form-submission-grade {
+
+}
+
+
+input.submission-grade-input {
+	width: 100px;
+	border: 3px solid #DDD;
 }

@@ -35,6 +35,18 @@ if (get_input('return_required', false)) {
 	$return_required = false;
 }
 
+if (get_input('grade_required', false)) {
+	$grade_required = true;
+	$grade_total = get_input('grade_total', false);
+	if ($status == TODO_STATUS_PUBLISHED && !$grade_total) {
+		// @TODO
+		//register_error(elgg_echo('todo:error:requiredfields'));
+		//forward(REFERER);
+	}
+} else {
+	$grade_required = false;
+}
+
 $rubric_select		= get_input('rubric_select');
 $rubric_guid		= get_input('rubric_guid');
 $access_level		= get_input('access_level');
@@ -81,6 +93,8 @@ $todo->tags 		= $tags;
 $todo->suggested_tags = $suggested_tags;
 $todo->due_date		= $due_date;
 $todo->return_required = $return_required;
+$todo->grade_required = $grade_required;
+$todo->grade_total = $grade_total;
 $todo->status = $status;
 $todo->rubric_guid = $rubric_guid;
 

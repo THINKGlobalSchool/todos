@@ -63,7 +63,19 @@ elgg.todo.init = function() {
 	// Register submit handler for submission file form
 	$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
 	
-	$('.submission-content-input-add').live('click', elgg.todo.submissionSubmitContent)
+	$('.submission-content-input-add').live('click', elgg.todo.submissionSubmitContent);
+
+	// Change handler for todo grade required checkbox
+	$(document).delegate('#todo-grade-required-input', 'change', function(){
+		if ($(this).is(":checked")) {
+			$('#todo-grade-total-container').show();
+		} else {
+			$('#todo-grade-total-container').hide();
+		}
+	});
+
+	// Verify todo submit form
+	$(document).delegate('#todo-edit', 'submit', elgg.todo.todoSaveSubmit);
 	
 	// OTHER
 	
@@ -460,6 +472,34 @@ elgg.todo.loadAssignees = function(guid, container) {
 			$("#" + container).html(data);
 		}
 	});
+}
+
+/**
+ * Validate the todo save form
+ */
+elgg.todo.todoSaveSubmit = function(event) {
+	var valid = true;
+
+	if ($('select[name=status]').val() == 1) {
+		if (!$('input[name=due_date]').val()) {
+			elgg.register_error(elgg.echo('todo:error:requireddate'));
+			valid = false;
+		}
+
+		if (!$('input[name=title]').val()) {
+			elgg.register_error(elgg.echo('todo:error:requiredtitle'));
+			valid = false;	
+		}
+
+		if ($('input[name=grade_required]').is(':checked') && !$('input[name=grade_total]').val()) {
+			elgg.register_error(elgg.echo('todo:error:requiredgradetotal'));
+			valid = false;
+		}
+	}
+	
+	if (!valid) {
+		event.preventDefault();
+	}
 }
 
 /**

@@ -26,6 +26,7 @@ $content = "<br /><br/><table class='elgg-table'>
 						<th><strong>" . elgg_echo('todo:label:accepted') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:datecompleted') . "</strong></th>
+						<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>
 					</tr>
@@ -43,12 +44,12 @@ foreach ($assignees as $assignee) {
 	$status = '<span class="incomplete">' . elgg_echo('todo:label:statusincomplete') . '</span>';
 	$date = '-';
 	$submission_info = '-';
-	$reminder = elgg_view("output/confirmlink", 
-									array(
-									'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . "&a=" . $assignee->getGUID(),
-									'text' => elgg_echo('todo:label:sendreminder'),
-									'confirm' => elgg_echo('todo:label:remindconfirm'),
-								));
+	$reminder = elgg_view("output/confirmlink", array(
+		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->guid . "&a=" . $assignee->guid,
+		'text' => elgg_echo('todo:label:sendreminder'),
+		'confirm' => elgg_echo('todo:label:remindconfirm'),
+	));
+	$grade = "N/A";
 	
 	// Accepted/Unaccepted
 	if (has_user_accepted_todo($assignee->guid, $vars['entity']->getGUID())) {
@@ -66,6 +67,7 @@ foreach ($assignees as $assignee) {
 			$date = date("F j, Y", $submission->time_created);
 			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 			$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
+			$grade = $submission->grade;
 		}
 
 		$reminder = '<span style="color: #bbbbbb;">-</span>';
@@ -77,6 +79,7 @@ foreach ($assignees as $assignee) {
 	$content .= 	"<td>$accepted</td>";
 	$content .= 	"<td>$status</td>";
 	$content .= 	"<td>$date</td>";
+	$content .= 	"<td id='assignee-grade-$assignee->guid' style='font-weight: bold;'>$grade</td>";
 	$content .= 	"<td>$submission_info</td>";
 	$content .= 	"<td>$reminder</td>";
 	$content .= '</tr>';
@@ -88,7 +91,7 @@ foreach ($assignee_guids as $idx => $guid) {
 }
 
 // Colspan for extra options
-$colspan = 5;
+$colspan = 6;
 
 // If there are submissions, display extra options
 if (get_todo_submissions_count($todo->guid)) {
@@ -98,7 +101,7 @@ if (get_todo_submissions_count($todo->guid)) {
 		//'class' => 'elgg-button elgg-button-action',
 	));
 	
-	$colspan = 4;
+	$colspan = 5;
 	$download_content = "<td>$download_files</td>";
 }
 

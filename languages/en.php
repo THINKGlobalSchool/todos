@@ -68,7 +68,7 @@ $english = array(
 	'todo:label:completed' => 'Completed',
 	'todo:label:ontime' => 'On Time',
 	'todo:label:ontimeincludingclosed' => 'On Time (Including Closed)',
-	'todo:label:datecompleted' => 'Date Completed',
+	'todo:label:datecompleted' => 'Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:submissions' => 'Submissions',
 	'todo:label:complete' => 'Complete',
@@ -122,6 +122,13 @@ $english = array(
 	'todo:label:date' => 'Date',
 	'todo:label:info' => 'Info',
 	'todo:label:submissionsadmin' => 'Submission Admin Role',
+	'todo:label:graderequired' => 'Grade Required',
+	'todo:label:gradetotal' => 'Grade Total',
+	'todo:label:grade' => 'Grade',
+	'todo:label:notgraded' => 'Not Graded',
+	'todo:label:gradedoutof' => 'Graded out of %s',
+	'todo:label:notyetgraded' => 'Ungraded',
+	'todo:label:child' => 'Child',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
@@ -134,10 +141,10 @@ $english = array(
 	'todo:label:future' => 'Future To Do\'s',
 	
 	// Reminder Labels
-	'todo:label:reminder' => 'Reminder',
-	'todo:label:sendreminder' => 'Send Reminder', 
+	'todo:label:reminder' => 'Remind',
+	'todo:label:sendreminder' => 'Send', 
 	'todo:label:remindconfirm' => 'Send Reminder?', 
-	'todo:label:remindall' => 'Remind All',
+	'todo:label:remindall' => 'All',
 	
 	// Status Labels
 	'todo:label:status' => 'Status',
@@ -272,7 +279,11 @@ You cannot reply to this email.",
 	'todo:success:flagopen' => 'To Do opened',
 	'todo:success:signup' => 'Successfully signed up for To Do',
 	'todo:success:assigneeremoved' => 'Assignee Removed',
+	'todo:success:grade' => 'Grade saved!',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
+	'todo:error:requiredtitle' => 'Title is required',
+	'todo:error:requireddate' => 'Due date is required',
+	'todo:error:requiredgradetotal' => 'Grade Total is required',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
 	'todo:error:delete' => 'There was an error deleting the Todo',
@@ -301,7 +312,9 @@ You cannot reply to this email.",
 	'todo:error:deletefile' => 'Failed to delete comment attachement',
 	'todo:error:invalidgroup' => 'Invalid Group',
 	'todo:error:invaliduser' => 'Invalid User',
+	'todo:error:invalidgrade' => 'Invalid Grade',
 	'todo:error:access' => 'Access Denied',
+	'todo:error:gradevalue' => 'Grade must be a number!',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',

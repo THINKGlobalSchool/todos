@@ -451,6 +451,8 @@ function todo_prepare_form_vars($todo = NULL) {
 		'return_required' => 0,
 		'rubric_select' => 0,
 		'rubric_guid' => NULL,
+		'grade_required' => 0,
+		'grade_total' => NULL,
 	);
 
 
