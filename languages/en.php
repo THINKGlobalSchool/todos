@@ -116,6 +116,7 @@ $english = array(
 	'todo:label:zipdelete' => 'Delete Todo Submission Zip Files (Cron period)',
 	'todo:label:attached' => 'File Attached',
 	'todo:label:groupusersubmissions' => 'User Submissions',
+	'todo:label:grades' => 'Grades',
 	'todo:label:selectmember' => 'Select Member',
 	'todo:label:selectamember' => 'Select a member',
 	'todo:label:show' => 'Show',

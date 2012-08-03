@@ -25,11 +25,19 @@ if (is_int($grade)) {
 	forward(REFERER);
 }
 
-if ($submission->canEdit()) {
+$todo = get_entity($submission->todo_guid);
+$can_grade = $todo->canEdit();
+
+if ($can_grade) {
 	$submission->grade = $grade;
-	echo $submission->getOwnerGUID();
+	echo json_encode(array(
+		'owner_guid' => $submission->getOwnerGUID(),
+		'grade_total' => $todo->grade_total,
+		'todo_guid' => $todo->guid, 
+		'grade' => $grade,
+	));
 	system_message(elgg_echo('todo:success:grade'));
 } else {
-	register_error('todo:error:access');
+	register_error(elgg_echo('todo:error:access'));
 }
 forward(REFERER);

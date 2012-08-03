@@ -83,6 +83,26 @@ function todo_init() {
 	elgg_register_simplecache_view('js/jquery_file_upload');
 	elgg_register_js('jQuery-File-Upload', $j_js);
 	
+	// Register DataTables JS
+	$dt_js = elgg_get_simplecache_url('js', 'datatables');
+	elgg_register_simplecache_view('js/datatables');
+	elgg_register_js('DataTables', $dt_js);
+	
+	// Register DataTables CSS
+	$dt_css = elgg_get_simplecache_url('css', 'todo/datatables');
+	elgg_register_simplecache_view('css/todo/datatables');
+	elgg_register_css('DataTables', $dt_css);
+	
+	// Register JS for tiptip
+	$tt_js = elgg_get_simplecache_url('js', 'tiptip');
+	elgg_register_simplecache_view('js/tiptip');
+	elgg_register_js('jquery.tiptip', $tt_js, 'head', 501);
+
+	// Register CSS for tiptip
+	$t_css = elgg_get_simplecache_url('css', 'tiptip');
+	elgg_register_simplecache_view('css/tiptip');
+	elgg_register_css('jquery.tiptip', $t_css);
+	
 	// Register datepicker JS
 	$daterange_js = elgg_get_site_url(). 'mod/todo/vendors/daterangepicker.jQuery.js';
 	elgg_register_js('jquery.daterangepicker', $daterange_js);
@@ -201,6 +221,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/submissions');
 	elgg_register_ajax_view('todo/user_submissions');
 	elgg_register_ajax_view('todo/group_user_submissions');
+	elgg_register_ajax_view('todo/group_submission_grades');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -321,6 +342,10 @@ function todo_page_handler($page) {
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
+			elgg_load_js('DataTables');
+			elgg_load_css('DataTables');
+			elgg_load_js('jquery.tiptip');
+			elgg_load_css('jquery.tiptip');
 
 			gatekeeper();
 			group_gatekeeper();
@@ -879,7 +904,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 		);
 		$return[] = ElggMenuItem::factory($options);
 	
-		// Add group submissions item
+		// Add group submissions and grades items
 		if (elgg_instanceof($user, 'group') && ($user->canEdit() /*|| @TODO Submissions Role*/ )) {
 			$options = array(
 				'name' => 'group_user_submissions',
@@ -888,6 +913,16 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 				'item_class' => 'todo-ajax-list-item',
 				'href' => 'ajax/view/todo/group_user_submissions?group=' . $user->guid,
 				'priority' => 4
+			);
+			$return[] = ElggMenuItem::factory($options);
+			
+			$options = array(
+				'name' => 'group_grades',
+				'text' => elgg_echo("todo:label:grades", array($by)),
+				'class' => 'todo-ajax-list',
+				'item_class' => 'todo-ajax-list-item',
+				'href' => 'ajax/view/todo/group_submission_grades?group=' . $user->guid,
+				'priority' => 5
 			);
 			$return[] = ElggMenuItem::factory($options);
 		}

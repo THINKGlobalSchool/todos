@@ -67,7 +67,9 @@ foreach ($assignees as $assignee) {
 			$date = date("F j, Y", $submission->time_created);
 			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 			$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
-			$grade = $submission->grade;
+			if ($submission->grade !== NULL) {
+				$grade = $submission->grade . '/' . $vars['entity']->grade_total; 
+			}
 		}
 
 		$reminder = '<span style="color: #bbbbbb;">-</span>';

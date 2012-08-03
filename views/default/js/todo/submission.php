@@ -425,9 +425,7 @@ elgg.todo.submission.submitGrade = function(event) {
 						if (data.status == -1) {
 							// Error
 						} else {
-							// Set grade in status table
-							var owner_guid = data.output;
-							$(document).find('#assignee-grade-' + owner_guid).html(submission_grade);
+							elgg.trigger_hook('submission', 'graded', data);
 							elgg.todo.submission.last_grade = submission_grade;
 						}
 					}
@@ -439,6 +437,23 @@ elgg.todo.submission.submitGrade = function(event) {
 	}
 
 	event.preventDefault();
+}
+
+elgg.todo.submission.graded_handler = function(hook, type, params, options) {
+	// Grade info
+	var owner_guid = params.output.owner_guid;
+	var todo_guid = params.output.todo_guid;
+	var grade = params.output.grade;
+	var grade_total = params.output.grade_total;
+	
+	// Friendly grade string
+	var grade_string = grade + '/' + grade_total;
+	
+	// Set grade in status table
+	$(document).find('#assignee-grade-' + owner_guid).html(grade_string);
+	
+	// Set grade in grade book
+	$(document).find('#submission-grade-' + todo_guid + '-' + owner_guid).html(grade_string);
 }
 
 // Calculate file size for display
@@ -455,4 +470,5 @@ elgg.todo.submission.calculateSize = function(size) {
     return (size / 1000).toFixed(2) + ' KB';
 }
 
+elgg.register_hook_handler('submission', 'graded', elgg.todo.submission.graded_handler);
 elgg.register_hook_handler('init', 'system', elgg.todo.submission.init);
