@@ -69,6 +69,7 @@ if (count($todos)) {
 		foreach ($todos as $todo) {	
 			$grade_content = '';
 			$grade_text = '';
+			$grade_class = '';
 				
 			if (has_user_submitted($member->guid, $todo->guid)) {
 				// Check if theres a submission, may have been manually completed
@@ -81,17 +82,19 @@ if (count($todos)) {
 						$grade_text .= "{$grade}/{$grade_total}";
 					} else {
 						$grade_text .= "Ungraded";
-					}
+						$grade_class = 'submission-ungraded';					}
 				
 					$grade_content = "<a id='submission-grade-{$todo->guid}-{$member->guid}' onclick='javascript:return false;' rel='grade-lightbox-{$member->guid}' class='todo-submission-lightbox' href='{$ajax_url}' style='font-weight: bold;'>$grade_text</a>";
 				}
 			} else if (!is_todo_assignee($todo->guid, $member->guid)) {
 				$grade_content = "Not assigned";
+				$grade_class = 'submission-unassigned';
 			} else {
 				$grade_content = "Incomplete";
+				$grade_class = 'submission-incomplete';
 			}
 			
-			$content .= "<td>{$grade_content}</td>";
+			$content .= "<td class='{$grade_class}'>{$grade_content}</td>";
 		}
 	
 		$content .= "</tr>";

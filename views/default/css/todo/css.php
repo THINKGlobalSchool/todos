@@ -551,3 +551,18 @@ input.submission-grade-input {
 	width: 100px;
 	border: 3px solid #DDD;
 }
+
+/** Submission Gradebook Styles **/
+.submission-incomplete {
+	font-style: italic;
+	color: #555555;
+}
+
+.submission-ungraded {
+	font-style: italic;
+}
+
+.submission-unassigned {
+	color: #AAAAAA;
+	font-size: 12px;
+}
