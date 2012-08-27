@@ -371,7 +371,8 @@ function todo_page_handler($page) {
 			break;
 		case 'loadassignees':
 			$guid = get_input('guid');
-			echo todo_get_page_content_assignees($guid);
+			$assignees = get_todo_assignees($guid);	
+			echo elgg_view('todo/assignees', array('assignees' => $assignees));
 			exit;
 			break;
 		case 'download':
