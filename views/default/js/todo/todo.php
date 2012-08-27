@@ -73,6 +73,11 @@ elgg.todo.init = function() {
 			$('#todo-grade-total-container').hide();
 		}
 	});
+	
+	// Change handler for student submission required checkbox
+	$(document).delegate('#todo_return_required', 'change', function(){
+		$('#todo-suggested-tags-container').toggle();
+	});
 
 	// Verify todo submit form
 	$(document).delegate('#todo-edit', 'submit', elgg.todo.todoSaveSubmit);
@@ -529,16 +534,24 @@ elgg.todo.removeAssignee = function(event) {
  *  Onchange handler for the assignee type select input
  */
 elgg.todo.assigneeTypeSelectChange = function(event) {
-	if ($(this).val() == 0) {
+	if ($(this).val() == 0) { // Individual
 		$('#todo-assign-individual-container').show();
 		$('#todo-assign-group-container').hide();
 		$("#todo-assignee-userpicker").removeAttr("disabled");
 		$("#todo-group-assignee-select").attr("disabled","disabled");
-	} else {
+		$("#todo-current-group-select").attr("disabled","disabled");
+	} else if ($(this).val() == 1) { // Groups (other groups)
 		$('#todo-assign-individual-container').hide();
 		$('#todo-assign-group-container').show();
 		$("#todo-assignee-userpicker").attr("disabled","disabled");
 		$("#todo-group-assignee-select").removeAttr("disabled");
+		$("#todo-current-group-select").attr("disabled","disabled");
+	} else if ($(this).val() == 2) { // Current group
+		$('#todo-assign-group-container').hide();
+		$('#todo-assign-individual-container').hide();
+		$("#todo-current-group-select").removeAttr("disabled");
+		$("#todo-group-assignee-select").attr("disabled","disabled");
+		$("#todo-assignee-userpicker").attr("disabled","disabled");
 	}
 	event.preventDefault();
 }

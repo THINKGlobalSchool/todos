@@ -9,10 +9,8 @@
  * @link http://www.thinkglobalschool.com/
  * 
  */
-
-
 		
-// get input
+// Get inputs
 $title 				= get_input('title');
 $description 		= get_input('description');
 $tags 				= string_to_tag_array(get_input('tags'));
@@ -22,34 +20,37 @@ $assignees			= get_input('members');
 $container_guid 	= get_input('container_guid');	
 $status 			= get_input('status');
 $guid 				= get_input('guid');
+$rubric_select		= get_input('rubric_select');
+$rubric_guid		= get_input('rubric_guid');
+$access_level		= get_input('access_level');
 
 // Sticky form
 elgg_make_sticky_form('todo_edit');
 
 // If user clicks 'save and new' 
-$forward_new		= get_input('submit_and_new', 0);
+$forward_new = get_input('submit_and_new', 0);
 	
-if (get_input('return_required', false)) {
-	$return_required = true;
+if (get_input('return_required', FALSE)) {
+	$return_required = TRUE;
 } else {
-	$return_required = false;
+	$suggested_tags = NULL;
+	$return_required = FALSE;
 }
 
-if (get_input('grade_required', false)) {
-	$grade_required = true;
-	$grade_total = get_input('grade_total', false);
+if (get_input('grade_required', FALSE)) {
+	$grade_required = TRUE;
+	$grade_total = get_input('grade_total', FALSE);
 	if ($status == TODO_STATUS_PUBLISHED && !$grade_total) {
 		// @TODO
 		//register_error(elgg_echo('todo:error:requiredfields'));
 		//forward(REFERER);
 	}
 } else {
-	$grade_required = false;
+	$grade_required = FALSE;
+	$grade_total = NULL;
+	$rubric_select = NULL;
+	$rubric_guid = NULL;
 }
-
-$rubric_select		= get_input('rubric_select');
-$rubric_guid		= get_input('rubric_guid');
-$access_level		= get_input('access_level');
 
 // Check values
 if ($status == TODO_STATUS_PUBLISHED && (empty($title) || empty($due_date))) {
@@ -64,7 +65,7 @@ if ($guid) {
 		
 		// Get previous status for notifications
 		$previous_status = $todo->status;
-		$todo->time_published = (($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) ? time() : null);
+		$todo->time_published = (($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) ? time() : NULL);
 		
 		// If editing, and assignees only is selected we need to set the access id 
 		// to the existing access collection id
@@ -83,7 +84,7 @@ if ($guid) {
 	$todo = new ElggObject();
 	$todo->subtype 		= "todo";
 	$todo->container_guid = $container_guid;
-	$todo->time_published = ($status == TODO_STATUS_PUBLISHED ? time() : null);
+	$todo->time_published = ($status == TODO_STATUS_PUBLISHED ? time() : NULL);
 	$todo->access_id 	= $access_level; 
 }
 

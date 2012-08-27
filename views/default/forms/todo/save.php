@@ -10,6 +10,9 @@
  * 
  */
 
+// Get page owner to determine if we're creating as a group
+$page_owner = elgg_get_page_owner_entity();
+
 // Get values/sticky values
 $title 				= elgg_extract('title', $vars);
 $description 		= elgg_extract('description', $vars);
@@ -49,6 +52,9 @@ HTML;
 } else {	
 	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));	
 	$submit_input .= '&nbsp;' . elgg_view('input/submit', array('name' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
+	
+	// Hide current assignees section until at least one is selected
+	$assignees_hidden = 'hidden';
 }
 
 $container_guid = get_input('container_guid', elgg_get_page_owner_guid());
@@ -86,18 +92,37 @@ $suggested_tags_input = elgg_view('input/tags', array(
 	'value' => $suggested_tags ? $suggested_tags : ',',
 ));
 
+// Set assignee options depending on page owner
+if (elgg_instanceof($page_owner, 'group')) {
+	$assign_options = array(
+		2 => elgg_echo('todo:label:currentgroup'),
+		1 => elgg_echo('todo:label:anothergroup'),
+		0 => elgg_echo('todo:label:individuals'),
+	);
+	$userpicker_hidden = 'hidden';
+	
+	$current_group_hidden = elgg_view('input/hidden', array(
+		'id' => 'todo-current-group-select',
+		'name' => 'members[]',
+		'value' => $page_owner->guid,
+	));
+	
+} else {
+	$assign_options = array(
+		0 => elgg_echo('todo:label:individuals'),
+		1 => elgg_echo('todo:label:groups'),
+	);
+}
+
 $assign_label = elgg_echo('todo:label:assignto');
 $assign_content = elgg_view('input/dropdown', array(
 	'name' => 'assignee_type_select',
 	'id' => 'todo-assignee-type-select',
-	'options_values' =>	array(
-		0 => elgg_echo('todo:label:individuals'),
-		1 => elgg_echo('todo:label:groups'
-	))		
+	'options_values' =>	$assign_options,
 ));
 													
 $user_picker = elgg_view('input/userpicker', array(
-	'id' => 'todo-assignee-userpicker'
+	'id' => 'todo-assignee-userpicker',
 ));
 
 $group_label = elgg_echo('todo:label:selectgroup');
@@ -112,6 +137,10 @@ $group_picker = elgg_view('input/dropdown', array(
 
 $return_label = elgg_echo('todo:label:returnrequired');
 $return_content = "<input type='checkbox' class='input-checkboxes' " . ($return_required ? "checked='checked' ": '' ) .  " name='return_required' id='todo_return_required'>";
+
+if (!$return_required) {
+	$suggested_tags_display = "display: none;";
+}
 
 $grade_required_label = elgg_echo('todo:label:graderequired');
 $grade_required_input = "<input type='checkbox' class='input-checkboxes' " . ($grade_required ? "checked='checked' ": '' ) .  " name='grade_required' id='todo-grade-required-input'>";
@@ -191,7 +220,7 @@ $access_content = elgg_view('input/dropdown', array(
 	'value' => $access_id
 ));
 
-$status_label = elgg_echo('todo:label:status');
+$status_label = elgg_echo('todo:label:publishstatus');
 $status_input = elgg_view('input/dropdown', array(
 	'name' => 'status',
 	'id' => 'todo_status',
@@ -236,27 +265,32 @@ $form_body = <<<HTML
         $tag_input
 	</div><br />
 	<div>
-		<label>$suggested_tags_label</label>&nbsp;&nbsp;$popup<br />
-        $suggested_tags_input
-	</div><br />
-	<div>
 		<label>$assign_label</label><br />
 		$assign_content<br /><br />
-		<div id='todo-assign-individual-container'>
+		<div id='todo-assign-individual-container' class='$userpicker_hidden'>
 			$user_picker
+			<br />
 		</div>
 		<div id='todo-assign-group-container'>
 			<label>$group_label</label><br />
 			$group_picker
+			$current_group_hidden
 			<br /><br />
-		</div><br />
-		<label>$assignees_label</label><br />
-		<div id='todo-assignees-container'></div>
-	</div><br />
+		</div>
+		<div class='$assignees_hidden'>
+			<label>$assignees_label</label><br />
+			<div id='todo-assignees-container'></div>
+			<br />
+		</div>
+	</div>
 	<div>
 		<label>$return_label</label>
 		$return_content
 	</div><br />
+	<div id='todo-suggested-tags-container' style='$suggested_tags_display'>
+		<label>$suggested_tags_label</label>&nbsp;&nbsp;$popup<br />
+        $suggested_tags_input<br />
+	</div>
 	<div>
 		<label>$grade_required_label</label>
 		$grade_required_input
@@ -264,8 +298,8 @@ $form_body = <<<HTML
 	<div id='todo-grade-total-container' style='$grade_required_display'>
 		<label>$grade_total_label</label>
 		$grade_total_input<br /><br />
+		$rubric_html
 	</div>
-	$rubric_html<br />
 	<div>
 		<label>$access_label</label><br />
 		$access_content

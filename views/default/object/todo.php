@@ -86,9 +86,6 @@ if ($full) { // Full View
 	} else {
 		$grade_content = elgg_echo("todo:label:notgraded");
 	}
-	
-	$suggested_tags_label = elgg_echo("todo:label:suggestedtags");
-	$suggested_tags_content = elgg_view('output/tags', array('value' => $todo->suggested_tags));
 
 	$status_label = elgg_echo("todo:label:status");
 	
@@ -139,6 +136,17 @@ if ($full) { // Full View
 
 	$body = elgg_view_module('info', $description_label, $description_content);
 	$body .= elgg_view_module('info', $duedate_label, $duedate_content);
+
+	$body .= elgg_view_module('info', $return_label, $return_content);	
+
+	// If supplied suggested tags, display them
+	if ($todo->suggested_tags) {
+		$suggested_tags_label = elgg_echo("todo:label:suggestedtags");
+		$suggested_tags_content = elgg_view('output/tags', array('value' => $todo->suggested_tags));
+		$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
+	}
+
+	$body .= elgg_view_module('info', $grade_label, $grade_content);	
 	
 	// If we have a rubric guid, display its info
 	if ((int)$todo->rubric_guid) {
@@ -149,9 +157,6 @@ if ($full) { // Full View
 		}
 	}
 	
-	$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
-	$body .= elgg_view_module('info', $return_label, $return_content);	
-	$body .= elgg_view_module('info', $grade_label, $grade_content);	
 	$body .= elgg_view_module('info', $status_label, $status_content);
 	
 
