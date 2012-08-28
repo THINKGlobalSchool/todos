@@ -49,7 +49,7 @@ foreach ($assignees as $assignee) {
 		'text' => elgg_echo('todo:label:sendreminder'),
 		'confirm' => elgg_echo('todo:label:remindconfirm'),
 	));
-	$grade = "N/A";
+	$grade = "-";
 	
 	// Accepted/Unaccepted
 	if (has_user_accepted_todo($assignee->guid, $vars['entity']->getGUID())) {
