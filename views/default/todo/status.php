@@ -36,20 +36,22 @@ $content = "<br /><br/><table class='elgg-table'>
 // Array of assignee guids to bulk remind
 $assignee_guids = array();
 
+$dash = "<span class='todo-status-dash'>-</span>";
+
 foreach ($assignees as $assignee) {
 	//Populate assignee_guids array for later
 	$assignee_guids[] = $assignee->getGUID();
 		
 	// Default values
 	$status = '<span class="incomplete">' . elgg_echo('todo:label:statusincomplete') . '</span>';
-	$date = '-';
-	$submission_info = '-';
+	
+	$submission_info = $date = $grade = $dash;
+	
 	$reminder = elgg_view("output/confirmlink", array(
 		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->guid . "&a=" . $assignee->guid,
 		'text' => elgg_echo('todo:label:sendreminder'),
 		'confirm' => elgg_echo('todo:label:remindconfirm'),
 	));
-	$grade = "-";
 	
 	// Accepted/Unaccepted
 	if (has_user_accepted_todo($assignee->guid, $vars['entity']->getGUID())) {
@@ -72,7 +74,7 @@ foreach ($assignees as $assignee) {
 			}
 		}
 
-		$reminder = '<span style="color: #bbbbbb;">-</span>';
+		$reminder = $dash;
 	}
 	
 	// Build rest of content
