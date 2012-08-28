@@ -60,6 +60,10 @@ div.todo-assignee-container {
 	font-weight: bold;
 }
 
+.todo-status-dash {
+	color: #bbbbbb;
+}
+
 span.accepted {
 	font-weight: bold !important;
 	color: green !important;
