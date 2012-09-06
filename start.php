@@ -235,6 +235,7 @@ function todo_init() {
 	elgg_register_action('todo/open', "$action_base/open.php");
 	elgg_register_action('todo/upload', "$action_base/upload.php");
 	elgg_register_action('todo/checkcontent', "$action_base/checkcontent.php");
+	elgg_register_action('todo/settings', "$action_base/settings.php");
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
@@ -379,6 +380,16 @@ function todo_page_handler($page) {
 			set_input('guid', $page[1]);
 			include elgg_get_plugins_path() . 'todo/pages/todo/download.php';
 			return TRUE;
+			break;
+		case 'settings':
+			gatekeeper();
+			elgg_set_context('settings');
+			switch ($page_type) {
+				default:
+				case 'notifications':
+					$params = todo_get_page_content_settings_notifications();
+					break;
+			}
 			break;
 	}
 	
@@ -671,6 +682,16 @@ function todo_submenus() {
 	if (elgg_in_context('admin')) {
 		elgg_register_admin_menu_item('administer', 'todo', 'statistics');
 	}
+
+	$item = array(
+		'name' => 'todo_notification_settings',
+		'text' => elgg_echo('todo:menu:notifications'),
+		'href' =>  'todo/settings/notifications',
+		'contexts' => array('settings'),
+		'priority' => 9999,
+	);
+
+	elgg_register_menu_item('page', ElggMenuItem::factory($item));
 }
 
 /**

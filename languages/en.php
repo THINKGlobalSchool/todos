@@ -32,6 +32,7 @@ $english = array(
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
 	'todo:menu:assignedtodos' => 'To Do\'s I\'ve Assigned', 
 	'todo:menu:alltodos' => 'All Site To Do\'s',		
+	'todo:menu:notifications' => 'To Do Notifications',
 	
 	// Labels 
 	'todo:label:due' => 'Due: %s',
@@ -133,6 +134,8 @@ $english = array(
 	'todo:label:gradedoutof' => 'Graded out of %s',
 	'todo:label:notyetgraded' => 'Ungraded',
 	'todo:label:child' => 'Child',
+	'todo:label:settings' => 'To Do Settings',
+	'todo:label:suppress_completion' => 'Suppress To Do Completion Notifications',
 	
 	// Calendar labels
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',

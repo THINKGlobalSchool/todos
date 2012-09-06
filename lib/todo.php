@@ -103,6 +103,21 @@ function todo_get_page_content_edit($type, $guid) {
 }
 
 /**
+ * Get todo notifications settings content
+ */
+function todo_get_page_content_settings_notifications() {
+	$params['title'] = elgg_echo('todo:label:settings');
+	$params['filter'] = '';
+	
+	$user = elgg_get_logged_in_user_entity();
+
+	$params['content'] = elgg_view_form('todo/settings');
+	
+	$params['layout'] = 'one_sidebar';
+	return $params;
+}
+
+/**
  * Get/list todo's based on critera
  * @param array $params:
  * 
