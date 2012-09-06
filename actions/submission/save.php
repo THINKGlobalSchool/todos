@@ -65,13 +65,15 @@ add_to_river('river/object/todosubmission/create', 'create', $user->guid, $submi
 
 // Notify todo owner
 global $CONFIG;
-notify_user(
-	$todo->owner_guid, 
-	$CONFIG->site->guid,
-	elgg_echo('todo:email:subjectsubmission', array($user->name, $todo->title)), 
-	elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL(), $submission->getURL()))
-);
 
+if (!elgg_get_plugin_user_setting('suppress_complete', $todo->owner_guid, 'todo')) {
+	notify_user(
+		$todo->owner_guid, 
+		$CONFIG->site->guid,
+		elgg_echo('todo:email:subjectsubmission', array($user->name, $todo->title)), 
+		elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL(), $submission->getURL()))
+	);
+}
 
 // Save successful, forward to index
 if ($success) {
