@@ -504,25 +504,27 @@ function submission_create_event_listener($event, $object_type, $object) {
 
 			// Set permissions for any attached content (files)
 			$contents = unserialize($object->content);
-			foreach ($contents as $content) {
-				$guid = (int)$content;
-				$entity = get_entity($guid);
-				if (elgg_instanceof($entity, 'object')) {
-					// If content is a todosubmissionfile entitity, set its ACL to that of the submission
-					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-						$entity->access_id = $submission_acl;
-					}
+			
+			if ($contents) {
+				foreach ($contents as $content) {
+					$guid = (int)$content;
+					$entity = get_entity($guid);
+					if (elgg_instanceof($entity, 'object')) {
+						// If content is a todosubmissionfile entitity, set its ACL to that of the submission
+						if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+							$entity->access_id = $submission_acl;
+						}
 
-					// Set up a todo content relationship for the entity
-					$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
-					
-					// Set content tags to todo suggested tags
-					todo_set_content_tags($entity, $todo);
+						// Set up a todo content relationship for the entity
+						$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
 
-					$entity->save();
-				} 
-			}
-						
+						// Set content tags to todo suggested tags
+						todo_set_content_tags($entity, $todo);
+
+						$entity->save();
+					} 
+				}
+			}			
 		} else {
 			return false;
 		}
