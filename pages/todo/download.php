@@ -32,16 +32,18 @@ foreach ($submission_batch as $submission) {
 	// Need to unserialize from metadata
 	$contents = unserialize($submission->content);
 
-	// Check each content item
-	foreach ($contents as $content) {
-		// Try to grab entity
-		$entity = get_entity($content);
+	if ($contents) {
+		// Check each content item
+		foreach ($contents as $content) {
+			// Try to grab entity
+			$entity = get_entity($content);
 
-		// Check if we have a downloadable entity (file, todosubmission file)
-		if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-			// Add to files array (guid => {'username' => username, 'filename' => file_location})
-			$files[$entity->guid]['filename'] = $entity->getFilenameOnFilestore();
-			$files[$entity->guid]['username'] = $entity->getOwnerEntity()->username;
+			// Check if we have a downloadable entity (file, todosubmission file)
+			if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+				// Add to files array (guid => {'username' => username, 'filename' => file_location})
+				$files[$entity->guid]['filename'] = $entity->getFilenameOnFilestore();
+				$files[$entity->guid]['username'] = $entity->getOwnerEntity()->username;
+			}
 		}
 	}
 }
