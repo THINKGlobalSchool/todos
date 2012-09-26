@@ -394,8 +394,6 @@ function get_todos(array $params) {
 			$content = $get_from_relationship($options);
 			break;
 	}
-	
-	error_log($options['limit']);
 
 	// If we have nothing, and we're listing, return a nice no results message
 	if (!$content && $params['list']) {
