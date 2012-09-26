@@ -54,7 +54,7 @@ if (!$filter_priority) {
 		'text' => elgg_echo('todo:label:sortasc'),
 		'class' => 'todo-ajax-sort',
 		'selected' => $sort_order === 'ASC',
-		'href' => "ajax/view/todo/list?type={$type}&status={$status}&sort_order=ASC&u={$container_guid}$",
+		'href' => "ajax/view/todo/list?type={$type}&status={$status}&sort_order=ASC&u={$container_guid}",
 	));
 
 	elgg_register_menu_item('todo-sort-menu', array(
