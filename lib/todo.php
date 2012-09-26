@@ -171,12 +171,22 @@ function get_todos(array $params) {
 	
 	// Default sort order
 	if (!$params['sort_order']) {
-		$params['sort_order'] = "DESC";
+		$params['sort_order'] = "ASC";
 	}
 	
 	// Default status
 	if (!$params['status']) {
 		$params['status'] = 'incomplete';
+	}
+	
+	// Default limit 
+	if (!$params['limit']) {
+		$params['limit'] = get_input('limit', 10);
+	}
+	
+	// Default offset 
+	if (!$params['offset']) {
+		$params['offset'] = get_input('offset', 0);
 	}
 	
 	// Common options
@@ -185,8 +195,8 @@ function get_todos(array $params) {
 		'subtype' => 'todo',
 		'full_view' => FALSE,
 		'order_by_metadata' => array('name' => $params['order_by_metadata'], 'as' => 'int', 'direction' => $params['sort_order']),
-		'limit' => get_input('limit', 10), 
-		'offset' => get_input('offset', 0),
+		'limit' => $params['limit'], 
+		'offset' => $params['offset'],
 		'count' => $count,
 	);
 
@@ -384,6 +394,8 @@ function get_todos(array $params) {
 			$content = $get_from_relationship($options);
 			break;
 	}
+	
+	error_log($options['limit']);
 
 	// If we have nothing, and we're listing, return a nice no results message
 	if (!$content && $params['list']) {

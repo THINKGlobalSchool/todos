@@ -12,7 +12,7 @@
 $type = get_input('type', 'all');
 $filter_priority = get_input('filter_priority', null);
 $status = get_input('status', 'incomplete');
-$sort_order = get_input('sort_order', 'DESC');
+$sort_order = get_input('sort_order', 'ASC');
 $container_guid = get_input('u', elgg_get_logged_in_user_guid()); 
 
 // Set up secondary menu nav items
@@ -112,6 +112,7 @@ if ($status != 'submissions') {
 		'sort_order' => $sort_order,
 		'container_guid' => $container_guid,
 		'list' => TRUE,
+		'limit' => 15,
 	);
 
 	$today = strtotime(date("F j, Y"));
