@@ -792,7 +792,14 @@ elgg.todo.getCalendars = function() {
 /**
  * Builds the calendar from a JSON object
  */
-elgg.todo.buildCalendar = function(calendars) {
+elgg.todo.buildCalendar = function(calendars, date, view) {
+	// Check for supplied view	
+	if (!view) {
+		view = 'month'; // Default to month
+	} else {
+		view = view.name;
+	}
+	
 	var url = elgg.get_site_url() + 'ajax/view/todo/calendar_feed';
 	$('#todo-category-calendar').fullCalendar({
 		weekMode: 'liquid',
@@ -801,8 +808,15 @@ elgg.todo.buildCalendar = function(calendars) {
 			center: 'title',
 			right: 'month,agendaWeek,agendaDay'
 		},
-		eventSources: elgg.todo.buildSources(calendars)
+		eventSources: elgg.todo.buildSources(calendars),
+		defaultView: view,
 	});
+	
+	// Check for supplied date
+	if (date) {
+		// Set calendar to date
+		$('#todo-category-calendar').fullCalendar('gotoDate', date.getFullYear(), date.getMonth(), date.getDate());
+	}
 }
 
 /**
@@ -816,7 +830,11 @@ elgg.todo.buildSources = function(calendars) {
 	var i = 0;
 	$.each(calendars, function(k, v) {
 		if (v.display) {
-			sources[i] = {'url' : v.url, 'type': 'GET'};
+			sources[i] = {
+				'url' : v.url, 
+				'type': 'GET',
+				'className': 'elgg-todocalendar-feed-' + k
+			};
 			i++;
 		}
 	});
@@ -833,8 +851,12 @@ elgg.todo.toggleCalendar = function() {
 
 	calendars[guid]['display'] = $(this).is(':checked');
 
+	var current_date = $('#todo-category-calendar').fullCalendar('getDate');
+	var current_view = $('#todo-category-calendar').fullCalendar('getView');
+	
 	$('#todo-category-calendar').fullCalendar('destroy');
-	elgg.todo.buildCalendar(calendars);
+	
+	elgg.todo.buildCalendar(calendars, current_date, current_view);
 }
 
 // Calendar menu item changed hook handler

@@ -10,8 +10,23 @@
  * 
  */
 
-$categories = get_input('categories_list');
-$categories = serialize($categories);
+$category_guids = get_input('categories_list');
+$categories = serialize($category_guids);
+
+$backgrounds = get_input('background');
+$foregrounds = get_input('foreground');
+
+if ($backgrounds && $foregrounds) {
+	$colors = array();
+	for ($i = 0; $i < count($category_guids); $i++) {
+		$colors[$category_guids[$i]] = array(
+			'bg' => $backgrounds[$i],
+			'fg' => $foregrounds[$i],
+		);
+	}
+	elgg_set_plugin_setting('calendar_category_colors', serialize($colors), 'todo');
+}
+
 
 elgg_set_plugin_setting('calendar_categories', $categories, 'todo');
 

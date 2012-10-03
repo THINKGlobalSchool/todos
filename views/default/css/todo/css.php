@@ -570,3 +570,10 @@ input.submission-grade-input {
 	color: #AAAAAA;
 	font-size: 12px;
 }
+
+/** Calendar Styles **/
+.elgg-todocalendar-feed {
+	border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+}

@@ -14,6 +14,9 @@
 $categories = elgg_get_plugin_setting('calendar_categories', 'todo');
 
 if ($categories) {
+	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+	$colors = unserialize($colors);
+
 	$categories = unserialize($categories);
 
 	foreach ($categories as $category) {
@@ -25,13 +28,18 @@ if ($categories) {
 				'class' => 'right todo-sidebar-calendar-toggler',
 				'checked' => 'checked'
 			));
-			$text = "<label>$category->title$input</label>";
+			
+			$bg = $colors[$category->guid]['bg'];
+			$fg = $colors[$category->guid]['fg'];
+			
+			
+			$text = "<label style='background: #$gb; color: #$fg;'>$category->title$input</label>";
 			
 			elgg_register_menu_item('todo-sidebar-calendars', array(
 				'name' => 'todo-sidebar-calendar-' . $guid,
 				'text' => $text,
 				'href' => false,
-				'item_class' => 'pam mvm elgg-tgscalendar-feed elgg-tgscalendar-feed-' . $guid // @TODO STYLES?
+				'item_class' => 'pam mvm elgg-todocalendar-feed elgg-todocalendar-feed-' . $guid // @TODO STYLES?
 			));
 		}
 	}
