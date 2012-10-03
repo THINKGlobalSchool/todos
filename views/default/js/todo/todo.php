@@ -808,8 +808,15 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 			center: 'title',
 			right: 'month,agendaWeek,agendaDay'
 		},
+		theme: true,
 		eventSources: elgg.todo.buildSources(calendars),
 		defaultView: view,
+		eventClick: function(event) {
+			if (event.url) {
+				window.open(event.url);
+				return false;
+			}
+		},
 	});
 	
 	// Check for supplied date
