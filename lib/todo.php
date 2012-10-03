@@ -403,36 +403,6 @@ function get_todos(array $params) {
 	}
 }
 
-
-/**
- * Helper function to build menu content
- * @param bool $secondary Show the secondary menu
- * @return HTML
- */
-function todo_get_filter_content($secondary = TRUE) {
-	// Not displayed if we're looking at a groups todos
-	if (!elgg_instanceof(elgg_get_page_owner_entity(), 'group')) {
-		// show the main filter menu.
-		$content = elgg_view_menu('todo-listing-main', array(
-			'sort_by' => 'priority',
-			// recycle the menu filter css
-			'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
-		));
-	
-		if ($secondary) {
-		// show the secondary filter menu.
-			$content .= elgg_view_menu('todo-listing-secondary', array(
-				'sort_by' => 'priority',
-				'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
-			));
-		}
-	
-		return $content;
-	} else {
-		return ' ';
-	}
-}
-
 /**
  * Pull together todo variables for the save form
  *
@@ -1157,49 +1127,6 @@ function todo_set_content_tags($entity, $todo) {
 }
 
 /**
- * Sort given todo array by due date, ascending or descending
- * 
- * @param array &$todos 
- * @param bool $descending 
- * 
- */
-function sort_todos_by_due_date(&$todos, $descending = false) {
-	if ($descending) {
-		usort($todos, "compare_todo_due_dates_desc");
-	} else {
-		usort($todos, "compare_todo_due_dates_asc");	
-	}
-}
-
-/** 
- * Compare given todos by due_date descending
- *  
- * @param ElggEntity $a 
- * @param ElggEntity $b
- * @return bool
- */
-function compare_todo_due_dates_desc($a, $b) {
-	if ($a->due_date == $b->due_date) {
-		return 0;
-	}
-	return ($a->due_date > $b->due_date) ? -1 : 1;
-}
-
-/** 
- * Compare given todos by due_date ascending
- *  
- * @param ElggEntity $a 
- * @param ElggEntity $b
- * @return bool
- */
-function compare_todo_due_dates_asc($a, $b) {
-	if ($a->due_date == $b->due_date) {
-		return 0;
-	}
-	return ($a->due_date < $b->due_date) ? -1 : 1;
-}
-
-/**
  * Generate unique user hash 
  *
  * @param ElggUser $user 
@@ -1234,34 +1161,6 @@ function check_todo_user_hash($hash, $user) {
 	}
 	return false;
 }
-
-/**
- * Get To Do's content header
- * 
- * @param string $context - Which mode we're in (nothing to do with elgg_get_context())
- * @return html
- */
-function get_todo_content_header($context = 'owned', $new_link = "todo/createtodo/") {	
-	$tabs = array(
-		'all' => array(
-			'title' => 'All',
-			'url' => elgg_get_site_url() . 'todo/all/',
-			'selected' => ($context == 'all'),
-		),
-		'assigned' => array(
-			'title' => 'Assigned to me',
-			'url' => elgg_get_site_url() . 'todo/',
-			'selected' => ($context == 'assigned'),
-		),
-		'owned' => array(
-			'title' => 'Assigned by me',
-			'url' => elgg_get_site_url() . 'todo/owner',
-			'selected' => ($context == 'owned'),
-		)
-	);
-					
-	return elgg_view('page_elements/content_header', array('tabs' => $tabs, 'type' => 'todo', 'new_link' => elgg_get_site_url() . $new_link));
-}	
 
 /**
  * Alternative viewer function to output simple entity views

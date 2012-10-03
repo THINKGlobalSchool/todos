@@ -103,6 +103,16 @@ function todo_init() {
 	elgg_register_simplecache_view('css/tiptip');
 	elgg_register_css('jquery.tiptip', $t_css);
 	
+	// Register JS for fullcalendar
+	$fc_js = elgg_get_simplecache_url('js', 'fullcalendar');
+	elgg_register_simplecache_view('js/fullcalendar');
+	elgg_register_js('tgs.fullcalendar', $fc_js);
+
+	// Register CSS for fullcalendar
+	$fc_css = elgg_get_simplecache_url('css', 'fullcalendar');
+	elgg_register_simplecache_view('css/fullcalendar');
+	elgg_register_css('tgs.fullcalendar', $fc_css);
+
 	// Register datepicker JS
 	$daterange_js = elgg_get_site_url(). 'mod/todo/vendors/daterangepicker.jQuery.js';
 	elgg_register_js('jquery.daterangepicker', $daterange_js);
@@ -150,16 +160,15 @@ function todo_init() {
 	
 	// Register handlers for submission relationships
 	elgg_register_event_handler('create', SUBMISSION_RELATIONSHIP, 'submission_relationship_event_listener');
-	//elgg_register_event_handler('delete', SUBMISSION_RELATIONSHIP, 'submission_relationship_event_listener');
 	
 	// Register a handler for submission comments so that the todo owner is notified
 	elgg_register_event_handler('annotate', 'all', 'submission_comment_event_listener');
-		
+
 	// Owner block hook (for logged in users)
 	if (elgg_is_logged_in()) {
 		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
 	}
-	
+
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
 	
@@ -222,6 +231,9 @@ function todo_init() {
 	elgg_register_ajax_view('todo/user_submissions');
 	elgg_register_ajax_view('todo/group_user_submissions');
 	elgg_register_ajax_view('todo/group_submission_grades');
+	elgg_register_ajax_view('todo/category_calendars');
+	elgg_register_ajax_view('todo/category_calendars_sidebar');
+	elgg_register_ajax_view('todo/calendar_feed');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -236,6 +248,7 @@ function todo_init() {
 	elgg_register_action('todo/upload', "$action_base/upload.php");
 	elgg_register_action('todo/checkcontent', "$action_base/checkcontent.php");
 	elgg_register_action('todo/settings', "$action_base/settings.php");
+	elgg_register_action('todo/calendars', "$action_base/calendars.php");
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
@@ -286,7 +299,8 @@ function todo_page_handler($page) {
 		default:
 			gatekeeper();
 			elgg_load_css('jquery.daterangepicker');
-			elgg_load_css('jquery.ui.smoothness');	
+			elgg_load_css('jquery.ui.smoothness');
+			elgg_load_css('tgs.fullcalendar');
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
@@ -294,6 +308,7 @@ function todo_page_handler($page) {
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
+			elgg_load_js('tgs.fullcalendar');
 		
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
@@ -682,7 +697,8 @@ function todo_submenus() {
 
 	// Admin stats
 	if (elgg_in_context('admin')) {
-		elgg_register_admin_menu_item('administer', 'todo', 'statistics');
+		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
+		elgg_register_admin_menu_item('administer', 'calendars', 'todos');
 	}
 
 	$item = array(
@@ -880,13 +896,9 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 	// Set up main nav for todo listings
 	$main_tab = get_input('todo_main_tab', 'all');
 
-	$user = elgg_get_page_owner_entity();
-	
-	if (!elgg_instanceof($user, 'user') && !elgg_instanceof($user, 'group')) {
-		$user = elgg_get_logged_in_user_entity();
-	}
+	$owner = elgg_get_page_owner_entity();
 
-	if ($user == elgg_get_logged_in_user_entity()) {
+	if ($owner == elgg_get_logged_in_user_entity()) {
 		$by = elgg_echo('todo:label:me');
 		
 		$options = array(
@@ -900,42 +912,40 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 
 		$return[] = ElggMenuItem::factory($options);
 	} else {
-		$by = $user->name;
+		$by = $owner->name;
 	}
 
-	if (elgg_instanceof($user, 'user')) {
+	if (elgg_instanceof($owner, 'user')) {
 		$options = array(
 			'name' => 'assigned',
 			'text' => elgg_echo("todo:label:assignedto", array($by)),
 			'class' => 'todo-ajax-list',
 			'item_class' => 'todo-ajax-list-item',
-			'href' => 'ajax/view/todo/list?type=assigned&u=' . $user->guid,
+			'href' => 'ajax/view/todo/list?type=assigned&u=' . $owner->guid,
 			'priority' => 2
 		);
 		$return[] = ElggMenuItem::factory($options);
 	}
-	
 
-	
 	if (elgg_is_logged_in()) {
 	 	$options = array(
 			'name' => 'owned',
 			'text' => elgg_echo("todo:label:assignedby", array($by)),
 			'class' => 'todo-ajax-list',
 			'item_class' => 'todo-ajax-list-item',
-			'href' => 'ajax/view/todo/list?type=owned&u=' . $user->guid,
+			'href' => 'ajax/view/todo/list?type=owned&u=' . $owner->guid,
 			'priority' => 3
 		);
 		$return[] = ElggMenuItem::factory($options);
 	
 		// Add group submissions and grades items
-		if (elgg_instanceof($user, 'group') && ($user->canEdit() /*|| @TODO Submissions Role*/ )) {
+		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() /*|| @TODO Submissions Role*/ )) {
 			$options = array(
 				'name' => 'group_user_submissions',
 				'text' => elgg_echo("todo:label:groupusersubmissions", array($by)),
 				'class' => 'todo-ajax-list',
 				'item_class' => 'todo-ajax-list-item',
-				'href' => 'ajax/view/todo/group_user_submissions?group=' . $user->guid,
+				'href' => 'ajax/view/todo/group_user_submissions?group=' . $owner->guid,
 				'priority' => 4
 			);
 			$return[] = ElggMenuItem::factory($options);
@@ -945,13 +955,25 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 				'text' => elgg_echo("todo:label:grades", array($by)),
 				'class' => 'todo-ajax-list',
 				'item_class' => 'todo-ajax-list-item',
-				'href' => 'ajax/view/todo/group_submission_grades?group=' . $user->guid,
+				'href' => 'ajax/view/todo/group_submission_grades?group=' . $owner->guid,
 				'priority' => 5
+			);
+			$return[] = ElggMenuItem::factory($options);
+		} else if (elgg_instanceof($owner, 'group')) {
+			// Group todos, but not the group owner's view
+		} else {
+			// Not group todos
+			$options = array(
+				'name' => 'category_calendars',
+				'text' => elgg_echo("todo:label:calendars"),
+				'class' => 'todo-ajax-list todo-calendars-item',
+				'item_class' => 'todo-ajax-list-item',
+				'href' => 'ajax/view/todo/category_calendars',
+				'priority' => 7
 			);
 			$return[] = ElggMenuItem::factory($options);
 		}
 	}
-	
 	return $return;
 }
 

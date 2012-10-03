@@ -22,7 +22,9 @@ $english = array(
 	'todo:ingroup' => 'in the group %s',
 	
 	// Admin
-	'admin:statistics:todo' => 'Todo Statistics',
+	'admin:todos' => 'To Do\'s',
+	'admin:todos:statistics' => 'Statistics',
+	'admin:todos:calendars' => 'Calendars',
 	
 	// Page titles 
 	'todo:title:edit' => 'Edit To Do',
@@ -138,8 +140,10 @@ $english = array(
 	'todo:label:suppress_completion' => 'Suppress To Do Completion Notifications',
 	
 	// Calendar labels
+	'todo:label:calendars' => 'Calendars',
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
 	'todo:label:calendarurl' => 'Todo Calendar URL',
+	'todo:label:showcategorycalendar' => 'Show these categories on todo calendar',
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',
@@ -287,6 +291,7 @@ You cannot reply to this email.",
 	'todo:success:signup' => 'Successfully signed up for To Do',
 	'todo:success:assigneeremoved' => 'Assignee Removed',
 	'todo:success:grade' => 'Grade saved!',
+	'todo:success:calendarsettings' => 'Successfully Saved Calendar Settings',
 	'todo:error:requiredfields' => 'One of more required fields are missing',
 	'todo:error:requiredtitle' => 'Title is required',
 	'todo:error:requireddate' => 'Due date is required',
