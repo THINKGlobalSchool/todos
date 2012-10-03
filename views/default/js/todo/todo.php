@@ -833,7 +833,7 @@ elgg.todo.toggleCalendar = function() {
 
 	calendars[guid]['display'] = $(this).is(':checked');
 
-	$('#elgg-tgscalendar').empty();
+	$('#todo-category-calendar').fullCalendar('destroy');
 	elgg.todo.buildCalendar(calendars);
 }
 
