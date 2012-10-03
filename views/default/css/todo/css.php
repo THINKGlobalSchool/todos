@@ -577,3 +577,22 @@ input.submission-grade-input {
 	-moz-border-radius: 10px 10px 10px 10px;
 	-webkit-border-radius: 10px 10px 10px 10px;
 }
+
+#todo-calendar-loader {
+    overflow: hidden;
+    width: 200px;
+}
+
+.todo-calendar-lightbox {
+	display: none;
+}
+
+#todo-calendar-loader h2 {
+	text-align: center;
+}
+
+#todo-calendar-loader img {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
