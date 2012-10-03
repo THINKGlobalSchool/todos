@@ -42,6 +42,7 @@ foreach ($todos as $todo) {
 		'title' => $todo->title,
 		'start' => $todo->time_created,
 		'end' => $todo->due_date,
+		'url' => $todo->getURL()
 	);
 }
 
