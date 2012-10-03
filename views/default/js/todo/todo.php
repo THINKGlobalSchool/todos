@@ -817,6 +817,19 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 				return false;
 			}
 		},
+		loading: function(isLoading, view) {
+			if (isLoading) {
+				$(".todo-calendar-lightbox").fancybox({
+					overlayShow: false,
+					hideOnOverlayClick: false,
+					hideOnContentClick: false,
+					enableEscapeButton: false,
+					showCloseButton: false,
+				}).trigger('click');
+			} else {
+				$.fancybox.close();
+			}
+		}
 	});
 	
 	// Check for supplied date

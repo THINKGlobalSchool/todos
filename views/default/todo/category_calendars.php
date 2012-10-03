@@ -10,9 +10,17 @@
  * 
  */
 
+$loader_url = elgg_get_site_url() . "_graphics/ajax_loader_bw.gif";
+
 $content = <<<HTML
 	<div id='todo-category-calendar'>
+		<div style='display: none;'><div id='todo-calendar-loader'>
+			<h2>Loading To Do's</h2>
+			<img src='$loader_url' /> 
+		</div>
 	</div>
+	<a href='#todo-calendar-loader' class="todo-calendar-lightbox">#</a>
+
 HTML;
 
 $categories = elgg_get_plugin_setting('calendar_categories', 'todo');
