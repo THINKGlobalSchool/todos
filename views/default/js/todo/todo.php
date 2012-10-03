@@ -14,7 +14,6 @@
 elgg.provide('elgg.todo');
 
 elgg.todo.fileUploadURL = elgg.get_site_url() + 'action/todo/upload';
-
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 
 elgg.todo.init = function() {
@@ -104,8 +103,17 @@ elgg.todo.init = function() {
 	
 	// Todo dashboard nav items
 	$('.todo-ajax-list').live('click', function(e){
+		// Trigger a hook for tab_changed
+		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $(this)},null);
+		
+		var $tab = $(this);
+		
 		$('#todo-dashboard').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'));
+		$('#todo-dashboard').load($(this).attr('href'), function() {
+			// Trigger a hook for tab_loaded
+			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $tab},null);
+		});
+
 		$('.todo-ajax-list-item').removeClass('elgg-state-selected');
 		$(this).closest('.todo-ajax-list-item').addClass('elgg-state-selected');
 		e.preventDefault();
@@ -155,6 +163,9 @@ elgg.todo.init = function() {
 
 	// On time filter change handler
 	$(document).delegate('.todo-user-submission-ontime-dropdown', 'change', elgg.todo.ontimeFilterChange);
+
+	// CALENDER EVENTS
+	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', elgg.todo.toggleCalendar);
 }
 
 /**	
@@ -763,4 +774,87 @@ elgg.todo.isValidURL = function(url) {
 		}
 }
 
+// Manually init calendars
+elgg.todo.initCalendar = function() {
+	// calendars are stored in elgg.todo.calendars.
+	elgg.todo.buildCalendar(elgg.todo.getCalendars());
+}
+
+/**
+ * Returns the calendars
+ *
+ * @return {Object}
+ */
+elgg.todo.getCalendars = function() {
+	return elgg.todo.calendars;
+}
+
+/**
+ * Builds the calendar from a JSON object
+ */
+elgg.todo.buildCalendar = function(calendars) {
+	var url = elgg.get_site_url() + 'ajax/view/todo/calendar_feed';
+	$('#todo-category-calendar').fullCalendar({
+		weekMode: 'liquid',
+		header: {
+			left: 'prev,next today',
+			center: 'title',
+			right: 'month,agendaWeek,agendaDay'
+		},
+		eventSources: elgg.todo.buildSources(calendars)
+	});
+}
+
+/**
+ * Build array of Full Calendar sources with unique class names
+ *
+ * @param {Object} The calendars object
+ * @return {Array}
+ */
+elgg.todo.buildSources = function(calendars) {
+	var sources = [];
+	var i = 0;
+	$.each(calendars, function(k, v) {
+		if (v.display) {
+			sources[i] = {'url' : v.url, 'type': 'GET'};
+			i++;
+		}
+	});
+
+	return sources;
+}
+
+/*
+ * Toggle calendar requested and rebuild display
+ */
+elgg.todo.toggleCalendar = function() {
+	var guid = $(this).attr('id').split('-')[3];
+	var calendars = elgg.todo.getCalendars();
+
+	calendars[guid]['display'] = $(this).is(':checked');
+
+	$('#elgg-tgscalendar').empty();
+	elgg.todo.buildCalendar(calendars);
+}
+
+// Calendar menu item changed hook handler
+elgg.todo.calendarMenuChanged = function(hook, type, params, options) {
+	if (params['tab'].hasClass('todo-calendars-item')) {
+		var $sidebar = $('#todo-main-sidebar');
+		$sidebar.load(elgg.get_site_url() + 'ajax/view/todo/category_calendars_sidebar');
+	} else {
+		// Remove sidebar
+		$('#todo-sidebar-calendars').remove();
+	}
+}
+
+// Calendar menu item loaded hook handler
+elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
+	if (params['tab'].hasClass('todo-calendars-item')) {
+		elgg.todo.initCalendar();
+	}
+}
+
+elgg.register_hook_handler('tab_changed', 'todo_dashboard', elgg.todo.calendarMenuChanged);
+elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
