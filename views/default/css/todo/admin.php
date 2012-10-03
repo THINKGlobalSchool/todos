@@ -47,3 +47,9 @@
 .todoadmin table.todostats td.content {
 	padding-left: 12px;
 }
+
+.elgg-todocalendar-feed {
+	border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+}

@@ -112,6 +112,10 @@ function todo_init() {
 	$fc_css = elgg_get_simplecache_url('css', 'fullcalendar');
 	elgg_register_simplecache_view('css/fullcalendar');
 	elgg_register_css('tgs.fullcalendar', $fc_css);
+	
+	// Uncached url that calls the views and builds the colors for the calendars
+	$d_url = 'ajax/view/css/todo/calendars_dynamic';
+	elgg_register_css('tgs.calendars_dynamic', $d_url, 999);
 
 	// Register datepicker JS
 	$daterange_js = elgg_get_site_url(). 'mod/todo/vendors/daterangepicker.jQuery.js';
@@ -234,6 +238,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/category_calendars');
 	elgg_register_ajax_view('todo/category_calendars_sidebar');
 	elgg_register_ajax_view('todo/calendar_feed');
+	elgg_register_ajax_view('css/todo/calendars_dynamic');
 
 	// Register actions
 	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
@@ -301,6 +306,7 @@ function todo_page_handler($page) {
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('jquery.ui.smoothness');
 			elgg_load_css('tgs.fullcalendar');
+			elgg_load_css('tgs.calendars_dynamic');
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');

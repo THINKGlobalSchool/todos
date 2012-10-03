@@ -144,6 +144,9 @@ $english = array(
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',
 	'todo:label:calendarurl' => 'Todo Calendar URL',
 	'todo:label:showcategorycalendar' => 'Show these categories on todo calendar',
+	'todo:label:categorycolors' => 'Calendar Colors',
+	'todo:label:calendarbackground' => 'Background',
+	'todo:label:calendarforeground' => 'Foreground',
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',

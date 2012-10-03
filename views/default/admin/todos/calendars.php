@@ -9,5 +9,5 @@
  * @link http://www.thinkglobalschool.com/
  *
  */
-
+elgg_load_css('tgs.calendars_dynamic');
 echo elgg_view_form('todo/calendars');
