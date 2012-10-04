@@ -820,22 +820,26 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 		loading: function(isLoading, view) {
 			if (isLoading) {
 				$(".todo-calendar-lightbox").fancybox({
-					overlayShow: false,
+					overlayShow: true,
 					hideOnOverlayClick: false,
 					hideOnContentClick: false,
 					enableEscapeButton: false,
 					showCloseButton: false,
 				}).trigger('click');
 			} else {
-				$.fancybox.close();
+				$.fancybox.close();				
 			}
 		}
-	});
+	});	
 	
-	// Check for supplied date
+	// Check for supplied date (need to this outside of loading event for it to be smooth)
 	if (date) {
 		// Set calendar to date
-		$('#todo-category-calendar').fullCalendar('gotoDate', date.getFullYear(), date.getMonth(), date.getDate());
+		$('#todo-category-calendar').fullCalendar('gotoDate', 
+			date.getFullYear(), 
+			date.getMonth(), 
+			date.getDate()
+		);
 	}
 }
 
