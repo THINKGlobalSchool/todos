@@ -806,9 +806,9 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 		header: {
 			left: 'prev,next today',
 			center: 'title',
-			right: 'month,agendaWeek,agendaDay'
+			right: 'month,basicWeek'
 		},
-		theme: true,
+		//theme: true,
 		eventSources: elgg.todo.buildSources(calendars),
 		defaultView: view,
 		eventClick: function(event) {
@@ -816,6 +816,9 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 				window.open(event.url);
 				return false;
 			}
+		},
+		eventRender: function(event, element) {
+			elgg.todo.makeCalendarTip(event, element);
 		},
 		loading: function(isLoading, view) {
 			if (isLoading) {
@@ -887,10 +890,20 @@ elgg.todo.toggleCalendar = function() {
 elgg.todo.calendarMenuChanged = function(hook, type, params, options) {
 	if (params['tab'].hasClass('todo-calendars-item')) {
 		var $sidebar = $('#todo-main-sidebar');
-		$sidebar.load(elgg.get_site_url() + 'ajax/view/todo/category_calendars_sidebar');
+		$sidebar.load(elgg.get_site_url() + 'ajax/view/todo/category_calendars_sidebar', function() {
+			// init date picker
+			$('#todo-calendar-date-picker').datepicker({
+				//dateFormat: 'DD, d MM, yy',
+				dateFormat: 'yy-mm-dd',
+				onSelect: function(dateText,dp){
+					console.log($('#todo-category-calendar'));
+					$('#todo-category-calendar').fullCalendar('gotoDate', new Date(Date.parse(dateText)));
+				}
+			});
+		});
 	} else {
 		// Remove sidebar
-		$('#todo-sidebar-calendars').remove();
+		$('#todo-calendar-sidebar-content').remove();
 	}
 }
 
@@ -900,6 +913,28 @@ elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
 		elgg.todo.initCalendar();
 	}
 }
+
+// Make tooltip from event/element
+elgg.todo.makeCalendarTip = function(event, element) {
+	element.qtip({
+		content: event.description,
+		position: {
+			corner: {
+				target: 'topLeft',
+				tooltip: 'bottomLeft'
+			}
+		},
+		style: { 
+			'font-size' : '11px',
+			tip: 'bottomMiddle',
+			width: 'auto',
+			name: 'dark',
+		},
+		show: {
+			delay: 0,
+		}
+	});
+} 
 
 elgg.register_hook_handler('tab_changed', 'todo_dashboard', elgg.todo.calendarMenuChanged);
 elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);

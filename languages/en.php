@@ -147,6 +147,9 @@ $english = array(
 	'todo:label:categorycolors' => 'Calendar Colors',
 	'todo:label:calendarbackground' => 'Background',
 	'todo:label:calendarforeground' => 'Foreground',
+	'todo:label:iplan' => 'iPlan',
+	'todo:label:groupcategories' => 'Group Categories',
+	'todo:label:jumptodate' => 'Jump to date',
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',

@@ -572,6 +572,10 @@ input.submission-grade-input {
 }
 
 /** Calendar Styles **/
+#todo-category-calendar {
+	padding-top: 15px;
+}
+
 .elgg-todocalendar-feed {
 	border-radius: 10px 10px 10px 10px;
 	-moz-border-radius: 10px 10px 10px 10px;
@@ -595,4 +599,10 @@ input.submission-grade-input {
 	margin-left: auto;
 	margin-right: auto;
 	display: block;
+}
+
+.qtip-wrapper {
+	-webkit-box-shadow: 1px 1px 5px #000;
+	-moz-box-shadow: 1px 1px 5px #000;
+	box-shadow: 1px 1px 5px #000;
 }
