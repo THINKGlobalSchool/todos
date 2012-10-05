@@ -38,11 +38,21 @@ $todos = new ElggBatch('elgg_get_entities', $options);
 $events = array();
 
 foreach ($todos as $todo) {
+	$owner = $todo->getOwnerEntity();
+	$container = $todo->getContainerEntity();
+	
+	$description = "Created by: {$owner->name}<br />";
+	
+	if ($owner->guid != $container->guid) {
+		$description .= "In group: {$container->name}";
+	}
+	
 	$events[] = array(
 		'title' => $todo->title,
 		'start' => $todo->time_created,
 		'end' => $todo->due_date,
-		'url' => $todo->getURL()
+		'url' => $todo->getURL(),
+		'description' => $description,
 	);
 }
 

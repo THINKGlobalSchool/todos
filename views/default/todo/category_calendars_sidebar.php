@@ -47,8 +47,19 @@ if ($categories) {
 	$content = elgg_view_menu('todo-sidebar-calendars');
 
 	if ($content) {
-		$module = elgg_view_module('aside', elgg_echo('todo:label:calendars'), $content, array('id' => 'todo-sidebar-calendars'));
-		echo $module;
+		$category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $content, array('id' => 'todo-sidebar-calendars'));
+		
+		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));
+		
+		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker);
+		
+		$content = <<<HTML
+			<div id='todo-calendar-sidebar-content'>
+				$category_module
+				$date_module
+			</div>
+HTML;
+		echo $content;
 	}
 }
 

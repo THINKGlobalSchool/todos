@@ -113,6 +113,11 @@ function todo_init() {
 	elgg_register_simplecache_view('css/fullcalendar');
 	elgg_register_css('tgs.fullcalendar', $fc_css);
 	
+	// Register JS for fullcalendar
+	$qt_js = elgg_get_simplecache_url('js', 'qtip');
+	elgg_register_simplecache_view('js/qtip');
+	elgg_register_js('jquery.qtip', $qt_js);
+	
 	// Uncached url that calls the views and builds the colors for the calendars
 	$d_url = 'ajax/view/css/todo/calendars_dynamic';
 	elgg_register_css('tgs.calendars_dynamic', $d_url, 999);
@@ -122,8 +127,8 @@ function todo_init() {
 	elgg_register_js('jquery.daterangepicker', $daterange_js);
 	
 	// Register custom theme CSS
-	$ui_url = elgg_get_site_url() . 'mod/todo/vendors/smoothness/jquery-ui-1.7.3.custom.css';
-	elgg_register_css('jquery.ui.smoothness', $ui_url);
+	$ui_url = elgg_get_site_url() . 'mod/todo/vendors/smoothness/todo.smoothness.css';
+	elgg_register_css('todo.smoothness', $ui_url);
 
 	// Register datepicker css
 	$daterange_css = elgg_get_site_url(). 'mod/todo/vendors/ui.daterangepicker.css';
@@ -304,7 +309,7 @@ function todo_page_handler($page) {
 		default:
 			gatekeeper();
 			elgg_load_css('jquery.daterangepicker');
-			elgg_load_css('jquery.ui.smoothness');
+			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
 			elgg_load_css('tgs.calendars_dynamic');
 			elgg_load_js('jquery.daterangepicker');
@@ -315,6 +320,7 @@ function todo_page_handler($page) {
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
 			elgg_load_js('tgs.fullcalendar');
+			elgg_load_js('jquery.qtip');
 		
 			$params['title'] = 'To Do Dashboard';
 			$params['filter'] = FALSE;
@@ -358,7 +364,7 @@ function todo_page_handler($page) {
 			break;
 		case 'group':
 			elgg_load_css('jquery.daterangepicker');
-			elgg_load_css('jquery.ui.smoothness');	
+			elgg_load_css('todo.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('jQuery-File-Upload');
 			elgg_load_js('elgg.todo.submission');
@@ -971,7 +977,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			// Not group todos
 			$options = array(
 				'name' => 'category_calendars',
-				'text' => elgg_echo("todo:label:calendars"),
+				'text' => elgg_echo("todo:label:iplan"),
 				'class' => 'todo-ajax-list todo-calendars-item',
 				'item_class' => 'todo-ajax-list-item',
 				'href' => 'ajax/view/todo/category_calendars',
