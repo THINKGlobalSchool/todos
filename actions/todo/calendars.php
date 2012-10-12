@@ -18,12 +18,22 @@ $foregrounds = get_input('foreground');
 
 if ($backgrounds && $foregrounds) {
 	$colors = array();
+	
 	for ($i = 0; $i < count($category_guids); $i++) {
+		// Get RGB of background
+		$rgb = html2rgb($backgrounds[$i]);
+		
+		// Create palette
+		$palette = generate_html_palette($rgb[0],$rgb[1],$rgb[2]);
+
+		// Set colors
 		$colors[$category_guids[$i]] = array(
 			'bg' => $backgrounds[$i],
 			'fg' => $foregrounds[$i],
+			'palette' => $palette,
 		);
 	}
+
 	elgg_set_plugin_setting('calendar_category_colors', serialize($colors), 'todo');
 }
 

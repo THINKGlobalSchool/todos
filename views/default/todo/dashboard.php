@@ -28,6 +28,9 @@ switch($tab) {
 	case 'owned':
 		$click = 'elgg-menu-item-owned';
 		break;
+	case 'iplan':
+		$click = 'elgg-menu-item-category-calendars';
+		break;
 }
 
 echo elgg_view_menu('todo-dashboard-listing-main', array(

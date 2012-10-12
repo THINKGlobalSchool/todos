@@ -10,44 +10,48 @@
  * 
  */
 
-
+// Get admin defined categories
 $categories = elgg_get_plugin_setting('calendar_categories', 'todo');
 
 if ($categories) {
+	// Get category colors
 	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
 	$colors = unserialize($colors);
 
 	$categories = unserialize($categories);
 
-	foreach ($categories as $category) {
+	// Create sidebar inputs
+	foreach ($categories as $key => $category) {
 		$category = get_entity($category);
 		if (elgg_instanceof($category, 'object', 'group_category')) {
 			$guid = $category->guid;
-			$input = elgg_view('input/checkbox', array(
-				'id' => 'todo-sidebar-calendar-' . $guid,
-				'class' => 'right todo-sidebar-calendar-toggler',
-				'checked' => 'checked'
-			));
 			
-			$bg = $colors[$category->guid]['bg'];
-			$fg = $colors[$category->guid]['fg'];
+			$checked = '';
+			if ($key == 0) {
+				$checked = "checked='checked'";
+			}
 			
-			
-			$text = "<label style='background: #$gb; color: #$fg;'>$category->title$input</label>";
+			// Set foreground color (background covered in CSS)
+			//$fg = $colors[$category->guid]['fg'];
+
+			$input = "<input class='right todo-sidebar-calendar-toggler' id='todo-sidebar-calendar-{$guid}' type='radio' name='category_calendar_radio' {$checked} />";
+
+			$text = "<label style='color: #$fg;'>$category->title$input</label>";
 			
 			elgg_register_menu_item('todo-sidebar-calendars', array(
 				'name' => 'todo-sidebar-calendar-' . $guid,
 				'text' => $text,
 				'href' => false,
-				'item_class' => 'pam mvm elgg-todocalendar-feed elgg-todocalendar-feed-' . $guid // @TODO STYLES?
+				'priority' => $key,
+				'item_class' => 'pam mvm elgg-todocalendar-feed elgg-todocalendar-feed-' . $guid
 			));
 		}
 	}
 	
-	$content = elgg_view_menu('todo-sidebar-calendars');
+	$category_content = elgg_view_menu('todo-sidebar-calendars', array('sort_by' => 'priority'));
 
-	if ($content) {
-		$category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $content, array('id' => 'todo-sidebar-calendars'));
+	if ($category_content) {
+		$category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $category_content, array('id' => 'todo-sidebar-calendars'));
 		
 		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));
 		
@@ -56,10 +60,10 @@ if ($categories) {
 		$content = <<<HTML
 			<div id='todo-calendar-sidebar-content'>
 				$category_module
+				<div id='todo-calendar-sidebar-groups'></div>
 				$date_module
 			</div>
 HTML;
 		echo $content;
 	}
 }
-

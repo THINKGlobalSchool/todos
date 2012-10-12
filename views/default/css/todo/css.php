@@ -137,11 +137,11 @@ span.unviewed {
 
 /* messages/new messages icon & counter in elgg_topbar */
 .todo-notifier {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left 2px;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_topbar.gif) no-repeat left 2px;
 	margin-top: -3px !important;
 }
 .todo-notifier:hover {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/images/todo_topbar.gif) no-repeat left -16px;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_topbar.gif) no-repeat left -16px;
 }
 
 .todo-topbar-item {
@@ -156,11 +156,11 @@ span.unviewed {
 	background-color: #000099;
 }
 
-.todo-topbar-item:hover #todo-hover-stats {
+.todo-topbar-item:hover #todo-topbar-hover {
 	display: block;
 }
 
-#todo-hover-stats {
+#todo-topbar-hover {
 	position: absolute;
 	top: 32px;
 	left: 0;
@@ -302,6 +302,37 @@ span.unviewed {
 .elgg-menu-item-todo-accept input {
 	margin-top: -3px;
 }
+
+.elgg-menu-item-todo-return-required {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon_large.png) no-repeat left;
+	width: 16px;
+}
+
+
+/* New entity menu
+.elgg-menu-entity-buttons .elgg-menu-item-todo-complete input,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept input,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-open input,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-create-submission input {
+	width: 160px;
+}
+
+
+.elgg-menu-entity-buttons .elgg-menu-item-todo-complete a,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept a,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-open a,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-create-submission a {
+	margin-bottom: 2px;
+	width: 146px;
+}
+
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept span {
+	width: 100%;
+	margin-bottom: 2px;
+	text-align: right;
+	display: block;
+}
+*/
 
 /* Ajax submissions */
 .todo-ajax-submission {
@@ -599,6 +630,59 @@ input.submission-grade-input {
 	margin-left: auto;
 	margin-right: auto;
 	display: block;
+}
+
+.todo-iplan-float {
+	float: right;
+}
+
+td.todo-iplan-hover {
+	text-align: center;
+}
+
+td.todo-iplan-hover a {
+	font-size: 85%;
+}
+
+.todo-calendar-event-title {
+	font-weight: bold;
+}
+
+.todo-calendar-event-title-info {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat left;
+	padding-left: 16px;
+	font-weight: bold;
+}
+
+.todo-calendar-event-subtitle {
+	font-style: italic;
+}
+
+.todo-sidebar-group-legend {
+	padding: 5px;
+	font-size: 11px;
+	margin-bottom: 5px;
+	-webkit-box-shadow: 1px 1px 2px #333;
+	-moz-box-shadow: 1px 1px 2px #333;
+	box-shadow: 1px 1px 2px #333;
+}
+
+.todo-sidebar-group-legend a {
+	color: inherit !important;
+}
+
+.todo-sidebar-group-legend a:hover {
+	color: inherit !important;
+	text-decoration: underline;
+}
+
+/** TEMPORARY **/
+.fc-event-inner {
+	padding-left: 3px;
+}
+
+.fc-event-title {
+	padding: 0 0 !important;
 }
 
 .qtip-wrapper {

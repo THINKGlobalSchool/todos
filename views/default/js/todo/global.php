@@ -25,7 +25,7 @@ elgg.todo.global.init = function() {
 	
 	// Todo hover menu item
 	$(".todo-topbar-item").mouseenter(function(event) {
-		$('#todo-hover-stats').appendTo($(this)).position({
+		$('#todo-topbar-hover').appendTo($(this)).position({
 			my: "left top",
 			at: "left bottom",
 			of: $(this),
