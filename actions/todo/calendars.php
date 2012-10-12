@@ -24,7 +24,7 @@ if ($backgrounds && $foregrounds) {
 		$rgb = html2rgb($backgrounds[$i]);
 		
 		// Create palette
-		$palette = generate_html_palette($rgb[0],$rgb[1],$rgb[2], 60);
+		$palette = generate_html_palette($rgb[0],$rgb[1],$rgb[2], 80);
 
 		// Set colors
 		$colors[$category_guids[$i]] = array(
