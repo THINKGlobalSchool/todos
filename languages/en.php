@@ -154,6 +154,7 @@ $english = array(
 	'todo:label:iplancalendar' => 'iPlan Calendar',
 	'todo:label:groupcategories' => 'Group Categories',
 	'todo:label:jumptodate' => 'Jump to date',
+	'todo:label:palettespread' => 'Palette Spread',
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',
