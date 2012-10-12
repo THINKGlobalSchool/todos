@@ -1193,9 +1193,9 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 	if ($entity->return_required) {
 		$options = array(
 			'name' => 'todo_return_required',
-			'alt' => elgg_echo('todo:label:returnrequired'),
-			'text' => "<span></span>",
-			'href' => false,
+			'text' => "<img src='" . elgg_get_site_url() . 'mod/todo/graphics/info_icon_large.png' . "' />",
+			'href' => '#',
+			'title' => elgg_echo('todo:label:returnrequired'),
 			'priority' => 0,
 			'section' => 'info',
 		);

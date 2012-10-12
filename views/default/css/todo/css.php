@@ -303,9 +303,8 @@ span.unviewed {
 	margin-top: -3px;
 }
 
-.elgg-menu-item-todo-return-required {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon_large.png) no-repeat left;
-	width: 16px;
+.elgg-menu-item-todo-return-required img {
+	margin-top: 3px;
 }
 
 
@@ -649,13 +648,13 @@ td.todo-iplan-hover a {
 }
 
 .todo-calendar-event-title-info {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat left;
-	padding-left: 16px;
 	font-weight: bold;
 }
 
 .todo-calendar-event-subtitle {
 	font-style: italic;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
+	padding-right: 18px;
 }
 
 .todo-sidebar-group-legend {
