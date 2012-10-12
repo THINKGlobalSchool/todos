@@ -34,7 +34,7 @@ if ($categories) {
 		$category = get_entity($category);
 		if (elgg_instanceof($category, 'object', 'group_category')) {
 			$calendars[$category->guid] = array(
-				'display' => TRUE,
+				'display' => FALSE,
 				'url' => elgg_get_site_url() . 'ajax/view/todo/calendar_feed?category=' . $category->guid,
 			);
 		}
@@ -50,3 +50,5 @@ $content .= <<<JAVASCRIPT
 JAVASCRIPT;
 
 echo $content;
+
+generate_html_palette(160,47,159);

@@ -173,18 +173,8 @@ function todo_init() {
 	// Register a handler for submission comments so that the todo owner is notified
 	elgg_register_event_handler('annotate', 'all', 'submission_comment_event_listener');
 
-	// Owner block hook (for logged in users)
-	if (elgg_is_logged_in()) {
-		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
-	}
-
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
-	
-	// Hook for site menu
-	if (elgg_is_logged_in()) {
-		elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
-	}
 	
 	// Handler to prepare main todo menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo-listing-main', 'todo_main_menu_setup');
@@ -212,6 +202,15 @@ function todo_init() {
 	
 	// Register handler for todo submission files 
 	elgg_register_plugin_hook_handler('entity:icon:url', 'object', 'submission_file_icon_url_override');
+	
+	// Logged in users init
+	if (elgg_is_logged_in()) {
+		// Owner block hook (for logged in users)
+		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
+		
+		// Hook for site menu
+		elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
+	}
 
 	// Cron hook for todo zip cleanup
 	$delete_period = elgg_get_plugin_setting('zipdelete', 'todo');
@@ -242,6 +241,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/group_submission_grades');
 	elgg_register_ajax_view('todo/category_calendars');
 	elgg_register_ajax_view('todo/category_calendars_sidebar');
+	elgg_register_ajax_view('todo/category_calendar_group_legend');
 	elgg_register_ajax_view('todo/calendar_feed');
 	elgg_register_ajax_view('css/todo/calendars_dynamic');
 
@@ -385,7 +385,16 @@ function todo_page_handler($page) {
 				elgg_register_title_button();
 				$params['title'] = 'To Do Dashboard';
 				$params['filter'] = FALSE;
-				$params['content'] = elgg_view('todo/dashboard');
+
+				// iPlan group link
+				$params['content'] = elgg_view('output/url', array(
+					'text' => elgg_echo('todo:label:iplancalendar'),
+					'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
+					'class' => 'todo-iplan-float elgg-button elgg-button-submit',
+					'target' => '_blank',
+				));
+
+				$params['content'] .= elgg_view('todo/dashboard');
 			} else {
 				forward('todo/dashboard');
 			}
@@ -795,7 +804,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 		'past_due' => $past_due_count,
 		'today' => $due_today_count,
 	));
-
+	
 	// Add todo item
 	$options = array(
 		'name' => 'todo',
@@ -1057,6 +1066,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'text' => $text,
 			'href' => false,
 			'priority' => 1,
+			//'section' => 'buttons',
 			'section' => 'actions',
 		);
 		$return[] = ElggMenuItem::factory($options);
@@ -1090,6 +1100,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 						'href' => $href,
 						'priority' => 3,
 						'link_class' => "elgg-button elgg-button-action $class",
+						//'section' => 'buttons',
 						'section' => 'actions',
 					);
 					$return[] = ElggMenuItem::factory($options);
@@ -1142,6 +1153,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'text' => $text,
 				'href' => false,
 				'priority' => 1000,
+				//'section' => 'buttons',
 				'section' => 'actions',
 			);
 			$return[] = ElggMenuItem::factory($options);
@@ -1157,6 +1169,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'text' => $text,
 				'href' => false,
 				'priority' => 2,
+				//'section' => 'buttons',
 				'section' => 'actions',
 			);
 			$return[] = ElggMenuItem::factory($options);
@@ -1171,6 +1184,19 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'text' => $text,
 			'href' => false,
 			'priority' => 1500,
+			'section' => 'info',
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
+	
+	// Show Icon for submission required todos
+	if ($entity->return_required) {
+		$options = array(
+			'name' => 'todo_return_required',
+			'alt' => elgg_echo('todo:label:returnrequired'),
+			'text' => "<span></span>",
+			'href' => false,
+			'priority' => 0,
 			'section' => 'info',
 		);
 		$return[] = ElggMenuItem::factory($options);

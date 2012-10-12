@@ -43,7 +43,8 @@ $english = array(
 	'todo:label:duedate' => 'Due Date',
 	'todo:label:assignto' => 'Assign To', 
 	'todo:label:return' => 'Return',
-	'todo:label:returnrequired' => 'Student Submission Required', 
+	'todo:label:returnrequired' => 'Student Submission Required',
+	'todo:label:submissionrequired' => 'Submission Required', 
 	'todo:label:individuals' => 'Individual(s)',
 	'todo:label:groups' => 'Group(s)',
 	'todo:label:group' => 'Group',
@@ -129,6 +130,7 @@ $english = array(
 	'todo:label:date' => 'Date',
 	'todo:label:info' => 'Info',
 	'todo:label:submissionsadmin' => 'Submission Admin Role',
+	'todo:label:facultyrole' => 'Faculty Role',
 	'todo:label:graderequired' => 'Grade Required',
 	'todo:label:gradetotal' => 'Grade Total',
 	'todo:label:grade' => 'Grade',
@@ -138,6 +140,7 @@ $english = array(
 	'todo:label:child' => 'Child',
 	'todo:label:settings' => 'To Do Settings',
 	'todo:label:suppress_completion' => 'Suppress To Do Completion Notifications',
+	'todo:label:grouplegend' => 'Group Legend',
 	
 	// Calendar labels
 	'todo:label:calendars' => 'Calendars',
@@ -148,6 +151,7 @@ $english = array(
 	'todo:label:calendarbackground' => 'Background',
 	'todo:label:calendarforeground' => 'Foreground',
 	'todo:label:iplan' => 'iPlan',
+	'todo:label:iplancalendar' => 'iPlan Calendar',
 	'todo:label:groupcategories' => 'Group Categories',
 	'todo:label:jumptodate' => 'Jump to date',
 	

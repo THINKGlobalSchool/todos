@@ -1232,3 +1232,85 @@ function submissions_gatekeeper($user_guid, $group_guid = FALSE) {
 		}
 	}
 }
+
+function generate_html_palette($r, $g, $b, $spread = 50, $count = 50) {
+	$color[0] = $r;
+	$color[1] = $g;
+	$color[2] = $b;
+	
+	$colors = array();
+
+    for($i = 0; $i < $count; ++$i) {
+    	$r = rand($color[0] - $spread, $color[0] + $spread);
+	    $g = rand($color[1] - $spread, $color[1] + $spread);
+	    $b = rand($color[2] - $spread, $color[2] + $spread);
+		$colors[] = rgb2html($r, $g, $b);
+    }
+	return $colors;
+}
+
+function display_html_palette($r, $g, $b) {
+	$spread = 56;
+
+	$color[0] = $r;
+	$color[1] = $g;
+	$color[2] = $b;
+	
+    echo "<div style='float:left; background-color:rgb($color[0],$color[1],$color[2]);'>&nbsp;Base Color&nbsp;</div><br/>";
+
+    for($i=0; $i<92; ++$i) {
+   	 $r = rand($color[0] - $spread, $color[0] + $spread);
+	    $g = rand($color[1] - $spread, $color[1] + $spread);
+	    $b = rand($color[2] - $spread, $color[2] + $spread);    
+	    echo "<div style='background-color:rgb($r,$g,$b); width:10px; height:10px; float:left;'></div>";
+    }    
+    echo "<br/>";
+}
+
+function html2rgb($color) {
+	if ($color[0] == '#') {
+		$color = substr($color, 1);
+	}
+
+	if (strlen($color) == 6) {
+		list($r, $g, $b) = array(
+			$color[0] . $color[1],
+			$color[2] . $color[3],
+			$color[4] . $color[5]
+		);
+	} elseif (strlen($color) == 3) {
+		list($r, $g, $b) = array(
+			$color[0] . $color[0], 
+			$color[1] . $color[1], 
+			$color[2] . $color[2]
+		);
+	} else {
+		return false;
+	}
+
+	$r = hexdec($r); 
+	$g = hexdec($g); 
+	$b = hexdec($b);
+
+	return array($r, $g, $b);
+}
+
+
+function rgb2html($r, $g = -1, $b = -1) {
+	if (is_array($r) && sizeof($r) == 3) {
+		list($r, $g, $b) = $r;
+	}
+
+	$r = intval($r);
+	$g = intval($g);
+	$b = intval($b);
+
+	$r = dechex($r<0?0:($r>255?255:$r));
+	$g = dechex($g<0?0:($g>255?255:$g));
+	$b = dechex($b<0?0:($b>255?255:$b));
+
+	$color = (strlen($r) < 2 ? '0' : '') . $r;
+	$color .= (strlen($g) < 2 ? '0' : '') . $g;
+	$color .= (strlen($b) < 2 ? '0' : '') . $b;
+	return '#' . $color;
+}
