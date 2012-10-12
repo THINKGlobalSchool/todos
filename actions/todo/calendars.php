@@ -16,6 +16,10 @@ $categories = serialize($category_guids);
 $backgrounds = get_input('background');
 $foregrounds = get_input('foreground');
 
+$spread = get_input('palette_spread');
+
+elgg_set_plugin_setting('palette_spread', $spread, 'todo');
+
 if ($backgrounds && $foregrounds) {
 	$colors = array();
 	
@@ -24,7 +28,7 @@ if ($backgrounds && $foregrounds) {
 		$rgb = html2rgb($backgrounds[$i]);
 		
 		// Create palette
-		$palette = generate_html_palette($rgb[0],$rgb[1],$rgb[2], 80);
+		$palette = generate_html_palette($rgb[0],$rgb[1],$rgb[2], $spread);
 
 		// Set colors
 		$colors[$category_guids[$i]] = array(

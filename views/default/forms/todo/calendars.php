@@ -13,6 +13,11 @@
 
 $categories = elgg_get_plugin_setting('calendar_categories', 'todo');
 $category_colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+$spread = elgg_get_plugin_setting('palette_spread', 'todo');
+
+if (!$spread) {
+	$spread = 50;
+}
 
 if ($categories) {
 	$categories = unserialize($categories);
@@ -73,6 +78,12 @@ $categories_input = elgg_view('input/groupcategories', array(
 	'value' => $categories,
 ));
 
+$spread_label = elgg_echo('todo:label:palettespread');
+$spread_input = elgg_view('input/text', array(
+	'value' => $spread,
+	'name' => 'palette_spread',
+));
+
 $submit_input = elgg_view('input/submit', array(
 	'name' => 'submit', 
 	'value' => elgg_echo('save')
@@ -85,6 +96,10 @@ $content = <<<HTML
 	$color_content
 	<div>
 		$submit_input
+	</div>
+	<div>
+		<label>$spread_label</label>
+		$spread_input
 	</div>
 HTML;
 
