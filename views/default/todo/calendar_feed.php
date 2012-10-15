@@ -89,6 +89,7 @@ HTML;
 		'url' => $todo->getURL(),
 		'description' => $description,
 		'color' => $container_colors[$container->guid],
+		'className' => 'todo-calendar-event',
 	);
 }
 
