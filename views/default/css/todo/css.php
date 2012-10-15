@@ -662,16 +662,17 @@ td.todo-iplan-hover a {
 }
 
 /** Todo Fullcalendar Specific **/
-#todo-category-calendar .todo-calendar-event .fc-event-inner {
-	padding-left: 3px;
+
+#todo-category-calendar .todo-calendar-event {
+	margin-bottom: 5px;
 }
 
 #todo-category-calendar .todo-calendar-event .fc-event-title {
 	padding: 0 0 !important;
 }
 
-#todo-category-calendar .todo-calendar-event {
-	margin-bottom: 5px;
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-title-container {
+	padding-left: 3px;
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-title {
