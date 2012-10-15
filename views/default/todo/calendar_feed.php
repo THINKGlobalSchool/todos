@@ -74,12 +74,14 @@ foreach ($todos as $todo) {
 	// Truncated title and group name
 	$todo_truncated = elgg_get_excerpt($todo->title, 75);
 	$title_content = <<<HTML
+	<div class='todo-calendar-event-title-container'>
 		<span class='$title_class'>
 			$container->name:
 		</span>
 		<span class='todo-calendar-event-subtitle'>
 			$todo_truncated
 		</span>
+	</div>
 HTML;
 	
 	$events[] = array(
