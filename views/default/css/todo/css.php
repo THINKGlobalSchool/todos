@@ -643,20 +643,6 @@ td.todo-iplan-hover a {
 	font-size: 85%;
 }
 
-.todo-calendar-event-title {
-	font-weight: bold;
-}
-
-.todo-calendar-event-title-info {
-	font-weight: bold;
-}
-
-.todo-calendar-event-subtitle {
-	font-style: italic;
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
-	padding-right: 18px;
-}
-
 .todo-sidebar-group-legend {
 	padding: 5px;
 	font-size: 11px;
@@ -675,14 +661,33 @@ td.todo-iplan-hover a {
 	text-decoration: underline;
 }
 
-/** TEMPORARY **/
-.fc-event-inner {
+/** Todo Fullcalendar Specific **/
+#todo-category-calendar .todo-calendar-event .fc-event-inner {
 	padding-left: 3px;
 }
 
-.fc-event-title {
+#todo-category-calendar .todo-calendar-event .fc-event-title {
 	padding: 0 0 !important;
 }
+
+#todo-category-calendar .todo-calendar-event {
+	margin-bottom: 5px;
+}
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-title {
+	font-weight: bold;
+}
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-title-info {
+	font-weight: bold;
+}
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle {
+	font-style: italic;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
+	padding-right: 18px;
+}
+/** End FC **/
 
 .qtip-wrapper {
 	-webkit-box-shadow: 1px 1px 5px #000;
