@@ -679,15 +679,16 @@ td.todo-iplan-hover a {
 	font-weight: bold;
 }
 
-#todo-category-calendar .todo-calendar-event .todo-calendar-event-title-info {
-	font-weight: bold;
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle {
+	font-style: italic;
 }
 
-#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle {
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-return-required {
 	font-style: italic;
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
 	padding-right: 18px;
 }
+
 /** End FC **/
 
 .qtip-wrapper {

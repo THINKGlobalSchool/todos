@@ -65,20 +65,20 @@ foreach ($todos as $todo) {
 	}
 	
 	if ($todo->return_required) {
-		$title_class = 'todo-calendar-event-title-info';
+		$subtitle_class = 'todo-calendar-event-subtitle-return-required';
 		$description .= "<br />" . elgg_echo('todo:label:submissionrequired');
 	} else {
-		$title_class = 'todo-calendar-event-title';
+		$subtitle_class = 'todo-calendar-event-subtitle';
 	}
 	
 	// Truncated title and group name
 	$todo_truncated = elgg_get_excerpt($todo->title, 75);
 	$title_content = <<<HTML
 	<div class='todo-calendar-event-title-container'>
-		<span class='$title_class'>
+		<span class='todo-calendar-event-title'>
 			$container->name:
 		</span>
-		<span class='todo-calendar-event-subtitle'>
+		<span class='$subtitle_class'>
 			$todo_truncated
 		</span>
 	</div>
