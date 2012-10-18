@@ -114,18 +114,22 @@ span.unviewed {
 }
 
 .todo-priority-1 {
-	background: #FA2A02;
+	background: #CE0000;
 }
 
 .todo-priority-2 {
-	background: #F87217;
+	background: #FA2A02;
 }
 
 .todo-priority-3 {
-	background: #FBB917;
+	background: #F87217;
 }
 
 .todo-priority-4 {
+	background: #FBB917;
+}
+
+.todo-priority-5 {
 	background: #71BC17;
 }
 
