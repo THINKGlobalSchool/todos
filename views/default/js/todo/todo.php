@@ -895,7 +895,8 @@ elgg.todo.toggleCalendar = function() {
 
 // Calendar menu item changed hook handler
 elgg.todo.calendarMenuChanged = function(hook, type, params, options) {
-	// Nope
+	// Clear the sidebar
+	$('#todo-main-sidebar').html('');
 }
 
 // Calendar menu item loaded hook handler
