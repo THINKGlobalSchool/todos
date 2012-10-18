@@ -49,8 +49,9 @@ function todo_init() {
 	// Priorities (currently just used for a pretty display)
 	define('TODO_PRIORITY_HIGH', 1);
 	define('TODO_PRIORITY_TODAY', 2);
-	define('TODO_PRIORITY_MEDIUM', 3);
-	define('TODO_PRIORITY_LOW', 4);
+	define('TODO_PRIORITY_TOMORROW', 3);
+	define('TODO_PRIORITY_MEDIUM', 4);
+	define('TODO_PRIORITY_LOW', 5);
 	
 	// Todo status's 
 	define('TODO_STATUS_DRAFT', 0);

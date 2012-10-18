@@ -143,6 +143,7 @@ $english = array(
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',
+	'todo:label:tomorrow' => 'Due Tomorrow',
 	'todo:label:pastdue' => 'Past Due',
 	'todo:label:nextweek' => 'Due This Week', 
 	'todo:label:future' => 'Future To Do\'s',
