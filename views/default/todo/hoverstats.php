@@ -32,19 +32,17 @@ $past_url = $url . "&filter_priority=" . TODO_PRIORITY_HIGH;
 // Get faculty role
 $faculty_role = elgg_get_plugin_setting('todofacultyrole', 'todo');
 
-// If we have a faculty role and this user is a member, add the iPlan calendar link to 
-// the todo hover menu
-if ($faculty_role && roles_is_member($faculty_role, elgg_get_logged_in_user_guid())) {
-	$iplan_link = elgg_view('output/url', array(
-		'text' => elgg_echo('todo:label:iplancalendar'),
-		'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
-		'class' => 'elgg-button elgg-button-submit',
-	));
-	
-	$iplan_content = "<tr>
-		<td colspan='2' class='todo-iplan-hover'>$iplan_link</td>
-	</tr>";
-}
+
+$iplan_link = elgg_view('output/url', array(
+	'text' => elgg_echo('todo:label:iplancalendar'),
+	'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
+	'class' => 'elgg-button elgg-button-submit',
+));
+
+$iplan_content = "<tr>
+	<td colspan='2' class='todo-iplan-hover'>$iplan_link</td>
+</tr>";
+
 
 $content = <<<HTML
 	<span id='todo-topbar-hover'>
