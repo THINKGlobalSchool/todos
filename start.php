@@ -1051,6 +1051,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		// Add accept button
 		if (has_user_accepted_todo($user_guid, $entity->getGUID())) {
 			$text = "<span class='accepted'>✓ Accepted</span>";
+			$section = 'info';
 		} else {
 			$text = "<span class='unviewed'>";
 			$text .= elgg_view("input/button", array(
@@ -1060,14 +1061,14 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'value' => 'Accept'
 			));
 			$text .= "</span>";
+			$section = 'buttons';
 		}
 		$options = array(
 			'name' => 'todo_accept',
 			'text' => $text,
 			'href' => false,
 			'priority' => 1,
-			//'section' => 'buttons',
-			'section' => 'actions',
+			'section' => $section,
 		);
 		$return[] = ElggMenuItem::factory($options);
 		
@@ -1100,8 +1101,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 						'href' => $href,
 						'priority' => 3,
 						'link_class' => "elgg-button elgg-button-action $class",
-						//'section' => 'buttons',
-						'section' => 'actions',
+						'section' => 'buttons',
 					);
 					$return[] = ElggMenuItem::factory($options);
 				}
@@ -1124,7 +1124,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'text' => $text,
 					'href' => false,
 					'priority' => 997,
-					'section' => 'actions',
+					'section' => 'buttons',
 				);
 				$return[] = ElggMenuItem::factory($options);		
 			}
@@ -1153,8 +1153,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'text' => $text,
 				'href' => false,
 				'priority' => 1000,
-				//'section' => 'buttons',
-				'section' => 'actions',
+				'section' => 'buttons',
 			);
 			$return[] = ElggMenuItem::factory($options);
         } else {
@@ -1169,8 +1168,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'text' => $text,
 				'href' => false,
 				'priority' => 2,
-				//'section' => 'buttons',
-				'section' => 'actions',
+				'section' => 'buttons',
 			);
 			$return[] = ElggMenuItem::factory($options);
 		}

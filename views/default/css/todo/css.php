@@ -308,20 +308,26 @@ span.unviewed {
 }
 
 
-/* New entity menu
+/* New entity menu */
 .elgg-menu-entity-buttons .elgg-menu-item-todo-complete input,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-accept input,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-open input,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-complete input,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-signup input,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-create-submission input {
 	width: 160px;
+	margin-top: 3px;
+	margin-bottom: -2px;
 }
 
 
 .elgg-menu-entity-buttons .elgg-menu-item-todo-complete a,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-accept a,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-open a,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-complete a,
+.elgg-menu-entity-buttons .elgg-menu-item-todo-signup a,
 .elgg-menu-entity-buttons .elgg-menu-item-todo-create-submission a {
-	margin-bottom: 2px;
+	margin-top: 5px;
 	width: 146px;
 }
 
@@ -331,7 +337,14 @@ span.unviewed {
 	text-align: right;
 	display: block;
 }
-*/
+
+.elgg-menu-item-todo-accept {
+	background: none !important; 
+}
+
+.elgg-menu-item-todo-accept span.accepted {
+	float: right;
+}
 
 /* Ajax submissions */
 .todo-ajax-submission {
