@@ -61,17 +61,26 @@ elgg.todo.global.showEntityInfo = function(event) {
 elgg.todo.global.acceptTodo = function(event) {
 	var todo_guid = $(this).attr('name');
 	$_this = $(this);
-	
+
 	elgg.action('todo/accept', {
 		data: {
 			guid: todo_guid,
 		},
 		success: function(data) {
 			if (data.status != -1) {
-				$_this.closest('.unviewed')
-					.removeClass('unviewed')
-					.addClass('accepted')
-					.html('✓ Accepted');
+				// Find entity anchor
+				var $entity_anchor = $(document).find('#entity-anchor-' + todo_guid);
+				var $elgg_body = $entity_anchor.closest('.elgg-body');
+				
+				// Create accepted list item
+				var $accepted_li = $(document.createElement('li'));
+				$accepted_li.html("<span class='accepted'>✓ Accepted</span>");
+				
+				// Add accepted list item to the info menu
+				$elgg_body.find('.elgg-menu-entity-info > li.elgg-menu-item-access').before($accepted_li).fadeIn();
+				
+				// Remove the accept button
+				$_this.closest('.elgg-menu-item-todo-accept').fadeOut();
 			}
 		}
 	});
