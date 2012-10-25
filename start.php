@@ -1299,7 +1299,7 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 			'href' => '#todo-entity-info-' . $entity->guid,
 			'id' => 'todo-entity-' . $entity->guid,
 			'class' => 'todo-show-info',
-			//'rel' => 'toggle',
+			'section' => 'info',
 			'priority' => 2000,
 		);
 		
