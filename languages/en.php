@@ -25,6 +25,7 @@ $english = array(
 	'admin:todos' => 'To Do\'s',
 	'admin:todos:statistics' => 'Statistics',
 	'admin:todos:calendars' => 'Calendars',
+	'admin:todos:manage' => 'Manage',
 	
 	// Page titles 
 	'todo:title:edit' => 'Edit To Do',
@@ -141,6 +142,9 @@ $english = array(
 	'todo:label:settings' => 'To Do Settings',
 	'todo:label:suppress_completion' => 'Suppress To Do Completion Notifications',
 	'todo:label:grouplegend' => 'Group Legend',
+	'todo:label:move' => 'Move Todo',
+	'todo:label:todoguid' => 'Todo GUID',
+	'todo:label:groupguid' => 'Group GUID',
 	
 	// Calendar labels
 	'todo:label:calendars' => 'Calendars',
@@ -338,6 +342,7 @@ You cannot reply to this email.",
 	'todo:error:invalidgrade' => 'Invalid Grade',
 	'todo:error:access' => 'Access Denied',
 	'todo:error:gradevalue' => 'Grade must be a number!',
+	'todo:error:nodata' => 'No data',
 	
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',
