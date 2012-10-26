@@ -78,6 +78,11 @@ function todo_init() {
 	elgg_register_js('elgg.todo.global', $g_js);
 	elgg_load_js('elgg.todo.global');
 	
+	// Register admin todo JS
+	$g_js = elgg_get_simplecache_url('js', 'todo/admin');
+	elgg_register_simplecache_view('js/todo/admin');
+	elgg_register_js('elgg.todo.admin', $g_js);
+	
 	// Register JS File Upload
 	$j_js = elgg_get_simplecache_url('js', 'jquery_file_upload');
 	elgg_register_simplecache_view('js/jquery_file_upload');
@@ -258,7 +263,8 @@ function todo_init() {
 	elgg_register_action('todo/upload', "$action_base/upload.php");
 	elgg_register_action('todo/checkcontent', "$action_base/checkcontent.php");
 	elgg_register_action('todo/settings', "$action_base/settings.php");
-	elgg_register_action('todo/calendars', "$action_base/calendars.php");
+	elgg_register_action('todo/calendars', "$action_base/calendars.php", 'admin');
+	elgg_register_action('todo/move', "$action_base/move.php", 'admin');
 	
 	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
@@ -273,7 +279,7 @@ function todo_init() {
 	// Register one once for todos
 	run_function_once("todo_run_once");
 	
-	return true;	
+	return TRUE;	
 }
 
 /**
@@ -719,6 +725,7 @@ function todo_submenus() {
 	// Admin stats
 	if (elgg_in_context('admin')) {
 		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
+		elgg_register_admin_menu_item('administer', 'manage', 'todos');
 		elgg_register_admin_menu_item('administer', 'calendars', 'todos');
 	}
 
