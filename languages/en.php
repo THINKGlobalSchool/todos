@@ -146,6 +146,12 @@ $english = array(
 	'todo:label:todoguid' => 'Todo GUID',
 	'todo:label:groupguid' => 'Group GUID',
 	
+	// Categories
+	'todo:label:category' => 'Category',
+	'todo:label:basic_task' => 'Basic Task',
+	'todo:label:assessed_task' => 'Assessed Task',
+	'todo:label:exam' => 'Test/Exam',
+	
 	// Calendar labels
 	'todo:label:calendars' => 'Calendars',
 	'todo:label:calendarsalt' => 'Calendar unique hash salt',

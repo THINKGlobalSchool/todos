@@ -24,6 +24,7 @@ $return_required	= elgg_extract('return_required', $vars);
 $is_rubric_selected	= elgg_extract('rubric_select', $vars);
 $rubric_guid		= elgg_extract('rubric_guid', $vars);
 $access_id 			= elgg_extract('access_level', $vars);
+$category           = elgg_extract('category', $vars);
 $status				= elgg_extract('status', $vars);
 $grade_required		= elgg_extract('grade_required', $vars);
 $grade_total		= elgg_extract('grade_total', $vars);
@@ -220,6 +221,18 @@ $access_content = elgg_view('input/dropdown', array(
 	'value' => $access_id
 ));
 
+$category_label = elgg_Echo('todo:label:category');
+$category_input = elgg_view('input/dropdown', array(
+	'name' => 'category',
+	'id' => 'todo_category',
+	'value' => $category,
+	'options_values' => array(
+		TODO_BASIC_TASK => elgg_echo('todo:label:basic_task'),
+		TODO_ASSESSED_TASK => elgg_echo('todo:label:assessed_task'),
+		TODO_EXAM => elgg_echo('todo:label:exam'),
+	)
+));
+
 $status_label = elgg_echo('todo:label:publishstatus');
 $status_input = elgg_view('input/dropdown', array(
 	'name' => 'status',
@@ -300,6 +313,10 @@ $form_body = <<<HTML
 		$grade_total_input<br /><br />
 		$rubric_html
 	</div>
+	<div>
+		<label>$category_label</label><br />
+		$category_input
+	</div><br />
 	<div>
 		<label>$access_label</label><br />
 		$access_content
