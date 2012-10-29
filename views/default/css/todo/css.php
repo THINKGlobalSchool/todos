@@ -334,18 +334,17 @@ span.unviewed {
 	width: 146px;
 }
 
-.elgg-menu-entity-buttons .elgg-menu-item-todo-accept span {
-	width: 100%;
-	margin-bottom: 2px;
-	text-align: right;
-	display: block;
-}
-
-.elgg-menu-item-todo-accept {
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept {
 	background: none !important; 
 }
 
-.elgg-menu-item-todo-accept span.accepted {
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept span {
+	width: 100%;
+	margin-bottom: 2px;
+	display: block;
+}
+
+.elgg-menu-entity-buttons .elgg-menu-item-todo-accept span.accepted {
 	float: right;
 }
 
@@ -717,6 +716,7 @@ td.todo-iplan-hover a {
 
 .todo-calender-tooltip-return-required {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat left center;
+	min-width: 150px;
 }
 
 .todo-calender-tooltip-basic-task {
