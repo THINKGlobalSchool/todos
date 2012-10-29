@@ -55,6 +55,11 @@ function todo_init() {
 	// Todo status's 
 	define('TODO_STATUS_DRAFT', 0);
 	define('TODO_STATUS_PUBLISHED', 1);
+	
+	// Todo Categories
+	define('TODO_BASIC_TASK', 'basic_task');
+	define('TODO_ASSESSED_TASK', 'assessed_task');
+	define('TODO_EXAM', 'exam');
 
 	// Extend CSS
 	elgg_extend_view('css/elgg','css/todo/css');

@@ -419,6 +419,7 @@ function todo_prepare_form_vars($todo = NULL) {
 		'status' => TODO_STATUS_PUBLISHED,
 		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
 		'access_id' => NULL,
+		'category' => NULL,
 		'tags' => NULL,
 		'suggested_tags' => NULL,
 		'container_guid' => NULL,

@@ -23,6 +23,7 @@ $guid 				= get_input('guid');
 $rubric_select		= get_input('rubric_select');
 $rubric_guid		= get_input('rubric_guid');
 $access_level		= get_input('access_level');
+$category           = get_input('category');
 
 // Sticky form
 elgg_make_sticky_form('todo_edit');
@@ -98,6 +99,7 @@ $todo->grade_required = $grade_required;
 $todo->grade_total = $grade_total;
 $todo->status = $status;
 $todo->rubric_guid = $rubric_guid;
+$todo->category = $category;
 
 
 // Before saving, check permissions
