@@ -64,22 +64,27 @@ foreach ($todos as $todo) {
 		$description .= "In group: {$container->name}";
 	}
 	
+	// Truncated title and group name
+	$todo_event_title = elgg_get_excerpt($todo->title, 75);
+	
 	if ($todo->return_required) {
-		$subtitle_class = 'todo-calendar-event-subtitle-return-required';
-		$description .= "<br />" . elgg_echo('todo:label:submissionrequired');
-	} else {
-		$subtitle_class = 'todo-calendar-event-subtitle';
+		$description .= "<br /><span class='todo-calender-tooltip-return-required'>" . elgg_echo('todo:label:submissionrequired') . "</span>";
+		$todo_event_title .= "<span class='todo-calendar-event-subtitle-return-required'></span>";
 	}
 	
-	// Truncated title and group name
-	$todo_truncated = elgg_get_excerpt($todo->title, 75);
+	if ($todo->category) {
+		$css_category = preg_replace('/[^a-z0-9\-]/i', '-', $todo->category);
+		$description .= "<br /><span class='todo-calender-tooltip-{$css_category}'>" . elgg_echo("todo:label:{$todo->category}") . "</span>";
+		$todo_event_title .= "<span class='todo-calendar-event-subtitle-{$css_category}'></span>";
+	}
+	
 	$title_content = <<<HTML
 	<div class='todo-calendar-event-title-container'>
 		<span class='todo-calendar-event-title'>
 			$container->name:
 		</span>
-		<span class='$subtitle_class'>
-			$todo_truncated
+		<span class='todo-calendar-event-subtitle'>
+			$todo_event_title
 		</span>
 	</div>
 HTML;

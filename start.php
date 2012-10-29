@@ -1211,6 +1211,20 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 		);
 		$return[] = ElggMenuItem::factory($options);
 	}
+	
+	// Show Icon for todo categories
+	if ($entity->category) {
+		$name = "category_" . $entity->category;
+		$options = array(
+			'name' => $name,
+			'text' => "<img src='" . elgg_get_site_url() . 'mod/todo/graphics/todo_cat_' . $entity->category . '.png' . "' />",
+			'href' => '#',
+			'title' => elgg_echo("todo:label:{$entity->category}"),
+			'priority' => 1,
+			'section' => 'info',
+		);
+		$return[] = ElggMenuItem::factory($options);
+	}
 		
 	return $return;
 }

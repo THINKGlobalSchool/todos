@@ -303,7 +303,10 @@ span.unviewed {
 	margin-top: -3px;
 }
 
-.elgg-menu-item-todo-return-required img {
+.elgg-menu-item-todo-return-required img,
+.elgg-menu-item-category-exam img,
+.elgg-menu-item-category-basic-task img, 
+.elgg-menu-item-category-assessed-task img {
 	margin-top: 3px;
 }
 
@@ -697,10 +700,45 @@ td.todo-iplan-hover a {
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-return-required {
-	font-style: italic;
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
 	padding-right: 18px;
 }
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-basic-task {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_basic_task_small.png) no-repeat right bottom;
+	padding-right: 18px;
+}
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-assessed-task {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_assessed_task_small.png) no-repeat right bottom;
+	padding-right: 18px;
+}
+
+#todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-exam {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_exam_small.png) no-repeat right bottom;
+	padding-right: 18px;
+}
+
+.todo-calender-tooltip-return-required {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat left center;
+	padding-left: 18px;
+}
+
+.todo-calender-tooltip-basic-task {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_basic_task_small.png) no-repeat left center;
+	padding-left: 18px;
+}
+
+.todo-calender-tooltip-assessed-task {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_assessed_task_small.png) no-repeat left center;
+	padding-left: 18px;
+}
+
+.todo-calender-tooltip-exam {
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_exam_small.png) no-repeat left center;
+	padding-left: 18px;
+}
+
 
 /** End FC **/
 
