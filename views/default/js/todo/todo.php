@@ -944,6 +944,7 @@ elgg.todo.makeCalendarTip = function(event, element) {
 			tip: 'bottomMiddle',
 			width: 'auto',
 			name: 'dark',
+			'default': false,
 		},
 		show: {
 			delay: 0,

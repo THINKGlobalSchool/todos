@@ -68,13 +68,13 @@ foreach ($todos as $todo) {
 	$todo_event_title = elgg_get_excerpt($todo->title, 75);
 	
 	if ($todo->return_required) {
-		$description .= "<br /><span class='todo-calendar-icon-padding todo-calender-tooltip-return-required'>" . elgg_echo('todo:label:submissionrequired') . "</span>";
+		$description .= "<div class='todo-calendar-icon-padding todo-calender-tooltip-return-required'>" . elgg_echo('todo:label:submissionrequired') . "</div>";
 		$todo_event_title .= "<span class='todo-calendar-icon-padding todo-calendar-event-subtitle-return-required'></span>";
 	}
 	
 	if ($todo->category) {
 		$css_category = preg_replace('/[^a-z0-9\-]/i', '-', $todo->category);
-		$description .= "<br /><span class='todo-calendar-icon-padding todo-calender-tooltip-{$css_category}'>" . elgg_echo("todo:label:{$todo->category}") . "</span>";
+		$description .= "<div class='todo-calendar-icon-padding todo-calender-tooltip-{$css_category}'>" . elgg_echo("todo:label:{$todo->category}") . "</div>";
 		$todo_event_title .= "<span class='todo-calendar-icon-padding todo-calendar-event-subtitle-{$css_category}'></span>";
 	}
 	

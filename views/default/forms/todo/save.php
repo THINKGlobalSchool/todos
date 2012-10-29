@@ -297,6 +297,10 @@ $form_body = <<<HTML
 		</div>
 	</div>
 	<div>
+		<label>$category_label</label><br />
+		$category_input
+	</div><br />
+	<div>
 		<label>$return_label</label>
 		$return_content
 	</div><br />
@@ -313,10 +317,6 @@ $form_body = <<<HTML
 		$grade_total_input<br /><br />
 		$rubric_html
 	</div>
-	<div>
-		<label>$category_label</label><br />
-		$category_input
-	</div><br />
 	<div>
 		<label>$access_label</label><br />
 		$access_content
