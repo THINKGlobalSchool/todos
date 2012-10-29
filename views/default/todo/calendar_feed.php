@@ -80,12 +80,8 @@ foreach ($todos as $todo) {
 	
 	$title_content = <<<HTML
 	<div class='todo-calendar-event-title-container'>
-		<span class='todo-calendar-event-title'>
-			$container->name:
-		</span>
-		<span class='todo-calendar-event-subtitle'>
-			$todo_event_title
-		</span>
+		<span class='todo-calendar-event-title'>$container->name:</span>
+		<span class='todo-calendar-event-subtitle'>$todo_event_title</span>
 	</div>
 HTML;
 	
