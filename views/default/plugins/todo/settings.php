@@ -11,6 +11,7 @@
  */
 
 $delete = $vars['entity']->zipdelete;
+$enable_iplan = $vars['entity']->enable_iplan;
 
 if (!$delete) {
 	$delete = 'daily';
@@ -53,6 +54,16 @@ $zip_delete_input = elgg_view('input/dropdown', array(
 	'value' => $delete,
 ));
 
+$enable_iplan_label = elgg_echo('todo:label:enable_iplan');
+$enable_iplan_input = elgg_view('input/dropdown', array(
+		'name' => 'params[enable_iplan]',
+		'options_values' => array(
+			'1' => elgg_echo('option:yes'),
+			'0' => elgg_echo('option:no')
+		),
+	'value' => $enable_iplan,
+));
+
 $content = <<<HTML
 	<div>
 		<label>$calendar_salt_label</label>
@@ -61,6 +72,10 @@ $content = <<<HTML
 	<div>
 		<label>$zip_delete_label</label>
 		$zip_delete_input
+	</div>
+	<div>
+		<label>$enable_iplan_label</label>
+		$enable_iplan_input
 	</div>
 	<div>
 		<label>$submissions_role_label</label> 

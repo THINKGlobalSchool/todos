@@ -29,19 +29,18 @@ $url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&sta
 $today_url = $url . "&filter_priority=" . TODO_PRIORITY_TODAY;
 $past_url = $url . "&filter_priority=" . TODO_PRIORITY_HIGH;
 
-// Get faculty role
-$faculty_role = elgg_get_plugin_setting('todofacultyrole', 'todo');
+// Show iPlan if enabled
+if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
+	$iplan_link = elgg_view('output/url', array(
+		'text' => elgg_echo('todo:label:iplancalendar'),
+		'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
+		'class' => 'elgg-button elgg-button-submit',
+	));
 
-
-$iplan_link = elgg_view('output/url', array(
-	'text' => elgg_echo('todo:label:iplancalendar'),
-	'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
-	'class' => 'elgg-button elgg-button-submit',
-));
-
-$iplan_content = "<tr>
-	<td colspan='2' class='todo-iplan-hover'>$iplan_link</td>
-</tr>";
+	$iplan_content = "<tr>
+		<td colspan='2' class='todo-iplan-hover'>$iplan_link</td>
+	</tr>";
+}
 
 
 $content = <<<HTML

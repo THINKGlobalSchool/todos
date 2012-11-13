@@ -995,8 +995,8 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			$return[] = ElggMenuItem::factory($options);
 		} else if (elgg_instanceof($owner, 'group')) {
 			// Group todos, but not the group owner's view
-		} else {
-			// Not group todos
+		} else if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
+			// Not group todos, and iPlan enabled
 			$options = array(
 				'name' => 'category_calendars',
 				'text' => elgg_echo("todo:label:iplan"),
