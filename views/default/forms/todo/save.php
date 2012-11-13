@@ -18,6 +18,7 @@ $title 				= elgg_extract('title', $vars);
 $description 		= elgg_extract('description', $vars);
 $tags 				= elgg_extract('tags', $vars);
 $suggested_tags		= elgg_extract('suggested_tags', $vars);
+$start_date			= elgg_extract('start_date', $vars);
 $due_date			= elgg_extract('due_date', $vars);
 $container_guid 	= elgg_extract('container_guid', $vars);
 $return_required	= elgg_extract('return_required', $vars);
@@ -73,6 +74,12 @@ $description_label = elgg_echo("todo:label:description");
 $description_input = elgg_view("input/longtext", array(
 	'name' => 'description', 
 	'value' => $description
+));
+
+$startdate_label = elgg_echo('todo:label:startdate');
+$startdate_content = elgg_view('input/date', array(
+	'name' => 'start_date', 
+	'value' => $start_date
 ));
 
 $duedate_label = elgg_echo('todo:label:duedate');
@@ -247,16 +254,27 @@ $status_input = elgg_view('input/dropdown', array(
 		
 $assignees_label = elgg_echo('todo:label:currentassignees');
 
-$submission_popup_label = elgg_echo('todo:label:suggestedtagswhat');
-$submission_popup_title = elgg_echo('todo:label:suggestedtagstitle');
-$submission_popup_info = elgg_echo('todo:label:suggestedtagsinfo');			
+$suggested_popup_label = elgg_echo('todo:label:whatisthis');
+$suggested_popup_title = elgg_echo('todo:label:suggestedtagstitle');
+$suggested_popup_info = elgg_echo('todo:label:suggestedtagsinfo');			
 
-$popup_content = elgg_view_module('popup', $submission_popup_title, $submission_popup_info, array(
-	'id' => 'info',
+$suggested_popup_content = elgg_view_module('popup', $suggested_popup_title, $suggested_popup_info, array(
+	'id' => 'suggesedtags-info',
 	'class' => 'hidden todo-help-popup',
 ));
 
-$popup = "<a style='font-size: 10px;' id='todo-suggested-what' href='#info'>$submission_popup_label</a>" . $popup_content;
+$suggested_popup = "<a style='font-size: 10px;' id='todo-suggested-what' href='#suggesedtags-info'>$suggested_popup_label</a>" . $suggested_popup_content;
+
+$startdate_popup_label = elgg_echo('todo:label:whatisthis');
+$startdate_popup_title = elgg_echo('todo:label:startdate');
+$startdate_popup_info = elgg_echo('todo:label:startdateinfo');			
+
+$startdate_popup_content = elgg_view_module('popup', $startdate_popup_title, $startdate_popup_info, array(
+	'id' => 'startdate-info',
+	'class' => 'hidden todo-help-popup',
+));
+
+$startdate_popup = "<a style='font-size: 10px;' id='todo-startdate-what' href='#startdate-info'>$startdate_popup_label</a>" . $startdate_popup_content;
 
 // Build Form Body
 $form_body = <<<HTML
@@ -268,6 +286,10 @@ $form_body = <<<HTML
 	<div>
 		<label>$description_label</label><br />
         $description_input
+	</div><br />
+	<div>
+		<label>$startdate_label</label>&nbsp;&nbsp;$startdate_popup<br />
+		$startdate_content
 	</div><br />
 	<div>
 		<label>$duedate_label</label><br />
@@ -305,7 +327,7 @@ $form_body = <<<HTML
 		$return_content
 	</div><br />
 	<div id='todo-suggested-tags-container' style='$suggested_tags_display'>
-		<label>$suggested_tags_label</label>&nbsp;&nbsp;$popup<br />
+		<label>$suggested_tags_label</label>&nbsp;&nbsp;$suggested_popup<br />
         $suggested_tags_input<br />
 	</div>
 	<div>

@@ -416,6 +416,7 @@ function todo_prepare_form_vars($todo = NULL) {
 		'title' => NULL,
 		'description' => NULL,
 		'due_date' => NULL,
+		'start_date' => NULL,
 		'status' => TODO_STATUS_PUBLISHED,
 		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
 		'access_id' => NULL,

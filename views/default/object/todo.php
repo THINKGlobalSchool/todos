@@ -134,9 +134,21 @@ if ($full) { // Full View
 		$status_content .= elgg_view('todo/status', $vars);
 	} 
 
+	// Description Content
 	$body = elgg_view_module('info', $description_label, $description_content);
+
+	// Optional Start Date
+	if ($todo->start_date) {
+		$start = is_int($todo->start_date) ? date("F j, Y", $todo->start_date) : $todo->start_date;
+		$startdate_label = elgg_echo("todo:label:startdate");
+		$startdate_content = elgg_view('output/longtext', array('value' => $start));
+		$body .= elgg_view_module('info', $startdate_label, $startdate_content);
+	}
+
+	// Due date content
 	$body .= elgg_view_module('info', $duedate_label, $duedate_content);
 
+	// Submission Required Content
 	$body .= elgg_view_module('info', $return_label, $return_content);	
 
 	// If supplied suggested tags, display them
