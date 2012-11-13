@@ -147,6 +147,7 @@ $english = array(
 	'todo:label:move' => 'Move Todo',
 	'todo:label:todoguid' => 'Todo GUID',
 	'todo:label:groupguid' => 'Group GUID',
+	'todo:label:enable_iplan' => 'iPlan Calendars Enabled?',
 	
 	// Categories
 	'todo:label:category' => 'Category',
