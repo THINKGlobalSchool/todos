@@ -98,7 +98,19 @@ elgg.todo.init = function() {
 			of: $(this),
 			collision: 'fit fit'
 		}
-		$('.todo-help-popup').toggle().position(options);
+		$('#suggesedtags-info').toggle().position(options);
+	});
+	
+	// What is this rollover for submission tags
+	$('#todo-startdate-what').click(function(e){e.preventDefault();});
+	$('#todo-startdate-what').hover(function() {
+		var options = {
+			my: 'center top',
+			at: 'center bottom',
+			of: $(this),
+			collision: 'fit fit'
+		}
+		$('#startdate-info').toggle().position(options);
 	});
 	
 	// Todo dashboard nav items

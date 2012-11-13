@@ -38,10 +38,13 @@ $english = array(
 	'todo:menu:notifications' => 'To Do Notifications',
 	
 	// Labels 
+	'todo:label:whatisthis' => 'What is this?',
 	'todo:label:due' => 'Due: %s',
 	'todo:label:noresults' => 'No Results',
 	'todo:label:description' => 'Instructions',
 	'todo:label:duedate' => 'Due Date',
+	'todo:label:startdate' => 'Start Date',
+	'todo:label:startdateinfo' => 'Optional: Supplying a start date will display this todo on calendars as starting on this date instead of the date it was created.',
 	'todo:label:assignto' => 'Assign To', 
 	'todo:label:return' => 'Return',
 	'todo:label:returnrequired' => 'Student Submission Required',
@@ -111,7 +114,6 @@ $english = array(
 	'todo:label:submittedforsingle' => 'Submitted for 1 To Do', 
 	'todo:label:submittedformultiple' => 'Submitted for %s To Do\'s',
 	'todo:label:suggestedtags' => 'Student Submission Tag(s)',
-	'todo:label:suggestedtagswhat' => 'What is this?',
 	'todo:label:suggestedtagstitle' => 'Submission Tags',
 	'todo:label:suggestedtagsinfo' => 'Student submission tags are the tags that students should use for any content they post related to this to do.',
 	'todo:label:sortasc' => 'Sort Ascending &#9650;',

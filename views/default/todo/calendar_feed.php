@@ -85,9 +85,12 @@ foreach ($todos as $todo) {
 	</div>
 HTML;
 	
+	// Use supplied start date, or default to time created
+	$start_date = $todo->start_date ? $todo->start_date  : $todo->time_created;
+
 	$events[] = array(
 		'title' => $title_content,
-		'start' => $todo->time_created,
+		'start' => $start_date,
 		'end' => $todo->due_date,
 		'url' => $todo->getURL(),
 		'description' => $description,
