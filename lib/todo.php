@@ -587,7 +587,13 @@ function get_todo_access_array() {
  */
 function get_todo_groups_array() {
 	// Get user's groups
-	$groups = get_users_membership(elgg_get_logged_in_user_guid());
+	$options = array(
+		'relationship' => 'member',
+		'relationship_guid' => elgg_get_logged_in_user_guid(),
+		'inverse_relationship' => FALSE,
+		'limit' => 100,
+	);
+	$groups = elgg_get_entities_from_relationship($options);
 
 	$array = array();
 	foreach ($groups as $group) {
