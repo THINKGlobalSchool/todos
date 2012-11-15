@@ -13,7 +13,7 @@
 $group = elgg_get_page_owner_entity();
 
 // Only display sidebar todo's if enabled
-if (elgg_instanceof($group, 'group') && $group->todo_enable == 'yes') {	
+if (elgg_instanceof($group, 'group') && $group->todo_enable == 'yes' && elgg_in_context('groups')) {	
 	// get the groups todo's
 	$todos = elgg_get_entities(array('type' => 'object', 'subtype' => 'todo', 
 										'container_guids' => elgg_get_page_owner_guid(), 'limit' => 6));
