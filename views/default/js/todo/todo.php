@@ -114,11 +114,10 @@ elgg.todo.init = function() {
 	});
 	
 	// Todo dashboard nav items
-	$('.todo-ajax-list').live('click', function(e){
+	$('.todo-ajax-list').live('click', function(e){	
 		// Trigger a hook for tab_changed
-		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $(this)},null);
-		
 		var $tab = $(this);
+		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $tab},null);
 		
 		$('#todo-dashboard').html("<div class='elgg-ajax-loader'></div>");
 		$('#todo-dashboard').load($(this).attr('href'), function() {
@@ -133,31 +132,50 @@ elgg.todo.init = function() {
 	
 	// Todo dashboard filter nav items
 	$('.todo-ajax-filter').live('click', function(e){
+		// Trigger a hook for tab_changed
+		var $tab = $(this);
+		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $tab},null);
+
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'));
+		$('#todo-dashboard').load($(this).attr('href'), function() {
+			// Trigger a hook for tab_loaded
+			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $tab},null);
+		});
 		e.preventDefault();
 	});
 	
 	// Todo dashboard sort nav items
 	$('.todo-ajax-sort').live('click', function(e){
+		var $sender = $(this);
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'));
+		$('#todo-dashboard').load($(this).attr('href'), function() {
+			// Trigger a hook for tab_loaded
+			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
+		});
 		e.preventDefault();
 	});
 
 	// Todo dashboard filter due date
 	$('#todo-filter-due').live('change', function(e) {
+		var $sender = $(this);
 		var priority = $(this).val();
 		var href = $(this).parent().find('a').attr('href');
 		href = elgg.get_site_url() + href + "&filter_priority=" + priority;
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load(href);
+		$('#todo-dashboard').load(href, function() {
+			// Trigger a hook for tab_loaded
+			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
+		});
 	});
 
 	// Special pagination helper for todo content
 	$('#todo-dashboard #todo-dashboard-content.todo-dashboard-content-pagination-helper .elgg-pagination a').live('click', function(event) {
+		var $sender = $(this);
 		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'));
+		$('#todo-dashboard').load($(this).attr('href'), function() {
+			// Trigger a hook for tab_loaded
+			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
+		});
 		event.preventDefault();
 	});
 	
@@ -843,7 +861,11 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 					showCloseButton: false,
 				}).trigger('click');
 			} else {
-				$.fancybox.close();				
+				// Using a timeout here, sometimes loading too quickly 
+				// will prevent the lightbox from closing
+				setTimeout(function() {
+					$.fancybox.close();
+				}, 300)			
 			}
 		}
 	});	

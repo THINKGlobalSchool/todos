@@ -13,9 +13,10 @@
  */
 
 $assignees = elgg_extract('assignees', $vars);
+$todo_guid = elgg_extract('todo_guid', $vars);
 
 if ($assignees) { 
-	$member_list .= "<div class='todo-assignees' id='$guid'>";
+	$member_list .= "<div class='todo-assignees' id='$todo_guid'>";
 	foreach ($assignees as $assignee) {
 		$member_list .= "<div style='float: left; width: 200px;'>"  . elgg_view('todo/assignee', array('entity' => $assignee)) . "</div>";	
 	}
