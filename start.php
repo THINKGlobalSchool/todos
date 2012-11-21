@@ -214,6 +214,12 @@ function todo_init() {
 	// Register handler for todo submission files 
 	elgg_register_plugin_hook_handler('entity:icon:url', 'object', 'submission_file_icon_url_override');
 	
+	// Register todos as a group copyable subtype
+	elgg_register_plugin_hook_handler('cangroupcopy', 'entity', 'todo_can_group_copy_handler');
+
+	// Register handler for post todo group copy
+	elgg_register_plugin_hook_handler('groupcopy', 'entity', 'todo_group_copy_handler');
+	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
 		// Owner block hook (for logged in users)
@@ -421,7 +427,7 @@ function todo_page_handler($page) {
 		case 'loadassignees':
 			$guid = get_input('guid');
 			$assignees = get_todo_assignees($guid);	
-			echo elgg_view('todo/assignees', array('assignees' => $assignees));
+			echo elgg_view('todo/assignees', array('assignees' => $assignees, 'todo_guid' => $guid));
 			exit;
 			break;
 		case 'download':
@@ -1431,6 +1437,28 @@ function submission_file_icon_url_override($hook, $type, $returnvalue, $params) 
 		$url = elgg_trigger_plugin_hook('file:icon:url', 'override', $params, $url);
 		return $url;
 	}
+}
+
+/**
+ * Register todo as a group copyable subtype
+ */
+function todo_can_group_copy_handler($hook, $type, $return, $params) {
+	$return[] = 'todo';
+	return $return;
+}
+
+/**
+ * Perform extra tasks after a todo had been copied to a group
+ */
+function todo_group_copy_handler($hook, $type, $return, $params) {
+	$new_entity = $params['new_entity'];
+
+	if (elgg_instanceof($new_entity, 'object', 'todo')) {
+		// Update (reset) the todo's complete status
+		update_todo_complete($new_entity->guid);
+	}
+
+	return $return;
 }
 
 /**
