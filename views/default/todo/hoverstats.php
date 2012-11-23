@@ -16,18 +16,22 @@ $upcoming = $vars['upcoming'];
 $past_due = $vars['past_due'];
 $today = $vars['today'];
 $new = $vars['new'];
+$this_week = $vars['this_week'];
 
 $past_due_label = elgg_echo('todo:label:pastdue');
 $upcoming_label = elgg_echo('todo:label:incomplete');
 $new_label = elgg_echo('todo:label:new');
 $today_label = elgg_echo('todo:label:today');
+$this_week_label = elgg_echo('todo:label:nextweek');
 
 $user = elgg_get_logged_in_user_entity();
 
 $url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&status=incomplete&u={$user->guid}";
 
 $today_url = $url . "&filter_priority=" . TODO_PRIORITY_TODAY;
+$this_week_url = $url . "&filter_priority=" . TODO_PRIORITY_MEDIUM;
 $past_url = $url . "&filter_priority=" . TODO_PRIORITY_HIGH;
+$upcoming_url = $url . "&sort_order=DESC";
 
 // Show iPlan if enabled
 if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
@@ -56,7 +60,11 @@ $content = <<<HTML
 					<td>$today</td>
 				</tr>
 				<tr>
-					<td><a href='$url'>$upcoming_label</a></td>
+					<td><a href='$this_week_url'>$this_week_label</a></td>
+					<td>$this_week</td>
+				</tr>
+				<tr>
+					<td><a href='$upcoming_url'>$upcoming_label</a></td>
 					<td>$upcoming</td>
 				</tr>
 				<tr>
