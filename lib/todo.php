@@ -274,7 +274,7 @@ function get_todos(array $params) {
 		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
 		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
 
-	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string < {$due_end}))";
+	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string <= {$due_end}))";
 	}
 	
 	// Display by context
@@ -924,13 +924,18 @@ function count_assigned_todos($user_guid, $container_guid = NULL) {
 /**
  * Count user todo's by due date
  *
- * @param $user_guid   int    user's guid
- * @param $date        int    timestamp
- * @param $due_operand string operand for due date (>, <, =)
- * @param $status      string (incomplete|complete) 
+ * @param $user_guid   int     user's guid
+ * @param $date_params array   array(
+ *                               'start' => timestamp, 
+ *                               'end' => timestamp, (optional, if both start and end, then we'll check between dates)
+ *                               'operand' => string, (required if only start date is supplied: >, <, =)
+ *                             )
+ *                             
+ * @param $due_operand string  operand for single due date (>, <, =)
+ * @param $status      string  (incomplete|complete) 
  * @return int
  */
-function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $status = 'incomplete') {
+function count_assigned_todos_by_due_date($user_guid, $date_params, $status = 'incomplete') {
 	// Common options
 	$options = array(
 		'type' => 'object',
@@ -941,12 +946,39 @@ function count_assigned_todos_by_due_date($user_guid, $date, $due_operand, $stat
 				'name' => 'status',
 				'value' => TODO_STATUS_PUBLISHED, 
 				'operand' => '='),
-			array(
-				'name' => 'due_date',
-				'value' => $date,
-				'operand' => $due_operand,
-			))
+		)
 	);
+
+	// Check for just start date and operand
+	if (!$date_params['end'] && $date_params['operand']) {
+		// Just start date metadata value pairs
+		$options['metadata_name_value_pairs'][] = array(
+			'name' => 'due_date',
+			'value' => $date_params['start'],
+			'operand' => $date_params['operand'],
+		);
+	} else if ($date_params['start'] && $date_params['end']) {
+		// Got start and end, we'll be checking for items in this range
+
+		// Start date
+		$options['metadata_name_value_pairs'][] = array(
+			'name' => 'due_date',
+			'value' => $date_params['start'],
+			'operand' => '>',
+		);
+		
+		// End date
+		$options['metadata_name_value_pairs'][] = array(
+			'name' => 'due_date',
+			'value' => $date_params['end'],
+			'operand' => '<=',
+		);
+	} else {
+		// Insufficient params..
+		return FALSE;
+	}
+	
+
 
 	$test_id = get_metastring_id('manual_complete');
 	$one_id = get_metastring_id(1);

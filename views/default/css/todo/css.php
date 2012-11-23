@@ -174,7 +174,7 @@ span.unviewed {
 	-webkit-border-radius: 0 0 4px 4px;
 	-moz-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
-	width: 125px;
+	width: 145px;
 }
 
 /** Todo info toggler **/

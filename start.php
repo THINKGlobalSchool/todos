@@ -802,10 +802,13 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	$incomplete_count = count_incomplete_todos($user->guid);
 
 	$today = strtotime(date("F j, Y"));
-	$due_today_count = count_assigned_todos_by_due_date($user_guid, $today, '=', 'incomplete');
-	$upcoming_count = count_assigned_todos_by_due_date($user_guid, $today, '>', 'incomplete');
-	$past_due_count = count_assigned_todos_by_due_date($user_guid, $today, '<=', 'incomplete');
-
+	$next_week = strtotime("+7 days", $today);
+	
+	$due_today_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '='), 'incomplete');
+	$upcoming_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '>'), 'incomplete');
+	$past_due_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '<='), 'incomplete');
+	$due_this_week_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'end' => $next_week), 'incomplete');
+	
 	$class = "elgg-icon todo-notifier";
 	$text = "<span class='$class'></span>";
 
@@ -822,6 +825,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 		'upcoming' => $upcoming_count,
 		'past_due' => $past_due_count,
 		'today' => $due_today_count,
+		'this_week' => $due_this_week_count,
 	));
 	
 	// Add todo item
