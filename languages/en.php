@@ -148,6 +148,7 @@ $english = array(
 	'todo:label:todoguid' => 'Todo GUID',
 	'todo:label:groupguid' => 'Group GUID',
 	'todo:label:enable_iplan' => 'iPlan Calendars Enabled?',
+	'todo:label:submission_tz' => 'Submission Timezone',
 	
 	// Categories
 	'todo:label:category' => 'Category',

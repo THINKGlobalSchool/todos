@@ -554,6 +554,12 @@ function submission_create_event_listener($event, $object_type, $object) {
 			}
 
 			$object->access_id = $submission_acl;
+
+			// Update timestamp based on timezone
+			$time_created = $object->time_created;
+			$offset_time_created = $time_created + todo_get_submission_timezone_offset();
+			$object->time_created = $offset_time_created;
+			$object->utc_created = $time_created; // Store original timestamp for good measure
 			$object->save();
 
 			// Set permissions for any attached content (files)

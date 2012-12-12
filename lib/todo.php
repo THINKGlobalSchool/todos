@@ -1354,3 +1354,50 @@ function rgb2html($r, $g = -1, $b = -1) {
 	$color .= (strlen($b) < 2 ? '0' : '') . $b;
 	return '#' . $color;
 }
+
+/**
+ * Helper function to format a timezone offset
+ * 
+ * @param int $offset offset
+ * @return string
+ */
+function todo_format_tz_offet($offset) {
+	$hours = $offset / 3600;
+	$remainder = $offset % 3600;
+	$sign = $hours > 0 ? '+' : '-';
+	$hour = (int) abs($hours);
+	$minutes = (int) abs($remainder / 60);
+
+	if ($hour == 0 AND $minutes == 0) {
+		$sign = ' ';
+	}
+	return $sign . str_pad($hour, 2, '0', STR_PAD_LEFT) .':'. str_pad($minutes,2, '0');
+}
+
+/**
+ * Helper function to get the timezone offset based on the 
+ *
+ * @return int
+ */
+function todo_get_submission_timezone_offset() {
+	// Get timezone
+	$utc = new DateTimeZone('UTC');
+
+	// Get current date/time
+	$current_dt = new DateTime('now', $utc);
+
+	$submission_tz = elgg_get_plugin_setting('submission_tz', 'todo');
+
+	// Might be unset/disabled, so return 0
+	if (!$submission_tz) {
+		return 0;
+	}
+
+	// Get configured time zone object
+	$time_zone = new DateTimeZone($submission_tz);
+
+	// Calulate offset
+	$offset =  $time_zone->getOffset($current_dt);
+
+	return $offset;
+}
