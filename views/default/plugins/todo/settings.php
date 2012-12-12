@@ -12,6 +12,7 @@
 
 $delete = $vars['entity']->zipdelete;
 $enable_iplan = $vars['entity']->enable_iplan;
+$submission_tz = $vars['entity']->submission_tz;
 
 if (!$delete) {
 	$delete = 'daily';
@@ -64,6 +65,40 @@ $enable_iplan_input = elgg_view('input/dropdown', array(
 	'value' => $enable_iplan,
 ));
 
+
+
+// Time zone offset select
+$utc = new DateTimeZone('UTC');
+$dt = new DateTime('now', $utc);
+
+$tz_option_values = array(0 => 'Disabled');
+
+foreach(DateTimeZone::listIdentifiers() as $tz) {
+	$current_tz = new DateTimeZone($tz);
+	$offset =  $current_tz->getOffset($dt);
+	$transition =  $current_tz->getTransitions($dt->getTimestamp(), $dt->getTimestamp());
+	$abbr = $transition[0]['abbr'];
+	$formatted_offset = todo_format_tz_offet($offset);
+	$option = "{$tz} [{$abbr} $formatted_offset]";
+	$tz_option_values[$tz] = $option;
+}
+
+$submission_tz_label = elgg_echo('todo:label:submission_tz');
+$submission_tz_input = elgg_view('input/dropdown', array(
+		'name' => 'params[submission_tz]',
+		'options_values' => $tz_option_values,
+		'value' => $submission_tz,
+));
+
+if ($submission_tz) {
+	$server_time = date('D, d M Y H:i:s',time());
+	$offset_time = date('D, d M Y H:i:s',time() + todo_get_submission_timezone_offset());
+	$time_offset_preview = "<pre>
+Server Time: $server_time
+Offset Time: $offset_time
+</pre>";
+}
+
 $content = <<<HTML
 	<div>
 		<label>$calendar_salt_label</label>
@@ -84,6 +119,11 @@ $content = <<<HTML
 	<div>
 		<label>$faculty_role_label</label> 
 		$faculty_role_input
+	</div>
+	<div>
+		<label>$submission_tz_label</label> 
+		$submission_tz_input
+		$time_offset_preview
 	</div>
 HTML;
 
