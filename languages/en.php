@@ -255,9 +255,7 @@ To reply, view, or comment on the original item, click here:
 
 To view %s's profile, click here:
 
-%s
-
-You cannot reply to this email.",
+%s",
 
 	'todo:email:bodysubmissioncomment' => "There is a new comment on a submission for the To Do titled %s.
 
@@ -267,9 +265,7 @@ To view or comment on the original submission, click here:
 
 To view %s's profile, click here:
 
-%s
-
-You cannot reply to this email.",
+%s",
 
 	// Submission Annotations
 	'riveraction:annotation:submission_annotation' => '%s commented on %s',
@@ -301,9 +297,7 @@ To reply or view the original item, click here:
 
 To view %s's profile, click here:
 
-%s
-
-You cannot reply to this email.",
+%s",
 	
 	// Messages
 	'todo:success:save' => 'To Do Saved',
