@@ -177,6 +177,10 @@ span.unviewed {
 	width: 145px;
 }
 
+#todo-topbar-hover .elgg-table td {
+	color: #222222;
+}
+
 /** Todo info toggler **/
 .todo-entity-info {
 	display: none;
