@@ -196,6 +196,8 @@ elgg.todo.init = function() {
 
 	// CALENDER EVENTS
 	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', elgg.todo.toggleCalendar);
+
+	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
 }
 
 /**	
@@ -825,7 +827,7 @@ elgg.todo.getCalendars = function() {
 elgg.todo.buildCalendar = function(calendars, date, view) {
 	// Check for supplied view	
 	if (!view) {
-		view = 'month'; // Default to month
+		view = 'basicWeek'; // Default to week view
 	} else {
 		view = view.name;
 	}
@@ -925,6 +927,41 @@ elgg.todo.toggleCalendar = function() {
 	
 	// Trigger a hook for any post toggle tasks
 	elgg.trigger_hook('category_toggled', 'todo_dashboard', {'guid' : guid}, null);
+}
+
+/*
+ * Toggle calendar todo category and rebuild display
+ */
+elgg.todo.toggleCalendarTodoCategory = function(event) {
+	var category = $(this).val();
+
+	var calendars = elgg.todo.getCalendars();
+
+	var base_url = elgg.get_site_url() + 'ajax/view/todo/calendar_feed';
+
+	var url_enabled = '';
+
+	var $checked_categories = $('input[name="todo_category[]"]:checked');
+
+	if ($checked_categories.length < 1) {
+		event.preventDefault();
+		return false;
+	}
+
+	$checked_categories.each(function() {
+		url_enabled += "&" + $(this).val() + '=1';
+	});
+
+	$.each(calendars, function(k, v) {
+	 	calendars[k]['url'] = base_url + "?category=" + k + url_enabled;
+	});
+
+	var current_date = $('#todo-category-calendar').fullCalendar('getDate');
+	var current_view = $('#todo-category-calendar').fullCalendar('getView');
+	
+	$('#todo-category-calendar').fullCalendar('destroy');
+
+	elgg.todo.buildCalendar(calendars, current_date, current_view);
 }
 
 // Calendar menu item changed hook handler

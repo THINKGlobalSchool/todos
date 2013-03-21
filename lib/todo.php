@@ -1401,3 +1401,24 @@ function todo_get_submission_timezone_offset() {
 
 	return $offset;
 }
+
+/**
+ * Helper function to grab an array of todo categories
+ * suitable for a dropdown input
+ *
+ * @param  bool $flip Optional: flip the options/values
+ * @return array
+ */
+function todo_get_categories_dropdown($flip = FALSE) {
+	$categories = array(
+		TODO_BASIC_TASK => elgg_echo('todo:label:basic_task'),
+		TODO_ASSESSED_TASK => elgg_echo('todo:label:assessed_task'),
+		TODO_EXAM => elgg_echo('todo:label:exam'),
+	);
+
+	if ($flip) {
+		$categories = array_flip($categories);
+	}
+
+	return $categories;
+}
