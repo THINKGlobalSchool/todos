@@ -152,6 +152,7 @@ $english = array(
 	
 	// Categories
 	'todo:label:category' => 'Category',
+	'todo:label:todocategories' => 'To Do Categories',
 	'todo:label:basic_task' => 'Basic Task',
 	'todo:label:assessed_task' => 'Assessed Task',
 	'todo:label:exam' => 'Test/Exam',

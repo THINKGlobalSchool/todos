@@ -12,10 +12,14 @@
 
 $category_guid = get_input('category', FALSE);
 
+// Get category flags
+$basic_task = get_input(TODO_BASIC_TASK, FALSE);
+$assessed_task = get_input(TODO_ASSESSED_TASK, FALSE);
+$exam = get_input(TODO_EXAM, FALSE);
+
 $category = get_entity($category_guid);
 
 $container_guids = ELGG_ENTITIES_ANY_VALUE;
-
 
 if (elgg_instanceof($category, 'object', 'group_category')) {
 	// Array to hold container colors (per group colors)
@@ -49,10 +53,28 @@ $options = array(
 	'limit' => 0,
 );
 
-$todos = new ElggBatch('elgg_get_entities', $options);
+$metadata_values = array();
+
+if ($basic_task) {
+	$metadata_values[] = TODO_BASIC_TASK;
+}
+
+if ($assessed_task) {
+	$metadata_values[] = TODO_ASSESSED_TASK;
+}
+
+if ($exam) {
+	$metadata_values[] = TODO_EXAM;
+}
+
+if (count($metadata_values) >= 1) {
+	$options['metadata_name'] = 'category';
+	$options['metadata_values'] = $metadata_values;
+}
+
+$todos = new ElggBatch('elgg_get_entities_from_metadata', $options);
 
 $events = array();
-
 
 foreach ($todos as $todo) {
 	$owner = $todo->getOwnerEntity();

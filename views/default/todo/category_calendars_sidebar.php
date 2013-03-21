@@ -51,16 +51,28 @@ if ($categories) {
 	$category_content = elgg_view_menu('todo-sidebar-calendars', array('sort_by' => 'priority'));
 
 	if ($category_content) {
-		$category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $category_content, array('id' => 'todo-sidebar-calendars'));
+		// Group categories
+		$group_category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $category_content, array('id' => 'todo-sidebar-calendars'));
 		
-		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));
-		
+		// Todo categories
+		$todo_category_input = elgg_view('input/checkboxes', array(
+			'name' => 'todo_category',
+			'class' => 'todo-sidebar-todo-category-checkbox',
+			'value' => array(TODO_ASSESSED_TASK, TODO_EXAM),
+			'options' => todo_get_categories_dropdown(TRUE),
+		));
+
+		$todo_category_module = elgg_view_module('aside', elgg_echo('todo:label:todocategories'), $todo_category_input, array('id' => 'todo-sidebar-todo-categories'));
+
+		// Date content
+		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));		
 		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker);
 		
 		$content = <<<HTML
 			<div id='todo-calendar-sidebar-content'>
-				$category_module
+				$group_category_module
 				<div id='todo-calendar-sidebar-groups'></div>
+				$todo_category_module
 				$date_module
 			</div>
 HTML;

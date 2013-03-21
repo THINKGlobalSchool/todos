@@ -233,11 +233,7 @@ $category_input = elgg_view('input/dropdown', array(
 	'name' => 'category',
 	'id' => 'todo_category',
 	'value' => $category,
-	'options_values' => array(
-		TODO_BASIC_TASK => elgg_echo('todo:label:basic_task'),
-		TODO_ASSESSED_TASK => elgg_echo('todo:label:assessed_task'),
-		TODO_EXAM => elgg_echo('todo:label:exam'),
-	)
+	'options_values' => todo_get_categories_dropdown(),
 ));
 
 $status_label = elgg_echo('todo:label:publishstatus');

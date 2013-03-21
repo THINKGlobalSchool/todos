@@ -33,9 +33,12 @@ if ($categories) {
 	foreach ($categories as $category) {
 		$category = get_entity($category);
 		if (elgg_instanceof($category, 'object', 'group_category')) {
+			$url = elgg_get_site_url() . 'ajax/view/todo/calendar_feed?category=' . $category->guid;
+			$url .= '&' . TODO_ASSESSED_TASK . '=1&' . TODO_EXAM . '=1';
+
 			$calendars[$category->guid] = array(
 				'display' => FALSE,
-				'url' => elgg_get_site_url() . 'ajax/view/todo/calendar_feed?category=' . $category->guid,
+				'url' => $url,
 			);
 		}
 	}
