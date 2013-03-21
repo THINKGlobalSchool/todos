@@ -71,9 +71,9 @@ if ($categories) {
 		$content = <<<HTML
 			<div id='todo-calendar-sidebar-content'>
 				$group_category_module
-				<div id='todo-calendar-sidebar-groups'></div>
 				$todo_category_module
 				$date_module
+				<div id='todo-calendar-sidebar-groups'></div>
 			</div>
 HTML;
 		echo $content;
