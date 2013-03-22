@@ -88,11 +88,21 @@ function todo_init() {
 	$g_js = elgg_get_simplecache_url('js', 'todo/admin');
 	elgg_register_simplecache_view('js/todo/admin');
 	elgg_register_js('elgg.todo.admin', $g_js);
+
+	// Register jquery ui widget (for jquery file upload)
+	$js = elgg_get_simplecache_url('js', 'jquery_ui_widget');
+	elgg_register_simplecache_view('js/jquery_ui_widget');
+	elgg_register_js('jquery.ui.widget', $js);
 	
 	// Register JS File Upload
 	$j_js = elgg_get_simplecache_url('js', 'jquery_file_upload');
 	elgg_register_simplecache_view('js/jquery_file_upload');
-	elgg_register_js('jQuery-File-Upload', $j_js);
+	elgg_register_js('jquery-file-upload', $j_js);
+
+	// Register jquery.iframe-transport (for jquery file upload)
+	$j_js = elgg_get_simplecache_url('js', 'jquery_iframe_transport');
+	elgg_register_simplecache_view('js/jquery_iframe_transport');
+	elgg_register_js('jquery.iframe-transport', $j_js);
 	
 	// Register DataTables JS
 	$dt_js = elgg_get_simplecache_url('js', 'datatables');
@@ -333,7 +343,9 @@ function todo_page_handler($page) {
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
-			elgg_load_js('jQuery-File-Upload');
+			elgg_load_js('jquery.ui.widget');
+			elgg_load_js('jquery-file-upload');
+			elgg_load_js('jquery.iframe-transport');
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
@@ -367,7 +379,9 @@ function todo_page_handler($page) {
 			elgg_load_js('lightbox');
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('jquery.form');
-			elgg_load_js('jQuery-File-Upload');
+			elgg_load_js('jquery.ui.widget');
+			elgg_load_js('jquery-file-upload');
+			elgg_load_js('jquery.iframe-transport');
 			gatekeeper();
 			if ($page[1] == 'submission'){
 				$params = todo_get_page_content_view($page[1], $page[2]);
@@ -384,7 +398,9 @@ function todo_page_handler($page) {
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
-			elgg_load_js('jQuery-File-Upload');
+			elgg_load_js('jquery.ui.widget');
+			elgg_load_js('jquery-file-upload');
+			elgg_load_js('jquery.iframe-transport');
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');

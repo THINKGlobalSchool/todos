@@ -1,6 +1,6 @@
 <?php
 /**
- * Todo jQuery File Upload simplecache view
+ * Todo jquery.ui.widget simplecache view
  * 
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
@@ -11,6 +11,6 @@
  */
 $js_path = elgg_get_config('path');
 
-$fileupload = "{$js_path}mod/todo/vendors/jquery-file-upload/jquery.fileupload.js";
+$widget = "{$js_path}mod/todo/vendors/jquery-file-upload/jquery.ui.widget.js";
 
-include $fileupload;
+include $widget;
