@@ -232,8 +232,6 @@ $categories_dropdown = todo_get_categories_dropdown();
 
 array_unshift($categories_dropdown, elgg_echo('todo:label:select'));
 
-elgg_dump($categories_dropdown);
-
 $category_label = elgg_Echo('todo:label:category');
 $category_input = elgg_view('input/dropdown', array(
 	'name' => 'category',
