@@ -751,3 +751,8 @@ td.todo-iplan-hover a {
 	-moz-box-shadow: 1px 1px 5px #000;
 	box-shadow: 1px 1px 5px #000;
 }
+
+.todo-required:after {
+	color: red;
+	content: " *";
+}

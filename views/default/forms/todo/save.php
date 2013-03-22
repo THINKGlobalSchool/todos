@@ -228,12 +228,18 @@ $access_content = elgg_view('input/dropdown', array(
 	'value' => $access_id
 ));
 
+$categories_dropdown = todo_get_categories_dropdown();
+
+array_unshift($categories_dropdown, elgg_echo('todo:label:select'));
+
+elgg_dump($categories_dropdown);
+
 $category_label = elgg_Echo('todo:label:category');
 $category_input = elgg_view('input/dropdown', array(
 	'name' => 'category',
 	'id' => 'todo_category',
 	'value' => $category,
-	'options_values' => todo_get_categories_dropdown(),
+	'options_values' => $categories_dropdown,
 ));
 
 $status_label = elgg_echo('todo:label:publishstatus');
@@ -276,7 +282,7 @@ $startdate_popup = "<a style='font-size: 10px;' id='todo-startdate-what' href='#
 $form_body = <<<HTML
 <div class='margin_top todo'>
 	<div>
-		<label>$title_label</label><br />
+		<label class='todo-required'>$title_label</label><br />
         $title_input
 	</div><br />
 	<div>
@@ -288,7 +294,7 @@ $form_body = <<<HTML
 		$startdate_content
 	</div><br />
 	<div>
-		<label>$duedate_label</label><br />
+		<label class='todo-required'>$duedate_label</label><br />
 		$duedate_content
 	</div><br />
 	<div>
@@ -315,7 +321,7 @@ $form_body = <<<HTML
 		</div>
 	</div>
 	<div>
-		<label>$category_label</label><br />
+		<label class='todo-required'>$category_label</label><br />
 		$category_input
 	</div><br />
 	<div>
@@ -331,7 +337,7 @@ $form_body = <<<HTML
 		$grade_required_input
 	</div><br />
 	<div id='todo-grade-total-container' style='$grade_required_display'>
-		<label>$grade_total_label</label>
+		<label class='todo-required'>$grade_total_label</label>
 		$grade_total_input<br /><br />
 		$rubric_html
 	</div>
