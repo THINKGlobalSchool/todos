@@ -543,6 +543,11 @@ elgg.todo.todoSaveSubmit = function(event) {
 			elgg.register_error(elgg.echo('todo:error:requiredgradetotal'));
 			valid = false;
 		}
+
+		if ($('select[name=category]').val() == 0) {
+			elgg.register_error(elgg.echo('todo:error:requiredcategory'));
+			valid = false;
+		}
 	}
 	
 	if (!valid) {
