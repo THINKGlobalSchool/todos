@@ -115,8 +115,10 @@ elgg.todo.submission.initFancybox = function() {
 			}
 		},
 		'onClosed': function() {
-			// Reset location hash
-			window.location.hash = '';
+			// Clear hash and prevent scrolling (set scrollTop AND hash == ' ')
+			var scr = document.body.scrollTop;
+			window.location.hash = ' ';
+			document.body.scrollTop = scr;
 			elgg.todo.submission.last_grade = null;
 		}
 	});
