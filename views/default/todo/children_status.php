@@ -54,10 +54,22 @@ if (count($children)) {
 }
 
 if ($child_content) {
+	if (elgg_is_active_plugin('roles')) {
+		 if (roles_is_member(elgg_get_plugin_setting('view_students_role', 'parentportal'), elgg_get_logged_in_user_guid())) {
+		 	$user_label = elgg_echo('todo:label:student');
+		 } else if (roles_is_member(elgg_get_plugin_setting('todofacultyrole', 'todo'), elgg_get_logged_in_user_guid())) {
+		 	$user_label = elgg_echo('todo:label:advisee');
+		 }
+	}
+
+	if (!$user_label) {
+		$user_label = elgg_echo('todo:label:child');
+	}
+
 	$content = "<table class='elgg-table'>";
 	$content .= "<thead>
 							<tr>
-								<th><strong>" . elgg_echo('todo:label:child') . "</strong></th>
+								<th><strong>" . $user_label . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>
 							</tr>
