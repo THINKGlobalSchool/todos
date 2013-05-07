@@ -118,7 +118,7 @@ if ($full) { // Full View
 	} 
 	
 	// If we're viewing as a parent
-	if ($is_parent && elgg_is_active_plugin('parentportal')) {
+	if (!$is_assignee && !$is_owner && elgg_is_active_plugin('parentportal')) {
 		$child_content = elgg_view('todo/children_status', array(
 			'todo' => $todo,
 			'parent' => elgg_get_logged_in_user_entity(),
