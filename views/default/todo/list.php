@@ -18,7 +18,7 @@ $container_guid = get_input('u', elgg_get_logged_in_user_guid());
 // Set up secondary menu nav items
 elgg_register_menu_item('todo-dashboard-secondary', array(
 	'name' => 'todo_incomplete',
-	'text' => $type == 'owned' ? elgg_echo('todo:label:statusincomplete') : elgg_echo('todo:label:incomplete'),
+	'text' => elgg_echo('todo:label:incomplete'),
 	'class' => 'todo-ajax-filter',
 	'item_class' => 'todo-ajax-filter-item',
 	'selected' => $status === 'incomplete',
