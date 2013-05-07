@@ -12,7 +12,7 @@
 $type = get_input('type', 'all');
 $filter_priority = get_input('filter_priority', null);
 $status = get_input('status', 'incomplete');
-$sort_order = get_input('sort_order', 'ASC');
+$sort_order = get_input('sort_order', 'DESC');
 $container_guid = get_input('u', elgg_get_logged_in_user_guid()); 
 
 // Set up secondary menu nav items

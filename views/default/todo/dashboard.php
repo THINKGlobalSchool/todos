@@ -48,7 +48,7 @@ echo elgg_view_menu('todo-dashboard-listing-main', array(
 	// Function to click default tab
 	todo_click_tab = function() {
 		$link = $('.<?php echo $click; ?> > a.todo-ajax-list');
-		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; echo $filter_priority; echo $sort_order; ?>");
+		$link.attr('href', $link.attr('href') + "&status=<?php echo $status; echo $filter_priority;?>&sort_order=ASC");
 		$link.click();	
 	}
 	// Need to click AFTER elgg is initted
