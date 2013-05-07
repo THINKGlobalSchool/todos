@@ -1139,8 +1139,13 @@ function update_todo_complete($todo_guid) {
 function todo_set_content_tags($entity, $todo) {
 	$suggested_tags = $todo->suggested_tags;
 	
-	if (!$suggested_tags || !is_array($suggested_tags)) {
+	if (!$suggested_tags) {
 		return false; // Nothing to do here
+	}
+
+	// Make sure we have an array
+	if (!is_array($suggested_tags)) {
+		$suggested_tags = array($suggested_tags);
 	}
 	
 	// Get entity tags
