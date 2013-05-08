@@ -90,20 +90,43 @@ HTML;
 			$work_submitted_label = elgg_echo('todo:label:worksubmitted');
 	
 			foreach ($contents as $content) {
+				$icon = false;
 				$guid = (int)$content;
 				if (is_int($guid) && $entity = get_entity($guid)) {
 					// If this is a 'downloadable' file (file or todosubmission file)
 					if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
 						// Url should point directly to the file, not the view
 						$href = "file/download/{$entity->guid}";
+
+						if (elgg_instanceof($entity, 'object', 'file')) {
+							$icon = $entity->getURL();
+						} else {
+							$icon = false;
+						}
+
 					} else {
 						$href = $entity->getURL();
+						$icon = $href;
 					}
 					$text = $entity->title;
 				} else {
 					$href = $text = $content;
 				}
-				$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text, 'target' => '_blank')). "</li>";
+
+				if ($icon) {
+					$content_icon = elgg_view('output/url', array(
+						'text' => elgg_view('output/img', array(
+							'src' => elgg_get_site_url() . 'mod/todo/graphics/spot_content.png'
+						)) . "<span>" . elgg_echo('todo:label:viewonspot') . "</span>", 
+						'class' => 'todo-spot-content-link',
+						'target' => '_blank',
+						'href' => $icon
+					));
+				} else {
+					$content_icon = null;
+				}
+
+				$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text, 'target' => '_blank')). "$content_icon</li>";
 			}
 		}
 	
@@ -137,7 +160,7 @@ HTML;
 			$assignment_content
 			<div>
 				<label>$work_submitted_label</label><br />
-				<ul>
+				<ul class='todo-work-submitted-list'>
 				$work_submitted_content
 				</ul>
 			</div><br />

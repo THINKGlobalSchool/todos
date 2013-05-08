@@ -154,7 +154,8 @@ $english = array(
 	'todo:label:submission_tz' => 'Submission Timezone',
 	'todo:label:deletesubmission' => 'Delete this submission',
 	'todo:label:deletesubmissionconfirm' => 'This will delete this user\'s submission including all related files.  This cannot be undone.  Do you wish to continue?',
-	
+	'todo:label:viewonspot' => 'View on Spot',
+
 	// Categories
 	'todo:label:category' => 'Category',
 	'todo:label:todocategories' => 'To Do Categories',

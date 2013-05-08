@@ -756,3 +756,32 @@ td.todo-iplan-hover a {
 	color: red;
 	content: " *";
 }
+
+.todo-work-submitted-list li {
+	height: 25px;
+	line-height: 25px;
+	font-weight: bold;
+}
+
+/** Spot content submission icon */
+.todo-spot-content-link {
+	margin-left: 10px;
+	position: relative;
+	top: 2px;
+	display: inline-block;
+	width: 100px;
+}
+
+.todo-spot-content-link span {
+	display: none;
+}
+
+.todo-spot-content-link:hover span {
+	display: inline-block;
+	font-size: 0.8em;
+	text-decoration: none;
+	vertical-align: middle;
+	position: relative;
+	top: -3px;
+	margin-left: 6px;
+}
