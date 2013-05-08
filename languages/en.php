@@ -152,6 +152,8 @@ $english = array(
 	'todo:label:groupguid' => 'Group GUID',
 	'todo:label:enable_iplan' => 'iPlan Calendars Enabled?',
 	'todo:label:submission_tz' => 'Submission Timezone',
+	'todo:label:deletesubmission' => 'Delete this submission',
+	'todo:label:deletesubmissionconfirm' => 'This will delete this user\'s submission including all related files.  This cannot be undone.  Do you wish to continue?',
 	
 	// Categories
 	'todo:label:category' => 'Category',

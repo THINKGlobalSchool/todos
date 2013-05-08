@@ -1288,10 +1288,10 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 		// Add delete link
 		$options = array(
 			'name' => 'delete',
-			'text' => elgg_view_icon('delete'),
+			'text' => elgg_echo('todo:label:deletesubmission'),
 			'title' => elgg_echo('delete:this'),
 			'href' => "action/$handler/delete?guid={$entity->getGUID()}",
-			'confirm' => elgg_echo('deleteconfirm'),
+			'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
 			'priority' => 300,
 		);
 		$return[] = ElggMenuItem::factory($options);
