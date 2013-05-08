@@ -1499,7 +1499,12 @@ function submission_can_edit($hook, $type, $return, $params) {
 	$entity = $params['entity'];
 
 	if (elgg_instanceof($entity, 'object', 'todosubmission')) {
+		if ($entity->owner_guid == elgg_get_logged_in_user_guid()) {
+			return true;
+		}
+
 		$todo = get_entity($entity->todo_guid);
+
 		if ($todo->canEdit()) {
 			return true;
 		}
