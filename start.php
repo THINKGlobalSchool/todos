@@ -210,7 +210,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_entity_menu_setup');
 	
 	// Submission entity menu
-	elgg_register_plugin_hook_handler('register', 'menu:entity', 'submission_entity_menu_setup');
+	elgg_register_plugin_hook_handler('register', 'menu:entity', 'submission_entity_menu_setup', 9999);
 	
 	// Generic entity menu handler
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_content_entity_menu_setup');
@@ -229,6 +229,9 @@ function todo_init() {
 
 	// Register handler for post todo group copy
 	elgg_register_plugin_hook_handler('groupcopy', 'entity', 'todo_group_copy_handler');
+
+	// Register permissions check handler for todo submissions
+	elgg_register_plugin_hook_handler('permissions_check', 'object', 'submission_can_edit');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -1482,6 +1485,24 @@ function todo_group_copy_handler($hook, $type, $return, $params) {
 	if (elgg_instanceof($new_entity, 'object', 'todo')) {
 		// Update (reset) the todo's complete status
 		update_todo_complete($new_entity->guid);
+	}
+
+	return $return;
+}
+
+/**
+ * Override the canEdit function to return true for submissions
+ * where the user can edit the todo
+ *
+ */
+function submission_can_edit($hook, $type, $return, $params) {
+	$entity = $params['entity'];
+
+	if (elgg_instanceof($entity, 'object', 'todosubmission')) {
+		$todo = get_entity($entity->todo_guid);
+		if ($todo->canEdit()) {
+			return true;
+		}
 	}
 
 	return $return;
