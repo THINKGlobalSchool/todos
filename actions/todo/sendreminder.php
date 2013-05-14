@@ -10,15 +10,6 @@
  * 
  */
 
-// Start engine as this action is triggered via ajax
-require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/engine/start.php');
-
-// Logged in check
-gatekeeper();
-
-// must have security token 
-action_gatekeeper();
-
 $todo_guid = get_input('todo_guid');
 $assignee_guid = get_input('a');
 
@@ -39,10 +30,10 @@ foreach ($assignees as $guid) {
 	if ($assignee && $todo && $todo->getSubtype() == "todo" && !has_user_submitted($guid, $todo->getGUID())) {
 		$owner = get_entity($todo->container_guid);
 		$success &= notify_user($guid, 
-								$todo->container_guid, 
-								elgg_echo('todo:email:subjectreminder'), 
-								sprintf(elgg_echo('todo:email:bodyreminder'), $owner->name, $todo->title, $todo->getURL())
-								);
+			$todo->container_guid, 
+			elgg_echo('todo:email:subjectreminder'), 
+			sprintf(elgg_echo('todo:email:bodyreminder'), $owner->name, $todo->title, $todo->getURL())
+		);
 	}
 }
 	

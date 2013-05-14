@@ -155,6 +155,8 @@ $english = array(
 	'todo:label:deletesubmission' => 'Delete this submission',
 	'todo:label:deletesubmissionconfirm' => 'This will delete this user\'s submission including all related files.  This cannot be undone.  Do you wish to continue?',
 	'todo:label:viewonspot' => 'View on Spot',
+	'todo:label:dropout' => 'Drop out',
+	'todo:label:dropoutconfirm' => 'Are you sure you want to unassign yourself from this todo?',
 
 	// Categories
 	'todo:label:category' => 'Category',

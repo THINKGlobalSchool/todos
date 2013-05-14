@@ -1119,6 +1119,18 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'section' => $section,
 		);
 		$return[] = ElggMenuItem::factory($options);
+
+		// Add a 'drop out' button
+		$drop_url = elgg_get_site_url() . "action/todo/unassign?todo_guid=" . $entity->getGUID() . "&assignee_guid=" . $user_guid;
+		$options = array(
+			'name' => 'todo_dropout',
+			'text' => elgg_echo('todo:label:dropout'),
+			'href' => $drop_url,
+			'priority' => 1,
+			'confirm' => elgg_echo('todo:label:dropoutconfirm'),
+			'section' => 'actions',
+		);
+		$return[] = ElggMenuItem::factory($options);
 		
 		// Full view only
 		if (elgg_in_context('todo_full_view')) {
