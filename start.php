@@ -1289,7 +1289,7 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 		return $return;
 	}
 	
-	$handler = elgg_extract('handler', $params, false);
+	$handler = elgg_extract('handler', $params, FALSE);
 	if ($handler != 'submission') {
 		return $return;
 	}
@@ -1300,16 +1300,54 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 	$return = array();
 	
 	if ($entity->canEdit()) {
-		// Add delete link
-		$options = array(
-			'name' => 'delete',
-			'text' => elgg_echo('todo:label:deletesubmission'),
-			'title' => elgg_echo('delete:this'),
-			'href' => "action/$handler/delete?guid={$entity->getGUID()}",
-			'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
-			'priority' => 300,
-		);
-		$return[] = ElggMenuItem::factory($options);
+		// Can delete flag
+		$can_delete = FALSE;
+
+		// Get todo 
+		$todo = get_entity($entity->todo_guid);
+
+		// Get time created with offset
+		$time_created = $entity->time_created;
+
+		// Current time with offset
+		$current_time = time() + todo_get_submission_timezone_offset();
+
+		// Create DateTime objects with timestamps
+		$dt_created = new DateTime();
+		$dt_created->setTimestamp($time_created);
+
+		$dt_now = new DateTime();
+		$dt_now->setTimestamp($current_time);
+
+		// Get date interval diff
+		$diff = $dt_now->diff($dt_created);
+
+		// Get total minutes
+		$minutes = $diff->days * 24 * 60;
+		$minutes += $diff->h * 60;
+		$minutes += $diff->i;
+
+		// If we're the todo owner or an admin
+		if ($todo && (($todo->owner_guid == elgg_get_logged_in_user_guid()) || elgg_is_admin_logged_in())) {
+			$can_delete = TRUE;
+			$delete_label = elgg_echo('todo:label:deletesubmission');
+		} else if ($todo && (is_todo_assignee($entity->todo_guid, elgg_get_logged_in_user_guid()) && $minutes <= 60)) {
+			$can_delete = TRUE;
+			$delete_label = elgg_echo('todo:label:deletesubmissionassignee', array(60 - $minutes));
+		}
+
+		// If we can delete, show the link with provided label
+		if ($can_delete) {
+			$options = array(
+				'name' => 'delete',
+				'text' => $delete_label,
+				'title' => elgg_echo('delete:this'),
+				'href' => "action/$handler/delete?guid={$entity->getGUID()}",
+				'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
+				'priority' => 300,
+			);
+			$return[] = ElggMenuItem::factory($options);
+		}
 	}
 			
 	return $return;
