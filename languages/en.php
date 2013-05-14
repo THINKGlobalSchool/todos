@@ -153,6 +153,7 @@ $english = array(
 	'todo:label:enable_iplan' => 'iPlan Calendars Enabled?',
 	'todo:label:submission_tz' => 'Submission Timezone',
 	'todo:label:deletesubmission' => 'Delete this submission',
+	'todo:label:deletesubmissionassignee' => 'Delete this submission (for the next %s minutes)',
 	'todo:label:deletesubmissionconfirm' => 'This will delete this user\'s submission including all related files.  This cannot be undone.  Do you wish to continue?',
 	'todo:label:viewonspot' => 'View on Spot',
 	'todo:label:copytoprofile' => 'Publish on Profile',
