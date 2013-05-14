@@ -1558,7 +1558,7 @@ function submission_can_edit($hook, $type, $return, $params) {
 
 		$todo = get_entity($entity->todo_guid);
 
-		if ($todo->canEdit()) {
+		if ($todo && $todo->canEdit()) {
 			return true;
 		}
 	}
