@@ -773,7 +773,7 @@ td.todo-iplan-hover a {
 	position: relative;
 	top: 1px;
 	display: inline-block;
-	width: 100px;
+	width: 150px;
 }
 
 .todo-spot-content-link span {
