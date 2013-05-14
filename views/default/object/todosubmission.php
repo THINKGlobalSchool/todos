@@ -92,34 +92,59 @@ HTML;
 			foreach ($contents as $content) {
 				$icon = false;
 				$guid = (int)$content;
+
+				$view_icon_content = elgg_view('output/img', array(
+					'src' => elgg_get_site_url() . 'mod/todo/graphics/spot_content.png'
+				)) . "<span>" . elgg_echo('todo:label:viewonspot') . "</span>";
+
+				$copy_icon_content = elgg_view('output/img', array(
+					'src' => elgg_get_site_url() . 'mod/todo/graphics/copy_content.png'
+				)) . "<span>" . elgg_echo('todo:label:copytoprofile') . "</span>";
+
+				$target = null;
+
 				if (is_int($guid) && $entity = get_entity($guid)) {
 					// If this is a 'downloadable' file (file or todosubmission file)
 					if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
 						// Url should point directly to the file, not the view
 						$href = "file/download/{$entity->guid}";
 
+						// If this an elgg 'file' submitted to the todo
 						if (elgg_instanceof($entity, 'object', 'file')) {
 							$icon = $entity->getURL();
+							$icon_content = $view_icon_content;
+							$target = '_blank';
+						} else if ($owner->guid == elgg_get_logged_in_user_guid()) { 
+							// Todo submission 'file' and we're the owner, show copy
+							$icon = elgg_add_action_tokens_to_url("action/submission/copy_content?type=file&todo_guid={$todo->guid}&entity_guid=" . $entity->guid);
+							$icon_content = $copy_icon_content;
 						} else {
 							$icon = false;
+							$icon_content = null;
 						}
 
 					} else {
+						// Some other elgg entity submitted
 						$href = $entity->getURL();
 						$icon = $href;
+						$icon_content = $view_icon_content;
+						$target = '_blank';
 					}
 					$text = $entity->title;
 				} else {
+					// Url submitted
 					$href = $text = $content;
+					if ($owner->guid == elgg_get_logged_in_user_guid()) {
+						$icon = elgg_add_action_tokens_to_url("action/submission/copy_content?type=bookmark&todo_guid={$todo->guid}&url=" . urlencode($href));
+						$icon_content = $copy_icon_content;
+					}
 				}
 
 				if ($icon) {
 					$content_icon = elgg_view('output/url', array(
-						'text' => elgg_view('output/img', array(
-							'src' => elgg_get_site_url() . 'mod/todo/graphics/spot_content.png'
-						)) . "<span>" . elgg_echo('todo:label:viewonspot') . "</span>", 
+						'text' => $icon_content, 
 						'class' => 'todo-spot-content-link',
-						'target' => '_blank',
+						'target' => $target,
 						'href' => $icon
 					));
 				} else {
