@@ -311,6 +311,10 @@ span.unviewed {
 	margin-top: -3px;
 }
 
+.elgg-menu-item-todo-dropout {
+	background-position: 0 -180px !important;
+}
+
 .elgg-menu-item-todo-return-required img,
 .elgg-menu-item-category-exam img,
 .elgg-menu-item-category-basic-task img, 
