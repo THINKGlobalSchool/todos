@@ -112,7 +112,6 @@ if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
 	
 // Save and assign users
 if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
-	elgg_set_context($context);
 	register_error(elgg_echo("todo:error:create"));		
 	forward(REFERER);
 }

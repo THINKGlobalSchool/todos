@@ -748,9 +748,9 @@ function get_users_todos($user_guid) {
  * @return bool
  */
 function is_todo_assignee($todo_guid, $user_guid) {
-		$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP , $todo_guid);
+	$object = check_entity_relationship($user_guid, TODO_ASSIGNEE_RELATIONSHIP , $todo_guid);
 	if ($object) {
-			return true;
+		return true;
 	} else {
 		return false;
 	}
