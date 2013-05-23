@@ -232,6 +232,12 @@ function todo_init() {
 
 	// Register permissions check handler for todo submissions
 	elgg_register_plugin_hook_handler('permissions_check', 'object', 'submission_can_edit');
+
+	// Register for unit tests
+	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
+
+	// Register get_access_sql_suffix hook handler for todos
+	//elgg_register_plugin_hook_handler('access:get_sql_suffix', 'user', 'todos_access_handler');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -526,7 +532,7 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 			$result = add_user_to_access_collection($user->getGUID(), $acl);
 		} catch (DatabaseException $e) {
 			//
-		}		
+		}	
 	}
 	return true;
 }
@@ -700,15 +706,15 @@ function submission_comment_event_listener($event, $object_type, $object) {
  * Plugin hook to add to do's to users profile block
  * 	
  * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
+ * @param unknown_type $type
+ * @param unknown_type $value
  * @param unknown_type $params
  * @return unknown
  */
-function todo_profile_menu($hook, $entity_type, $return, $params) {	
+function todo_profile_menu($hook, $type, $value, $params) {	
 	// Only display todo link for users or groups with enabled todos
 	if ($params['owner'] instanceof ElggUser || $params['owner']->todo_enable == 'yes') {
-		$return[] = array(
+		$value[] = array(
 			'text' => elgg_echo('todo'),
 			'href' => elgg_get_site_url() . "todo/owner/{$params['owner']->username}",
 		);
@@ -718,36 +724,36 @@ function todo_profile_menu($hook, $entity_type, $return, $params) {
 	if (elgg_instanceof($params['entity'], 'user')) {
 		$url = "todo/dashboard/{$params['entity']->username}";
 		$item = new ElggMenuItem('todo', elgg_echo('todo'), $url);
-		$return[] = $item;
+		$value[] = $item;
 		
 		// Add submissions (depends on access)
 		if (submissions_gatekeeper($params['entity']->guid)) {
 			$url = "todo/dashboard/{$params['entity']->username}?type=assigned&status=submissions";
 			$item = new ElggMenuItem('todosubmissions', elgg_echo('item:object:todosubmission'), $url);
-			$return[] = $item;
+			$value[] = $item;
 		}
 		
 	} else {
 		if ($params['entity']->todo_enable == "yes") {
 			$url = "todo/group/dashboard/{$params['entity']->guid}/owner";
 			$item = new ElggMenuItem('todo', elgg_echo('todo:group'), $url);
-			$return[] = $item;
+			$value[] = $item;
 		}
 	}
 
-	return $return;
+	return $value;
 }
 
 /** 
  * Comments for submissions on the river are forcefully hidden
  * 
  * @param unknown_type $hook
- * @param unknown_type $entity_type
- * @param unknown_type $returnvalue
+ * @param unknown_type $type
+ * @param unknown_type $value
  * @param unknown_type $params
  * @return unknown
  */
-function todo_submission_river_rewrite($hook, $entity_type, $returnvalue, $params) {
+function todo_submission_river_rewrite($hook, $type, $value, $params) {
 	$entity = get_entity($params['vars']['item']->object_guid);
 	if (elgg_instanceof($entity, 'object', 'todosubmission')) {	
 		return ' ';
@@ -822,7 +828,7 @@ function todo_url($entity) {
  * Tobar menu hook handler
  * - adds the todo icon to the topbar
  */
-function todo_topbar_menu_setup($hook, $type, $return, $params) {		
+function todo_topbar_menu_setup($hook, $type, $value, $params) {		
 	$user = elgg_get_logged_in_user_entity();
 	$assigned_count = count_unaccepted_todos($user->guid);
 	$incomplete_count = count_incomplete_todos($user->guid);
@@ -862,15 +868,15 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 		'priority' => 999,
 		'item_class' => 'todo-topbar-item',
 	);
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 
-	return $return;
+	return $value;
 }
 
 /**
  * Todo main menu setup
  */
-function todo_main_menu_setup($hook, $type, $return, $params) {	
+function todo_main_menu_setup($hook, $type, $value, $params) {	
 	// Set up main nav for todo listings
 	$main_tab = get_input('todo_main_tab', 'all');
 	
@@ -894,7 +900,7 @@ function todo_main_menu_setup($hook, $type, $return, $params) {
 		'priority' => 1,
 	);
 	
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 	
 	$options = array(
 		'name' => 'assignedtome',
@@ -904,7 +910,7 @@ function todo_main_menu_setup($hook, $type, $return, $params) {
 		'priority' => 2
 	);
 	
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 	
  	$options = array(
 		'name' => 'assignedbyme',
@@ -914,15 +920,15 @@ function todo_main_menu_setup($hook, $type, $return, $params) {
 		'priority' => 3
 	);
 	
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 	
-	return $return;
+	return $value;
 }
 
 /**
  * Todo secondary menu setup
  */
-function todo_secondary_menu_setup($hook, $type, $return, $params) {
+function todo_secondary_menu_setup($hook, $type, $value, $params) {
 	// Set up secondary nav for todo listings
 	$secondary_tab = get_input('status', 'incomplete');
 	
@@ -944,7 +950,7 @@ function todo_secondary_menu_setup($hook, $type, $return, $params) {
 		'priority' => 1
 	);
 	
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 	
 	$options = array(
 		'name' => 'todo_complete',
@@ -954,15 +960,15 @@ function todo_secondary_menu_setup($hook, $type, $return, $params) {
 		'priority' => 2
 	);
 	
-	$return[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);
 	
-	return $return;
+	return $value;
 }
 
 /**
  * Todo main menu setup
  */
-function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {	
+function todo_dashboard_main_menu_setup($hook, $type, $value, $params) {	
 	// Set up main nav for todo listings
 	$main_tab = get_input('todo_main_tab', 'all');
 
@@ -980,7 +986,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			'priority' => 1,
 		);
 
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	} else {
 		$by = $owner->name;
 	}
@@ -994,7 +1000,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			'href' => 'ajax/view/todo/list?type=assigned&u=' . $owner->guid,
 			'priority' => 2
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 
 	if (elgg_is_logged_in()) {
@@ -1006,7 +1012,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 			'href' => 'ajax/view/todo/list?type=owned&u=' . $owner->guid,
 			'priority' => 3
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	
 		// Add group submissions and grades items
 		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() /*|| @TODO Submissions Role*/ )) {
@@ -1018,7 +1024,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 				'href' => 'ajax/view/todo/group_user_submissions?group=' . $owner->guid,
 				'priority' => 4
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 			
 			$options = array(
 				'name' => 'group_grades',
@@ -1028,7 +1034,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 				'href' => 'ajax/view/todo/group_submission_grades?group=' . $owner->guid,
 				'priority' => 5
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 		} else if (elgg_instanceof($owner, 'group')) {
 			// Group todos, but not the group owner's view
 		} else if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
@@ -1041,24 +1047,24 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 				'href' => 'ajax/view/todo/category_calendars',
 				'priority' => 7
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 		}
 	}
-	return $return;
+	return $value;
 }
 
 
 /**
  * Add todo specific links/info to entity menu
  */
-function todo_entity_menu_setup($hook, $type, $return, $params) {
+function todo_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
-		return $return;
+		return $value;
 	}
 	
 	$handler = elgg_extract('handler', $params, false);
 	if ($handler != 'todo') {
-		return $return;
+		return $value;
 	}
 	
 	$entity = $params['entity'];
@@ -1078,7 +1084,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 150,
 			'section' => 'info',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 
 	// Show closed
@@ -1090,7 +1096,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 2,
 			'section' => 'info',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 	
 	// Different actions depending if user is assignee or not
@@ -1119,7 +1125,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 1,
 			'section' => $section,
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 
 		// Add a 'drop out' button, if user has not already submitted
 		if (!has_user_submitted($user_guid, $entity->getGUID())) {
@@ -1132,7 +1138,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'confirm' => elgg_echo('todo:label:dropoutconfirm'),
 				'section' => 'actions',
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 		}
 		
 		// Full view only
@@ -1149,7 +1155,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'section' => 'info',
 					'onclick' => "javascript:return false;",
 				);
-				$return[] = ElggMenuItem::factory($options);
+				$value[] = ElggMenuItem::factory($options);
 			} else { // User has not submitted
 				if (!$entity->manual_complete) {
 					elgg_load_js('lightbox');
@@ -1166,7 +1172,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 						'link_class' => "elgg-button elgg-button-action $class",
 						'section' => 'buttons',
 					);
-					$return[] = ElggMenuItem::factory($options);
+					$value[] = ElggMenuItem::factory($options);
 				}
 			}
 		}
@@ -1189,7 +1195,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 					'priority' => 997,
 					'section' => 'buttons',
 				);
-				$return[] = ElggMenuItem::factory($options);		
+				$value[] = ElggMenuItem::factory($options);		
 			}
 		}
 	}
@@ -1218,7 +1224,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'priority' => 1000,
 				'section' => 'buttons',
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
         } else {
 			$text = elgg_view("output/confirmlink", array(
 				'href' => "action/todo/complete?guid=" . $entity->getGUID(),
@@ -1233,7 +1239,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 				'priority' => 2,
 				'section' => 'buttons',
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 		}
 	}
 	
@@ -1247,7 +1253,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 1500,
 			'section' => 'info',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 	
 	// Show Icon for submission required todos
@@ -1260,7 +1266,7 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 0,
 			'section' => 'info',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 	
 	// Show Icon for todo categories
@@ -1274,30 +1280,30 @@ function todo_entity_menu_setup($hook, $type, $return, $params) {
 			'priority' => 1,
 			'section' => 'info',
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 		
-	return $return;
+	return $value;
 }
 
 
 /**
  * Customize todo submission entity menu
  */
-function submission_entity_menu_setup($hook, $type, $return, $params) {
+function submission_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
-		return $return;
+		return $value;
 	}
 	
 	$handler = elgg_extract('handler', $params, FALSE);
 	if ($handler != 'submission') {
-		return $return;
+		return $value;
 	}
 	
 	$entity = $params['entity'];
 	
 	// Nuke menu
-	$return = array();
+	$value = array();
 	
 	if ($entity->canEdit()) {
 		// Can delete flag
@@ -1346,23 +1352,23 @@ function submission_entity_menu_setup($hook, $type, $return, $params) {
 				'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
 				'priority' => 300,
 			);
-			$return[] = ElggMenuItem::factory($options);
+			$value[] = ElggMenuItem::factory($options);
 		}
 	}
 			
-	return $return;
+	return $value;
 }
 
 /**
  * Customize entity menu, display link to todo if entity was submitted as content
  */
-function todo_content_entity_menu_setup($hook, $type, $return, $params) {
+function todo_content_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
-		return $return;
+		return $value;
 	}
 	
 	if (!elgg_is_logged_in()) {
-		return $return;
+		return $value;
 	}
 	
 	$ia = elgg_get_ignore_access();
@@ -1419,17 +1425,17 @@ function todo_content_entity_menu_setup($hook, $type, $return, $params) {
 		);
 		
 			
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 	elgg_set_ignore_access($ia);
 
-	return $return;
+	return $value;
 }
 
 /**
  * Add the comment and like links to river actions menu
  */
-function submission_river_menu_setup($hook, $type, $return, $params) {
+function submission_river_menu_setup($hook, $type, $value, $params) {
 	if (elgg_is_logged_in()) {
 		$item = $params['item'];
 		$object = $item->getObjectEntity();
@@ -1438,19 +1444,19 @@ function submission_river_menu_setup($hook, $type, $return, $params) {
 		}
 	}
 
-	return $return;
+	return $value;
 }
 
 /**
  * Hook to allow output/access to display 'Assignees Only'
  */
-function todo_output_access_handler($hook, $type, $return, $params) {
+function todo_output_access_handler($hook, $type, $value, $params) {
 	if ($params['vars']['entity']) {
 		if ($params['vars']['entity']->getSubtype() == 'todo' && $params['vars']['entity']->access_id != ACCESS_LOGGED_IN) {
-			$return = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
+			$value = "<span class='elgg-access'>" . elgg_echo('todo:label:assigneesonly') . "</span>";
 		}
 	}
-	return $return;
+	return $value;
 }
 
 /**
@@ -1460,7 +1466,7 @@ function todo_output_access_handler($hook, $type, $return, $params) {
  *
  * @return string Relative URL
  */
-function submission_file_icon_url_override($hook, $type, $returnvalue, $params) {
+function submission_file_icon_url_override($hook, $type, $value, $params) {
 	$file = $params['entity'];
 	$size = $params['size'];
 	if (elgg_instanceof($file, 'object', 'todosubmissionfile') || elgg_instanceof($file, 'object', 'submissionannotationfile')) {
@@ -1524,15 +1530,15 @@ function submission_file_icon_url_override($hook, $type, $returnvalue, $params) 
 /**
  * Register todo as a group copyable subtype
  */
-function todo_can_group_copy_handler($hook, $type, $return, $params) {
-	$return[] = 'todo';
-	return $return;
+function todo_can_group_copy_handler($hook, $type, $value, $params) {
+	$value[] = 'todo';
+	return $value;
 }
 
 /**
  * Perform extra tasks after a todo had been copied to a group
  */
-function todo_group_copy_handler($hook, $type, $return, $params) {
+function todo_group_copy_handler($hook, $type, $value, $params) {
 	$new_entity = $params['new_entity'];
 
 	if (elgg_instanceof($new_entity, 'object', 'todo')) {
@@ -1540,7 +1546,7 @@ function todo_group_copy_handler($hook, $type, $return, $params) {
 		update_todo_complete($new_entity->guid);
 	}
 
-	return $return;
+	return $value;
 }
 
 /**
@@ -1548,7 +1554,7 @@ function todo_group_copy_handler($hook, $type, $return, $params) {
  * where the user can edit the todo
  *
  */
-function submission_can_edit($hook, $type, $return, $params) {
+function submission_can_edit($hook, $type, $value, $params) {
 	$entity = $params['entity'];
 
 	if (elgg_instanceof($entity, 'object', 'todosubmission')) {
@@ -1563,7 +1569,7 @@ function submission_can_edit($hook, $type, $return, $params) {
 		}
 	}
 
-	return $return;
+	return $value;
 }
 
 /**
@@ -1612,7 +1618,7 @@ function todo_cleanup_cron($hook, $type, $value, $params) {
 /**
  * Adds a delete link to "submission_annotation" annotations
  */
-function todo_submission_annotation_menu_setup($hook, $type, $return, $params) {
+function todo_submission_annotation_menu_setup($hook, $type, $value, $params) {
 	$annotation = $params['annotation'];
 
 	if ($annotation->name == 'submission_annotation' && $annotation->canEdit()) {
@@ -1626,17 +1632,17 @@ function todo_submission_annotation_menu_setup($hook, $type, $return, $params) {
 			'text' => "<span class=\"elgg-icon elgg-icon-delete\"></span>",
 			'encode_text' => false
 		);
-		$return[] = ElggMenuItem::factory($options);
+		$value[] = ElggMenuItem::factory($options);
 	}
 
-	return $return;
+	return $value;
 }
 
 /**
  * Override comment comment counting for todo submissions to include both 
  * generic_comment and submission_annotation types
  */
-function todo_submission_comment_count($hook, $type, $return, $params) {
+function todo_submission_comment_count($hook, $type, $value, $params) {
 	$entity = $params['entity'];
 
 	if ($entity->getSubtype() == 'todosubmission') {
@@ -1652,7 +1658,7 @@ function todo_submission_comment_count($hook, $type, $return, $params) {
 		return (int)$count;
 	}
 
-	return $return;
+	return $value;
 }
 
 /**
@@ -1674,4 +1680,43 @@ function todo_run_once() {
 	
 	$dummy->save();
 	$dummy->delete();	
+}
+
+
+/**
+ * Runs unit tests for todos
+ *
+ * @return array
+ */
+function todo_test($hook, $type, $value, $params) {
+	$value = array();
+	$value[] = elgg_get_plugins_path() . 'todo/tests/todo.php';
+	return $value;
+}
+
+/**
+ * Implement access sql suffix hook for todos
+ * 	
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todos_access_handler($hook, $type, $value, $params) {
+	// global $superuser_role;
+
+	// $dbprefix = elgg_get_config('dbprefix');
+
+	// $table_prefix = $params['table_prefix'];
+	// $owner_guid_column = $params['owner_guid_column'];
+	// $user_guid = $params['user_guid'];
+	// $role_guid = $superuser_role->guid;
+
+	// $value['ors'][] = "{$user_guid} IN (
+	// 	SELECT guid_one FROM {$dbprefix}entity_relationships
+	// 	WHERE relationship='belongs_to' AND guid_two={$role_guid}
+	// )";
+
+	return $value;
 }
