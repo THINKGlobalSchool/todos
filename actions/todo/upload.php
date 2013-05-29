@@ -10,10 +10,6 @@
  * 
  */
 
-// Manual action check
-action_gatekeeper();
-gatekeeper();
-
 // must have a file if a new file upload
 if (empty($_FILES['upload']['name'])) {
 	echo json_encode(array(
