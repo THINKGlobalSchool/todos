@@ -107,6 +107,9 @@ if (count($_FILES) === 1) {
 
 	// Set attachment guid to uploaded file
 	$content['attachment_guid'] = $file_guid;
+
+	// Add relationship to submission for access controls
+	add_entity_relationship($file->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $entity_guid);
 }
 
 elgg_push_context('create_submission_annotation');

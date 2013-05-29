@@ -71,11 +71,11 @@ if ($guid) {
 		
 		// If editing, and assignees only is selected we need to set the access id 
 		// to the existing access collection id
-		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
-			$todo->access_id = $todo->assignee_acl;
-		} else {
+		// if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+		// 	$todo->access_id = $todo->assignee_acl;
+		// } else {
 			$todo->access_id = $access_level;
-		}
+//		}
 		
 	} else {
 		register_error(elgg_echo('todo:error:edit'));

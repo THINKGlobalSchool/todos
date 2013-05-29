@@ -19,6 +19,7 @@ $english = array(
 	'item:object:todo' => 'To Do\'s',
 	'item:object:todosubmission' => 'To Do Submissions',
 	'item:object:todosubmissionfile' => 'To Do Submission File',
+	'item:object:submissionannotationfile' => 'To Do Submission Annotation File',
 	'todo:ingroup' => 'in the group %s',
 	
 	// Admin

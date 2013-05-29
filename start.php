@@ -15,7 +15,7 @@
 /*********************** @TODO: (Code related) ************************/
 // - Improve rubric selection interface
 // - Improve libs (cleanup gross/unused)
-// - Dream up some unit tests
+// - Need more unit tests for submission entities/metadata/annotations/annotation files
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -24,9 +24,12 @@ function todo_init() {
 	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todo/lib/todo.php');
 	elgg_load_library('elgg:todo');
 
-	// Assignment (todo) access levels
+	// Todo access levels
 	define('TODO_ACCESS_LEVEL_LOGGED_IN', ACCESS_LOGGED_IN);
 	define('TODO_ACCESS_LEVEL_ASSIGNEES_ONLY', -10);
+
+	// Submission access level
+	define('SUBMISSION_ACCESS_ID', -11);
 	
 	// Determine if optional plugins are enabled
 	define('TODO_RUBRIC_ENABLED', elgg_is_active_plugin('rubrics') ? true : false);
@@ -42,6 +45,9 @@ function todo_init() {
 	define('SUBMISSION_RELATIONSHIP', 'submittedto');
 	
 	define('TODO_CONTENT_RELATIONSHIP', 'submitted_for_todo');
+
+	// Relationship for submission annotation files (annotation file belongs to submission)
+	define('SUBMISSION_ANNOTATION_FILE_RELATIONSHIP', 'file_annotation_for');
 	
 	// Relationship for complete todos
 	define('COMPLETED_RELATIONSHIP', 'completedtodo');
@@ -217,7 +223,10 @@ function todo_init() {
 	
 	// Remove comments from todo complete river entries
 	elgg_register_plugin_hook_handler('register', 'menu:river', 'submission_river_menu_setup');
-	
+
+	// Handler to add delete button to submission annotations
+	elgg_register_plugin_hook_handler('register', 'menu:annotation', 'todo_submission_annotation_menu_setup');
+
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 	
@@ -237,7 +246,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
 	// Register get_access_sql_suffix hook handler for todos
-	//elgg_register_plugin_hook_handler('access:get_sql_suffix', 'user', 'todos_access_handler');
+	elgg_register_plugin_hook_handler('access:get_sql_suffix', 'user', 'todos_access_handler');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -256,9 +265,6 @@ function todo_init() {
 	}
 
 	elgg_register_plugin_hook_handler('cron', $delete_period, 'todo_cleanup_cron');
-
-	// Handler to add delete button to submission annotations
-	elgg_register_plugin_hook_handler('register', 'menu:annotation', 'todo_submission_annotation_menu_setup');
 
 	// Override comment counting for todo submissions
 	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');
@@ -485,23 +491,23 @@ function todo_page_handler($page) {
  * Todo created, so add users to access lists.
  */
 function todo_create_event_listener($event, $object_type, $object) {
-	if ($object->getSubtype() == 'todo') {
-		$todo_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $object->title, $object->getGUID());
-		if ($todo_acl) {
-			$object->assignee_acl = $todo_acl;
-			try {
-				add_user_to_access_collection($object->owner_guid, $todo_acl);
-			} catch (DatabaseException $e) {
-				//
-			}
-			if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
-				$object->access_id = $todo_acl;
-				$object->save();
-			}
-		} else {
-			return false;
-		}
-	}
+	// if ($object->getSubtype() == 'todo') {
+	// 	$todo_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $object->title, $object->getGUID());
+	// 	if ($todo_acl) {
+	// 		$object->assignee_acl = $todo_acl;
+	// 		try {
+	// 			add_user_to_access_collection($object->owner_guid, $todo_acl);
+	// 		} catch (DatabaseException $e) {
+	// 			//
+	// 		}
+	// 		if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+	// 			$object->access_id = $todo_acl;
+	// 			$object->save();
+	// 		}
+	// 	} else {
+	// 		return false;
+	// 	}
+	// }
 	return true;
 }
 
@@ -523,16 +529,16 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 	if ($object['todo']->getSubtype() == 'todo') {
 		$todo = $object['todo'];
 		$user = $object['user'];
-		$acl = $todo->assignee_acl;
+	//	$acl = $todo->assignee_acl;
 
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
 
-		try {
-			$result = add_user_to_access_collection($user->getGUID(), $acl);
-		} catch (DatabaseException $e) {
-			//
-		}	
+		// try {
+		// 	$result = add_user_to_access_collection($user->getGUID(), $acl);
+		// } catch (DatabaseException $e) {
+		// 	//
+		// }	
 	}
 	return true;
 }
@@ -545,12 +551,12 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 	if ($object['todo']->getSubtype() == 'todo') {	
 		$todo = $object['todo'];
 		$user = $object['user'];
-		$acl = $todo->assignee_acl;
+		//$acl = $todo->assignee_acl;
 
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
 
-		$result = remove_user_from_access_collection($user->getGUID(), $acl);
+		//$result = remove_user_from_access_collection($user->getGUID(), $acl);
 	}
 	return true;
 }
@@ -564,22 +570,23 @@ function submission_create_event_listener($event, $object_type, $object) {
 		$todo = get_entity($object->todo_guid);
 
 		// Create an ACL for the submission, only the todo assigner and assignee can see it
-		$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, $object->getGUID());
+		//$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, $object->getGUID());
 
-		if ($submission_acl) {
-			$object->submission_acl = $submission_acl;
+		//if ($submission_acl) {
+			// $object->submission_acl = $submission_acl;
 
-			try {
-				$result = add_user_to_access_collection($todo->owner_guid, $submission_acl);
-			} catch (DatabaseException $e) {
-			}
+			// try {
+			// 	$result = add_user_to_access_collection($todo->owner_guid, $submission_acl);
+			// } catch (DatabaseException $e) {
+			// }
 			
-			try {
-				$result = add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
-			} catch (DatabaseException $e) {
-			}
+			// try {
+			// 	$result = add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
+			// } catch (DatabaseException $e) {
+			// }
 
-			$object->access_id = $submission_acl;
+		//	$object->access_id = $submission_acl;
+			$object->access_id = SUBMISSION_ACCESS_ID;
 
 			// Update timestamp based on timezone
 			$time_created = $object->time_created;
@@ -588,17 +595,17 @@ function submission_create_event_listener($event, $object_type, $object) {
 			$object->utc_created = $time_created; // Store original timestamp for good measure
 			$object->save();
 
-			// Set permissions for any attached content (files)
-			$contents = unserialize($object->content);
-			
-			if ($contents) {
+			// Set permissions for any attached content (files)		
+			if ($object->content) {
+				$contents = unserialize($object->content);
 				foreach ($contents as $content) {
 					$guid = (int)$content;
 					$entity = get_entity($guid);
 					if (elgg_instanceof($entity, 'object')) {
 						// If content is a todosubmissionfile entitity, set its ACL to that of the submission
 						if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-							$entity->access_id = $submission_acl;
+							//$entity->access_id = $submission_acl;
+							$entity->access_id = $object->access_id;
 						}
 
 						// Set up a todo content relationship for the entity
@@ -611,9 +618,9 @@ function submission_create_event_listener($event, $object_type, $object) {
 					} 
 				}
 			}			
-		} else {
-			return false;
-		}
+		// } else {
+		// 	return false;
+		// }
 	}
 	return true;
 }
@@ -627,28 +634,30 @@ function submission_delete_event_listener($event, $object_type, $object) {
 		$todo = get_entity($object->todo_guid);
 
 		// Make sure we nuke the relationship so the remove event fires
-		remove_entity_relationship($object->getGUID(), SUBMISSION_RELATIONSHIP, $todo->getGUID());
+		remove_entity_relationship($object->guid, SUBMISSION_RELATIONSHIP, $todo->guid);
 
 		// Reset permissions for any attached content (files)
-		$contents = unserialize($object->content);
-		foreach ($contents as $content) {
-			$guid = (int)$content;
-			$entity = get_entity($guid);
-			if (elgg_instanceof($entity, 'object')) {
-				// If content is a valid entitity, set its ACL back to private
-				if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-					$entity->access_id = ACCESS_PRIVATE;
-				}
-				
-				// Remove todo content relationship
-				remove_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
-				
-				$entity->save();
-			} 
+		if ($object->content) {
+			$contents = unserialize($object->content);
+			foreach ($contents as $content) {
+				$guid = (int)$content;
+				$entity = get_entity($guid);
+				if (elgg_instanceof($entity, 'object')) {
+					// If content is a valid entitity, set its ACL back to private
+					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+						$entity->access_id = ACCESS_PRIVATE;
+					}
+					
+					// Remove todo content relationship
+					remove_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+					
+					$entity->save();
+				} 
+			}
 		}
 		
 		// Nuke the ACL
-		$result = delete_access_collection($object->submission_acl);
+		//$result = delete_access_collection($object->submission_acl);
 	}
 	return true;
 }
@@ -704,12 +713,12 @@ function submission_comment_event_listener($event, $object_type, $object) {
 
 /**
  * Plugin hook to add to do's to users profile block
- * 	
- * @param unknown_type $hook
- * @param unknown_type $type
- * @param unknown_type $value
- * @param unknown_type $params
- * @return unknown
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_profile_menu($hook, $type, $value, $params) {	
 	// Only display todo link for users or groups with enabled todos
@@ -747,11 +756,11 @@ function todo_profile_menu($hook, $type, $value, $params) {
 /** 
  * Comments for submissions on the river are forcefully hidden
  * 
- * @param unknown_type $hook
- * @param unknown_type $type
- * @param unknown_type $value
- * @param unknown_type $params
- * @return unknown
+ * @param string $hook
+ * @param string $type
+ * @param string $value
+ * @param array  $params
+ * @return string
  */
 function todo_submission_river_rewrite($hook, $type, $value, $params) {
 	$entity = get_entity($params['vars']['item']->object_guid);
@@ -827,6 +836,12 @@ function todo_url($entity) {
 /**
  * Tobar menu hook handler
  * - adds the todo icon to the topbar
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_topbar_menu_setup($hook, $type, $value, $params) {		
 	$user = elgg_get_logged_in_user_entity();
@@ -875,6 +890,12 @@ function todo_topbar_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Todo main menu setup
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_main_menu_setup($hook, $type, $value, $params) {	
 	// Set up main nav for todo listings
@@ -927,6 +948,12 @@ function todo_main_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Todo secondary menu setup
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_secondary_menu_setup($hook, $type, $value, $params) {
 	// Set up secondary nav for todo listings
@@ -967,6 +994,12 @@ function todo_secondary_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Todo main menu setup
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_dashboard_main_menu_setup($hook, $type, $value, $params) {	
 	// Set up main nav for todo listings
@@ -1056,6 +1089,12 @@ function todo_dashboard_main_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Add todo specific links/info to entity menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
@@ -1289,6 +1328,12 @@ function todo_entity_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Customize todo submission entity menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function submission_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
@@ -1361,6 +1406,12 @@ function submission_entity_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Customize entity menu, display link to todo if entity was submitted as content
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_content_entity_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('widgets')) {
@@ -1434,6 +1485,12 @@ function todo_content_entity_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Add the comment and like links to river actions menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function submission_river_menu_setup($hook, $type, $value, $params) {
 	if (elgg_is_logged_in()) {
@@ -1449,6 +1506,12 @@ function submission_river_menu_setup($hook, $type, $value, $params) {
 
 /**
  * Hook to allow output/access to display 'Assignees Only'
+ *
+ * @param string  $hook
+ * @param string  $type
+ * @param string  $value
+ * @param array   $params
+ * @return string
  */
 function todo_output_access_handler($hook, $type, $value, $params) {
 	if ($params['vars']['entity']) {
@@ -1463,6 +1526,11 @@ function todo_output_access_handler($hook, $type, $value, $params) {
  * Override the default entity icon for files
  *
  * Plugins can override or extend the icons using the plugin hook: 'file:icon:url', 'override'
+ *
+ * @param string  $hook
+ * @param string  $type
+ * @param string  $value
+ * @param array   $params
  *
  * @return string Relative URL
  */
@@ -1529,6 +1597,12 @@ function submission_file_icon_url_override($hook, $type, $value, $params) {
 
 /**
  * Register todo as a group copyable subtype
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_can_group_copy_handler($hook, $type, $value, $params) {
 	$value[] = 'todo';
@@ -1537,6 +1611,12 @@ function todo_can_group_copy_handler($hook, $type, $value, $params) {
 
 /**
  * Perform extra tasks after a todo had been copied to a group
+ *
+ * @param string $hook
+ * @param string $type
+ * @param mixed  $value
+ * @param array  $params
+ * @return mixed
  */
 function todo_group_copy_handler($hook, $type, $value, $params) {
 	$new_entity = $params['new_entity'];
@@ -1553,6 +1633,11 @@ function todo_group_copy_handler($hook, $type, $value, $params) {
  * Override the canEdit function to return true for submissions
  * where the user can edit the todo
  *
+ * @param string $hook
+ * @param string $type
+ * @param bool   $value
+ * @param array  $params
+ * @return bool
  */
 function submission_can_edit($hook, $type, $value, $params) {
 	$entity = $params['entity'];
@@ -1574,6 +1659,12 @@ function submission_can_edit($hook, $type, $value, $params) {
 
 /**
  * Cron to clean up the todo export directory
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_cleanup_cron($hook, $type, $value, $params) {
 	// Get data root
@@ -1617,11 +1708,18 @@ function todo_cleanup_cron($hook, $type, $value, $params) {
 
 /**
  * Adds a delete link to "submission_annotation" annotations
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
  */
 function todo_submission_annotation_menu_setup($hook, $type, $value, $params) {
 	$annotation = $params['annotation'];
 
-	if ($annotation->name == 'submission_annotation' && $annotation->canEdit()) {
+	// Add delete for admins/annotation owner ONLY
+	if ($annotation->name == 'submission_annotation' && (elgg_is_admin_logged_in() || $annotation->getOwnerGUID() == elgg_get_logged_in_user_guid())) {
 		$url = elgg_http_add_url_query_elements('action/submission/delete_annotation', array(
 			'annotation_id' => $annotation->id,
 		));
@@ -1641,6 +1739,12 @@ function todo_submission_annotation_menu_setup($hook, $type, $value, $params) {
 /**
  * Override comment comment counting for todo submissions to include both 
  * generic_comment and submission_annotation types
+ *
+ * @param string $hook
+ * @param string $type
+ * @param int    $value
+ * @param array  $params
+ * @return int
  */
 function todo_submission_comment_count($hook, $type, $value, $params) {
 	$entity = $params['entity'];
@@ -1686,10 +1790,14 @@ function todo_run_once() {
 /**
  * Runs unit tests for todos
  *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
  * @return array
  */
 function todo_test($hook, $type, $value, $params) {
-	$value = array();
+	//$value = array(); // uncomment to just run todo tests
 	$value[] = elgg_get_plugins_path() . 'todo/tests/todo.php';
 	return $value;
 }
@@ -1704,19 +1812,112 @@ function todo_test($hook, $type, $value, $params) {
  * @return array
  */
 function todos_access_handler($hook, $type, $value, $params) {
-	// global $superuser_role;
+	// @TODO this is getting insanely repetitive
 
-	// $dbprefix = elgg_get_config('dbprefix');
+	$dbprefix = elgg_get_config('dbprefix');
 
-	// $table_prefix = $params['table_prefix'];
-	// $owner_guid_column = $params['owner_guid_column'];
-	// $user_guid = $params['user_guid'];
-	// $role_guid = $superuser_role->guid;
+	// Get params
+	$table_prefix = $params['table_prefix'];
+	$owner_guid_column = $params['owner_guid_column'];
+	$user_guid = $params['user_guid'];
 
-	// $value['ors'][] = "{$user_guid} IN (
-	// 	SELECT guid_one FROM {$dbprefix}entity_relationships
-	// 	WHERE relationship='belongs_to' AND guid_two={$role_guid}
-	// )";
+	// Get subtype IDs
+	$todo_subtype = get_subtype_id('object', 'todo');
+	$submission_subtype = get_subtype_id('object', 'todosubmission');
+	$submission_file_subtype = get_subtype_id('object', 'todosubmissionfile');
+	$submission_annotation_file_subtype = get_subtype_id('object', 'submissionannotationfile');
+
+	/** General SQL for determining owner/assignee permissions **/
+
+	// @todo 'e.guid' should probably be {$guid_column}
+	// Todo assignee AND clause (determine if user is assigned to todo)
+	$todo_assigned_and = "{$user_guid} IN (
+		SELECT guid_one FROM {$dbprefix}entity_relationships
+		WHERE relationship='assignedtodo' AND guid_two = e.guid
+	)";
+
+	// Determine if user is the owner of the todo this submission was submitted to
+	$todo_owner_submission_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities te
+		WHERE te.guid = (
+			SELECT guid_two FROM {$dbprefix}entity_relationships
+			WHERE relationship='submittedto' AND guid_one = e.guid
+		)
+	)"; 
+
+	// Determine if user is the owner of the todo that this file was submitted to
+	$todo_owner_submission_file_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities te
+		WHERE te.guid = (
+			SELECT guid_two FROM {$dbprefix}entity_relationships
+			WHERE relationship='submitted_for_todo' AND guid_one = e.guid
+		)
+	)";
+
+	// Determine if the user owns the submission that this annotation file was attached to 
+	$submission_owner_annotation_file_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities se 
+		WHERE se.guid = (
+			SELECT guid_two FROM {$dbprefix}entity_relationships
+			WHERE relationship='file_annotation_for' AND guid_one = e.guid
+		)
+	)";
+
+	/** Table prefixes **/
+	$todo_entity_prefixes = array('e.', 't1.');
+	$todo_meta_prefixes = array('n_table.', 'mf_table.');
+
+	// Dealing with entities
+	if (in_array($table_prefix, $todo_entity_prefixes)) {
+		// Todo permissions (todo assignee)
+		$value['ors'][] = "({$table_prefix}subtype IN ({$todo_subtype}) AND $todo_assigned_and)";
+
+		// Submission permissions (todo owner)
+		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_subtype}) AND $todo_owner_submission_and)";
+
+		// Submission file permissions (todo owner)
+		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_file_subtype}) AND $todo_owner_submission_file_and)";
+
+		// Submission annotation file permissions (for submission owner)
+		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_annotation_file_subtype}) AND $submission_owner_annotation_file_and)";
+	}
+
+	// Dealing with metadata/annotations (check if starts with n_table or is in custom prefix array)
+	if (!strncmp($table_prefix, 'n_table', strlen('n_table')) || in_array($table_prefix, $todo_meta_prefixes)) {
+
+		// Todo permissions (todo assignee)
+		$value['ors'][] = "(
+			(SELECT subtype FROM {$dbprefix}entities te WHERE te.guid = {$table_prefix}entity_guid) IN ({$todo_subtype})
+			AND $todo_assigned_and
+		)";
+
+		// Submission permissions (todo owner)
+		$value['ors'][] = "(
+			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_prefix}entity_guid) IN ({$submission_subtype})
+			AND $todo_owner_submission_and
+		)";
+
+		// Submission file permissions (todo owner)
+		$value['ors'][] = "(
+			(SELECT subtype FROM {$dbprefix}entities sfe WHERE sfe.guid = {$table_prefix}entity_guid) IN ({$submission_file_subtype})
+			AND $todo_owner_submission_file_and
+		)";
+
+		// Submission annotation permissions (submission owner)
+		$value['ors'][] = "(
+			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_prefix}entity_guid) IN ({$submission_subtype})
+			AND {$user_guid} IN (
+				SELECT owner_guid FROM {$dbprefix}entities se
+				WHERE se.guid = {$table_prefix}entity_guid
+			)
+		)";
+
+		// Submission annotation file permissions (for submission owner)
+		$value['ors'][] = "(
+			(SELECT subtype FROM {$dbprefix}entities saf WHERE saf.guid = {$table_prefix}entity_guid) IN ({$submission_annotation_file_subtype})
+			AND $submission_owner_annotation_file_and
+		)";
+	}
 
 	return $value;
 }
