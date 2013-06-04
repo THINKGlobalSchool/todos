@@ -845,6 +845,7 @@ function todo_topbar_menu_setup($hook, $type, $return, $params) {
 	}
 
 	$text .= elgg_echo('todo');
+	//$text .= elgg_echo('todo:label:mytodos');
 
 	$text .= elgg_view('todo/hoverstats', array(
 		'new' => $assigned_count,

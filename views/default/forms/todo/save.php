@@ -50,7 +50,13 @@ HTML;
 		$access_id = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
 	}
 	
-	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));		
+	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));
+
+	if ($status == TODO_STATUS_DRAFT) {
+		$due_date = ($due_date == 0 || $due_date == '0') ? '' : $due_date;
+		$start_date = ($start_date == 0 || $start_date == '0') ? '' : $start_date;
+	}
+
 } else {	
 	$submit_input = elgg_view('input/submit', array('name' => 'submit', 'value' => elgg_echo('save')));	
 	$submit_input .= '&nbsp;' . elgg_view('input/submit', array('name' => 'submit_and_new', 'value' => elgg_echo('todo:label:savenew')));
