@@ -94,15 +94,14 @@ $todo->title 		= $title;
 $todo->description 	= $description;
 $todo->tags 		= $tags;
 $todo->suggested_tags = $suggested_tags;
-$todo->due_date		= $due_date;
-$todo->start_date		= $start_date;
 $todo->return_required = $return_required;
 $todo->grade_required = $grade_required;
 $todo->grade_total = $grade_total;
 $todo->status = $status;
 $todo->rubric_guid = $rubric_guid;
 $todo->category = $category;
-
+$todo->due_date	= $due_date;
+$todo->start_date = $start_date;
 
 // Before saving, check permissions
 if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {

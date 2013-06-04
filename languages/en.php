@@ -159,6 +159,7 @@ $english = array(
 	'todo:label:copytoprofile' => 'Publish on Profile',
 	'todo:label:dropout' => 'Drop out',
 	'todo:label:dropoutconfirm' => 'Are you sure you want to unassign yourself from this todo?',
+	'todo:label:mytodos' => 'My To Do\'s',
 
 	// Categories
 	'todo:label:category' => 'Category',
