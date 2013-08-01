@@ -174,6 +174,8 @@ span.unviewed {
 	-webkit-border-radius: 0 0 4px 4px;
 	-moz-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
+	border: 1px solid #999;
+	border-top: 0px;
 	width: 145px;
 }
 
