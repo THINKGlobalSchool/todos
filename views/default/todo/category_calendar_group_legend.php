@@ -37,19 +37,19 @@ if (elgg_instanceof($category, 'object', 'group_category')) {
 
 		// Create content
 		$text = <<<HTML
-			<div style='background: $bg; color: #$fg;' class='todo-sidebar-group-legend'>
+			<div style='background: $bg; color: #$fg;' class='todo-category-calendars-group-legend'>
 				<a href='$url'>$group->name</a>
 			</div>
 HTML;
 		
-		elgg_register_menu_item('todo-sidebar-calendars-groups', array(
+		elgg_register_menu_item('todo-category-calendars-groups', array(
 			'name' => 'todo-sidebar-calendar-group' . $group->guid,
 			'text' => $text,
 			'href' => false,
 		));	
 	}
 	
-	$group_content = elgg_view_menu('todo-sidebar-calendars-groups');
+	$group_content = elgg_view_menu('todo-category-calendars-groups');
 		
 	$group_module = elgg_view_module('aside', elgg_echo('todo:label:grouplegend'), $group_content);
 

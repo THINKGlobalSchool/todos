@@ -636,9 +636,14 @@ input.submission-grade-input {
 }
 
 .elgg-todocalendar-feed {
-	border-radius: 10px 10px 10px 10px;
-	-moz-border-radius: 10px 10px 10px 10px;
-	-webkit-border-radius: 10px 10px 10px 10px;
+	border-radius: 5px 5px 5px 5px;
+	-moz-border-radius: 5px 5px 5px 5px;
+	-webkit-border-radius: 5px 5px 5px 5px;
+	display: inline-block;
+}
+
+.elgg-todocalendar-feed input {
+    margin: 3px 4px 2px 7px !important;
 }
 
 #todo-calendar-loader {
@@ -672,22 +677,84 @@ td.todo-iplan-hover a {
 	font-size: 85%;
 }
 
-.todo-sidebar-group-legend {
+/* Legend */
+
+.todo-category-calendars-group-legend {
 	padding: 5px;
 	font-size: 11px;
-	margin-bottom: 5px;
+	margin: 5px;
 	-webkit-box-shadow: 1px 1px 2px #333;
 	-moz-box-shadow: 1px 1px 2px #333;
 	box-shadow: 1px 1px 2px #333;
 }
 
-.todo-sidebar-group-legend a {
+.todo-category-calendars-group-legend a {
 	color: inherit !important;
 }
 
-.todo-sidebar-group-legend a:hover {
+.todo-category-calendars-group-legend a:hover {
 	color: inherit !important;
 	text-decoration: underline;
+}
+
+.elgg-menu-todo-category-calendars-groups {
+
+}
+
+.elgg-menu-todo-category-calendars-groups li {
+	display: inline-block;
+	width: 33%;
+	vertical-align: top;
+}
+
+#todo-category-calendar-legend {
+	margin-top: 10px;
+}
+
+/** Category calendar filter styles **/
+
+.ui-datepicker {
+	z-index: 90001 !important;
+}
+
+#todo-calendar-filters-content {
+	margin-top: 10px;
+}
+
+#todo-calendar-filters-content > .elgg-module-aside {
+	display: inline-block;
+	vertical-align: top;
+}
+
+#todo-calendar-filters-content > #filter-calendars.elgg-module-aside {
+	width: 50%;
+}
+
+#todo-calendar-filters-content > #filter-todo-categories.elgg-module-aside {
+	width: 25%;
+}
+
+#todo-calendar-filters-content > #filter-date.elgg-module-aside {
+	width: 24%;
+}
+
+
+#todo-calendar-filters-content input#todo-calendar-date-picker {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: bold;
+	height: 20px;
+	margin: 0;
+	padding: 0 4px 0 6px;
+}
+
+#todo-calendar-filters-content > ul.todo-sidebar-todo-category-checkbox li {
+	display: inline-block;
+}
+
+#todo-calendar-filters-content > ul.todo-sidebar-todo-category-checkbox li input {
+	float: right;
+	margin: 2px 14px 2px 3px;
 }
 
 /** Todo Fullcalendar Specific **/

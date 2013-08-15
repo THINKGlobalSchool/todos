@@ -984,8 +984,8 @@ elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
 			// Push 'tab=iplan' to address bar
 			window.history.pushState("string", "Title", "dashboard?tab=iplan");
 
-			var $sidebar = $('#todo-main-sidebar');
-			$sidebar.load(elgg.get_site_url() + 'ajax/view/todo/category_calendars_sidebar', function() {
+			var $category_container = $('#todo-calendar-categories');
+			$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
 				// init date picker
 				$('#todo-calendar-date-picker').datepicker({
 					dateFormat: 'yy-mm-dd',
@@ -1000,7 +1000,7 @@ elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
 			});
 		} else {
 			// Remove sidebar
-			$('#todo-calendar-sidebar-content').remove();
+			$('#todo-calendar-filters-content').remove();
 		}
 	}
 }
@@ -1031,8 +1031,8 @@ elgg.todo.makeCalendarTip = function(event, element) {
 // Show the group category legend when a category is toggled
 elgg.todo.showCategoryLegend = function(hook, type, params, options) {
 	var guid = params['guid'];
-	var $group_container = $('#todo-calendar-sidebar-groups');
-	$group_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_group_legend?category_guid=' + guid, function() {
+	var $legend_container = $('#todo-category-calendar-legend');
+	$legend_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_group_legend?category_guid=' + guid, function() {
 		//
 	});
 }

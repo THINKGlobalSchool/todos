@@ -10,10 +10,10 @@
  * 
  */
 
-if (elgg_in_context('todo')) {
-	$content = <<<HTML
-		<div id='todo-main-sidebar'>
-		</div>
-HTML;
-	echo $content;
-}
+// if (elgg_in_context('todo')) {
+// 	$content = <<<HTML
+// 		<div id='todo-main-sidebar'>
+// 		</div>
+// HTML;
+// 	echo $content;
+// }
