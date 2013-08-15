@@ -270,7 +270,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/group_user_submissions');
 	elgg_register_ajax_view('todo/group_submission_grades');
 	elgg_register_ajax_view('todo/category_calendars');
-	elgg_register_ajax_view('todo/category_calendars_sidebar');
+	elgg_register_ajax_view('todo/category_calendar_filters');
 	elgg_register_ajax_view('todo/category_calendar_group_legend');
 	elgg_register_ajax_view('todo/calendar_feed');
 	elgg_register_ajax_view('css/todo/calendars_dynamic');
@@ -335,6 +335,8 @@ function todo_page_handler($page) {
 	elgg_load_js('elgg.todo');
 	
 	$page_type = $page[0];
+
+	$layout = 'content';
 	
 	switch ($page_type) {
 		case 'dashboard':
@@ -371,8 +373,9 @@ function todo_page_handler($page) {
 			if ($user) {
 				elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
 			}
-			
+			set_input('owner_block_force_hidden', true);
 			$params['content'] = elgg_view('todo/dashboard');
+			$layout = 'content';
 			break;
 		case 'add':
 			gatekeeper();
@@ -470,7 +473,7 @@ function todo_page_handler($page) {
 	// Custom sidebar (none at the moment)
 	$params['sidebar'] .= elgg_view('todo/sidebar');
 
-	$body = elgg_view_layout('content', $params);
+	$body = elgg_view_layout($layout, $params);
 
 	echo elgg_view_page($params['title'], $body);
 }

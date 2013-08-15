@@ -38,21 +38,21 @@ if ($categories) {
 
 			$text = "<label style='color: #$fg;'>$category->title$input</label>";
 			
-			elgg_register_menu_item('todo-sidebar-calendars', array(
+			elgg_register_menu_item('todo-filter-calendars', array(
 				'name' => 'todo-sidebar-calendar-' . $guid,
 				'text' => $text,
 				'href' => false,
 				'priority' => $key,
-				'item_class' => 'pam mvm elgg-todocalendar-feed elgg-todocalendar-feed-' . $guid
+				'item_class' => 'pas mrs elgg-todocalendar-feed elgg-todocalendar-feed-' . $guid
 			));
 		}
 	}
 	
-	$category_content = elgg_view_menu('todo-sidebar-calendars', array('sort_by' => 'priority'));
+	$category_content = elgg_view_menu('todo-filter-calendars', array('sort_by' => 'priority'));
 
 	if ($category_content) {
 		// Group categories
-		$group_category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $category_content, array('id' => 'todo-sidebar-calendars'));
+		$group_category_module = elgg_view_module('aside', elgg_echo('todo:label:groupcategories'), $category_content, array('id' => 'filter-calendars'));
 		
 		// Todo categories
 		$todo_category_input = elgg_view('input/checkboxes', array(
@@ -62,18 +62,17 @@ if ($categories) {
 			'options' => todo_get_categories_dropdown(TRUE),
 		));
 
-		$todo_category_module = elgg_view_module('aside', elgg_echo('todo:label:todocategories'), $todo_category_input, array('id' => 'todo-sidebar-todo-categories'));
+		$todo_category_module = elgg_view_module('aside', elgg_echo('todo:label:todocategories'), $todo_category_input, array('id' => 'filter-todo-categories'));
 
 		// Date content
 		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));		
-		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker);
+		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker, array('id' => 'filter-date'));
 		
 		$content = <<<HTML
-			<div id='todo-calendar-sidebar-content'>
+			<div id='todo-calendar-filters-content'>
 				$group_category_module
 				$todo_category_module
 				$date_module
-				<div id='todo-calendar-sidebar-groups'></div>
 			</div>
 HTML;
 		echo $content;
