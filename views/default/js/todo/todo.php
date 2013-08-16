@@ -832,7 +832,8 @@ elgg.todo.getCalendars = function() {
 elgg.todo.buildCalendar = function(calendars, date, view) {
 	// Check for supplied view	
 	if (!view) {
-		view = 'basicWeek'; // Default to week view
+		//view = 'basicWeek'; // Default to week view
+		view = 'month';
 	} else {
 		view = view.name;
 	}
