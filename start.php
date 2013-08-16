@@ -374,8 +374,13 @@ function todo_page_handler($page) {
 				elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
 			}
 			set_input('owner_block_force_hidden', true);
+			if (!elgg_view_exists('topbaronly')) {
+				$layout = 'one_column_content';
+			} else {
+				$layout = 'content';
+			}
+
 			$params['content'] = elgg_view('todo/dashboard');
-			$layout = 'content';
 			break;
 		case 'add':
 			gatekeeper();
