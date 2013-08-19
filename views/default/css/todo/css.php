@@ -640,6 +640,7 @@ input.submission-grade-input {
 	-moz-border-radius: 5px 5px 5px 5px;
 	-webkit-border-radius: 5px 5px 5px 5px;
 	display: inline-block;
+	margin-bottom: 5px;
 }
 
 .elgg-todocalendar-feed input {
