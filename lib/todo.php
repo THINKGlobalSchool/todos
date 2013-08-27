@@ -591,30 +591,17 @@ function get_todo_groups_array() {
 		'relationship' => 'member',
 		'relationship_guid' => elgg_get_logged_in_user_guid(),
 		'inverse_relationship' => FALSE,
+		'joins' => array("JOIN " . elgg_get_config("dbprefix") . "groups_entity ge ON e.guid = ge.guid"),
+		'order_by' => 'ge.name ASC',
 		'limit' => 100,
 	);
 	$groups = elgg_get_entities_from_relationship($options);
 
 	$array = array();
 	foreach ($groups as $group) {
-		$array[$group->getGUID()] = "Group: " . $group->name;
+		$array[$group->getGUID()] = $group->name;
 	}
-	
-	// If shared_access (channels) is enabled
-	if (TODO_CHANNELS_ENABLED) {
-		// Get users channels
-		$channels = elgg_get_entities(array('relationship' => 'shared_access_member',
-											'relationship_guid' => elgg_get_logged_in_user_guid(),
-											'inverse_relationship' => FALSE,
-											'types' => 'object',
-											'subtypes' => 'shared_access',
-											'limit' => 0
-									  		));
-									
-		foreach ($channels as $channel) {
-			$array[$channel->getGUID()] = "Channel: " . $channel->title;
-		}
-	}
+
 	return $array;
 }
 
