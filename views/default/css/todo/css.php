@@ -15,6 +15,7 @@
 	border: 2px solid #bbbbbb;
 	font-size: 120%;
 	width: auto;
+	max-width: 450px;
 	height: auto;
 	padding: 10px;
 	-moz-border-radius:5px 5px 5px 5px;

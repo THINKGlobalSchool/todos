@@ -590,7 +590,16 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 		$("#todo-current-group-select").attr("disabled","disabled");
 	} else if ($(this).val() == 1) { // Groups (other groups)
 		$('#todo-assign-individual-container').hide();
-		$('#todo-assign-group-container').show();
+		$('#todo-assign-group-container').show(1, function() {
+			
+			var options = {
+				'placeholder_text_multiple': 'Click here to select group(s)..',
+				'width' : '50%'
+			};
+
+			$("#todo-group-assignee-select").chosen(options);	
+		});
+		
 		$("#todo-assignee-userpicker").attr("disabled","disabled");
 		$("#todo-group-assignee-select").removeAttr("disabled");
 		$("#todo-current-group-select").attr("disabled","disabled");
@@ -1038,7 +1047,16 @@ elgg.todo.showCategoryLegend = function(hook, type, params, options) {
 	});
 }
 
+elgg.todo.chosenInterrupt = function(hook, type, params, options) {
+	if (params.id == 'todo-group-assignee-select') {
+		// Do nothing
+		return function(){};
+	}
+	return options;
+}
+
 elgg.register_hook_handler('tab_changed', 'todo_dashboard', elgg.todo.calendarMenuChanged);
 elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
 elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
+elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
