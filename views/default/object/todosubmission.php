@@ -280,6 +280,17 @@ HTML;
 			$todo_subtext = "<p class='elgg-subtext'>{$subtext_content}</p>";
 		}
 
+		if ($todo->grade_required) {
+			$grade_label = elgg_echo('todo:label:grade');
+			$grade = $submission->grade ? $submission->grade : 'n/a';
+			$grade_content = <<<HTML
+				<tr>
+					<td class='submission-info-label'>$grade_label</td>
+					<td class='submission-info-value'>$grade</td>
+				</tr>
+HTML;
+		}
+
 		$content = <<<HTML
 			<tr>
 				<td>
@@ -308,6 +319,7 @@ HTML;
 								<td class='submission-info-label'>$comments_label</td>
 								<td class='submission-info-value'>$comments_count</td>
 							</tr>
+							$grade_content
 						</tbody>
 					</table>
 				</td>

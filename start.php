@@ -676,16 +676,19 @@ function submission_comment_event_listener($event, $object_type, $object) {
 		$user = get_entity($object->owner_guid);
 		
 		if (elgg_in_context('create_submission_annotation')) {
-			notify_user($todo->owner_guid, 
-						$user->getGUID(),
-						elgg_echo('submission_annotation:email:subject'), 
-						elgg_echo('todo:email:bodysubmissioncomment', array( 
-								$todo->title,
-								$object->getURL(),
-								$user->name,
-								$user->getURL()
-						))
-			);
+			// Don't notify the todo owner if they comment on their own todo's submission
+			if ($todo->owner_guid != elgg_get_logged_in_user_guid()) {
+				notify_user($todo->owner_guid, 
+							$user->getGUID(),
+							elgg_echo('submission_annotation:email:subject'), 
+							elgg_echo('todo:email:bodysubmissioncomment', array( 
+									$todo->title,
+									$object->getURL(),
+									$user->name,
+									$user->getURL()
+							))
+				);
+			}
 		} else {
 			// Notify todo owner that the submission was commented on
 			notify_user($todo->owner_guid, 
