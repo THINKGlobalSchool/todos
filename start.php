@@ -232,6 +232,9 @@ function todo_init() {
 
 	// Register permissions check handler for todo submissions
 	elgg_register_plugin_hook_handler('permissions_check', 'object', 'submission_can_edit');
+
+	// Register todos with ECML
+	elgg_register_plugin_hook_handler('get_views', 'ecml', 'todo_ecml_views_hook');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -1664,6 +1667,14 @@ function todo_submission_comment_count($hook, $type, $return, $params) {
 		return (int)$count;
 	}
 
+	return $return;
+}
+
+/**
+ * Parse todos for ECML
+ */
+function todo_ecml_views_hook($hook, $type, $return, $params) {
+	$return['object/todo'] = elgg_echo('todo');
 	return $return;
 }
 
