@@ -140,8 +140,7 @@ $user_picker = elgg_view('input/userpicker', array(
 ));
 
 $group_label = elgg_echo('todo:label:selectgroup');
-$group_picker = elgg_view('input/dropdown', array(
-// $group_picker = elgg_view('input/chosen_dropdown', array(
+$group_picker = elgg_view('input/chosen_dropdown', array(
 	'name' => 'members[]', 
 	'id' => 'todo-group-assignee-select', 
 	'options_values' => get_todo_groups_array(), 
