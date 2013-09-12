@@ -1414,3 +1414,42 @@ function todo_get_categories_dropdown($flip = FALSE) {
 
 	return $categories;
 }
+
+/**
+ * Helper function to delete todo/submission annotation files 
+ * and their associated thumbnails (if any)
+ * 
+ * @param ElggObject $entity
+ * @return bool
+ */
+function todo_delete_file($entity) {
+	// If we have an image, process the thumbnails (check both mime and simple type due to inconsistent crap)
+	if ($entity->simpletype == "image" || file_get_simple_type($entity->getMimeType()) == "image") {
+		// Grab thumbnails
+		$thumbnail = $entity->thumbnail;
+		$smallthumb = $entity->smallthumb;
+		$largethumb = $entity->largethumb;
+
+		if ($thumbnail) { //delete standard thumbnail image
+			$delfile = new ElggFile();
+			$delfile->owner_guid = $entity->getOwnerGUID();
+			$delfile->setFilename($thumbnail);
+			$delfile->delete();
+		}
+		if ($smallthumb) { //delete small thumbnail image
+			$delfile = new ElggFile();
+			$delfile->owner_guid = $entity->getOwnerGUID();
+			$delfile->setFilename($smallthumb);
+			$delfile->delete();
+		}
+		if ($largethumb) { //delete large thumbnail image
+			$delfile = new ElggFile();
+			$delfile->owner_guid = $entity->getOwnerGUID();
+			$delfile->setFilename($largethumb);
+			$delfile->delete();
+		}
+	}
+
+	// Delete entity
+	return $entity->delete();
+}
