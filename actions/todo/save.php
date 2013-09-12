@@ -71,11 +71,11 @@ if ($guid) {
 		
 		// If editing, and assignees only is selected we need to set the access id 
 		// to the existing access collection id
-		if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
-			$todo->access_id = $todo->assignee_acl;
-		} else {
+		// if ($access_level == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
+		// 	$todo->access_id = $todo->assignee_acl;
+		// } else {
 			$todo->access_id = $access_level;
-		}
+//		}
 		
 	} else {
 		register_error(elgg_echo('todo:error:edit'));
@@ -111,7 +111,6 @@ if (!can_write_to_container($todo->owner_guid, $todo->container_guid)) {
 	
 // Save and assign users
 if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
-	elgg_set_context($context);
 	register_error(elgg_echo("todo:error:create"));		
 	forward(REFERER);
 }
