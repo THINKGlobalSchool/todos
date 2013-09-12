@@ -15,6 +15,7 @@
 /*********************** @TODO: (Code related) ************************/
 // - Improve rubric selection interface
 // - Improve libs (cleanup gross/unused)
+// - Better handling of todo submission/submission annotation files
 // - Need more unit tests for submission entities/metadata/annotations/annotation files
 
 elgg_register_event_handler('init', 'system', 'todo_init');
@@ -200,6 +201,9 @@ function todo_init() {
 	// Register a handler for submission comments so that the todo owner is notified
 	elgg_register_event_handler('annotate', 'all', 'submission_comment_event_listener');
 
+	// Register a handler for submission annotation delete events
+	elgg_register_event_handler('delete', 'annotations', 'submission_annotation_delete_event_listener');
+
 	// Hook into views to post process river/item/wrapper for todo submissions
 	elgg_register_plugin_hook_handler('view', 'river/elements/footer', 'todo_submission_river_rewrite');
 	
@@ -249,7 +253,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
 	// Register get_access_sql_suffix hook handler for todos
-	elgg_register_plugin_hook_handler('access:get_sql_suffix', 'user', 'todos_access_handler');
+	elgg_register_plugin_hook_handler('get_sql', 'access', 'todos_access_handler');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -488,6 +492,17 @@ function todo_page_handler($page) {
 					break;
 			}
 			break;
+		case 'debug':
+			// access_show_hidden_entities(TRUE);
+			$nukes = elgg_get_entities(array(
+				'type' => 'object',
+				'subtypes' => array('todo', 'todosubmission'),
+				'limit' => 0
+			));
+			foreach ($nukes as $nuke) {
+				$nuke->delete();
+			}
+			break;
 	}
 	
 	// Custom sidebar (none at the moment)
@@ -615,7 +630,6 @@ function submission_create_event_listener($event, $object_type, $object) {
 					if (elgg_instanceof($entity, 'object')) {
 						// If content is a todosubmissionfile entitity, set its ACL to that of the submission
 						if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-							//$entity->access_id = $submission_acl;
 							$entity->access_id = $object->access_id;
 						}
 
@@ -647,16 +661,16 @@ function submission_delete_event_listener($event, $object_type, $object) {
 		// Make sure we nuke the relationship so the remove event fires
 		remove_entity_relationship($object->guid, SUBMISSION_RELATIONSHIP, $todo->guid);
 
-		// Reset permissions for any attached content (files)
+		// Handle objects attached to this submission
 		if ($object->content) {
 			$contents = unserialize($object->content);
 			foreach ($contents as $content) {
 				$guid = (int)$content;
 				$entity = get_entity($guid);
 				if (elgg_instanceof($entity, 'object')) {
-					// If content is a valid entitity, set its ACL back to private
+					// If content is a file attached to this submission, delete it
 					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-						$entity->access_id = ACCESS_PRIVATE;
+						todo_delete_file($entity);
 					}
 					
 					// Remove todo content relationship
@@ -666,9 +680,6 @@ function submission_delete_event_listener($event, $object_type, $object) {
 				} 
 			}
 		}
-		
-		// Nuke the ACL
-		//$result = delete_access_collection($object->submission_acl);
 	}
 	return true;
 }
@@ -721,6 +732,26 @@ function submission_comment_event_listener($event, $object_type, $object) {
 			);
 		}
 		
+	}
+	return true;
+}
+
+/**
+ * Submission annotation delete handler
+ */
+function submission_annotation_delete_event_listener($event, $object_type, $object) {
+	// Check for submission annotations
+	if ($object && $object instanceof ElggAnnotation && $object->name == "submission_annotation") {
+		$annotation = unserialize($object->value);
+		// Check for attached entity
+		if (isset($annotation['attachment_guid'])) {
+			// Get attachment entity
+			$entity = get_entity($annotation['attachment_guid']);
+			// Delete it
+			if (elgg_instanceof($entity, 'object', 'submissionannotationfile')) {
+				todo_delete_file($entity);
+			}
+		}
 	}
 	return true;
 }
@@ -1835,12 +1866,21 @@ function todo_test($hook, $type, $value, $params) {
  * @return array
  */
 function todos_access_handler($hook, $type, $value, $params) {
+	// $defaults = array(
+	// 	'table_alias' => 'e',
+	// 	'user_guid' => elgg_get_logged_in_user_guid(),
+	// 	'use_enabled_clause' => !$ENTITY_SHOW_HIDDEN_OVERRIDE,
+	// 	'access_column' => 'access_id',
+	// 	'owner_guid_column' => 'owner_guid',
+	// 	'guid_column' => 'guid',
+	// );
+
 	// @TODO this is getting insanely repetitive
 
 	$dbprefix = elgg_get_config('dbprefix');
 
 	// Get params
-	$table_prefix = $params['table_prefix'];
+	$table_alias = $params['table_alias'];
 	$owner_guid_column = $params['owner_guid_column'];
 	$user_guid = $params['user_guid'];
 
@@ -1887,57 +1927,57 @@ function todos_access_handler($hook, $type, $value, $params) {
 	)";
 
 	/** Table prefixes **/
-	$todo_entity_prefixes = array('e.', 't1.');
-	$todo_meta_prefixes = array('n_table.', 'mf_table.');
+	$todo_entity_prefixes = array('e', 't1');
+	$todo_meta_prefixes = array('n_table', 'mf_table');
 
 	// Dealing with entities
-	if (in_array($table_prefix, $todo_entity_prefixes)) {
+	if (in_array($table_alias, $todo_entity_prefixes)) {
 		// Todo permissions (todo assignee)
-		$value['ors'][] = "({$table_prefix}subtype IN ({$todo_subtype}) AND $todo_assigned_and)";
+		$value['ors'][] = "({$table_alias}.subtype IN ({$todo_subtype}) AND $todo_assigned_and)";
 
 		// Submission permissions (todo owner)
-		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_subtype}) AND $todo_owner_submission_and)";
+		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_subtype}) AND $todo_owner_submission_and)";
 
 		// Submission file permissions (todo owner)
-		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_file_subtype}) AND $todo_owner_submission_file_and)";
+		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_file_subtype}) AND $todo_owner_submission_file_and)";
 
 		// Submission annotation file permissions (for submission owner)
-		$value['ors'][] = "({$table_prefix}subtype IN ({$submission_annotation_file_subtype}) AND $submission_owner_annotation_file_and)";
+		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_annotation_file_subtype}) AND $submission_owner_annotation_file_and)";
 	}
 
 	// Dealing with metadata/annotations (check if starts with n_table or is in custom prefix array)
-	if (!strncmp($table_prefix, 'n_table', strlen('n_table')) || in_array($table_prefix, $todo_meta_prefixes)) {
+	if (!strncmp($table_alias, 'n_table', strlen('n_table')) || in_array($table_alias, $todo_meta_prefixes)) {
 
 		// Todo permissions (todo assignee)
 		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities te WHERE te.guid = {$table_prefix}entity_guid) IN ({$todo_subtype})
+			(SELECT subtype FROM {$dbprefix}entities te WHERE te.guid = {$table_alias}.entity_guid) IN ({$todo_subtype})
 			AND $todo_assigned_and
 		)";
 
 		// Submission permissions (todo owner)
 		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_prefix}entity_guid) IN ({$submission_subtype})
+			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_alias}.entity_guid) IN ({$submission_subtype})
 			AND $todo_owner_submission_and
 		)";
 
 		// Submission file permissions (todo owner)
 		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities sfe WHERE sfe.guid = {$table_prefix}entity_guid) IN ({$submission_file_subtype})
+			(SELECT subtype FROM {$dbprefix}entities sfe WHERE sfe.guid = {$table_alias}.entity_guid) IN ({$submission_file_subtype})
 			AND $todo_owner_submission_file_and
 		)";
 
 		// Submission annotation permissions (submission owner)
 		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_prefix}entity_guid) IN ({$submission_subtype})
+			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_alias}.entity_guid) IN ({$submission_subtype})
 			AND {$user_guid} IN (
 				SELECT owner_guid FROM {$dbprefix}entities se
-				WHERE se.guid = {$table_prefix}entity_guid
+				WHERE se.guid = {$table_alias}.entity_guid
 			)
 		)";
 
 		// Submission annotation file permissions (for submission owner)
 		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities saf WHERE saf.guid = {$table_prefix}entity_guid) IN ({$submission_annotation_file_subtype})
+			(SELECT subtype FROM {$dbprefix}entities saf WHERE saf.guid = {$table_alias}.entity_guid) IN ({$submission_annotation_file_subtype})
 			AND $submission_owner_annotation_file_and
 		)";
 	}
