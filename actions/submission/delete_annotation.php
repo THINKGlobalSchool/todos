@@ -67,7 +67,7 @@ if ($comment = elgg_get_annotation_from_id($annotation_id)) {
 
 	$entity = get_entity($comment->entity_guid);
 
-	if ($comment->canEdit()) {
+	if (elgg_is_admin_logged_in() || $comment->getOwnerGUID() == elgg_get_logged_in_user_guid()) {
 		$comment->delete();
 		system_message(elgg_echo("submission_annotation:deleted"));
 		forward($entity->getURL());
