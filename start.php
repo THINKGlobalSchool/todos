@@ -15,7 +15,6 @@
 /*********************** @TODO: (Code related) ************************/
 // - Improve rubric selection interface
 // - Improve libs (cleanup gross/unused)
-// - Better handling of todo submission/submission annotation files
 // - Need more unit tests for submission entities/metadata/annotations/annotation files
 
 elgg_register_event_handler('init', 'system', 'todo_init');
