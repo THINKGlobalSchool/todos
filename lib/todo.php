@@ -27,6 +27,7 @@ function todo_get_page_content_view($type, $guid) {
 
 	// This is messed up, deleted todo's DO exist.. need to fix this checking
 	if (elgg_entity_exists($guid)) {
+		elgg_push_context('todo_test');
 		$entity = get_entity($guid);
 		if ($entity->enabled && $type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
 			$owner = $entity->getOwnerEntity();
@@ -146,6 +147,7 @@ function todo_get_page_content_settings_notifications() {
  * due_end             => due end date
  */
 function get_todos(array $params) {
+	set_input('pork', 'beans');
 	// Set list action
 	if (!$params['list']) {
 		$get_from_metadata = 'elgg_get_entities_from_metadata';

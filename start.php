@@ -15,6 +15,7 @@
 /*********************** @TODO: (Code related) ************************/
 // - Improve rubric selection interface
 // - Improve libs (cleanup gross/unused)
+// - Remove users from unused access collections (in script?)
 // - Need more unit tests for submission entities/metadata/annotations/annotation files
 
 elgg_register_event_handler('init', 'system', 'todo_init');
@@ -1864,7 +1865,48 @@ function todo_test($hook, $type, $value, $params) {
  * @param array  $params
  * @return array
  */
-function todos_access_handler($hook, $type, $value, $params) {
+function todos_accessss_handler($hook, $type, $value, $params) {
+	$access_column = $params['access_column'];
+	$table_alias = $params['table_alias'];
+	$guid_column = $params['guid_column'];
+	$owner_guid_column = $params['owner_guid_column'];
+	$user_guid = $params['user_guid'];
+
+	$dbprefix = elgg_get_config('dbprefix');
+	$todo_acl = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
+	$submission_acl = SUBMISSION_ACCESS_ID;
+
+
+	// var_dump($value);
+	// var_dump($params);
+	// error_log($table_alias . ' ' . $guid_column);
+
+	// if (strpos($table_alias, 'n_table') === 0) {
+	// 	$guid_column = 'entity_guid';
+	// }
+
+	$table_alias = $table_alias ? $table_alias . '.' : '';
+	$todo_assigned_and = "{$user_guid} IN (
+		SELECT guid_one FROM {$dbprefix}entity_relationships
+		WHERE guid_two = {$table_alias}{$guid_column}
+		AND relationship='assignedtodo'
+	)";
+
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl, $submission_acl) AND {$todo_assigned_and})";
+
+	return $value;
+}
+
+/**
+ * Implement access sql suffix hook for todos
+ * 	
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todos_accessx_handler($hook, $type, $value, $params) {
 	// $defaults = array(
 	// 	'table_alias' => 'e',
 	// 	'user_guid' => elgg_get_logged_in_user_guid(),
