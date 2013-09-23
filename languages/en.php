@@ -135,6 +135,7 @@ $english = array(
 	'todo:label:info' => 'Info',
 	'todo:label:submissionsadmin' => 'Submission Admin Role',
 	'todo:label:facultyrole' => 'Faculty Role',
+	'todo:label:adminrole' => 'Todo Admin Role',
 	'todo:label:graderequired' => 'Grade Required',
 	'todo:label:gradetotal' => 'Grade Total',
 	'todo:label:grade' => 'Grade',
