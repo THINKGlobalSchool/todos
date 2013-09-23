@@ -67,7 +67,7 @@ if (elgg_in_context('widgets')) {
 
 if ($full) { // Full View
 	// Determine how we are going to view this todo
-	$is_owner = $todo->canEdit();
+	$is_owner = $todo->canEdit() ? true : is_todo_admin();
 	$is_assignee = is_todo_assignee($todo->getGUID(), elgg_get_logged_in_user_guid());
 	$is_parent = elgg_get_logged_in_user_entity()->is_parent;
 

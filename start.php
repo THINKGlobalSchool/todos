@@ -235,7 +235,13 @@ function todo_init() {
 
 	// Register todos with ECML
 	elgg_register_plugin_hook_handler('get_views', 'ecml', 'todo_ecml_views_hook');
+
+	// Register todo unit tests
+	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 	
+	// Register access collections read handler for todo admins
+	elgg_register_plugin_hook_handler('access:collections:read', 'user', 'todo_read_access_handler');
+
 	// Logged in users init
 	if (elgg_is_logged_in()) {
 		// Owner block hook (for logged in users)
@@ -307,6 +313,9 @@ function todo_init() {
 
 	// Register one once for todos
 	run_function_once("todo_run_once");
+
+	// Set global todo admin role in config
+	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todo'));
 	
 	return TRUE;	
 }
@@ -1024,7 +1033,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $return, $params) {
 		$return[] = ElggMenuItem::factory($options);
 	
 		// Add group submissions and grades items
-		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() /*|| @TODO Submissions Role*/ )) {
+		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() || is_todo_admin())) {
 			$options = array(
 				'name' => 'group_user_submissions',
 				'text' => elgg_echo("todo:label:groupusersubmissions", array($by)),
@@ -1675,6 +1684,77 @@ function todo_submission_comment_count($hook, $type, $return, $params) {
  */
 function todo_ecml_views_hook($hook, $type, $return, $params) {
 	$return['object/todo'] = elgg_echo('todo');
+	return $return;
+}
+
+/**
+ * Runs unit tests for todos
+ */
+function todo_test($hook, $type, $value, $params) {
+	$value[] = elgg_get_plugins_path() . 'todo/tests/todo.php';
+	return $value;
+}
+
+/**
+ * Todo read access handler
+ */
+function todo_read_access_handler($hook, $type, $return, $params) {
+	if (!elgg_is_logged_in()) {
+		return $return;
+	}
+
+	$dbprefix = elgg_get_config('dbprefix');
+	$logged_in_user = elgg_get_logged_in_user_entity();
+
+	if (is_todo_admin()) {
+		// Get all todo related
+		$query = "SELECT ag.id FROM {$dbprefix}access_collections ag
+		          WHERE ag.name like 'To Do:%'";
+
+		$collections = get_data($query);
+		if ($collections) {
+			foreach ($collections as $collection) {
+				if (!empty($collection->id)) {
+					$access_array[] = (int)$collection->id;
+				}
+			}
+		}
+
+		$return = array_merge($access_array, $return);			
+	}
+
+	if (elgg_is_active_plugin('parentportal') && parentportal_is_user_parent($logged_in_user)) {
+		
+		$child_query = "SELECT guid from {$dbprefix}users_entity ue
+                        JOIN {$dbprefix}entity_relationships er on er.guid_one = ue.guid
+                        WHERE er.relationship = 'is_child_of'
+                        AND er.guid_two = {$logged_in_user->guid}";
+
+        $child_result = get_data($child_query);
+      
+		$site_id = $params['site_id'];
+
+		foreach ($child_result as $child) {
+			// Get child todo ACL memberships
+			$query = "SELECT am.access_collection_id
+			          FROM {$dbprefix}access_collection_membership am
+			          LEFT JOIN {$dbprefix}access_collections ag ON ag.id = am.access_collection_id
+			          WHERE ag.name like 'To Do:%'
+			          AND am.user_guid = {$child->guid} AND (ag.site_guid = $site_id OR ag.site_guid = 0)";
+		
+			$collections = get_data($query);
+			if ($collections) {
+				foreach ($collections as $collection) {
+					if (!empty($collection->access_collection_id)) {
+						$access_array[] = (int)$collection->access_collection_id;
+					}
+				}
+			}
+		}
+
+		$return = array_merge($access_array, $return);
+	}
+
 	return $return;
 }
 

@@ -42,6 +42,19 @@ if (count($children)) {
 				if ($submission->grade !== NULL) {
 					$child_grade = $submission->grade . "/" . $todo->grade_total;
 				}
+
+				// Check if theres a submission, may have been manually completed
+				if ($submission = get_user_submission($assignee->guid, $todo->guid)) {
+					$date = date("F j, Y", $submission->time_created);
+					$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
+					$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
+				} else {
+					$submission_info = "<span class='todo-status-dash'>-</span>";
+				}
+
+				$child_content .= "<td>{$submission_info}</td>";
+
+
 			} else {
 				$child_content .= "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
 			}
@@ -59,6 +72,8 @@ if ($child_content) {
 		 	$user_label = elgg_echo('todo:label:student');
 		 } else if (roles_is_member(elgg_get_plugin_setting('todofacultyrole', 'todo'), elgg_get_logged_in_user_guid())) {
 		 	$user_label = elgg_echo('todo:label:advisee');
+		 } else if (elgg_is_active_plugin('parentportal') && parentportal_is_user_parent(elgg_get_logged_in_user_entity())) {
+		 	$user_label = elgg_echo('parentportal:title:childinfo');
 		 }
 	}
 
@@ -71,6 +86,7 @@ if ($child_content) {
 							<tr>
 								<th><strong>" . $user_label . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
+								<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>
 							</tr>
 						</thead>
