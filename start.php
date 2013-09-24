@@ -252,7 +252,7 @@ function todo_init() {
 	// Register for unit tests
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
-	// Register get_access_sql_suffix hook handler for todos
+	// Register _elgg_get_access_where_sql hook handler for todos
 	elgg_register_plugin_hook_handler('get_sql', 'access', 'todos_access_handler');
 	
 	// Logged in users init
@@ -1865,7 +1865,8 @@ function todo_test($hook, $type, $value, $params) {
  * @param array  $params
  * @return array
  */
-function todos_accessss_handler($hook, $type, $value, $params) {
+function todos_access_handler($hook, $type, $value, $params) {
+	// Params
 	$access_column = $params['access_column'];
 	$table_alias = $params['table_alias'];
 	$guid_column = $params['guid_column'];
@@ -1873,155 +1874,61 @@ function todos_accessss_handler($hook, $type, $value, $params) {
 	$user_guid = $params['user_guid'];
 
 	$dbprefix = elgg_get_config('dbprefix');
+
+	// ACL's
 	$todo_acl = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
 	$submission_acl = SUBMISSION_ACCESS_ID;
 
 
-	// var_dump($value);
-	// var_dump($params);
-	// error_log($table_alias . ' ' . $guid_column);
-
-	// if (strpos($table_alias, 'n_table') === 0) {
-	// 	$guid_column = 'entity_guid';
-	// }
-
 	$table_alias = $table_alias ? $table_alias . '.' : '';
+
+	// Determine if user 
 	$todo_assigned_and = "{$user_guid} IN (
 		SELECT guid_one FROM {$dbprefix}entity_relationships
 		WHERE guid_two = {$table_alias}{$guid_column}
-		AND relationship='assignedtodo'
+		AND relationship='". TODO_ASSIGNEE_RELATIONSHIP . "'
 	)";
 
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl, $submission_acl) AND {$todo_assigned_and})";
-
-	return $value;
-}
-
-/**
- * Implement access sql suffix hook for todos
- * 	
- * @param string $hook
- * @param string $type
- * @param array  $value
- * @param array  $params
- * @return array
- */
-function todos_accessx_handler($hook, $type, $value, $params) {
-	// $defaults = array(
-	// 	'table_alias' => 'e',
-	// 	'user_guid' => elgg_get_logged_in_user_guid(),
-	// 	'use_enabled_clause' => !$ENTITY_SHOW_HIDDEN_OVERRIDE,
-	// 	'access_column' => 'access_id',
-	// 	'owner_guid_column' => 'owner_guid',
-	// 	'guid_column' => 'guid',
-	// );
-
-	// @TODO this is getting insanely repetitive
-
-	$dbprefix = elgg_get_config('dbprefix');
-
-	// Get params
-	$table_alias = $params['table_alias'];
-	$owner_guid_column = $params['owner_guid_column'];
-	$user_guid = $params['user_guid'];
-
-	// Get subtype IDs
-	$todo_subtype = get_subtype_id('object', 'todo');
-	$submission_subtype = get_subtype_id('object', 'todosubmission');
-	$submission_file_subtype = get_subtype_id('object', 'todosubmissionfile');
-	$submission_annotation_file_subtype = get_subtype_id('object', 'submissionannotationfile');
-
-	/** General SQL for determining owner/assignee permissions **/
-
-	// @todo 'e.guid' should probably be {$guid_column}
-	// Todo assignee AND clause (determine if user is assigned to todo)
-	$todo_assigned_and = "{$user_guid} IN (
-		SELECT guid_one FROM {$dbprefix}entity_relationships
-		WHERE relationship='assignedtodo' AND guid_two = e.guid
-	)";
-
+	
 	// Determine if user is the owner of the todo this submission was submitted to
 	$todo_owner_submission_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities te
 		WHERE te.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='submittedto' AND guid_one = e.guid
+			WHERE relationship='" . SUBMISSION_RELATIONSHIP . "'
+			AND guid_one = {$table_alias}{$guid_column}
 		)
-	)"; 
+	)";
 
-	// Determine if user is the owner of the todo that this file was submitted to
+	// Determine if user is the owner of the todo that this file was submitted for
 	$todo_owner_submission_file_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities te
 		WHERE te.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='submitted_for_todo' AND guid_one = e.guid
+			WHERE relationship='submitted_for_todo' AND guid_one = {$table_alias}{$guid_column}
 		)
 	)";
 
-	// Determine if the user owns the submission that this annotation file was attached to 
+	// Determine if user owns the submission
+	$submission_owner_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities se
+		WHERE se.guid = {$table_alias}{$guid_column}
+	)";
+
 	$submission_owner_annotation_file_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities se 
 		WHERE se.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='file_annotation_for' AND guid_one = e.guid
+			WHERE relationship='file_annotation_for' AND guid_one = {$table_alias}{$guid_column}
 		)
 	)";
 
-	/** Table prefixes **/
-	$todo_entity_prefixes = array('e', 't1');
-	$todo_meta_prefixes = array('n_table', 'mf_table');
 
-	// Dealing with entities
-	if (in_array($table_alias, $todo_entity_prefixes)) {
-		// Todo permissions (todo assignee)
-		$value['ors'][] = "({$table_alias}.subtype IN ({$todo_subtype}) AND $todo_assigned_and)";
+	// Todo related ors
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}) OR {$todo_owner_submission_file_and})";
 
-		// Submission permissions (todo owner)
-		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_subtype}) AND $todo_owner_submission_and)";
-
-		// Submission file permissions (todo owner)
-		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_file_subtype}) AND $todo_owner_submission_file_and)";
-
-		// Submission annotation file permissions (for submission owner)
-		$value['ors'][] = "({$table_alias}.subtype IN ({$submission_annotation_file_subtype}) AND $submission_owner_annotation_file_and)";
-	}
-
-	// Dealing with metadata/annotations (check if starts with n_table or is in custom prefix array)
-	if (!strncmp($table_alias, 'n_table', strlen('n_table')) || in_array($table_alias, $todo_meta_prefixes)) {
-
-		// Todo permissions (todo assignee)
-		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities te WHERE te.guid = {$table_alias}.entity_guid) IN ({$todo_subtype})
-			AND $todo_assigned_and
-		)";
-
-		// Submission permissions (todo owner)
-		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_alias}.entity_guid) IN ({$submission_subtype})
-			AND $todo_owner_submission_and
-		)";
-
-		// Submission file permissions (todo owner)
-		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities sfe WHERE sfe.guid = {$table_alias}.entity_guid) IN ({$submission_file_subtype})
-			AND $todo_owner_submission_file_and
-		)";
-
-		// Submission annotation permissions (submission owner)
-		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities se WHERE se.guid = {$table_alias}.entity_guid) IN ({$submission_subtype})
-			AND {$user_guid} IN (
-				SELECT owner_guid FROM {$dbprefix}entities se
-				WHERE se.guid = {$table_alias}.entity_guid
-			)
-		)";
-
-		// Submission annotation file permissions (for submission owner)
-		$value['ors'][] = "(
-			(SELECT subtype FROM {$dbprefix}entities saf WHERE saf.guid = {$table_alias}.entity_guid) IN ({$submission_annotation_file_subtype})
-			AND $submission_owner_annotation_file_and
-		)";
-	}
+	// Submission related ors
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}) OR {$submission_owner_and} OR $submission_owner_annotation_file_and)";		
 
 	return $value;
 }

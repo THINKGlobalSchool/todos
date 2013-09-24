@@ -256,7 +256,7 @@ function get_todos(array $params) {
 		$due_date = $params['due_date'];
 		$due_operand = $params['due_operand'];
 
-		$suffix = get_access_sql_suffix("mf_table");
+		$suffix = _elgg_get_access_where_sql(array("table_alias" => "mf_table", "guid_column" => "entity_guid"));
 		$due_joins = array();
 		
 		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
@@ -269,7 +269,7 @@ function get_todos(array $params) {
 		$due_start = $params['due_start'];
 		$due_end = $params['due_end'];
 		
-		$suffix = get_access_sql_suffix("mf_table");
+		$suffix = _elgg_get_access_where_sql(array("table_alias" => "mf_table", "guid_column" => "entity_guid"));
 		$due_joins = array();
 		
 		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
@@ -1035,9 +1035,9 @@ function count_submissions($user_guid, $container_guid = NULL, $ontime = FALSE) 
 	$db_prefix = elgg_get_config('dbprefix');
 	
 	// Access suffixen
-	$n1_suffix = get_access_sql_suffix("n_table1");
-	$n2_suffix = get_access_sql_suffix("n_table2");
-	$t1_suffix = get_access_sql_suffix("t1");
+	$n1_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table1", "guid_column" => "entity_guid"));
+	$n2_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table2", "guid_column" => "entity_guid"));
+	$t1_suffix = _elgg_get_access_where_sql(array("table_alias" => "t1"));
 
 	$joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
 	$joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";

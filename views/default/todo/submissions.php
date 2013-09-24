@@ -26,8 +26,8 @@ $joins = array();
 $db_prefix = elgg_get_config('dbprefix');
 
 // Access suffixen
-$n1_suffix = get_access_sql_suffix("n_table1");
-$t1_suffix = get_access_sql_suffix("t1");
+$n1_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table1", "guid_column" => "entity_guid"));
+$t1_suffix = _elgg_get_access_where_sql(array("table_alias" => "t1", "guid_column" => "entity_guid"));
 
 $joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
 $joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";
@@ -41,7 +41,7 @@ $wheres[] = "{$t1_suffix}";
 // If we were provided a return filter
 if ($filter_return !== NULL) {
 	// Access SQL
-	$n2_suffix = get_access_sql_suffix("n_table2");
+	$n2_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table2", "guid_column" => "entity_guid"));
 	
 	// Joins for return required
 	$joins[] = "JOIN {$db_prefix}metadata n_table2 on e.guid = n_table2.entity_guid";
@@ -61,7 +61,7 @@ if ($filter_return !== NULL) {
 
 // If we were provided an on time filter
 if ($filter_ontime !== NULL) {
-		$n3_suffix = get_access_sql_suffix("n_table3");
+		$n3_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table3", "guid_column" => "entity_guid"));
 		$joins[] = "JOIN {$db_prefix}metadata n_table3 on t1.guid = n_table3.entity_guid";
 		$joins[] = "JOIN {$db_prefix}metastrings msn3 on n_table3.name_id = msn3.id";
 		$joins[] = "JOIN {$db_prefix}metastrings msv3 on n_table3.value_id = msv3.id";
