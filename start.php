@@ -253,7 +253,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
 	// Register _elgg_get_access_where_sql hook handler for todos
-	elgg_register_plugin_hook_handler('get_sql', 'access', 'todos_access_handler');
+	elgg_register_plugin_hook_handler('get_sql', 'access', 'todo_access_handler');
 	
 	// Logged in users init
 	if (elgg_is_logged_in()) {
@@ -1865,7 +1865,7 @@ function todo_test($hook, $type, $value, $params) {
  * @param array  $params
  * @return array
  */
-function todos_access_handler($hook, $type, $value, $params) {
+function todo_access_handler($hook, $type, $value, $params) {
 	// Params
 	$access_column = $params['access_column'];
 	$table_alias = $params['table_alias'];
@@ -1879,56 +1879,53 @@ function todos_access_handler($hook, $type, $value, $params) {
 	$todo_acl = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
 	$submission_acl = SUBMISSION_ACCESS_ID;
 
+	// Relationships
+	$r_sub = SUBMISSION_RELATIONSHIP;
+	$r_saf = SUBMISSION_ANNOTATION_FILE_RELATIONSHIP;
+	$r_ta = TODO_ASSIGNEE_RELATIONSHIP;
+	$r_tc = TODO_CONTENT_RELATIONSHIP;
 
+	// Need to add a '.' to the query if there is a table alias
 	$table_alias = $table_alias ? $table_alias . '.' : '';
 
-	// Determine if user 
-	$todo_assigned_and = "{$user_guid} IN (
+	// Determine if user is assigned totdo
+	$todo_assigned_and = "{$user_guid} = (
 		SELECT guid_one FROM {$dbprefix}entity_relationships
 		WHERE guid_two = {$table_alias}{$guid_column}
-		AND relationship='". TODO_ASSIGNEE_RELATIONSHIP . "'
+		AND relationship='{$r_ta}'
 	)";
 
-	
-	// Determine if user is the owner of the todo this submission was submitted to
+	/** 
+	 * Handle submission related permissions (entities, annotations and metadata)
+	 * 
+	 * Checks for:
+	 * - User owns the submission entity (for metadata/annotations)
+	 * - User owns the todo (for submission annotation files, and submission content files)
+	 * 
+	 */
 	$todo_owner_submission_and = "{$user_guid} IN (
-		SELECT owner_guid FROM {$dbprefix}entities te
-		WHERE te.guid = (
-			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='" . SUBMISSION_RELATIONSHIP . "'
-			AND guid_one = {$table_alias}{$guid_column}
-		)
-	)";
-
-	// Determine if user is the owner of the todo that this file was submitted for
-	$todo_owner_submission_file_and = "{$user_guid} IN (
-		SELECT owner_guid FROM {$dbprefix}entities te
-		WHERE te.guid = (
-			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='submitted_for_todo' AND guid_one = {$table_alias}{$guid_column}
-		)
-	)";
-
-	// Determine if user owns the submission
-	$submission_owner_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities se
-		WHERE se.guid = {$table_alias}{$guid_column}
-	)";
-
-	$submission_owner_annotation_file_and = "{$user_guid} IN (
-		SELECT owner_guid FROM {$dbprefix}entities se 
 		WHERE se.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
-			WHERE relationship='file_annotation_for' AND guid_one = {$table_alias}{$guid_column}
+			WHERE guid_one = {$table_alias}{$guid_column}
+			AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
 		)
+		OR se.guid = (
+			SELECT guid_two FROM {$dbprefix}entity_relationships
+			WHERE guid_one = (
+				SELECT guid_two FROM {$dbprefix}entity_relationships
+				WHERE guid_one = {$table_alias}{$guid_column}
+				AND relationship = '$r_saf'
+			) AND relationship = '$r_sub'
+		)
+		OR se.guid = {$table_alias}{$guid_column}
 	)";
 
-
 	// Todo related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}) OR {$todo_owner_submission_file_and})";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}))";
 
 	// Submission related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}) OR {$submission_owner_and} OR $submission_owner_annotation_file_and)";		
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}))";		
 
 	return $value;
 }
