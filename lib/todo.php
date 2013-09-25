@@ -1249,14 +1249,10 @@ function submissions_gatekeeper($user_guid, $group_guid = FALSE) {
 		return TRUE;
 	}
 
-	 //@TODO roles, parents
-	/* Not yet implemented
-	// Check if we're a member of the submissions role
-	$role = get_entity(elgg_get_plugin_setting('todosubmissionsrole', 'todo'));
-	if (elgg_instanceof($role, 'object', 'role') && $role->isMember(elgg_get_logged_in_user_entity())) {
+	// Check if user is a todo admin
+	if (is_todo_admin()) {
 		return TRUE;
 	}
-	*/
 
 	// Check for valid group, and if we can edit
 	if ($group_guid) {
@@ -1534,4 +1530,25 @@ function todo_delete_file($entity) {
 
 	// Delete entity
 	return $entity->delete();
+}
+
+/**
+ * Helper function to check if given user is in the todo admin role
+ * if it's available
+ *
+ * @param int $user_guid The user guid to check
+ * @return bool
+ */
+function is_todo_admin($user_guid = 0) {
+    if (!$user_guid) {
+        $user_guid = elgg_get_logged_in_user_guid();
+    }
+  
+    $todo_admin_role = elgg_get_config('todo_admin_role');
+  
+    if (elgg_is_active_plugin('roles') && $todo_admin_role && roles_is_member($todo_admin_role, $user_guid)) {
+        return true;
+    } else {
+        return false;
+    }
 }

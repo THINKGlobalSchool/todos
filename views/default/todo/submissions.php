@@ -27,7 +27,7 @@ $db_prefix = elgg_get_config('dbprefix');
 
 // Access suffixen
 $n1_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table1", "guid_column" => "entity_guid"));
-$t1_suffix = _elgg_get_access_where_sql(array("table_alias" => "t1", "guid_column" => "entity_guid"));
+$t1_suffix = _elgg_get_access_where_sql(array("table_alias" => "t1"));
 
 $joins[] = "JOIN {$db_prefix}metadata n_table1 on e.guid = n_table1.entity_guid";
 $joins[] = "JOIN {$db_prefix}metastrings msn1 on n_table1.name_id = msn1.id";

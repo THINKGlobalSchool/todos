@@ -32,6 +32,13 @@ $faculty_role_input = elgg_view('input/roledropdown', array(
 	'show_hidden' => TRUE,
 ));
 
+$admin_role_label = elgg_echo('todo:label:adminrole');
+$admin_role_input = elgg_view('input/roledropdown', array(
+    'name' => 'params[todoadminrole]',
+    'value' => $vars['entity']->todoadminrole,
+    'show_hidden' => TRUE,
+));
+
 $calendar_salt_label = elgg_echo('todo:label:calendarsalt');
 $calendar_salt_input = elgg_view('input/text', array(
 	'name' => 'params[calsalt]',
@@ -120,6 +127,10 @@ $content = <<<HTML
 		<label>$faculty_role_label</label> 
 		$faculty_role_input
 	</div>
+	<div>
+        <label>$admin_role_label</label> 
+        $admin_role_input
+    </div>
 	<div>
 		<label>$submission_tz_label</label> 
 		$submission_tz_input
