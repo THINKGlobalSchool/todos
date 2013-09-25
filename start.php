@@ -324,6 +324,9 @@ function todo_init() {
 	// Register one once for todos
 	run_function_once("todo_run_once");
 	
+	// Set global todo admin role in config
+	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todo'));
+
 	return TRUE;	
 }
 
@@ -1866,14 +1869,17 @@ function todo_test($hook, $type, $value, $params) {
  * @return array
  */
 function todo_access_handler($hook, $type, $value, $params) {
-	// Params
+	// Logged in/site admin check
+	if (!elgg_is_logged_in() || elgg_is_admin_logged_in()) {
+		return $value;
+	}
+
+	// Hook Params
 	$access_column = $params['access_column'];
 	$table_alias = $params['table_alias'];
 	$guid_column = $params['guid_column'];
 	$owner_guid_column = $params['owner_guid_column'];
 	$user_guid = $params['user_guid'];
-
-	$dbprefix = elgg_get_config('dbprefix');
 
 	// ACL's
 	$todo_acl = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
@@ -1885,11 +1891,69 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$r_ta = TODO_ASSIGNEE_RELATIONSHIP;
 	$r_tc = TODO_CONTENT_RELATIONSHIP;
 
+	// Other vars
+	$dbprefix = elgg_get_config('dbprefix');
+	$logged_in_user = elgg_get_logged_in_user_entity();
+
 	// Need to add a '.' to the query if there is a table alias
 	$table_alias = $table_alias ? $table_alias . '.' : '';
 
+	// Todo admin check
+	if (is_todo_admin()) {
+		$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl, $submission_acl))";
+		return $value;
+	}
+
+	// Parent check
+	if (elgg_is_active_plugin('parentportal') && parentportal_is_user_parent($logged_in_user)) {
+		// Get parents children
+		$child_query = "SELECT guid from {$dbprefix}users_entity ue
+						JOIN {$dbprefix}entity_relationships er on er.guid_one = ue.guid
+						WHERE er.relationship = 'is_child_of'
+						AND er.guid_two = {$logged_in_user->guid}";
+
+		$child_result = get_data($child_query);
+
+		if (count($child_result) && is_array($child_result)) {
+			for ($i = 0; $i < count($child_result); $i++) {
+				$children_string .= $child_result[$i]->guid;
+				if ($i != (count($child_result) -1)) {
+					$children_string .= ", ";
+				}
+			}
+		}
+		
+		if ($children_string) {
+			$parent_assigned_sql = "OR (EXISTS(
+				SELECT guid_one FROM {$dbprefix}entity_relationships
+				WHERE guid_two = {$table_alias}{$guid_column}
+				AND relationship='{$r_ta}'
+				AND guid_one IN ({$children_string})
+			))"; 
+	
+			$parent_owner_submission_and = "OR (EXISTS(
+				SELECT owner_guid FROM {$dbprefix}entities se
+				WHERE se.guid = (
+					SELECT guid_two FROM {$dbprefix}entity_relationships
+					WHERE guid_one = {$table_alias}{$guid_column}
+					AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
+				)
+				OR se.guid = (
+					SELECT guid_two FROM {$dbprefix}entity_relationships
+					WHERE guid_one = (
+						SELECT guid_two FROM {$dbprefix}entity_relationships
+						WHERE guid_one = {$table_alias}{$guid_column}
+						AND relationship = '$r_saf'
+					) AND relationship = '$r_sub'
+				)
+				OR se.guid = {$table_alias}{$guid_column}
+				AND owner_guid IN ({$children_string})
+			))";
+		}
+	}
+
 	// Determine if user is assigned totdo
-	$todo_assigned_and = "{$user_guid} = (
+	$todo_assigned_and = "{$user_guid} IN (
 		SELECT guid_one FROM {$dbprefix}entity_relationships
 		WHERE guid_two = {$table_alias}{$guid_column}
 		AND relationship='{$r_ta}'
@@ -1922,10 +1986,10 @@ function todo_access_handler($hook, $type, $value, $params) {
 	)";
 
 	// Todo related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and} {$parent_assigned_sql}))";
 
 	// Submission related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}))";		
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and} {$parent_owner_submission_and}))";		
 
 	return $value;
 }

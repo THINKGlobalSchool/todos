@@ -18,10 +18,22 @@ if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 	$todo_owner = get_entity($todo->owner_guid);
 	$can_grade = $todo->canEdit();
 
+	if (elgg_is_active_plugin('parentportal')) {
+		$children = parentportal_get_parents_children(elgg_get_logged_in_user_guid());
+		foreach ($children as $child) {
+			if ($child->guid == $vars['entity']->owner_guid) {
+				$parent_condition = 1;
+			}
+		}
+	} else {
+		$parent_condition = 0;
+	}
+
 	// Hacky way to check security on todo submissions
 	if (elgg_get_logged_in_user_entity() == $todo_owner 
 		|| elgg_get_logged_in_user_entity() == get_entity($vars['entity']->owner_guid) 
-		|| elgg_is_admin_logged_in()) 
+		|| elgg_is_admin_logged_in()
+		|| is_todo_admin() || $parent_condition ) 
 	{
 		$valid = true;
 	}
