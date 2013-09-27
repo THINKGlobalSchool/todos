@@ -157,6 +157,28 @@ class TodoAPITest extends ElggCoreUnitTest {
 	}
 
 	/**
+	 * Helper function to test if user has access to an annotation
+	 */
+	public function hasAccessToAnnotation($annotation, $user) {
+		global $CONFIG;
+
+		$access_bit = _elgg_get_access_where_sql(array(
+			'user_guid' => $user->getGUID(),
+			'table_alias' => 'a',
+			'guid_column' => 'entity_guid'
+		));
+
+		$query = "SELECT id from {$CONFIG->dbprefix}annotations a WHERE a.id = " . $annotation->id;
+		// Add access controls
+		$query .= " AND " . $access_bit;
+		if (get_data($query)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Test assign_users_to_todo
 	 */
 	public function testAssignUsersTodo() {
@@ -257,7 +279,392 @@ class TodoAPITest extends ElggCoreUnitTest {
 		// Other user cannot access
 		$this->assertFalse(has_access_to_entity($submission, $user_three));
 	}
+
+	/**
+	 * Test todo submission file access 
+	 */
+	public function testSubmissionFileAccess() {
+		$user_one = $this->users[0];
+		$user_two = $this->users[1];
+		$user_three = $this->users[2];
+
+		// Create a todo owned by test user, assign another test user
+		$todo_guid = $this->createTodo(array(
+			'container_guid' => $user_one->guid,
+			'owner_guid' => $user_one->guid,
+		), array($user_two->guid));
+
+		// Create a todo submission file
+		$file = new FilePluginFile();
+		$file->subtype = 'todosubmissionfile';
+		$file->title = 'test todo submission file';
+		$file->access_id = ACCESS_PRIVATE;
+		$file->owner_guid = $user_two->guid;
+		$file->container_guid = $user_two->guid;
+		$file->save();
+
+		// Create a submission for test user for above todo
+		$submission_guid = $this->createTodoSubmission($todo_guid, array(
+			'owner_guid' => $user_two->guid,
+			'container_guid' => $user_two->guid,
+			'content' => serialize(array($file->guid)),
+		));
+
+		// Make sure submitter has access to the file
+		$this->assertTrue(has_access_to_entity($file, $user_two));
+
+		// Make sure owner has access to the file
+		$this->assertTrue(has_access_to_entity($file, $user_one));
+
+		// Make sure other user doesn't have access to file
+		$this->assertFalse(has_access_to_entity($file, $user_three));
+
+		// Delete the file
+		$file->delete();
+	}
+
+	/**
+	 * Test todo submission annotation access
+	 */
+	public function testSubmissionAnnotationAccess() {
+		$user_one = $this->users[0];
+		$user_two = $this->users[1];
+		$user_three = $this->users[2];
+
+		// Create a todo owned by test user, assign another test user
+		$todo_guid = $this->createTodo(array(
+			'container_guid' => $user_one->guid,
+			'owner_guid' => $user_one->guid,
+		), array($user_two->guid));
+
+		// Create a submission for test user for above todo
+		$submission_guid = $this->createTodoSubmission($todo_guid, array(
+			'owner_guid' => $user_two->guid,
+			'container_guid' => $user_two->guid,
+		));
+
+		$submission = get_entity($submission_guid);
+
+		// Create a todo submission annotation file
+		$file = new FilePluginFile();
+		$file->subtype = 'submissionannotationfile';
+		$file->title = 'test todo submission annotation file';
+		$file->access_id = $submission->access_id;
+		$file->owner_guid = $user_one->guid;
+		$file->container_guid = $user_one->guid;
+		$file->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $file->guid
+		);
+
+		add_entity_relationship($file->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_one->guid,
+			$submission->access_id
+		);
+
+		$annotation = elgg_get_annotation_from_id($annotation_id);
+
+		// Make sure annotation owner has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation, $user_one));
+
+		// Make sure submitter has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation, $user_two));
+
+		// Make sure other user doesn't have access to annotation
+		$this->assertFalse($this->hasAccessToAnnotation($annotation, $user_three));
+
+		// Make sure submitter has access to the file
+		$this->assertTrue(has_access_to_entity($file, $user_two));
+
+		// Make sure owner has access to the file
+		$this->assertTrue(has_access_to_entity($file, $user_one));
+
+		// Make sure other user doesn't have access to file
+		$this->assertFalse(has_access_to_entity($file, $user_three));
+
+		// Create another annotation, with a file owned by submitter
+		$file2 = new FilePluginFile();
+		$file2->subtype = 'submissionannotationfile';
+		$file2->title = 'test todo submission annotation file';
+		$file2->access_id = $submission->access_id;
+		$file2->owner_guid = $user_two->guid;
+		$file2->container_guid = $user_two->guid;
+		$file2->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $file2->guid
+		);
+
+		add_entity_relationship($file2->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_two->guid,
+			$submission->access_id
+		);
+
+		$annotation2 = elgg_get_annotation_from_id($annotation_id);
+
+		// Make sure annotation owner has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation2, $user_two));
+
+		// Make sure submitter has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation2, $user_one));
+
+		// Make sure other user doesn't have access to annotation
+		$this->assertFalse($this->hasAccessToAnnotation($annotation2, $user_three));
+
+		// Make sure submitter has access to the file
+		$this->assertTrue(has_access_to_entity($file2, $user_two));
+
+		// Make sure owner has access to the file
+		$this->assertTrue(has_access_to_entity($file2, $user_one));
+
+		// Make sure other user doesn't have access to file
+		$this->assertFalse(has_access_to_entity($file2, $user_three));
+
+		// Cleanup
+		$file->delete();
+		$file2->delete();
+	}
+
+	/**
+	 * Test todo admin access
+	 */
+	public function testTodoAdminAccess() {
+		$user_one = $this->users[0];
+		$user_two = $this->users[1];
+		$user_three = $this->users[2];
+
+		$todo_admin_role = elgg_get_config('todo_admin_role');
+
+		roles_add_user($todo_admin_role, $user_three->guid);
+
+		// Create a todo owned by test user, assign another test user
+		$todo_guid = $this->createTodo(array(
+			'container_guid' => $user_one->guid,
+			'owner_guid' => $user_one->guid,
+			'access_id' => TODO_ACCESS_LEVEL_ASSIGNEES_ONLY
+		), array($user_two->guid));
+
+		$todo = get_entity($todo_guid);
+
+		// Make sure todo admin can access todo
+		$this->assertTrue(has_access_to_entity($todo, $user_three));
+
+		// Create a todo submission file
+		$file = new FilePluginFile();
+		$file->subtype = 'todosubmissionfile';
+		$file->title = 'test todo submission file';
+		$file->access_id = ACCESS_PRIVATE;
+		$file->owner_guid = $user_two->guid;
+		$file->container_guid = $user_two->guid;
+		$file->save();
+
+		// Create a submission for test user for above todo
+		$submission_guid = $this->createTodoSubmission($todo_guid, array(
+			'owner_guid' => $user_two->guid,
+			'container_guid' => $user_two->guid,
+			'content' => serialize(array($file->guid)),
+		));
+
+		$submission = get_entity($submission_guid);
+
+		// Make sure todo admin can access submission
+		$this->assertTrue(has_access_to_entity($submission, $user_three));
+
+		// Make sure todo admin can access submission file
+		$this->assertTrue(has_access_to_entity($file, $user_three));
+
+		// Create a todo submission annotation file, owned by todo creator
+		$a_file = new FilePluginFile();
+		$a_file->subtype = 'submissionannotationfile';
+		$a_file->title = 'test todo submission annotation file';
+		$a_file->access_id = $submission->access_id;
+		$a_file->owner_guid = $user_one->guid;
+		$a_file->container_guid = $user_one->guid;
+		$a_file->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $a_file->guid
+		);
+
+		add_entity_relationship($a_file->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_one->guid,
+			$submission->access_id
+		);
+
+		$annotation = elgg_get_annotation_from_id($annotation_id);
+
+		// Make sure todo admin has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation, $user_three));
+
+		// Create another todo submission annotation file, owner by submitter
+		$a_file2 = new FilePluginFile();
+		$a_file2->subtype = 'submissionannotationfile';
+		$a_file2->title = 'test todo submission annotation file';
+		$a_file2->access_id = $submission->access_id;
+		$a_file2->owner_guid = $user_two->guid;
+		$a_file2->container_guid = $user_two->guid;
+		$a_file2->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $a_file2->guid
+		);
+
+		add_entity_relationship($a_file2->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_two->guid,
+			$submission->access_id
+		);
+
+		$annotation2 = elgg_get_annotation_from_id($annotation_id);
+
+		// Make sure todo admin has access to the annotation
+		$this->assertTrue($this->hasAccessToAnnotation($annotation2, $user_three));
+
+		// Cleanup
+		roles_remove_user($todo_admin_role, $user_three->guid);
+		$file->delete();
+		$a_file->delete();
+		$a_file2->delete();
+	}
+
+	/**
+	 * Test todo parent access
+	 */
+	public function testTodoParentAccess() {
+		$user_one = $this->users[0];
+		$user_two = $this->users[1];
+		$user_three = $this->users[2];
+
+		// Make user_three a parent
+		$user_three->is_parent = 1;
+
+		// Add child relationship
+		add_entity_relationship($user_two->guid, PARENT_CHILD_RELATIONSHIP, $user_three->guid);
+
+		// Create a todo owned by test user, assign another test user
+		$todo_guid = $this->createTodo(array(
+			'container_guid' => $user_one->guid,
+			'owner_guid' => $user_one->guid,
+			'access_id' => TODO_ACCESS_LEVEL_ASSIGNEES_ONLY
+		), array($user_two->guid));
+
+		$todo = get_entity($todo_guid);
+
+		// Create a todo submission file
+		$file = new FilePluginFile();
+		$file->subtype = 'todosubmissionfile';
+		$file->title = 'test todo submission file';
+		$file->access_id = ACCESS_PRIVATE;
+		$file->owner_guid = $user_two->guid;
+		$file->container_guid = $user_two->guid;
+		$file->save();
+
+		// Create a submission for test user for above todo
+		$submission_guid = $this->createTodoSubmission($todo_guid, array(
+			'owner_guid' => $user_two->guid,
+			'container_guid' => $user_two->guid,
+			'content' => serialize(array($file->guid)),
+		));
+
+		$submission = get_entity($submission_guid);
+
+		// Create a todo submission annotation file, owned by todo creator
+		$a_file = new FilePluginFile();
+		$a_file->subtype = 'submissionannotationfile';
+		$a_file->title = 'test todo submission annotation file';
+		$a_file->access_id = $submission->access_id;
+		$a_file->owner_guid = $user_one->guid;
+		$a_file->container_guid = $user_one->guid;
+		$a_file->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $a_file->guid
+		);
+
+		add_entity_relationship($a_file->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_one->guid,
+			$submission->access_id
+		);
+
+		$annotation = elgg_get_annotation_from_id($annotation_id);
+
+		// Create another todo submission annotation file, owner by submitter
+		$a_file2 = new FilePluginFile();
+		$a_file2->subtype = 'submissionannotationfile';
+		$a_file2->title = 'test todo submission annotation file';
+		$a_file2->access_id = $submission->access_id;
+		$a_file2->owner_guid = $user_two->guid;
+		$a_file2->container_guid = $user_two->guid;
+		$a_file2->save();
+
+		$annotation_content = array(
+			'comment' => 'test',
+			'attachment_guid' => $a_file2->guid
+		);
+
+		add_entity_relationship($a_file2->guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+
+		$annotation_id = create_annotation(
+			$submission_guid,
+			'submission_annotation',
+			serialize($annotation_content),
+			"",
+			$user_two->guid,
+			$submission->access_id
+		);
+
+		$annotation2 = elgg_get_annotation_from_id($annotation_id);
+		
+		$this->assertTrue(has_access_to_entity($todo, $user_three));
+		$this->assertTrue(has_access_to_entity($submission, $user_three));
+		$this->assertTrue(has_access_to_entity($file, $user_three));
+		$this->assertTrue($this->hasAccessToAnnotation($annotation, $user_three));
+		$this->assertTrue($this->hasAccessToAnnotation($annotation2, $user_three));
+
+		// Cleanup
+		$user_three->is_parent = false;
+		$file->delete();
+		$a_file->delete();
+		$a_file2->delete();
+	}
 }
+
+
 
 /**
  * This is here becuase either something in Elgg or simpletest is broken

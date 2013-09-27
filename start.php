@@ -14,9 +14,6 @@
 
 /*********************** @TODO: (Code related) ************************/
 // - Improve rubric selection interface
-// - Improve libs (cleanup gross/unused)
-// - Remove users from unused access collections (in script?)
-// - Need more unit tests for submission entities/metadata/annotations/annotation files
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -178,10 +175,10 @@ function todo_init() {
 	elgg_register_event_handler('pagesetup','system','todo_submenus');
 			
 	// Register a handler for creating todos
-	elgg_register_event_handler('create', 'object', 'todo_create_event_listener');
+	//elgg_register_event_handler('create', 'object', 'todo_create_event_listener');
 
 	// Register a handler for deleting todos
-	elgg_register_event_handler('delete', 'object', 'todo_delete_event_listener');
+	//elgg_register_event_handler('delete', 'object', 'todo_delete_event_listener');
 
 	// Register a handler for assigning users to todos
 	elgg_register_event_handler('assign','object','todo_assign_user_event_listener');
@@ -520,23 +517,6 @@ function todo_page_handler($page) {
  * Todo created, so add users to access lists.
  */
 function todo_create_event_listener($event, $object_type, $object) {
-	// if ($object->getSubtype() == 'todo') {
-	// 	$todo_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $object->title, $object->getGUID());
-	// 	if ($todo_acl) {
-	// 		$object->assignee_acl = $todo_acl;
-	// 		try {
-	// 			add_user_to_access_collection($object->owner_guid, $todo_acl);
-	// 		} catch (DatabaseException $e) {
-	// 			//
-	// 		}
-	// 		if ($object->access_id == TODO_ACCESS_LEVEL_ASSIGNEES_ONLY) {
-	// 			$object->access_id = $todo_acl;
-	// 			$object->save();
-	// 		}
-	// 	} else {
-	// 		return false;
-	// 	}
-	// }
 	return true;
 }
 
@@ -544,9 +524,6 @@ function todo_create_event_listener($event, $object_type, $object) {
  * Todo deleted, so remove access lists.
  */
 function todo_delete_event_listener($event, $object_type, $object) {
-	if ($object->getSubtype() == 'todo') {
-		delete_access_collection($object->assignee_acl);
-	}
 	return true;
 }
 
@@ -558,16 +535,10 @@ function todo_assign_user_event_listener($event, $object_type, $object) {
 	if ($object['todo']->getSubtype() == 'todo') {
 		$todo = $object['todo'];
 		$user = $object['user'];
-	//	$acl = $todo->assignee_acl;
 
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
 
-		// try {
-		// 	$result = add_user_to_access_collection($user->getGUID(), $acl);
-		// } catch (DatabaseException $e) {
-		// 	//
-		// }	
 	}
 	return true;
 }
@@ -580,12 +551,9 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 	if ($object['todo']->getSubtype() == 'todo') {	
 		$todo = $object['todo'];
 		$user = $object['user'];
-		//$acl = $todo->assignee_acl;
 
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
-
-		//$result = remove_user_from_access_collection($user->getGUID(), $acl);
 	}
 	return true;
 }
@@ -598,57 +566,38 @@ function submission_create_event_listener($event, $object_type, $object) {
 		// Get the submissions todo
 		$todo = get_entity($object->todo_guid);
 
-		// Create an ACL for the submission, only the todo assigner and assignee can see it
-		//$submission_acl = create_access_collection(elgg_echo('todo:todo') . ": " . $todo->title, $object->getGUID());
+		$object->access_id = SUBMISSION_ACCESS_ID;
 
-		//if ($submission_acl) {
-			// $object->submission_acl = $submission_acl;
+		// Update timestamp based on timezone
+		$time_created = $object->time_created;
+		$offset_time_created = $time_created + todo_get_submission_timezone_offset();
+		$object->time_created = $offset_time_created;
+		$object->utc_created = $time_created; // Store original timestamp for good measure
+		$object->save();
 
-			// try {
-			// 	$result = add_user_to_access_collection($todo->owner_guid, $submission_acl);
-			// } catch (DatabaseException $e) {
-			// }
-			
-			// try {
-			// 	$result = add_user_to_access_collection(elgg_get_logged_in_user_guid(), $submission_acl);
-			// } catch (DatabaseException $e) {
-			// }
+		// Set permissions for any attached content (files)		
+		if ($object->content) {
+			$contents = unserialize($object->content);
+			foreach ($contents as $content) {
+				$guid = (int)$content;
+				$entity = get_entity($guid);
+				if (elgg_instanceof($entity, 'object')) {
+					// If content is a todosubmissionfile entitity, set its ACL to that of the submission
+					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+						$entity->access_id = $object->access_id;
+					}
 
-		//	$object->access_id = $submission_acl;
-			$object->access_id = SUBMISSION_ACCESS_ID;
+					// Set up a todo content relationship for the entity
+					$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
 
-			// Update timestamp based on timezone
-			$time_created = $object->time_created;
-			$offset_time_created = $time_created + todo_get_submission_timezone_offset();
-			$object->time_created = $offset_time_created;
-			$object->utc_created = $time_created; // Store original timestamp for good measure
-			$object->save();
+					// Set content tags to todo suggested tags
+					todo_set_content_tags($entity, $todo);
 
-			// Set permissions for any attached content (files)		
-			if ($object->content) {
-				$contents = unserialize($object->content);
-				foreach ($contents as $content) {
-					$guid = (int)$content;
-					$entity = get_entity($guid);
-					if (elgg_instanceof($entity, 'object')) {
-						// If content is a todosubmissionfile entitity, set its ACL to that of the submission
-						if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-							$entity->access_id = $object->access_id;
-						}
+					$entity->save();
+				} 
+			}
+		}			
 
-						// Set up a todo content relationship for the entity
-						$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
-
-						// Set content tags to todo suggested tags
-						todo_set_content_tags($entity, $todo);
-
-						$entity->save();
-					} 
-				}
-			}			
-		// } else {
-		// 	return false;
-		// }
 	}
 	return true;
 }
@@ -1869,17 +1818,17 @@ function todo_test($hook, $type, $value, $params) {
  * @return array
  */
 function todo_access_handler($hook, $type, $value, $params) {
-	// Logged in/site admin check
-	if (!elgg_is_logged_in() || elgg_is_admin_logged_in()) {
-		return $value;
-	}
-
 	// Hook Params
 	$access_column = $params['access_column'];
 	$table_alias = $params['table_alias'];
 	$guid_column = $params['guid_column'];
 	$owner_guid_column = $params['owner_guid_column'];
 	$user_guid = $params['user_guid'];
+
+	// Logged in/site admin check
+	if (!elgg_is_logged_in() || (elgg_is_admin_logged_in()) && $user_guid == elgg_get_logged_in_user_guid()) {
+		return $value;
+	}
 
 	// ACL's
 	$todo_acl = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
@@ -1893,24 +1842,26 @@ function todo_access_handler($hook, $type, $value, $params) {
 
 	// Other vars
 	$dbprefix = elgg_get_config('dbprefix');
-	$logged_in_user = elgg_get_logged_in_user_entity();
 
 	// Need to add a '.' to the query if there is a table alias
 	$table_alias = $table_alias ? $table_alias . '.' : '';
 
 	// Todo admin check
-	if (is_todo_admin()) {
+	if (is_todo_admin($user_guid)) {
 		$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl, $submission_acl))";
 		return $value;
 	}
 
+	$parent_owner_submission_and = $parent_assigned_sql = '';
+	$children_string = false;
+
 	// Parent check
-	if (elgg_is_active_plugin('parentportal') && parentportal_is_user_parent($logged_in_user)) {
+	if (elgg_is_active_plugin('parentportal')) {
 		// Get parents children
 		$child_query = "SELECT guid from {$dbprefix}users_entity ue
 						JOIN {$dbprefix}entity_relationships er on er.guid_one = ue.guid
 						WHERE er.relationship = 'is_child_of'
-						AND er.guid_two = {$logged_in_user->guid}";
+						AND er.guid_two = {$user_guid}";
 
 		$child_result = get_data($child_query);
 
@@ -1922,7 +1873,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 				}
 			}
 		}
-		
+
 		if ($children_string) {
 			$parent_assigned_sql = "OR (EXISTS(
 				SELECT guid_one FROM {$dbprefix}entity_relationships
@@ -1950,7 +1901,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 				AND owner_guid IN ({$children_string})
 			))";
 		}
-	}
+	}		
 
 	// Determine if user is assigned totdo
 	$todo_assigned_and = "{$user_guid} IN (

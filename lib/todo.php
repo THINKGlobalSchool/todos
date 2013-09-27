@@ -713,11 +713,13 @@ function get_todo_submissions_count($todo_guid) {
  * @return array 
  */
 function get_users_todos($user_guid) {
-	$todos = elgg_get_entities_from_relationship(array('relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
-													 'relationship_guid' => $user_guid, 
-													 'inverse_relationship' => FALSE,
-													 'limit' => 9999,
-													 'offset' => 0,));
+	$todos = elgg_get_entities_from_relationship(array(
+		'relationship' => TODO_ASSIGNEE_RELATIONSHIP, 
+		'relationship_guid' => $user_guid, 
+		'inverse_relationship' => FALSE,
+		'limit' => 9999,
+		'offset' => 0
+	));
 													
 	// Do not include draft todos
 	foreach ($todos as $idx => $todo) {
@@ -930,12 +932,11 @@ function count_assigned_todos_by_due_date($user_guid, $date_params, $status = 'i
 		'type' => 'object',
 		'subtype' => 'todo',
 		'count' => TRUE,
-		'metadata_name_value_pairs' => array(
-			array(
-				'name' => 'status',
-				'value' => TODO_STATUS_PUBLISHED, 
-				'operand' => '='),
-		)
+		'metadata_name_value_pairs' => array(array(
+			'name' => 'status',
+			'value' => TODO_STATUS_PUBLISHED, 
+			'operand' => '='
+		))
 	);
 
 	// Check for just start date and operand
