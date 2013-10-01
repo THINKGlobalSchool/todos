@@ -52,7 +52,7 @@ if ($acl_go) {
 	$limit = 10;
 
 	// Batch update ACL's
-	while ($offset < ($count - $limit)) {
+	while ($offset <= ($count - $limit)) {
 		// Get acls
 		$acl_query = "SELECT e.*, value.string as acl_id, name.string as metadata_name FROM {$dbprefix}entities e
 			  JOIN {$dbprefix}metadata n_table on e.guid = n_table.entity_guid
