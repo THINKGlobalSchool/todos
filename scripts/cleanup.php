@@ -26,8 +26,7 @@ echo elgg_view_title('Todo Cleanup Scripts');
 
 // Clean up ACL's
 if ($acl_go) {
-	// Get acls
-	$q = "SELECT e.*, value.string as acl_id, name.string as metadata_name FROM {$dbprefix}entities e
+	$count_query = "SELECT e.*, value.string as acl_id, name.string as metadata_name, COUNT(*) as count FROM {$dbprefix}entities e
 		  JOIN {$dbprefix}metadata n_table on e.guid = n_table.entity_guid
 		  JOIN {$dbprefix}metastrings name on n_table.name_id = name.id
 		  JOIN {$dbprefix}metastrings value on n_table.value_id = value.id
@@ -35,9 +34,9 @@ if ($acl_go) {
 		  AND   (name.string = 'assignee_acl' OR name.string = 'submission_acl')
 	";
 
-	$acls = get_data($q);
-
-	echo "Total acls: " . count($acls) . "<br /><br />";
+	$result = get_data($count_query);
+	$count = $result[0]->count ? $result[0]->count : 0;
+	echo "Total acls: " . $count . "<br /><br />";
 
 	// Core access id's
 	$core_acls = array(
@@ -48,56 +47,77 @@ if ($acl_go) {
 		ACCESS_FRIENDS
 	);
 
-	// Loop over acls/objects
-	foreach ($acls as $acl) {
-		$id = $acl->acl_id;
-		$guid = $acl->guid;
-		$subtype = $acl->subtype;
-		$access_id = $acl->access_id;
-		if ($acl_go) {
-			if ($subtype == $todo_subtype) {
-				$type = "TODO";
-			} else if ($subtype == $submission_subtype) {
-				$type = "SUBMISSION";
-			} else {
-				echo "INVALID SUBTYPE!!! <br />";
-				continue;
-			}
+	// Offset/limit
+	$offset = 0;
+	$limit = 10;
 
-			// Commit..
-			if (!$safety) {
-				// Remove old acl!
-				$deleted = '   -> DELETED!!!';
-				delete_access_collection($id);
+	// Batch update ACL's
+	while ($offset < ($count - $limit)) {
+		// Get acls
+		$acl_query = "SELECT e.*, value.string as acl_id, name.string as metadata_name FROM {$dbprefix}entities e
+			  JOIN {$dbprefix}metadata n_table on e.guid = n_table.entity_guid
+			  JOIN {$dbprefix}metastrings name on n_table.name_id = name.id
+			  JOIN {$dbprefix}metastrings value on n_table.value_id = value.id
+			  WHERE subtype IN ({$todo_subtype}, {$submission_subtype})
+			  AND   (name.string = 'assignee_acl' OR name.string = 'submission_acl')
+			  LIMIT {$offset},{$limit}
+		";
 
-				// Update access id's (where applicable) and delete metadata
+		$acls = get_data($acl_query);
+
+		// Loop over acls/objects
+		foreach ($acls as $acl) {
+			$id = $acl->acl_id;
+			$guid = $acl->guid;
+			$subtype = $acl->subtype;
+			$access_id = $acl->access_id;
+			if ($acl_go) {
 				if ($subtype == $todo_subtype) {
-					// If todo access id isn't a core id, set it to assignees only
-					if (!in_array($access_id, $core_acls)) {
-						$access = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
-						update_data("UPDATE {$dbprefix}entities SET access_id = $access WHERE guid = $guid");
-					}
-
-					access_show_hidden_entities(TRUE);
-					$res = elgg_delete_metadata(array(
-						'guid' => $guid,
-						'metadata_name' => 'assignee_acl',
-					));
-					access_show_hidden_entities(FALSE);
-
+					$type = "TODO";
 				} else if ($subtype == $submission_subtype) {
-					$access = SUBMISSION_ACCESS_ID;
-					update_data("UPDATE {$dbprefix}entities SET access_id = $access WHERE guid = $guid");
-
-					elgg_delete_metadata(array(
-						'guid' => $guid,
-						'metadata_name' => 'submission_acl',
-					));
+					$type = "SUBMISSION";
+				} else {
+					echo "INVALID SUBTYPE!!! <br />";
+					continue;
 				}
+
+				// Commit..
+				if (!$safety) {
+					// Remove old acl!
+					$deleted = '   -> DELETED!!!';
+					delete_access_collection($id);
+
+					// Update access id's (where applicable) and delete metadata
+					if ($subtype == $todo_subtype) {
+						// If todo access id isn't a core id, set it to assignees only
+						if (!in_array($access_id, $core_acls)) {
+							$access = TODO_ACCESS_LEVEL_ASSIGNEES_ONLY;
+							update_data("UPDATE {$dbprefix}entities SET access_id = $access WHERE guid = $guid");
+						}
+
+						access_show_hidden_entities(TRUE);
+						$res = elgg_delete_metadata(array(
+							'guid' => $guid,
+							'metadata_name' => 'assignee_acl',
+						));
+						access_show_hidden_entities(FALSE);
+
+					} else if ($subtype == $submission_subtype) {
+						$access = SUBMISSION_ACCESS_ID;
+						update_data("UPDATE {$dbprefix}entities SET access_id = $access WHERE guid = $guid");
+
+						elgg_delete_metadata(array(
+							'guid' => $guid,
+							'metadata_name' => 'submission_acl',
+						));
+					}
+				}
+				echo "$type (guid: $guid, access_id: $access_id) - ACL: " . $id . " $deleted" . "<br />";
 			}
-			echo "$type (guid: $guid, access_id: $access_id) - ACL: " . $id . " $deleted" . "<br />";
 		}
+		$offset += $limit;
 	}
+
 } else if ($fixannotationfiles_go) { // Fix annotations and annotation files
 	// Select submission info/submission annotation info
 	$q = "SELECT e.*, 
@@ -149,13 +169,18 @@ if ($acl_go) {
 
 			// Commit..
 			if (!$safety) {
-				// Add new relationship and update access id on file entity
-				$rel = SUBMISSION_ANNOTATION_FILE_RELATIONSHIP;
-				$done = " ---> Added relationship ({$rel}); updated access id (-11)";
-				add_entity_relationship($entity_guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
 				$entity = get_entity($entity_guid);
-				$entity->access_id = SUBMISSION_ACCESS_ID;
-				$entity->save();
+				if ($entity) {
+					// Add new relationship and update access id on file entity
+					$rel = SUBMISSION_ANNOTATION_FILE_RELATIONSHIP;
+					$done = " ---> Added relationship ({$rel}); updated access id (-11)";
+					add_entity_relationship($entity_guid, SUBMISSION_ANNOTATION_FILE_RELATIONSHIP, $submission_guid);
+					
+					$entity->access_id = SUBMISSION_ACCESS_ID;
+					$entity->save();
+				} else {
+					$done = " ---> Entity no longer exists! Skipped.";
+				}
 			}
 
 			// Display info
