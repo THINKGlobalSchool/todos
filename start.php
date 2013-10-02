@@ -1819,6 +1819,7 @@ function todo_test($hook, $type, $value, $params) {
  */
 function todo_access_handler($hook, $type, $value, $params) {
 	// Hook Params
+	$ignore_access = $params['ignore_access'];
 	$access_column = $params['access_column'];
 	$table_alias = $params['table_alias'];
 	$guid_column = $params['guid_column'];
@@ -1826,7 +1827,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$user_guid = $params['user_guid'];
 
 	// Logged in/site admin check
-	if (!elgg_is_logged_in() || (elgg_is_admin_logged_in()) && $user_guid == elgg_get_logged_in_user_guid()) {
+	if ($ignore_access || !elgg_is_logged_in() || (elgg_is_admin_logged_in()) && $user_guid == elgg_get_logged_in_user_guid()) {
 		return $value;
 	}
 
