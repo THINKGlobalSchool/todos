@@ -121,15 +121,18 @@ if ($acl_go) {
 	}
 
 } else if ($fixtodocontentfiles_go) { 
-	echo "Updating todosubmissionfiles access id";
+	echo "Updating todosubmissionfiles/metadata access id";
 	if (!$safety) {
-		$result = update_data("UPDATE {$dbprefix}entities e JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET e.access_id = -11 WHERE s.subtype = 'todosubmissionfile';");
+		$result_one = update_data("UPDATE {$dbprefix}entities e JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET e.access_id = -11 WHERE s.subtype = 'todosubmissionfile';");
+		$result_two = update_data("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -11 WHERE s.subtype = 'todosubmissionfile';");
 	} else {
-		$result = get_data("SELECT e.access_id FROM {$dbprefix}entities e join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todosubmissionfile';"); 
+		$result_one = get_data("SELECT e.access_id FROM {$dbprefix}entities e join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todosubmissionfile';"); 
+		$result_two = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todosubmissionfile';"); 
 	}
 
 	echo "<pre>";
-	var_dump($result);
+	var_dump($result_one);
+	var_dump($result_two);
 	echo "</pre>";
 	
 
