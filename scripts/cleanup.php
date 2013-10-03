@@ -12,6 +12,7 @@ $safety = get_input('safety');
 // Action inputs
 $acl_go = get_input('acl_go', FALSE);
 $fixannotationfiles_go = get_input('fixannotationfiles_go');
+$updatesubmissionmetadata_go = get_input('updatesubmissionmetadata_go');
 $cleanorphanedannotationfiles_go = get_input('cleanorphanedannotationfiles_go');
 $cleanorphanedtodofiles_go = get_input('cleanorphanedtodofiles_go');
 
@@ -192,6 +193,19 @@ if ($acl_go) {
 
 	echo "<br />Total submission annotation files: $count";
 
+} else if ($updatesubmissionmetadata_go) {
+	echo "Updating submission metadata!";
+
+	if (!$safety) {
+		$result = update_date("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -11 WHERE s.subtype = 'todosubmission';");
+	} else {
+		$result = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todosubmission';"); 
+	}
+
+	echo "<pre>";
+	echo var_dump($result);
+	echo "</pre>";
+
 } else if ($cleanorphanedtodofiles_go) { // Remove orphaned todosubmissionfiles
 	$r = TODO_CONTENT_RELATIONSHIP;
 
@@ -248,10 +262,11 @@ if ($acl_go) {
 } else { // Display form
 	echo "<form method='GET' action=''>";
 	echo "<input type='checkbox' name='safety' value='1' checked='CHECKED' /> Safety? (Uncheck to commit to deletes/changes!)<br /><br />";
-	echo "<input type='submit' name='acl_go' value='Delete assignee/submission ACLs' /><br />";
-	echo "<input type='submit' name='fixannotationfiles_go' value='Fix Annotation & Files (ACL + Relationship)' /><br />";
-	echo "<input type='submit' name='cleanorphanedtodofiles_go' value='Remove orphaned todosubmissionfiles' /><br />";
-	echo "<input type='submit' name='cleanorphanedannotationfiles_go' value='Remove orphaned submissionannotationfiles' /><br />";
+	echo "<input type='submit' name='acl_go' value='1. Delete assignee/submission ACLs' /><br />";
+	echo "<input type='submit' name='fixannotationfiles_go' value='2. Fix Annotation & Files (ACL + Relationship)' /><br />";
+	echo "<input type='submit' name='updatesubmissionmetadata_go' value='3. Update Submission metadata ACL' /><br />";
+	echo "<input type='submit' name='cleanorphanedtodofiles_go' value='4. Remove orphaned todosubmissionfiles' /><br />";
+	echo "<input type='submit' name='cleanorphanedannotationfiles_go' value='5. Remove orphaned submissionannotationfiles' /><br />";
 	echo "</form>";
 }
 
