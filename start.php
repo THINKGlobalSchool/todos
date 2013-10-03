@@ -1875,33 +1875,52 @@ function todo_access_handler($hook, $type, $value, $params) {
 			}
 		}
 
+		// If we've got children
 		if ($children_string) {
-			$parent_assigned_sql = "OR (EXISTS(
+			$parent_assigned_sql = "(EXISTS(
 				SELECT guid_one FROM {$dbprefix}entity_relationships
 				WHERE guid_two = {$table_alias}{$guid_column}
 				AND relationship='{$r_ta}'
 				AND guid_one IN ({$children_string})
 			))"; 
+
+			$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$parent_assigned_sql}))";
 	
-			$parent_owner_submission_and = "OR (EXISTS(
+			// Check if the user is the parent of the submisson's owner
+			$parent_owner_submission_and = "EXISTS(
+				SELECT owner_guid FROM {$dbprefix}entities se
+				WHERE se.guid = {$table_alias}{$guid_column}
+				AND owner_guid IN ({$children_string})
+			)";
+
+			// Check if the user is the parent of the submisson owner's content/annotations/etc
+			$parent_submission_owner_content_object_and = "EXISTS(
 				SELECT owner_guid FROM {$dbprefix}entities se
 				WHERE se.guid = (
 					SELECT guid_two FROM {$dbprefix}entity_relationships
 					WHERE guid_one = {$table_alias}{$guid_column}
-					AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
-				)
-				OR se.guid = (
+					AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}'))
+				AND owner_guid IN ({$children_string})
+			)";
+	
+			// Ensure the user is the parent of the user to whom this todo is assigned
+			$parent_todo_owner_object_and = "EXISTS(
+				SELECT owner_guid FROM {$dbprefix}entities se
+				WHERE se.guid = (
 					SELECT guid_two FROM {$dbprefix}entity_relationships
 					WHERE guid_one = (
 						SELECT guid_two FROM {$dbprefix}entity_relationships
 						WHERE guid_one = {$table_alias}{$guid_column}
 						AND relationship = '$r_saf'
-					) AND relationship = '$r_sub'
-				)
-				OR se.guid = {$table_alias}{$guid_column}
+					) AND relationship = '$r_sub')
 				AND owner_guid IN ({$children_string})
-			))";
-		}
+			)";
+
+			
+			$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$parent_owner_submission_and}))";
+			$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$parent_submission_owner_content_object_and}))";
+			$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$parent_todo_owner_object_and}))";
+		}	
 	}		
 
 	// Determine if user is assigned totdo
@@ -1911,37 +1930,44 @@ function todo_access_handler($hook, $type, $value, $params) {
 		AND relationship='{$r_ta}'
 	)";
 
-	/** 
-	 * Handle submission related permissions (entities, annotations and metadata)
-	 * 
-	 * Checks for:
-	 * - User owns the submission entity (for metadata/annotations)
-	 * - User owns the todo (for submission annotation files, and submission content files)
-	 * 
-	 */
-	$todo_owner_submission_and = "{$user_guid} IN (
+
+	// SQL to check if the user is the owner of the submission for submission files/annotations
+	$submission_owner_content_object_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities se
 		WHERE se.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
 			WHERE guid_one = {$table_alias}{$guid_column}
 			AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
-		)
-		OR se.guid = (
+	))";
+
+	// Check if the user owns the submission object
+	$submission_owner_object_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities se
+		WHERE se.guid = {$table_alias}{$guid_column}
+	)";
+
+	// Check if the user owns the todo, for access to the submissions
+	$todo_owner_object_and = "{$user_guid} IN (
+		SELECT owner_guid FROM {$dbprefix}entities se
+		WHERE se.guid = (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
 			WHERE guid_one = (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
 				WHERE guid_one = {$table_alias}{$guid_column}
 				AND relationship = '$r_saf'
-			) AND relationship = '$r_sub'
-		)
-		OR se.guid = {$table_alias}{$guid_column}
+			) AND relationship = '$r_sub')
 	)";
 
+
 	// Todo related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and} {$parent_assigned_sql}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}))";
 
 	// Submission related ors
-	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and} {$parent_owner_submission_and}))";		
+	//$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_content_object_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_object_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_object_and}))";
+
 
 	return $value;
 }

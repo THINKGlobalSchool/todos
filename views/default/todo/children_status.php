@@ -44,7 +44,7 @@ if (count($children)) {
 				}
 
 				// Check if theres a submission, may have been manually completed
-				if ($submission = get_user_submission($assignee->guid, $todo->guid)) {
+				if ($submission = get_user_submission($child->guid, $todo->guid)) {
 					$date = date("F j, Y", $submission->time_created);
 					$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 					$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
