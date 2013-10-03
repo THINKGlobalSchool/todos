@@ -197,7 +197,7 @@ if ($acl_go) {
 	echo "Updating submission metadata!";
 
 	if (!$safety) {
-		$result = update_date("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -11 WHERE s.subtype = 'todosubmission';");
+		$result = update_data("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -11 WHERE s.subtype = 'todosubmission';");
 	} else {
 		$result = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todosubmission';"); 
 	}
