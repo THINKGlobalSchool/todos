@@ -12,11 +12,18 @@
  * 
  */
 
+// Get todo
 $todo = $vars['entity'];
-
 
 // Get assignees
 $assignees = get_todo_assignees($todo->getGUID());
+
+if ($todo->grade_required) {
+	$grade_header = "<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>";
+	$colspan = 6;
+} else {
+	$colspan = 5;
+}
 
 // Table Headers
 $content = "<br /><br/><table class='elgg-table'>
@@ -26,7 +33,7 @@ $content = "<br /><br/><table class='elgg-table'>
 						<th><strong>" . elgg_echo('todo:label:accepted') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:datecompleted') . "</strong></th>
-						<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>
+						$grade_header
 						<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
 						<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>
 					</tr>
@@ -69,12 +76,17 @@ foreach ($assignees as $assignee) {
 			$date = date("F j, Y", $submission->time_created);
 			$ajax_url = elgg_get_site_url() . 'ajax/view/todo/ajax_submission?guid=' . $submission->guid;
 			$submission_info = "<a onclick='javascript:return false;' rel='todo-submission-lightboxen' class='todo-submission-lightbox' href='{$ajax_url}'>View</a>";
+			
 			if ($submission->grade !== NULL) {
-				$grade = $submission->grade . '/' . $vars['entity']->grade_total; 
+					$grade = $submission->grade . '/' . $vars['entity']->grade_total; 
 			}
 		}
 
 		$reminder = $dash;
+	}
+
+	if ($todo->grade_required) {
+		$grade_content = "<td id='assignee-grade-$assignee->guid' style='font-weight: bold;'>$grade</td>";
 	}
 	
 	// Build rest of content
@@ -83,7 +95,7 @@ foreach ($assignees as $assignee) {
 	$content .= 	"<td>$accepted</td>";
 	$content .= 	"<td>$status</td>";
 	$content .= 	"<td>$date</td>";
-	$content .= 	"<td id='assignee-grade-$assignee->guid' style='font-weight: bold;'>$grade</td>";
+	$content .= 	$grade_content;
 	$content .= 	"<td>$submission_info</td>";
 	$content .= 	"<td>$reminder</td>";
 	$content .= '</tr>';
@@ -94,9 +106,6 @@ foreach ($assignee_guids as $idx => $guid) {
 	$qs .= "&a[]=" . $assignee_guids[$idx];
 }
 
-// Colspan for extra options
-$colspan = 6;
-
 // If there are submissions, display extra options
 if (get_todo_submissions_count($todo->guid)) {
 	$download_files = elgg_view('output/url', array(
@@ -105,7 +114,7 @@ if (get_todo_submissions_count($todo->guid)) {
 		//'class' => 'elgg-button elgg-button-action',
 	));
 	
-	$colspan = 5;
+	$colspan = ($colspan == 6) ? 5 : 4;
 	$download_content = "<td>$download_files</td>";
 }
 

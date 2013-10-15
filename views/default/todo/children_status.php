@@ -56,7 +56,11 @@ if (count($children)) {
 			} else {
 				$child_content .= "<td><span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span></td><td>-</td>";
 			}
-			$child_content .= "<td><strong>{$child_grade}</strong></td>";
+
+			if ($todo->grade_required) {
+				$grade_header = "<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>";
+				$child_content .= "<td><strong>{$child_grade}</strong></td>";
+			}
 			
 			$child_content .= "</tr>";
 		}
@@ -85,7 +89,7 @@ if ($child_content) {
 								<th><strong>" . $user_label . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:status') . "</strong></th>
 								<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
-								<th><strong>" . elgg_echo('todo:label:grade') . "</strong></th>
+								$grade_header
 							</tr>
 						</thead>
 						<tbody>";
