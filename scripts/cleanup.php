@@ -228,9 +228,9 @@ if ($acl_go) {
 	echo "Updating todo metadata!";
 
 	if (!$safety) {
-		$result = update_data("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -10 WHERE s.subtype = 'todo' AND e.access_id != -10;");
+		$result = update_data("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -10 WHERE s.subtype = 'todo' AND e.access_id == -10;");
 	} else {
-		$result = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todo' AND e.access_id != -10;"); 
+		$result = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todo' AND e.access_id == -10;"); 
 	}
 
 	echo "<pre>";
