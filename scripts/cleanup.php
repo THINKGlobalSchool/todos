@@ -14,6 +14,7 @@ $acl_go = get_input('acl_go', FALSE);
 $fixtodocontentfiles_go = get_input('fixtodocontentfiles_go');
 $fixannotationfiles_go = get_input('fixannotationfiles_go');
 $updatesubmissionmetadata_go = get_input('updatesubmissionmetadata_go');
+$updatetodometadata_go = get_input('updatetodometadata_go');
 $cleanorphanedannotationfiles_go = get_input('cleanorphanedannotationfiles_go');
 $cleanorphanedtodofiles_go = get_input('cleanorphanedtodofiles_go');
 
@@ -223,6 +224,19 @@ if ($acl_go) {
 	echo var_dump($result);
 	echo "</pre>";
 
+} else if ($updatetodometadata_go) {
+	echo "Updating todo metadata!";
+
+	if (!$safety) {
+		$result = update_data("UPDATE {$dbprefix}metadata m JOIN {$dbprefix}entities e on m.entity_guid = e.guid JOIN {$dbprefix}entity_subtypes s on e.subtype = s.id SET m.access_id = -10 WHERE s.subtype = 'todo';");
+	} else {
+		$result = get_data("SELECT m.access_id FROM {$dbprefix}metadata AS m JOIN {$dbprefix}entities AS e on m.entity_guid = e.guid join {$dbprefix}entity_subtypes AS s ON e.subtype = s.id WHERE s.subtype = 'todo';"); 
+	}
+
+	echo "<pre>";
+	echo var_dump($result);
+	echo "</pre>";
+
 } else if ($cleanorphanedtodofiles_go) { // Remove orphaned todosubmissionfiles
 	$r = TODO_CONTENT_RELATIONSHIP;
 
@@ -283,8 +297,9 @@ if ($acl_go) {
 	echo "<input type='submit' name='fixtodocontentfiles_go' value='2. Fix todo content files' /><br />";
 	echo "<input type='submit' name='fixannotationfiles_go' value='3. Fix Annotation & Files (ACL + Relationship)' /><br />";
 	echo "<input type='submit' name='updatesubmissionmetadata_go' value='4. Update Submission metadata ACL' /><br />";
-	echo "<input type='submit' name='cleanorphanedtodofiles_go' value='5. Remove orphaned todosubmissionfiles' /><br />";
-	echo "<input type='submit' name='cleanorphanedannotationfiles_go' value='6. Remove orphaned submissionannotationfiles' /><br />";
+	echo "<input type='submit' name='updatetodometadata_go' value='5. Update Todo metadata ACL' /><br />";
+	echo "<input type='submit' name='cleanorphanedtodofiles_go' value='6. Remove orphaned todosubmissionfiles' /><br />";
+	echo "<input type='submit' name='cleanorphanedannotationfiles_go' value='7. Remove orphaned submissionannotationfiles' /><br />";
 	echo "</form>";
 }
 
