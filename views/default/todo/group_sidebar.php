@@ -25,7 +25,7 @@ if (elgg_instanceof($group, 'group') && $group->todo_enable == 'yes' && elgg_in_
 	}
 	
 	$all_link = elgg_view('output/url', array(
-		'href' => 'todo/group/' . $group->getGUID() . '/owner/',
+		'href' => 'todo/group/dashboard/' . $group->getGUID() . '/owner/',
 		'text' => elgg_echo('link:view:all')
 
 	));
