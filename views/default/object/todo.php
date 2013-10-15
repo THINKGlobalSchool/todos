@@ -111,7 +111,7 @@ if ($full) { // Full View
 
 			if ($submission->grade !== NULL) {
 				$status_content .= $submission->grade . "/" . $todo->grade_total;
-			} else {
+			} else if ($todo->grade_required) {
 				$status_content .= "(" . elgg_echo('todo:label:notyetgraded') . ")";
 			}
 
