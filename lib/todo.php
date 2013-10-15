@@ -30,10 +30,11 @@ function todo_get_page_content_view($type, $guid) {
 		elgg_push_context('todo_test');
 		$entity = get_entity($guid);
 		if ($entity->enabled && $type == 'todo' && elgg_instanceof($entity, 'object', 'todo')) {
-			$owner = $entity->getOwnerEntity();
+			$owner = $entity->getContainerEntity();
 			$params['title'] = $entity->title;
 			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
 			$params['content'] .= elgg_view_comments($entity);
+
 			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
 			elgg_push_breadcrumb($entity->title);
 			return $params;
