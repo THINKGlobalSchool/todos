@@ -91,11 +91,13 @@ if ($full) { // Full View
 
 	$status_label = elgg_echo("todo:label:status");
 	
-	// Default status
-	if (have_assignees_completed_todo($todo->getGUID())) {
-		$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";		
-	} else {
-		$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+	if (elgg_is_admin_logged_in() || $is_owner || $is_assignee) {
+		// Default status
+		if (have_assignees_completed_todo($todo->getGUID())) {
+			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";		
+		} else {
+			$status_content = "<span class='incomplete'>" . elgg_echo('todo:label:statusincomplete') . "</span>";
+		}
 	}
 	
 	// Assignee
@@ -173,8 +175,9 @@ if ($full) { // Full View
 		}
 	}
 	
-	$body .= elgg_view_module('info', $status_label, $status_content);
-	
+	if ($status_content) {
+		$body .= elgg_view_module('info', $status_label, $status_content);
+	}
 
 	$header = elgg_view_title($todo->title);
 
