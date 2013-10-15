@@ -25,6 +25,10 @@ if ($todo->grade_required) {
 	$colspan = 5;
 }
 
+if (!is_todo_admin()) {
+	$remind_header = "<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>";
+}
+
 // Table Headers
 $content = "<br /><br/><table class='elgg-table'>
 				<thead>
@@ -35,7 +39,7 @@ $content = "<br /><br/><table class='elgg-table'>
 						<th><strong>" . elgg_echo('todo:label:datecompleted') . "</strong></th>
 						$grade_header
 						<th><strong>" . elgg_echo('todo:label:submission') . "</strong></th>
-						<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>
+						$remind_header
 					</tr>
 				</thead>
 				</tbody>";
@@ -88,6 +92,10 @@ foreach ($assignees as $assignee) {
 	if ($todo->grade_required) {
 		$grade_content = "<td id='assignee-grade-$assignee->guid' style='font-weight: bold;'>$grade</td>";
 	}
+
+	if (!is_todo_admin()) {
+		$remind_content = "<td>$reminder</td>";
+	}
 	
 	// Build rest of content
 	$content .= '<tr>';
@@ -97,7 +105,7 @@ foreach ($assignees as $assignee) {
 	$content .= 	"<td>$date</td>";
 	$content .= 	$grade_content;
 	$content .= 	"<td>$submission_info</td>";
-	$content .= 	"<td>$reminder</td>";
+	$content .= 	$remind_content;
 	$content .= '</tr>';
 }
 
@@ -118,15 +126,17 @@ if (get_todo_submissions_count($todo->guid)) {
 	$download_content = "<td>$download_files</td>";
 }
 
-$remind_all = elgg_view("output/confirmlink", array(
-	'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
-	'text' => elgg_echo('todo:label:remindall'),
-	'confirm' => elgg_echo('todo:label:remindconfirm'),
-));
+if (!is_todo_admin()) {
+	$remind_all = elgg_view("output/confirmlink", array(
+		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
+		'text' => elgg_echo('todo:label:remindall'),
+		'confirm' => elgg_echo('todo:label:remindconfirm'),
+	));
 
-$content .= "<tr><td colspan=$colspan style='text-align: right;'></td>";
-$content .= $download_content;
-$content .= "<td>$remind_all</td></tr>";
+	$content .= "<tr><td colspan=$colspan style='text-align: right;'></td>";
+	$content .= $download_content;
+	$content .= "<td>" . $remind_all . "</td></tr>";
+}
 
 
 $content .= '</tbody></table>';
