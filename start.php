@@ -1048,7 +1048,7 @@ function todo_dashboard_main_menu_setup($hook, $type, $value, $params) {
 		$value[] = ElggMenuItem::factory($options);
 	
 		// Add group submissions and grades items
-		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() /*|| @TODO Submissions Role*/ )) {
+		if (elgg_instanceof($owner, 'group') && ($owner->canEdit() || is_todo_admin())) {
 			$options = array(
 				'name' => 'group_user_submissions',
 				'text' => elgg_echo("todo:label:groupusersubmissions", array($by)),
