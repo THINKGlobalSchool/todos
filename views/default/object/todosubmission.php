@@ -166,6 +166,10 @@ HTML;
 				$work_submitted_content .= "<li>" . elgg_view('output/url', array('href' => $href, 'text' => $text, 'target' => '_blank')). "$content_icon</li>";
 			}
 		}
+
+		if (!$todo->return_required) {
+			$work_submitted_content = "<h3 class='todo-no-submission-label'>" . elgg_echo('todo:label:nosubmissionrequired') . "</h3>";
+		}
 	
 		if ($submission->description) {
 			$moreinfo_content = elgg_view('output/longtext', array('value' => $submission->description));
