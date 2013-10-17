@@ -470,6 +470,13 @@ span.unviewed {
 	padding: 3px 0 0 2px;
 }
 
+h3.todo-no-submission-label {
+	color: #666666;
+	display: block;
+	font-size: 18px;
+	margin-left: 175px;
+}
+
 #submit-empty-loader {
 	min-width: 30px;
 	min-height: 27px;

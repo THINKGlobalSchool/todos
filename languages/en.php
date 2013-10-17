@@ -162,6 +162,7 @@ $english = array(
 	'todo:label:dropout' => 'Drop out',
 	'todo:label:dropoutconfirm' => 'Are you sure you want to unassign yourself from this todo?',
 	'todo:label:mytodos' => 'My To Do\'s',
+	'todo:label:nosubmissionrequired' => 'No Submission Required',
 
 	// Categories
 	'todo:label:category' => 'Category',
