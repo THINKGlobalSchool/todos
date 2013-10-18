@@ -43,7 +43,15 @@ function todo_get_page_content_view($type, $guid) {
 			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
 			
 			// Show custom submission annotations
-			$params['content'] .= elgg_view('todo/submission_annotations', array('entity' => $entity));
+			$submission_annotation_options = array(
+				'entity' => $entity,
+			);
+
+			if (is_todo_admin() || elgg_get_logged_in_user_entity()->is_parent) {
+				$submission_annotation_options['show_add_form'] = false;
+			}
+
+			$params['content'] .= elgg_view('todo/submission_annotations', $submission_annotation_options);
 			
 			$todo = get_entity($entity->todo_guid);
 			$owner = $todo->getOwnerEntity();
