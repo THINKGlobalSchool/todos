@@ -95,22 +95,25 @@ elgg.todo.submission.initFancybox = function() {
 			// Fix tinymce control for submission text field
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 
-			// Init lightbox embed if it exists
-			if (typeof(elgg.tgsembed) != 'undefined') {
-				elgg.tgsembed.initLightbox();
-			}
+			if (id) {
+				// Init lightbox embed if it exists
+				if (typeof(elgg.tgsembed) != 'undefined') {
+					elgg.tgsembed.initLightbox();
+				}
 
-			if (typeof(tinyMCE) !== 'undefined') {
-				tinyMCE.EditorManager.execCommand('mceAddControl', false, id);
-			}
+				if (typeof(tinyMCE) !== 'undefined') {
+					tinyMCE.EditorManager.execCommand('mceAddControl', false, id);
+				}
 
-			// Init drag and drop input
-			elgg.todo.submission.initDragDrop();
+				// Init drag and drop input
+				elgg.todo.submission.initDragDrop();
+			}	
 		},
 		'onCleanup': function() {
 			// Fix tinymce control for submission text field
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
-			if (typeof(tinyMCE) !== 'undefined') {
+
+			if (id && typeof(tinyMCE) !== 'undefined') {
 	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
 			}
 		},

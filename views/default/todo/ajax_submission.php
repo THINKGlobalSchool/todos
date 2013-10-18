@@ -61,7 +61,16 @@ elgg_push_context('ajax_submission');
 $object_view = elgg_view_entity($entity, array('full_view' => TRUE));
 elgg_pop_context();
 
-$comments = elgg_view('todo/submission_annotations', array('entity' => $entity));
+// Show custom submission annotations
+$submission_annotation_options = array(
+	'entity' => $entity,
+);
+
+if (is_todo_admin() || elgg_get_logged_in_user_entity()->is_parent) {
+	$submission_annotation_options['show_add_form'] = false;
+}
+
+$comments = elgg_view('todo/submission_annotations', $submission_annotation_options);
 
 $module = elgg_view_module('info', $navigation, $object_view . $comments);
 
