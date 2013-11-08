@@ -15,15 +15,16 @@ if (check_todo_user_hash($hash, get_user_by_username($username))) {
 	$ical_events = array();
 	
 	foreach($todos as $todo) {
-		$ical_events[] = array('dtstart' => date($date_format_str, $todo->due_date),				// Start date
-							   'dtend' => date($date_format_str, $todo->due_date),					// End date
-							   'dtstamp' => date($time_format_str,$todo->time_created),				// Created
-							   'uid' => md5($todo->time_created . $username), 						// Unique id, time created hashed with username
-							   'created' => date($time_format_str, $todo->time_created), 			// Created
-							   'last-modified' =>  date($time_format_str, $todo->time_updated),		// Last modified
-							   'summary' => "To Do: " . $todo->title, 											// Short summary
-							  // 'description' => str_replace("\r\n", "=0D=0A=", strip_tags($todo->description)));	// Full description, CFLF
-							   'description' => '');
+		$ical_events[] = array(
+			'dtstart' => date($date_format_str, $todo->due_date),				// Start date
+			'dtend' => date($date_format_str, $todo->due_date),					// End date
+			'dtstamp' => date($time_format_str,$todo->time_created),				// Created
+			'uid' => md5($todo->time_created . $username), 						// Unique id, time created hashed with username
+			'created' => date($time_format_str, $todo->time_created), 			// Created
+			'last-modified' =>  date($time_format_str, $todo->time_updated),		// Last modified
+			'summary' => "To Do: " . $todo->title, 											// Short summary
+			'description' => $todo->getURL(),	// Full description, CFLF
+		);
 	}	
 	
 	$filename = "SpotTodoExport.ics";
