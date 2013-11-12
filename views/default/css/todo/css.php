@@ -5,22 +5,11 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  * 
  */
 ?>
-
-.todo .multiselect {
-	border: 2px solid #bbbbbb;
-	font-size: 120%;
-	width: auto;
-	max-width: 450px;
-	height: auto;
-	padding: 10px;
-	-moz-border-radius:5px 5px 5px 5px;
-	-webkit-border-radius: 5px 5px 5px 5px;
-}
 
 #submission-content-select {
 	border: 2px solid #bbbbbb;
@@ -32,7 +21,6 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 }
 
-
 div.todo-assignee-container {
 	padding: 5px;
 	margin: 3px;
@@ -42,7 +30,7 @@ div.todo-assignee-container {
 	display: none;
 }
 
-#rubric_picker_container {
+#todo-rubric-select-container {
 	display: none;
 }
 
@@ -217,7 +205,6 @@ span.unviewed {
 }
 
 /** POPUP DIALOG **/
-
 #todo-submission-dialog  {
 	width: 735px;
 	padding: 10px;
@@ -228,37 +215,8 @@ span.unviewed {
 }
 
 /** Todo sort menus **/
-
-.elgg-menu-todo-sort {
-	text-align: center;
-}
-
 .elgg-menu-submissions-sort {
 	text-align: left;
-}
-
-.elgg-menu-todo-sort li, .elgg-menu-submissions-sort li {
-	margin-right: 5px;
-	font-size: 10px;
-	text-transform: uppercase;
-}
-
-.elgg-menu-todo-sort li a, .elgg-menu-submissions-sort li a {
-	color: #999;
-}
-
-.elgg-menu-todo-sort li.elgg-state-selected a, .elgg-menu-submissions-sort li.elgg-state-selected a {
-	font-weight: bold;
-	color: inherit;
-}
-
-/** Todo dashboard controls **/
-
-.todo-dashboard {
-}
-
-.todo-dashboard > .ui-tabs-panel {
-
 }
 
 /** Resets and tweaks for todo sidebar in groups **/
@@ -524,10 +482,6 @@ h3.todo-no-submission-label {
 .todo-submissions-table th {
 	font-weight: bold;
 	color: #666666;
-}
-
-.todo-submissions-table td, todo-submissions-table th {
-	
 }
 
 .todo-submissions-table td.todo-submission-column {
@@ -866,4 +820,59 @@ td.todo-iplan-hover a {
 	position: relative;
 	top: -3px;
 	margin-left: 6px;
+}
+
+/**	Todo Dashboard Menu (new) **/
+#todo-dashboard-menu-container {
+	background: none repeat scroll 0 0 #CCCCCC;
+	box-shadow: 1px 1px 1px #555555;
+	padding: 5px;
+	width: 959px;
+}
+
+#todo-dashboard-menu-container > ul > li label { 
+	margin-right: 5px;
+}
+
+#todo-dashboard-menu-container > ul > li {
+	display: inline-block;
+	margin-right: 5px;
+}
+
+ul.todo-dashboard-menu-extras {
+	border-top: 1px dotted #AAAAAA;
+	margin-top: 4px;
+	overflow: auto;
+}
+
+ul.todo-dashboard-menu-advanced {
+	border-top: 1px dotted #AAAAAA;
+	margin-top: 4px;
+	padding-top: 4px;
+	display: none;
+}
+
+ul.todo-dashboard-menu-extras li {
+	float: left;
+}
+
+ul.todo-dashboard-menu-extras li.elgg-menu-item-sort {
+	float: right;
+}
+
+.todo-dashboard-show-advanced.advanced-off:after,
+.todo-dashboard-sort.descending:after {
+	content: " ▼";
+	font-size: 9px;
+	text-decoration: none;
+}
+
+.todo-dashboard-show-advanced.advanced-on:after,
+.todo-dashboard-sort.ascending:after  {
+	content: " ▲";
+	text-decoration: none;
+}
+
+#todo-dashboard-content-container .elgg-ajax-loader {
+	margin-top: 20px;
 }

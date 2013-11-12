@@ -13,9 +13,21 @@
 //<script>
 elgg.provide('elgg.todo');
 
+// Global vars
 elgg.todo.fileUploadURL = elgg.get_site_url() + 'action/todo/upload';
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
+elgg.todo.ajaxListURL = elgg.get_site_url() + 'ajax/view/todo/list';
+elgg.todo.defaultDashboard = $.param({
+	'context': 'assigned',
+	'priority': 0,
+	'status': 'incomplete',
+	'container_guid': elgg.get_logged_in_user_guid(),
+	'sort_order': 'ASC'
+});
 
+/**
+ * Main init
+ */
 elgg.todo.init = function() {
 	// Create submission click handler
 	$('.todo-submit-empty').live('click', elgg.todo.completeClick);
@@ -40,6 +52,9 @@ elgg.todo.init = function() {
 			}
 		}
 	});
+
+	// INIT DASHBOARD NAV
+	elgg.todo.initDashboardNavigation();
 	
 	// TODO FORM SETUP
 	// Submission form submit handler
@@ -62,6 +77,7 @@ elgg.todo.init = function() {
 	// Register submit handler for submission file form
 	$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
 	
+	// Register click handler for submission content submit
 	$('.submission-content-input-add').live('click', elgg.todo.submissionSubmitContent);
 
 	// Change handler for todo grade required checkbox
@@ -88,8 +104,10 @@ elgg.todo.init = function() {
 
 	// Assign onchange for the assignee type select input
 	$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
+
+	$('#todo-rubric-select').change(elgg.todo.rubricSelectChange);
 	
-	// What is this rollover for submission tags
+	// 'What is this' rollover for submission tags
 	$('#todo-suggested-what').click(function(e){e.preventDefault();});
 	$('#todo-suggested-what').hover(function() {
 		var options = {
@@ -101,7 +119,7 @@ elgg.todo.init = function() {
 		$('#suggesedtags-info').toggle().position(options);
 	});
 	
-	// What is this rollover for submission tags
+	// 'What is this' rollover for todo start date
 	$('#todo-startdate-what').click(function(e){e.preventDefault();});
 	$('#todo-startdate-what').hover(function() {
 		var options = {
@@ -112,74 +130,7 @@ elgg.todo.init = function() {
 		}
 		$('#startdate-info').toggle().position(options);
 	});
-	
-	// Todo dashboard nav items
-	$('.todo-ajax-list').live('click', function(e){	
-		// Trigger a hook for tab_changed
-		var $tab = $(this);
-		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $tab},null);
-		
-		$('#todo-dashboard').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'), function() {
-			// Trigger a hook for tab_loaded
-			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $tab},null);
-		});
 
-		$('.todo-ajax-list-item').removeClass('elgg-state-selected');
-		$(this).closest('.todo-ajax-list-item').addClass('elgg-state-selected');
-		e.preventDefault();
-	});
-	
-	// Todo dashboard filter nav items
-	$('.todo-ajax-filter').live('click', function(e){
-		// Trigger a hook for tab_changed
-		var $tab = $(this);
-		elgg.trigger_hook('tab_changed', 'todo_dashboard', {'tab' : $tab},null);
-
-		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'), function() {
-			// Trigger a hook for tab_loaded
-			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $tab},null);
-		});
-		e.preventDefault();
-	});
-	
-	// Todo dashboard sort nav items
-	$('.todo-ajax-sort').live('click', function(e){
-		var $sender = $(this);
-		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'), function() {
-			// Trigger a hook for tab_loaded
-			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
-		});
-		e.preventDefault();
-	});
-
-	// Todo dashboard filter due date
-	$('#todo-filter-due').live('change', function(e) {
-		var $sender = $(this);
-		var priority = $(this).val();
-		var href = $(this).parent().find('a').attr('href');
-		href = elgg.get_site_url() + href + "&filter_priority=" + priority;
-		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load(href, function() {
-			// Trigger a hook for tab_loaded
-			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
-		});
-	});
-
-	// Special pagination helper for todo content
-	$('#todo-dashboard #todo-dashboard-content.todo-dashboard-content-pagination-helper .elgg-pagination a').live('click', function(event) {
-		var $sender = $(this);
-		$('#todo-dashboard-content').html("<div class='elgg-ajax-loader'></div>");
-		$('#todo-dashboard').load($(this).attr('href'), function() {
-			// Trigger a hook for tab_loaded
-			elgg.trigger_hook('tab_loaded', 'todo_dashboard', {'tab' : $sender},null);
-		});
-		event.preventDefault();
-	});
-	
-	
 	// GROUP/USER SUBMISSIONS
 
 	// Group member click handler
@@ -250,6 +201,9 @@ elgg.todo.submissionFormSubmit = function(event) {
 	event.preventDefault();
 }
 
+/**
+ * Create submission action
+ */
 elgg.todo.createSubmission = function(todo_guid, content, comment) {	
 	// Replace submit button with spinner	
 	var $button = $('#submit-create-submission').clone(); // Store original button
@@ -453,8 +407,10 @@ elgg.todo.submissionSubmitContent = function(event) {
 	event.preventDefault();
 }
 
-// Handler to add an 'add' button to the modules content listing to allow
-// adding spot content to a todo submission
+/**
+ * Handler to add an 'add' button to the modules content listing to allow
+ * adding spot content to a todo submission
+ */
 elgg.todo.submissionAddHover = function(event) {
 	// For some reason the height is only accurate at this point.. 
 	var height = $(this).height();
@@ -510,7 +466,9 @@ elgg.todo.submissionContentMenuClick = function(event) {
 	event.preventDefault();
 }
 
-// Load todo assignees into container
+/**
+ * Load todo assignees into container
+ */
 elgg.todo.loadAssignees = function(guid, container) {
 	elgg.get(elgg.todo.loadAssigneesURL, {
 		data: {
@@ -593,7 +551,7 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 		$('#todo-assign-group-container').show(1, function() {
 			
 			var options = {
-				'placeholder_text_multiple': 'Click here to select group(s)..',
+				'placeholder_text_multiple': elgg.echo('todo:label:selectgroupsmulti'),
 				'width' : '50%'
 			};
 
@@ -614,12 +572,31 @@ elgg.todo.assigneeTypeSelectChange = function(event) {
 }
 
 /**
+ * On change handler for rubric select
+ */
+elgg.todo.rubricSelectChange = function() {
+	if ($(this).val() == 1) {
+		$('#todo-rubric-guid').removeAttr('disabled');
+		$('#todo-rubric-select-container').show(1, function() {
+			
+			var options = {
+				'width' : '50%'
+			};
+
+			$("#todo-rubric-guid").chosen(options);	
+		});
+	} else {
+		$('#todo-rubric-select-container').hide();
+		$('#todo-rubric-guid').attr('disabled', 'DISABLED');
+	}
+}
+
+/**
  *  Click handler for todo group member click
  */
 elgg.todo.groupMemberClick = function(event) {
 	// Main container
 	var $container = $(this).closest('div.todo-group-user-submissions-container');
-
 
 	// Submissions content container
 	var $submissions_content = $container.find('.todo-user-submissions-content');
@@ -783,11 +760,6 @@ elgg.todo.dateRangePickerChange = function($input) {
 	elgg.modules.genericmodule.init();
 }
 
-// Check if string starts with str
-String.prototype.startsWith = function(str){
-    return (this.indexOf(str) === 0);
-}
-
 // Trim HTTP or HTTPS from a url string
 elgg.todo.trimProtocol = function(str) {
 	if (str) {
@@ -801,6 +773,9 @@ elgg.todo.trimProtocol = function(str) {
 	return false;
 }
 
+/**
+ * Determine if given string is a valid url
+ */
 elgg.todo.isValidURL = function(url) {
 	if (url.length == 0) { 
 		return false; 
@@ -820,7 +795,9 @@ elgg.todo.isValidURL = function(url) {
 		}
 }
 
-// Manually init calendars
+/**
+ * Manually init calendars
+ */
 elgg.todo.initCalendar = function() {
 	// calendars are stored in elgg.todo.calendars.
 	elgg.todo.buildCalendar(elgg.todo.getCalendars());
@@ -979,21 +956,14 @@ elgg.todo.toggleCalendarTodoCategory = function(event) {
 	elgg.todo.buildCalendar(calendars, current_date, current_view);
 }
 
-// Calendar menu item changed hook handler
-elgg.todo.calendarMenuChanged = function(hook, type, params, options) {
-	// Clear the sidebar
-	$('#todo-main-sidebar').html('');
-}
-
-// Calendar menu item loaded hook handler
+/**
+ * Calendar menu item loaded hook handler
+ */
 elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
 	if (params['tab'].hasClass('todo-calendars-item')) {
 		elgg.todo.initCalendar();
 		
 		if (params['tab'].hasClass('todo-calendars-item')) {
-			// Push 'tab=iplan' to address bar
-			window.history.pushState("string", "Title", "dashboard?tab=iplan");
-
 			var $category_container = $('#todo-calendar-categories');
 			$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
 				// init date picker
@@ -1015,7 +985,9 @@ elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
 	}
 }
 
-// Make tooltip from event/element
+/**
+ * Make tooltip from event/element
+ */
 elgg.todo.makeCalendarTip = function(event, element) {
 	element.qtip({
 		content: event.description,
@@ -1038,7 +1010,9 @@ elgg.todo.makeCalendarTip = function(event, element) {
 	});
 }
 
-// Show the group category legend when a category is toggled
+/**
+ * Show the group category legend when a category is toggled
+ */
 elgg.todo.showCategoryLegend = function(hook, type, params, options) {
 	var guid = params['guid'];
 	var $legend_container = $('#todo-category-calendar-legend');
@@ -1047,16 +1021,289 @@ elgg.todo.showCategoryLegend = function(hook, type, params, options) {
 	});
 }
 
+/**
+ * Chosen init handler
+ */
 elgg.todo.chosenInterrupt = function(hook, type, params, options) {
-	if (params.id == 'todo-group-assignee-select') {
+	if (params.id == 'todo-group-assignee-select' || params.id == 'todo-rubric-guid') {
 		// Do nothing
 		return function(){};
 	}
 	return options;
 }
 
-elgg.register_hook_handler('tab_changed', 'todo_dashboard', elgg.todo.calendarMenuChanged);
+/**
+ * Chosen handler for dashboard inputs
+ */
+elgg.todo.setupMenuInputs = function (hook, type, params, options) {
+	if (params.id == 'todo-context-filter' 
+		|| params.id == 'todo-due-filter' 
+		|| params.id == 'todo-status-filter') {
+		options.disable_search = true;
+	}
+
+	if (params.id == 'todo-group-filter') {
+		options.width = "135px";
+	}
+
+	return options;
+}
+
+/**
+ * Init dashboard filter/nav
+ */
+elgg.todo.initDashboardNavigation = function() {
+	// Handle advanced click
+	$('.todo-dashboard-show-advanced').live('click', function(event) {
+		$(this).toggleClass('advanced-off').toggleClass('advanced-on');
+
+		// Get nav container
+		$(this).closest('#todo-dashboard-menu-container').find('.todo-dashboard-menu-advanced').toggle();
+
+		event.preventDefault();
+	});
+
+	// Handle sort order clicks
+	$('.todo-dashboard-sort').live('click', function(event) {
+		$(this).toggleClass('descending').toggleClass('ascending');
+
+		if ($(this).hasClass('descending')) {
+			$(this).html(elgg.echo('todo:label:sortdesc'));
+			$(this).val('ASC');
+		} else if ($(this).hasClass('ascending')) {
+			$(this).html(elgg.echo('todo:label:sortasc'));
+			$(this).val('DESC');
+		}
+
+		// Use the list handler
+		elgg.todo.listHandler($(this), true);
+
+		event.preventDefault();
+	});
+
+	// Init pagination
+	$('#todo-dashboard-content .elgg-pagination a').live('click', function(event) {
+		// Get link params
+		var link_params = deParam($(this).attr('href').slice($(this).attr('href').indexOf('?') + 1));
+		
+		// Set data attribute and value of offset
+		$(this).attr('data-param', 'offset');
+		$(this).val(link_params['offset']);
+
+		// Use the trusty list handler with this element
+		elgg.todo.listHandler($(this), true);
+
+		event.preventDefault();
+	});
+
+	// If the content container is empty (first load, populate it from params)
+	if ($('#todo-dashboard-content-container').is(':empty')) {
+		elgg.todo.listHandler(null, false);
+	}
+
+	// Add popstate event listener
+	window.addEventListener("popstate", function(e) {
+	    elgg.todo.listHandler(null, false)
+	});
+}
+
+/**
+ * Hook handler for chosen.js change event
+ */
+elgg.todo.handleDashboardChange = function(hook, type, params, handler) {
+	// Check if we're dealing with a todo dashboard filter
+	if (params.element.hasClass('todo-dashboard-filter')) {
+		return function() {
+			// Use the todo list handler
+			elgg.todo.listHandler(params.element, true);
+		}
+	} else {
+		return handler;
+	}
+}
+
+/**
+ * Todo list handler, responsible for populating the dashboard with content and pushing state
+ *
+ * @param  obj  $element   Element that triggered the event
+ * @param  bool pushState  Wether or not to push a new state
+ * @return void
+ */
+elgg.todo.listHandler = function ($element, pushState) {
+	$('#todo-dashboard-content-container').html("<div class='elgg-ajax-loader'></div>");
+
+	var query_index = window.location.href.indexOf('?');
+
+	// Check for params
+	if (query_index != -1) {
+		var params = deParam(window.location.href.slice(query_index + 1));
+		var base_url = window.location.href.slice(0, query_index);
+	} else {
+		// Use defaults
+		var params = deParam(elgg.todo.defaultDashboard);
+		var base_url = window.location.href;
+	}
+
+	// If we were passed an element, update it's data param
+	if ($element) {
+		var param = $element.data('param');
+		params[param] = $element.val();
+	}
+
+	// Push that state!
+	if (pushState) {
+		history.pushState({}, elgg.echo('todo:title:dashboard'), base_url + "?" + $.param(params));
+	}
+
+	// Make sure the appropriate inputs are selected on state change
+	$.each(params, function(idx, val) {
+		// Get select for each available parameter
+		var $select = $("#todo-dashboard-menu-container").find("[data-param='" + idx + "']");
+		
+		// Set new value
+		$select.val(val);
+
+		// Update chosen
+		$select.trigger('chosen:updated');
+	});
+
+	// Load data
+	elgg.get(elgg.todo.ajaxListURL, {
+		data: params,
+		success: function(data) {
+			// Load data
+			$("#todo-dashboard-content-container").html(data);
+		},
+		error: function() {
+			// Show error on failure
+			$("#todo-dashboard-content-container").html(elgg.echo('todo:error:content'));
+		}
+	});
+}
+
+elgg.register_hook_handler('change', 'chosen.js', elgg.todo.handleDashboardChange);
 elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
 elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
 elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
+elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);	
+
+/** OTHER UTILITY FUNCTIONS **/
+
+// Fix for goofy chrome 'empty' states, from: http://stackoverflow.com/a/18126524/1202510   
+(function() {
+    // There's nothing to do for older browsers ;)
+    if (!window.addEventListener)
+        return;
+    var blockPopstateEvent = true;
+    window.addEventListener("load", function() {
+        // The timeout ensures that popstate-events will be unblocked right
+        // after the load event occured, but not in the same event-loop cycle.
+        setTimeout(function(){ blockPopstateEvent = false; }, 0);
+    }, false);
+    window.addEventListener("popstate", function(evt) {
+        if (blockPopstateEvent && document.readyState=="complete") {
+            evt.preventDefault();
+            evt.stopImmediatePropagation();
+        }
+    }, false);
+})();
+
+// Check if string starts with str
+String.prototype.startsWith = function(str){
+    return (this.indexOf(str) === 0);
+}
+
+// Deparam function (from: https://gist.github.com/dancrew32/1163405)
+function deParam (params, coerce) {
+	var obj = {};
+	var coerce_types = { 'true': !0, 'false': !1, 'null': null };
+	var decode = decodeURIComponent;
+
+	// Iterate over all name=value pairs.
+	$.each(params.replace(/\+/g, ' ').split('&'), function(j, v){
+			var param = v.split( '=' ),
+			key = decode(param[0]),
+			val,
+			cur = obj,
+			i = 0,
+
+			// If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+			// into its component parts.
+			keys = key.split(']['),
+			keys_last = keys.length - 1;
+
+			// If the first keys part contains [ and the last ends with ], then []
+			// are correctly balanced.
+			if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+			// Remove the trailing ] from the last keys part.
+			keys[keys_last] = keys[keys_last].replace(/\]$/, '');
+
+			// Split first keys part into two parts on the [ and add them back onto
+			// the beginning of the keys array.
+			keys = keys.shift().split('[').concat(keys);
+
+			keys_last = keys.length - 1;
+			} else {
+				// Basic 'foo' style key.
+				keys_last = 0;
+			}
+
+			// Are we dealing with a name=value pair, or just a name?
+			if (param.length === 2) {
+				val = decode(param[1]);
+
+				// Coerce values.
+				if (coerce) {
+					val = val && !isNaN(val)            ? +val              // number
+						: val === 'undefined'             ? undefined         // undefined
+						: coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
+						: val;                                                // string
+				}
+
+				if (keys_last) {
+					// Complex key, build deep object structure based on a few rules:
+					// * The 'cur' pointer starts at the object top-level.
+					// * [] = array push (n is set to array length), [n] = array if n is 
+					//   numeric, otherwise object.
+					// * If at the last keys part, set the value.
+					// * For each keys part, if the current level is undefined create an
+					//   object or array based on the type of the next keys part.
+					// * Move the 'cur' pointer to the next level.
+					// * Rinse & repeat.
+					for ( ; i <= keys_last; i++) {
+						key = keys[i] === '' ? cur.length : keys[i];
+						cur = cur[key] = i < keys_last
+							? cur[key] || (keys[i+1] && isNaN( keys[i+1] ) ? {} : [])
+							: val;
+					}
+
+				} else {
+					// Simple key, even simpler rules, since only scalars and shallow
+					// arrays are allowed.
+
+					if ($.isArray(obj[key])) {
+						// val is already an array, so push on the next value.
+						obj[key].push(val);
+
+					} else if (obj[key] !== undefined) {
+						// val isn't an array, but since a second value has been specified,
+						// convert val into an array.
+						obj[key] = [obj[key], val];
+
+					} else {
+						// val is a scalar.
+						obj[key] = val;
+					}
+				}
+
+			} else if (key) {
+				// No value was defined, so set something meaningful.
+				obj[key] = coerce
+					? undefined
+					: '';
+			}
+	});
+
+	return obj;
+}

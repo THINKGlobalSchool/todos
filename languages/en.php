@@ -31,12 +31,14 @@ $english = array(
 	// Page titles 
 	'todo:title:edit' => 'Edit To Do',
 	'todo:title:alltodos' => 'All Site To Do\'s',
+	'todo:title:dashboard' => 'To Do Dashboard',
 	
 	// Menu items
 	'todo:menu:yourtodos' => 'To Do\'s Assigned To Me',
 	'todo:menu:assignedtodos' => 'To Do\'s I\'ve Assigned', 
 	'todo:menu:alltodos' => 'All Site To Do\'s',		
 	'todo:menu:notifications' => 'To Do Notifications',
+	'todo:menu:due' => 'Due',
 	
 	// Labels 
 	'todo:label:whatisthis' => 'What is this?',
@@ -91,6 +93,7 @@ $english = array(
 	'todo:label:new' => 'New',
 	'todo:label:incomplete' => 'Upcoming',
 	'todo:label:statusincomplete' => 'Incomplete',
+	'todo:label:statusany' => 'Any',
 	'todo:label:viewsubmission' => 'View Submission',
 	'todo:label:assignment' => 'Assignment',
 	'todo:label:moreinfo' => 'Additional Information',
@@ -101,7 +104,9 @@ $english = array(
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
+	'todo:label:assignedbyme' => 'Assigned by me',
 	'todo:label:assignedto' => 'Assigned to %s',
+	'todo:label:assignedtome' => 'Assigned to me',
 	'todo:label:submittedby' => 'Submitted by %s',
 	'todo:label:me' => 'me',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
@@ -118,8 +123,9 @@ $english = array(
 	'todo:label:suggestedtags' => 'Student Submission Tag(s)',
 	'todo:label:suggestedtagstitle' => 'Submission Tags',
 	'todo:label:suggestedtagsinfo' => 'Student submission tags are the tags that students should use for any content they post related to this to do.',
-	'todo:label:sortasc' => 'Sort Ascending &#9650;',
-	'todo:label:sortdesc' => 'Sort Descending &#9660;',
+	'todo:label:sortasc' => 'Ascending',
+	'todo:label:sortdesc' => 'Descending',
+	'todo:label:showadvanced' => 'Advanced Options',
 	'todo:label:linkspotcontent' => 'You are submitting a link to Spot. You should be using Add Spot Content for this. Do you want to continue?',
 	'todo:label:prev' => 'Prev',
 	'todo:label:next' => 'Next',
@@ -163,6 +169,10 @@ $english = array(
 	'todo:label:dropoutconfirm' => 'Are you sure you want to unassign yourself from this todo?',
 	'todo:label:mytodos' => 'My To Do\'s',
 	'todo:label:nosubmissionrequired' => 'No Submission Required',
+	'todo:label:selectagroup' => 'Select a group',
+	'todo:label:nogroups' => 'No groups',
+	'todo:label:groupclass' => 'Group/Class',
+	'todo:label:selectgroupsmulti' => 'Click here to select group(s)..',
 
 	// Categories
 	'todo:label:category' => 'Category',
@@ -184,6 +194,7 @@ $english = array(
 	'todo:label:groupcategories' => 'Group Categories',
 	'todo:label:jumptodate' => 'Jump to date',
 	'todo:label:palettespread' => 'Palette Spread',
+
 	
 	// Time frame labels
 	'todo:label:today' => 'Due Today',
@@ -356,6 +367,7 @@ To view %s's profile, click here:
 	'todo:error:filetoolarge' => 'File size must be less than 8MB',
 	'todo:error:uploadfailed' => 'File upload failed',
 	'todo:error:deletefile' => 'Failed to delete comment attachement',
+	'todo:error:content' => 'There was an error loading content',
 	'todo:error:invalid' => 'Invalid Entity',
 	'todo:error:invalidurl' => 'Invalid URL',
 	'todo:error:invalidgroup' => 'Invalid Group',
@@ -366,7 +378,11 @@ To view %s's profile, click here:
 	'todo:error:access' => 'Access Denied',
 	'todo:error:gradevalue' => 'Grade must be a number!',
 	'todo:error:nodata' => 'No data',
-	
+
+	// Widgets
+	'todo:widget:omni_title' => 'To Do\'s',
+	'todo:widget:omni_desc' => 'The todo roles omni-widget',
+
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',
 	'todo:group' => 'Group to do\'s', 
