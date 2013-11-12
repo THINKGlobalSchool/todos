@@ -143,8 +143,7 @@ $group_label = elgg_echo('todo:label:selectgroup');
 $group_picker = elgg_view('input/chosen_dropdown', array(
 	'name' => 'members[]', 
 	'id' => 'todo-group-assignee-select', 
-	'options_values' => get_todo_groups_array(), 
-	'class' => 'multiselect', 
+	'options_values' => get_todo_groups_array(),  
 	'multiple' => 'MULTIPLE',
 	'disabled' => 'DISABLED',
 ));
@@ -171,7 +170,6 @@ $grade_total_input = elgg_view('input/text', array(
 ));
 
 // Optional content
- 
 $rubric_html = "";
 
 if (TODO_RUBRIC_ENABLED) {
@@ -179,7 +177,7 @@ if (TODO_RUBRIC_ENABLED) {
 	$rubric_picker_label = elgg_echo('todo:label:rubricpicker');
 	$rubric_content = elgg_view('input/dropdown', array(
 		'name' => 'rubric_select', 
-		'id' => 'rubric_select', 
+		'id' => 'todo-rubric-select', 
 		'options_values' => array(
 			0 => elgg_echo('todo:label:rubricnone'),
 			1 => elgg_echo('todo:label:rubricselect'
@@ -187,9 +185,9 @@ if (TODO_RUBRIC_ENABLED) {
 		'value' => $is_rubric_selected
 	));
 	
-	$rubric_picker = elgg_view('input/dropdown', array(
+	$rubric_picker = elgg_view('input/chosen_dropdown', array(
 		'name' => 'rubric_guid', 
-		'id' => 'rubric_picker', 
+		'id' => 'todo-rubric-guid', 
 		'options_values' => get_todo_rubric_array(), 
 		'value' => $rubric_guid,
 		'disabled' => 'DISABLED',
@@ -200,25 +198,22 @@ if (TODO_RUBRIC_ENABLED) {
 			$(document).ready(function() {
 				var rubric_guid = '$rubric_guid';
 				if (rubric_guid) {
-					$('#rubric_picker_container').show();
-					$('#rubric_picker').removeAttr('disabled');
-					$('#rubric_select').val(1);
+					$('#todo-rubric-select-container').show();
+					$('#todo-rubric-guid').removeAttr('disabled');
+
+					var options = {
+						'width' : '50%'
+					};
+
+					$("#todo-rubric-guid").chosen(options);	
+					$('#todo-rubric-select').val(1);
 				}
-				$('#rubric_select').change(function() {
-					if ($(this).val() == 1) {
-						$('#rubric_picker_container').show();
-						$('#rubric_picker').removeAttr('disabled');
-					} else {
-						$('#rubric_picker_container').hide();
-						$('#rubric_picker').attr('disabled', 'DISABLED');
-					}
-				});
 			});	
 		</script>
 HTML;
 
 	$rubric_html .= "<div><label>$rubric_label</label><br />$rubric_content</div><br />
-					<div id='rubric_picker_container'>
+					<div id='todo-rubric-select-container'>
 						<label>$rubric_picker_label</label><br />
 						$rubric_picker
 						<br /><br />

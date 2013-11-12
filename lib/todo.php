@@ -156,7 +156,6 @@ function todo_get_page_content_settings_notifications() {
  * due_end             => due end date
  */
 function get_todos(array $params) {
-	set_input('pork', 'beans');
 	// Set list action
 	if (!$params['list']) {
 		$get_from_metadata = 'elgg_get_entities_from_metadata';
