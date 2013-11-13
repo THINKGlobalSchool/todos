@@ -171,8 +171,8 @@ function todo_init() {
 	// Page handler
 	elgg_register_page_handler('todo','todo_page_handler');
 
-	// Add submenus
-	elgg_register_event_handler('pagesetup','system','todo_submenus');
+	// Page setup
+	elgg_register_event_handler('pagesetup','system','todo_page_setup');
 
 	// Register a handler for assigning users to todos
 	elgg_register_event_handler('assign','object','todo_assign_user_event_listener');
@@ -349,11 +349,22 @@ function todo_page_handler($page) {
 	$page_type = $page[0];
 
 	$layout = 'content';
-	
+
+	// iPlan title menu options
+	$iplan_title_options = array(
+		'name' => 'group-iplan',
+		'href' => elgg_get_site_url() . 'todo/iplan',
+		'text' => elgg_echo('todo:label:iplancalendar'),
+		'link_class' => 'elgg-button elgg-button-submit',
+		'priority' => 501
+	);
+
 	switch ($page_type) {
 		case 'dashboard':
 		default:
 			gatekeeper();
+			elgg_register_menu_item('title', $iplan_title_options);
+
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
@@ -383,7 +394,7 @@ function todo_page_handler($page) {
 			}
 		
 			if ($user) {
-				elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
+				elgg_push_breadcrumb($user->name);
 			}
 			set_input('owner_block_force_hidden', true);
 			if (!elgg_view_exists('topbaronly')) {
@@ -405,7 +416,9 @@ function todo_page_handler($page) {
 			elgg_load_js('tgs.fullcalendar');
 			elgg_load_js('jquery.qtip');
 
-			$params['title'] = elgg_echo('todo:title:dashboard');
+			elgg_push_breadcrumb(elgg_echo('todo:label:iplan'));
+
+			$params['title'] = elgg_echo('todo:label:iplancalendar');
 			$params['filter'] = FALSE;
 			$params['content'] = elgg_view('todo/category_calendars');
 
@@ -435,6 +448,8 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'group':
+			elgg_register_menu_item('title', $iplan_title_options);
+
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
@@ -454,20 +469,11 @@ function todo_page_handler($page) {
 
 			$group = get_entity($page[2]);
 			if (elgg_instanceof($group, 'group')) {
-				elgg_push_breadcrumb($group->name, 'todo/group/dashboard/' . $group->guid);
+				elgg_push_breadcrumb($group->name);
 				elgg_set_page_owner_guid($group->guid);
 				elgg_register_title_button();
 				$params['title'] = 'To Do Dashboard';
 				$params['filter'] = FALSE;
-
-				// iPlan group link
-				$params['content'] = elgg_view('output/url', array(
-					'text' => elgg_echo('todo:label:iplancalendar'),
-					'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
-					'class' => 'todo-iplan-float elgg-button elgg-button-submit',
-					'target' => '_blank',
-				));
-
 				$params['content'] .= elgg_view('todo/dashboard');
 			} else {
 				forward('todo/dashboard');
@@ -764,16 +770,17 @@ function todo_submission_river_rewrite($hook, $type, $value, $params) {
 /**
  * Setup todo submenus
  */
-function todo_submenus() {
+function todo_page_setup() {
 	$page_owner = elgg_get_page_owner_entity();
 
-	// Admin stats
+	// Admin menus
 	if (elgg_in_context('admin')) {
 		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
 		elgg_register_admin_menu_item('administer', 'manage', 'todos');
 		elgg_register_admin_menu_item('administer', 'calendars', 'todos');
 	}
 
+	// Todo notificaton settings
 	$item = array(
 		'name' => 'todo_notification_settings',
 		'text' => elgg_echo('todo:menu:notifications'),
@@ -781,7 +788,6 @@ function todo_submenus() {
 		'contexts' => array('settings'),
 		'priority' => 9999,
 	);
-
 	elgg_register_menu_item('page', ElggMenuItem::factory($item));
 }
 

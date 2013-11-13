@@ -35,7 +35,12 @@ function todo_get_page_content_view($type, $guid) {
 			$params['content'] = elgg_view_entity($entity, array('full_view' => TRUE));
 			$params['content'] .= elgg_view_comments($entity);
 
-			elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
+			if (elgg_instanceof($owner, 'group')) {
+				elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/group/dashboard/{$owner->guid}/owner");
+			} else {
+				elgg_push_breadcrumb($owner->name, elgg_get_site_url() . "todo/owner/{$owner->username}");
+			}
+
 			elgg_push_breadcrumb($entity->title);
 			return $params;
 		} else if ($entity->enabled && $type == 'submission' && elgg_instanceof($entity, 'object', 'todosubmission')) {
