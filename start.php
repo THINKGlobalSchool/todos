@@ -12,9 +12,8 @@
  */
 
 /*********************** @TODO: (Code related) ************************/
-// - Implement search/group on dashboard menu
+// - Implement search on dashboard menu? (Titles etc)
 // - Implement calendar views
-// - Group/user dashboard view
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -397,6 +396,19 @@ function todo_page_handler($page) {
 			set_input('assignee_guid', $user->guid);
 
 			$params['content'] = elgg_view('todo/dashboard');
+			break;
+		case 'iplan':
+			elgg_load_css('jquery.daterangepicker');
+			elgg_load_css('todo.smoothness');
+			elgg_load_css('tgs.fullcalendar');
+			elgg_load_css('tgs.calendars_dynamic');
+			elgg_load_js('tgs.fullcalendar');
+			elgg_load_js('jquery.qtip');
+
+			$params['title'] = elgg_echo('todo:title:dashboard');
+			$params['filter'] = FALSE;
+			$params['content'] = elgg_view('todo/category_calendars');
+
 			break;
 		case 'add':
 			gatekeeper();

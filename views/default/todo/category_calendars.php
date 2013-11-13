@@ -51,6 +51,10 @@ $json = json_encode($calendars);
 $content .= <<<JAVASCRIPT
 	<script type='text/javascript'>
 			elgg.todo.calendars = $json;
+
+			$(document).ready(function() {
+				elgg.todo.initStandaloneCalendar();
+			});			
 	</script>
 JAVASCRIPT;
 
