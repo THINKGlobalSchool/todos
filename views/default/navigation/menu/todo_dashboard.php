@@ -25,14 +25,29 @@ $content .= elgg_view('navigation/menu/elements/todo_dashboard_section', array(
 	'item_class' => $item_class
 ));
 
-// Advanced section
-$content .= elgg_view('navigation/menu/elements/todo_dashboard_section', array(
-	'items' => $vars['menu']['advanced'],
-	'class' => "todo-dashboard-menu-advanced",
-	'section' => 'advanced',
-	'name' => 'dashboard',
-	'item_class' => $item_class
-));
+// Advanced section (only display if there are registered items)
+if (count($vars['menu']['advanced'])) {
+	$content .= elgg_view('navigation/menu/elements/todo_dashboard_section', array(
+		'items' => $vars['menu']['advanced'],
+		'class' => "todo-dashboard-menu-advanced",
+		'section' => 'advanced',
+		'name' => 'dashboard',
+		'item_class' => $item_class
+	));
+
+	// Show advanced link
+	$options = array(
+		'name' => 'advanced',
+		'href' => '#',
+		'text' => elgg_echo('todo:label:showadvanced'),
+		'link_class' => 'menu-sort todo-dashboard-show-advanced advanced-off',
+		'encode_text' => false,
+		'section' => 'extras',
+		'priority' => 0,
+	);
+
+	$vars['menu']['extras'][] = ElggMenuItem::factory($options);
+}
 
 
 // Extras section

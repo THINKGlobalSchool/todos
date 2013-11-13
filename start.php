@@ -382,7 +382,7 @@ function todo_page_handler($page) {
 			if (elgg_get_page_owner_guid() == elgg_get_logged_in_user_guid()) {
 				elgg_register_title_button();
 			}
-			
+		
 			if ($user) {
 				elgg_push_breadcrumb($user->name, 'todo/dashboard/' . $user->username);
 			}
@@ -392,6 +392,9 @@ function todo_page_handler($page) {
 			} else {
 				$layout = 'content';
 			}
+
+			set_input('assigner_guid', $user->guid);
+			set_input('assignee_guid', $user->guid);
 
 			$params['content'] = elgg_view('todo/dashboard');
 			break;
@@ -1531,32 +1534,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 	$status = get_input('status', 'incomplete');
 	$container_guid = get_input('container_guid', elgg_get_logged_in_user_guid());
 
-	/** MAIN MENU ITEMS **/
-
-	// Context filter
-	$context_filter_input = elgg_view('input/chosen_dropdown', array(
-		'id' => 'todo-context-filter',
-		'options_values' => array(
-			'all' => elgg_echo('all'),
-			'assigned' => elgg_echo('todo:label:assignedtome'),
-			'owned' => elgg_echo('todo:label:assignedbyme')
-		),
-		'class' => 'todo-dashboard-filter',
-		'data-param' => 'context',
-		'value' => $context,
-	));
-
-	$options = array(
-		'name' => 'context-filter',
-		'href' => false,
-		'label' => elgg_echo('todo:label:show'),
-		'text' => $context_filter_input,
-		'encode_text' => false,
-		'section' => 'main',
-		'priority' => 0,
-	);
-
-	$value[] = ElggMenuItem::factory($options);
+	$page_owner = elgg_get_page_owner_entity();
 
 	// Due filter
 	$due_filter_input = elgg_view('input/chosen_dropdown', array(
@@ -1610,8 +1588,6 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 	$value[] = ElggMenuItem::factory($options);
 
-	/** EXTRAS MENU ITEMS **/
-
 	// Sort filter
 	$options = array(
 		'name' => 'sort',
@@ -1626,63 +1602,110 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 	$value[] = ElggMenuItem::factory($options);
 
-	// Show advanced link
+	// Page owner input
 	$options = array(
-		'name' => 'advanced',
-		'href' => '#',
-		'text' => elgg_echo('todo:label:showadvanced'),
-		'link_class' => 'menu-sort todo-dashboard-show-advanced advanced-off',
-		'encode_text' => false,
+		'name' => 'todo-hidden-page-owner',
+		'href' => false,
+		'text' => elgg_view('input/hidden', array(
+			'name' => 'page_owner',
+			'value' => elgg_get_page_owner_guid(),
+			'id' => 'hidden-page-owner',
+			'class' => 'todo-dashboard-hidden-filter',
+		)),
 		'section' => 'extras',
 		'priority' => 0,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
 
-	/** ADVANCED MENU ITEMS **/
-	$group_options = array(
-		'type' => 'group',
-		'relationship' => 'member',
-		'relationship_guid' => elgg_get_logged_in_user_entity()->guid,
-		'limit' => 0,
-		'joins' => array("JOIN " . elgg_get_config("dbprefix") . "groups_entity ge ON e.guid = ge.guid"),
-		"order_by" => "ge.name ASC"
-	);
-	
-	$groups = elgg_get_entities_from_relationship($group_options);
+	// Non-group items
+	if (!elgg_instanceof($page_owner, 'group')) {
+		// Context filter
+		$context_input = elgg_view('input/chosen_dropdown', array(
+			'id' => 'todo-context-filter',
+			'options_values' => array(
+				'all' => elgg_echo('all'),
+				'assigned' => elgg_echo('todo:label:assignedtome'),
+				'owned' => elgg_echo('todo:label:assignedbyme')
+			),
+			'class' => 'todo-dashboard-filter',
+			'data-param' => 'context',
+			'value' => $context,
+		));
 
-	$groups_array = array();
+		$context_options = array(
+			'name' => 'context-filter',
+			'href' => false,
+			'label' => elgg_echo('todo:label:show'),
+			'text' => $context_input,
+			'encode_text' => false,
+			'section' => 'main',
+			'priority' => 0,
+		);
 
-	if (count($groups) >= 1) {
-		$groups_array[0] = elgg_echo('todo:label:selectagroup');
+		// Group selector, hide if we're looking at a group
+		$group_options = array(
+			'type' => 'group',
+			'relationship' => 'member',
+			'relationship_guid' => elgg_get_logged_in_user_entity()->guid,
+			'limit' => 0,
+			'joins' => array("JOIN " . elgg_get_config("dbprefix") . "groups_entity ge ON e.guid = ge.guid"),
+			"order_by" => "ge.name ASC"
+		);
+		
+		$groups = elgg_get_entities_from_relationship($group_options);
 
-		foreach ($groups as $group) {
-			$groups_array[$group->guid] = $group->name;
+		$groups_array = array();
+
+		if (count($groups) >= 1) {
+			$groups_array[0] = elgg_echo('todo:label:selectagroup');
+
+			foreach ($groups as $group) {
+				$groups_array[$group->guid] = $group->name;
+			}
+		} else {
+			$groups_array[0] = elgg_echo('todo:label:nogroups');
 		}
+
+		$group_filter_input = elgg_view('input/chosen_dropdown', array(
+			'id' => 'todo-group-filter',
+			'options_values' => $groups_array,
+			'value' => $container_guid,
+			'class' => 'todo-dashboard-filter',
+			'data-param' => 'container_guid'
+		));
+
+		$options = array(
+			'name' => 'groups-filter',
+			'href' => false,
+			'label' => elgg_echo('todo:label:groupclass'),
+			'text' => $group_filter_input,
+			'encode_text' => false,
+			'section' => 'advanced',
+			'priority' => 0
+		);
+
+		$value[] = ElggMenuItem::factory($options);
 	} else {
-		$groups_array[0] = elgg_echo('todo:label:nogroups');
+		// Viewing a group, hard code the context
+		$context_input = elgg_view('input/hidden', array(
+			'id' => 'todo-hidden-context',
+			'class' => 'todo-dashboard-hidden-filter',
+			'name' => 'context',
+			'value' => 'owned',
+		));
+
+		$context_options = array(
+			'name' => 'todo-hidden-context',
+			'href' => false,
+			'text' => $context_input,
+			'section' => 'extras',
+			'priority' => 0,
+		);
 	}
 
-	$group_filter_input = elgg_view('input/chosen_dropdown', array(
-		'id' => 'todo-group-filter',
-		'options_values' => $groups_array,
-		'value' => $container_guid,
-		'class' => 'todo-dashboard-filter',
-		'data-param' => 'container_guid'
-	));
-
-	$options = array(
-		'name' => 'groups-filter',
-		'href' => false,
-		'label' => elgg_echo('todo:label:groupclass'),
-		'text' => $group_filter_input,
-		'encode_text' => false,
-		'section' => 'advanced',
-		'priority' => 0
-	);
-
-	$value[] = ElggMenuItem::factory($options);
-
+	// Add context item (conditionally created above)
+	$value[] = ElggMenuItem::factory($context_options);
 
 	return $value;
 }

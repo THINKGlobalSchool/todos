@@ -21,8 +21,7 @@ elgg.todo.defaultDashboard = $.param({
 	'context': 'assigned',
 	'priority': 0,
 	'status': 'incomplete',
-	'container_guid': elgg.get_logged_in_user_guid(),
-	'sort_order': 'ASC'
+	'sort_order': 'DESC'
 });
 
 /**
@@ -1165,6 +1164,11 @@ elgg.todo.listHandler = function ($element, pushState) {
 
 		// Update chosen
 		$select.trigger('chosen:updated');
+	});
+
+	// Include any hidden inputs (ie page owner)
+	$('.todo-dashboard-hidden-filter').each(function(idx) {
+		params[$(this).attr('name')] = $(this).val();
 	});
 
 	// Load data
