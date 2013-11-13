@@ -794,6 +794,26 @@ elgg.todo.isValidURL = function(url) {
 		}
 }
 
+elgg.todo.initStandaloneCalendar = function() {
+
+	elgg.todo.initCalendar();
+
+	var $category_container = $('#todo-calendar-categories');
+	$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
+		// init date picker
+		$('#todo-calendar-date-picker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			onSelect: function(dateText,dp){
+				$('#todo-category-calendar').fullCalendar('gotoDate', new Date(Date.parse(dateText)));
+			}
+		});
+
+		// Load selected calendar
+		$selected_category = $(this).find('input[name=category_calendar_radio]:checked');
+		$selected_category.trigger('click');
+	});
+}
+
 /**
  * Manually init calendars
  */
@@ -1187,7 +1207,7 @@ elgg.todo.listHandler = function ($element, pushState) {
 
 elgg.register_hook_handler('change', 'chosen.js', elgg.todo.handleDashboardChange);
 elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
-elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
+//elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
 elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
 elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);	
