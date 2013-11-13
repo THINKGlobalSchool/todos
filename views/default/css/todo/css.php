@@ -827,7 +827,7 @@ td.todo-iplan-hover a {
 	background: none repeat scroll 0 0 #CCCCCC;
 	box-shadow: 1px 1px 1px #555555;
 	padding: 5px;
-	width: 959px;
+	width: 99%;
 }
 
 #todo-dashboard-menu-container > ul > li label { 

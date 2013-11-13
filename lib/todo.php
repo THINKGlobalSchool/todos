@@ -135,9 +135,11 @@ function todo_get_page_content_settings_notifications() {
  *
  * status              => NULL|STRING complete|incomplete|any
  * 
- * container_guid      => NULL|INT who's todos @todo change this to something else
+ * assignee_guid       => NULL|INT get todo's assigned to this user guid (used in assigned context)
+ *
+ * assigner_guid       => NULL|INT get todo's assigned by this user guid (used in owned context )
  * 
- * todo_container_guid => NULL|INT todo container guid (optional)
+ * container_guid      => NULL|INT get todo's assigned by container guid (used in all/owned context)
  * 
  * sort_order          => STRING ASC|DESC
  * 
@@ -166,13 +168,6 @@ function get_todos(array $params) {
 		$get_from_relationship = 'elgg_list_entities_from_relationship';
 		$count = FALSE;
 	}
-	
-	// Default container guid if not supplied
-	if (!$params['container_guid']) {
-		$params['container_guid'] = elgg_get_logged_in_user_guid();
-	}
-	
-	$user_id = $params['container_guid'];
 	
 	// Default order by if not supplies
 	if (!$params['order_by_metadata']) {
@@ -209,11 +204,6 @@ function get_todos(array $params) {
 		'offset' => $params['offset'],
 		'count' => $count,
 	);
-
-	// Show only todo's with container_guid (for groups)
-	if ($params['todo_container_guid']) {
-		$options['container_guid'] = $params['todo_container_guid'];
-	}
 	
 	// Published status options
 	$published_options = array(
@@ -234,8 +224,8 @@ function get_todos(array $params) {
 			)),
 		'metadata_name_value_pairs_operator' => 'OR',
 	);	
-	
-	global $CONFIG;
+
+	$dbprefix = elgg_get_config('dbprefix');
 	
 	// Without complete/manual wheres (for owned/all)
 	$complete = get_metastring_id('complete');
@@ -244,13 +234,13 @@ function get_todos(array $params) {
 						
 	$without_complete_manual_wheres = array();
 	$without_complete_manual_wheres[] = "NOT EXISTS (
-			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			SELECT 1 FROM {$dbprefix}metadata md
 			WHERE md.entity_guid = e.guid
 				AND md.name_id = $complete
 				AND md.value_id = $one_id)";
 
 	$without_complete_manual_wheres[] = "NOT EXISTS (
-			SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+			SELECT 1 FROM {$dbprefix}metadata md
 			WHERE md.entity_guid = e.guid
 				AND md.name_id = $manual_complete
 				AND md.value_id = $one_id)";
@@ -267,9 +257,9 @@ function get_todos(array $params) {
 		$suffix = _elgg_get_access_where_sql(array("table_alias" => "mf_table", "guid_column" => "entity_guid"));
 		$due_joins = array();
 		
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
+		$due_joins[] = "JOIN {$dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
+		$due_joins[] = "JOIN {$dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
+		$due_joins[] = "JOIN {$dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
 
 	 	$due_where = "(mf_name.string = 'due_date' AND mf_value.string {$due_operand} {$due_date})";
 	} else if ($params['due_start'] && $params['due_end']) {
@@ -280,9 +270,9 @@ function get_todos(array $params) {
 		$suffix = _elgg_get_access_where_sql(array("table_alias" => "mf_table", "guid_column" => "entity_guid"));
 		$due_joins = array();
 		
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
-		$due_joins[] = "JOIN {$CONFIG->dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
+		$due_joins[] = "JOIN {$dbprefix}metadata mf_table on e.guid = mf_table.entity_guid";
+		$due_joins[] = "JOIN {$dbprefix}metastrings mf_name on mf_table.name_id = mf_name.id";
+		$due_joins[] = "JOIN {$dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
 
 	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string <= {$due_end}))";
 	}
@@ -292,6 +282,11 @@ function get_todos(array $params) {
 		case 'all':
 		default: 
 		/********************* ALL ************************/
+			// Show only todo's with container_guid (ie: groups)
+			if ($params['container_guid']) {
+				$options['container_guid'] = $params['container_guid'];
+			}
+
 			// Show based on status
 			if ($params['status'] == 'complete') {
 				// Use params, defaults and publshed and complete or manual
@@ -314,15 +309,26 @@ function get_todos(array $params) {
 		case 'owned':
 		/********************* OWNED **********************/
 			set_input('display_label', true);			
-			$container = get_entity($params['container_guid']);
+
+			// Check if we're looking for a container or owner guid (group vs. user)
+			if (isset($params['container_guid'])) {
+				$owner = get_entity($params['container_guid']);
+			} else if (isset($params['assigner_guid'])) {
+				$owner = get_entity($params['assigner_guid']);
+			} 
+
+			// Need an owner here, so fall back on page owner
+			if (!$owner) {
+				$owner = elgg_get_page_owner_entity();
+			}
 			
 			// Show both published and drafts when viewing owned
 			$published_options = array(); // Nuke it
 			
-			if (elgg_instanceof($container, 'group')) {
-				$options['container_guid'] = $params['container_guid'];
-			} else if (elgg_instanceof($container, 'user')) {
-				$options['owner_guid'] = $params['container_guid'];
+			if (elgg_instanceof($owner, 'group')) {
+				$options['container_guid'] = $owner->guid;
+			} else if (elgg_instanceof($owner, 'user')) {
+				$options['owner_guid'] = $owner->guid;
 			}
 			
 			// Show based on status
@@ -352,22 +358,28 @@ function get_todos(array $params) {
 
 			$relationship = COMPLETED_RELATIONSHIP;
 			
-			// Container guid in this case is the user to whom the todo's are assigned
-			$user_id = $params['container_guid'];
+			// The user to whom the todo's are assigned
+			$user_id = $params['assignee_guid'];
 			
 			if (!$user_id) {
 				$user_id = elgg_get_logged_in_user_guid();
+			}
+
+			// This is a new addition, I don't see why we can't pass 
+			// a container guid in this context
+			if (isset($params['container_guid'])) {
+				$options['container_guid'] = $params['container_guid'];
 			}
 			
 			// Build list based on status
 			if ($params['status'] == 'complete') {
 				$wheres[] = "(EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+						SELECT 1 FROM {$dbprefix}entity_relationships r2 
 						WHERE r2.guid_one = '$user_id'
 						AND r2.relationship = '$relationship'
 						AND r2.guid_two = e.guid) OR 
 							EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						SELECT 1 FROM {$dbprefix}metadata md
 						WHERE md.entity_guid = e.guid
 							AND md.name_id = $test_id
 							AND md.value_id = $one_id))";
@@ -377,13 +389,13 @@ function get_todos(array $params) {
 				set_input('display_label', true);
 				// Non existant 'manual complete'
 				$wheres[] = "NOT EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}metadata md
+						SELECT 1 FROM {$dbprefix}metadata md
 						WHERE md.entity_guid = e.guid
 							AND md.name_id = $test_id
 							AND md.value_id = $one_id)";
 
 				$wheres[] = "NOT EXISTS (
-						SELECT 1 FROM {$CONFIG->dbprefix}entity_relationships r2 
+						SELECT 1 FROM {$dbprefix}entity_relationships r2 
 						WHERE r2.guid_one = '$user_id'
 						AND r2.relationship = '$relationship'
 						AND r2.guid_two = e.guid)";
@@ -877,8 +889,8 @@ function count_complete_todos($user_guid, $container_guid = NULL) {
 	return get_todos(array(
 		'context' => 'assigned',
 		'status' => 'complete',
-		'container_guid' => $user_guid,
-		'todo_container_guid' => $container_guid,
+		'assignee_guid' => $user_guid,
+		'container_guid' => $container_guid,
 		'list' => FALSE,
 		'count' => TRUE,
 	));
@@ -895,8 +907,8 @@ function count_incomplete_todos($user_guid, $container_guid = NULL) {
 	return get_todos(array(
 		'context' => 'assigned',
 		'status' => 'incomplete',
-		'container_guid' => $user_guid,
-		'todo_container_guid' => $container_guid,
+		'assignee_guid' => $user_guid,
+		'container_guid' => $container_guid,
 		'list' => FALSE,
 		'count' => TRUE,
 	));
@@ -913,8 +925,8 @@ function count_assigned_todos($user_guid, $container_guid = NULL) {
 	return get_todos(array(
 		'context' => 'assigned',
 		'status' => 'any',
-		'container_guid' => $user_guid,
-		'todo_container_guid' => $container_guid,
+		'assignee_guid' => $user_guid,
+		'container_guid' => $container_guid,
 		'list' => FALSE,
 		'count' => TRUE,
 	));
