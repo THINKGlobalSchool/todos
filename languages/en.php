@@ -173,6 +173,9 @@ $english = array(
 	'todo:label:nogroups' => 'No groups',
 	'todo:label:groupclass' => 'Group/Class',
 	'todo:label:selectgroupsmulti' => 'Click here to select group(s)..',
+	'todo:label:viewas' => 'View As',
+	'todo:label:list' => 'List',
+	'todo:label:calendar' => 'Calendar',
 
 	// Categories
 	'todo:label:category' => 'Category',

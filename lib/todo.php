@@ -313,28 +313,34 @@ function get_todos(array $params) {
 			break;
 		case 'owned':
 		/********************* OWNED **********************/
-			set_input('display_label', true);			
+			set_input('display_label', true);
 
-			// Check if we're looking for a container or owner guid (group vs. user)
-			if ($params['container_guid']) {
-				$owner = get_entity($params['container_guid']);
-			} else if ($params['assigner_guid']) {
-				$owner = get_entity($params['assigner_guid']);
-			} 
+			$container_guid = $params['container_guid'];
+			$assigner_guid = $params['assigner_guid'];
 
-			// Need an owner here, so fall back on page owner
-			if (!$owner) {
-				$owner = elgg_get_page_owner_entity();
+			// Got both an assigner and container!
+			if ($container_guid && $assigner_guid) {
+				// Both the same (probably shouldn't happen)
+				if ($container_guid === $assigner_guid) {
+					$options['container_guid'] = $container_guid;
+				} else {
+					// Different container/assigner
+					$options['container_guid'] = $container_guid;
+					$options['owner_guid'] = $assigner_guid;
+				}
+			} else if ($container_guid) {
+				$options['container_guid'] = $container_guid;
+			} else {
+				// Only got an assigner, but this could be a group
+				if (elgg_instanceof(get_entity($assigner_guid), 'group')) {
+					$options['container_guid'] = $assigner_guid;
+				} else {
+					$options['owner_guid'] = $assigner_guid;
+				}
 			}
 			
 			// Show both published and drafts when viewing owned
 			$published_options = array(); // Nuke it
-			
-			if (elgg_instanceof($owner, 'group')) {
-				$options['container_guid'] = $owner->guid;
-			} else if (elgg_instanceof($owner, 'user')) {
-				$options['owner_guid'] = $owner->guid;
-			}
 			
 			// Show based on status
 			if ($params['status'] == 'complete') {

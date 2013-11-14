@@ -13,6 +13,12 @@
 
 /*********************** @TODO: (Code related) ************************/
 // - Implement search on dashboard menu? (Titles etc)
+// - Filter by (for admins - advanced): 
+//    - assigning user
+//    - assigned user
+//    - group role
+//    - ALL groups
+// - Move group filter to regular section
 // - Implement calendar views
 
 elgg_register_event_handler('init', 'system', 'todo_init');
@@ -1699,8 +1705,8 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'label' => elgg_echo('todo:label:groupclass'),
 			'text' => $group_filter_input,
 			'encode_text' => false,
-			'section' => 'advanced',
-			'priority' => 0
+			'section' => 'main',
+			'priority' => 4
 		);
 
 		$value[] = ElggMenuItem::factory($options);
@@ -1721,6 +1727,30 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'priority' => 0,
 		);
 	}
+
+	// View as dropdown
+	$view_filter_input = elgg_view('input/chosen_dropdown', array(
+		'id' => 'todo-view-filter',
+		'options_values' => array(
+			0 => elgg_echo('todo:label:list'),
+			1 => elgg_echo('todo:label:calendar')
+		),
+		'value' => 0,
+		'class' => 'todo-dashboard-filter',
+		// 'data-param' => 'container_guid'
+	));
+
+	$options = array(
+		'name' => 'view-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:viewas'),
+		'text' => $view_filter_input,
+		'encode_text' => false,
+		'section' => 'main',
+		'priority' => 9
+	);
+
+	$value[] = ElggMenuItem::factory($options);
 
 	// Add context item (conditionally created above)
 	$value[] = ElggMenuItem::factory($context_options);
