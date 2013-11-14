@@ -17,6 +17,8 @@ elgg.provide('elgg.todo');
 elgg.todo.fileUploadURL = elgg.get_site_url() + 'action/todo/upload';
 elgg.todo.loadAssigneesURL = elgg.get_site_url() + 'todo/loadassignees';
 elgg.todo.ajaxListURL = elgg.get_site_url() + 'ajax/view/todo/list';
+
+// Default todo dashboard params
 elgg.todo.defaultDashboard = $.param({
 	'context': 'assigned',
 	'priority': 0,
@@ -25,7 +27,7 @@ elgg.todo.defaultDashboard = $.param({
 });
 
 /**
- * Main init
+ * Main init hook
  */
 elgg.todo.init = function() {
 	// Create submission click handler
@@ -794,9 +796,12 @@ elgg.todo.isValidURL = function(url) {
 		}
 }
 
+/**
+ * Standalone Calendar Init 
+ */
 elgg.todo.initStandaloneCalendar = function() {
-
-	elgg.todo.initCalendar();
+	// calendars are stored in elgg.todo.calendars.
+	elgg.todo.buildCalendar(elgg.todo.getCalendars());
 
 	var $category_container = $('#todo-calendar-categories');
 	$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
@@ -812,14 +817,6 @@ elgg.todo.initStandaloneCalendar = function() {
 		$selected_category = $(this).find('input[name=category_calendar_radio]:checked');
 		$selected_category.trigger('click');
 	});
-}
-
-/**
- * Manually init calendars
- */
-elgg.todo.initCalendar = function() {
-	// calendars are stored in elgg.todo.calendars.
-	elgg.todo.buildCalendar(elgg.todo.getCalendars());
 }
 
 /**
@@ -976,35 +973,6 @@ elgg.todo.toggleCalendarTodoCategory = function(event) {
 }
 
 /**
- * Calendar menu item loaded hook handler
- */
-elgg.todo.calendarTabLoaded = function(hook, type, params, options) {
-	if (params['tab'].hasClass('todo-calendars-item')) {
-		elgg.todo.initCalendar();
-		
-		if (params['tab'].hasClass('todo-calendars-item')) {
-			var $category_container = $('#todo-calendar-categories');
-			$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
-				// init date picker
-				$('#todo-calendar-date-picker').datepicker({
-					dateFormat: 'yy-mm-dd',
-					onSelect: function(dateText,dp){
-						$('#todo-category-calendar').fullCalendar('gotoDate', new Date(Date.parse(dateText)));
-					}
-				});
-
-				// Load selected calendar
-				$selected_category = $(this).find('input[name=category_calendar_radio]:checked');
-				$selected_category.trigger('click');
-			});
-		} else {
-			// Remove sidebar
-			$('#todo-calendar-filters-content').remove();
-		}
-	}
-}
-
-/**
  * Make tooltip from event/element
  */
 elgg.todo.makeCalendarTip = function(event, element) {
@@ -1048,7 +1016,33 @@ elgg.todo.chosenInterrupt = function(hook, type, params, options) {
 		// Do nothing
 		return function(){};
 	}
+
+	// If element is in the hidden advanced dashboard menu, short circuit the chosen init
+	// we'll need to init these later
+	$element = $('#' + params.id);
+	if ($element.closest('.todo-dashboard-menu-advanced').length) {
+		// Register the handler to init the inputs later
+		elgg.register_hook_handler('late_init', 'chosen.js', elgg.todo.lateChosenInit);
+		return function(){};
+	}
+
 	return options;
+}
+
+/**
+ * Late chosen init handler
+ */
+elgg.todo.lateChosenInit = function(hook, type, params, options) {
+	$('.todo-dashboard-menu-advanced select').each(function(idx) {
+		// Check if the element has chosen enabled on it yet
+		if (!$(this).data('chosen_enabled')) {
+			// If not, set the flag and chosen-ify
+			$(this).data('chosen_enabled', true);
+
+			// Use the default chosen init function, need it's magic
+			elgg.tgstheme.defaultChosenInit($(this));
+		}
+	});
 }
 
 /**
@@ -1057,7 +1051,8 @@ elgg.todo.chosenInterrupt = function(hook, type, params, options) {
 elgg.todo.setupMenuInputs = function (hook, type, params, options) {
 	if (params.id == 'todo-context-filter' 
 		|| params.id == 'todo-due-filter' 
-		|| params.id == 'todo-status-filter') {
+		|| params.id == 'todo-status-filter'
+		|| params.id == 'todo-view-filter') {
 		options.disable_search = true;
 	}
 
@@ -1078,6 +1073,8 @@ elgg.todo.initDashboardNavigation = function() {
 
 		// Get nav container
 		$(this).closest('#todo-dashboard-menu-container').find('.todo-dashboard-menu-advanced').toggle();
+
+		elgg.trigger_hook('late_init', 'chosen.js');
 
 		event.preventDefault();
 	});
@@ -1205,12 +1202,16 @@ elgg.todo.listHandler = function ($element, pushState) {
 	});
 }
 
-elgg.register_hook_handler('change', 'chosen.js', elgg.todo.handleDashboardChange);
-elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
-//elgg.register_hook_handler('tab_loaded', 'todo_dashboard', elgg.todo.calendarTabLoaded);
+// Main hook
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
+
+// Chosen hooks
+elgg.register_hook_handler('change', 'chosen.js', elgg.todo.handleDashboardChange);
 elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
-elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);	
+elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);
+
+// Other
+elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
 
 /** OTHER UTILITY FUNCTIONS **/
 

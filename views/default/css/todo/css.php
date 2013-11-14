@@ -873,6 +873,10 @@ ul.todo-dashboard-menu-extras li.elgg-menu-item-sort {
 	text-decoration: none;
 }
 
+#todo-group-filter {
+	max-width: 200px;
+}
+
 #todo-dashboard-content-container .elgg-ajax-loader {
 	margin-top: 20px;
 }
