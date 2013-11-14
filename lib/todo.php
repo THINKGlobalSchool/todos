@@ -316,9 +316,9 @@ function get_todos(array $params) {
 			set_input('display_label', true);			
 
 			// Check if we're looking for a container or owner guid (group vs. user)
-			if (isset($params['container_guid'])) {
+			if ($params['container_guid']) {
 				$owner = get_entity($params['container_guid']);
-			} else if (isset($params['assigner_guid'])) {
+			} else if ($params['assigner_guid']) {
 				$owner = get_entity($params['assigner_guid']);
 			} 
 
@@ -372,7 +372,7 @@ function get_todos(array $params) {
 
 			// This is a new addition, I don't see why we can't pass 
 			// a container guid in this context
-			if (isset($params['container_guid'])) {
+			if ($params['container_guid']) {
 				$options['container_guid'] = $params['container_guid'];
 			}
 			
