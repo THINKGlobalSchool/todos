@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -183,12 +183,7 @@ function get_todos(array $params) {
 	if (!$params['sort_order']) {
 		$params['sort_order'] = "ASC";
 	}
-	
-	// Default status
-	if (!$params['status']) {
-		$params['status'] = 'incomplete';
-	}
-	
+
 	// Default limit 
 	if (!$params['limit']) {
 		$params['limit'] = get_input('limit', 10);
@@ -282,7 +277,7 @@ function get_todos(array $params) {
 	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string <= {$due_end}))";
 	}
 	
-	// Display by context
+	// Get options by context
 	switch($params['context']) {
 		case 'all':
 		default: 
@@ -296,20 +291,18 @@ function get_todos(array $params) {
 			if ($params['status'] == 'complete') {
 				// Use params, defaults and publshed and complete or manual
 				$options = array_merge($options, $published_options, $complete_or_manual);
-				$content = $get_from_metadata($options);	
 			} else if ($params['status'] == 'incomplete') {
 				set_input('display_label', true);
 
 				$options = array_merge($options, $published_options);
 				$options['wheres'] = $without_complete_manual_wheres;
-
-				// Due filter
-				$joins = $due_joins;
-				$options['wheres'][] = $due_where;
-				$options['joins'] = $joins;
-
-				$content = $get_from_metadata($options);	
 			}
+
+			// Due filter
+			$joins = $due_joins;
+			$options['wheres'][] = $due_where;
+			$options['joins'] = $joins;
+
 			break;
 		case 'owned':
 		/********************* OWNED **********************/
@@ -338,27 +331,31 @@ function get_todos(array $params) {
 					$options['owner_guid'] = $assigner_guid;
 				}
 			}
+
+			// Check for assingee_guid (may be looking for todos owned by x, assigned to y)
+			// NOTE: This excludes assigner == assignee
+			if ($params['assignee_guid'] && $params['assignee_guid'] != $options['owner_guid'] && $params['assignee_guid'] != $options['container_guid']) {
+				$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
+				$options['relationship_guid'] = $params['assignee_guid'];
+				$options['inverse_relationship'] = TRUE;
+			}
 			
 			// Show both published and drafts when viewing owned
 			$published_options = array(); // Nuke it
-			
+
 			// Show based on status
 			if ($params['status'] == 'complete') {
 				// Use params, defaults and complete or manual
-				$options = array_merge($options, $complete_or_manual);
-				$content = $get_from_metadata($options);	
-				
+				$options = array_merge($options, $complete_or_manual);	
 			} else if ($params['status'] == 'incomplete') {
 				$options = array_merge($options, $published_options);
-				$options['wheres'] = $without_complete_manual_wheres;
-
-				// Due filter
-				$joins = $due_joins;
-				$options['wheres'][] = $due_where;
-				$options['joins'] = $joins;
-
-				$content = $get_from_metadata($options);	
+				$options['wheres'] = $without_complete_manual_wheres;					
 			}
+
+			// Due filter
+			$joins = $due_joins;
+			$options['wheres'][] = $due_where;
+			$options['joins'] = $joins;
 
 			break;
 		case 'assigned':
@@ -371,6 +368,12 @@ function get_todos(array $params) {
 			
 			// The user to whom the todo's are assigned
 			$user_id = $params['assignee_guid'];
+
+			// Check and see if we also have an assigner guid
+			// NOTE: This excludes assigner == assignee
+			if ($params['assigner_guid'] && $params['assigner_guid'] != $user_id) {
+				$options['owner_guid'] = $params['assigner_guid'];
+			}
 			
 			if (!$user_id) {
 				$user_id = elgg_get_logged_in_user_guid();
@@ -410,11 +413,11 @@ function get_todos(array $params) {
 						WHERE r2.guid_one = '$user_id'
 						AND r2.relationship = '$relationship'
 						AND r2.guid_two = e.guid)";
-						
-				// Due filter
-				$joins = $due_joins;
-				$wheres[] = $due_where;
 			}
+
+			// Due filter
+			$joins = $due_joins;
+			$wheres[] = $due_where;
 
 			$options = array_merge($options, $published_options);
 			$options['wheres'] = $wheres;
@@ -422,11 +425,15 @@ function get_todos(array $params) {
 			$options['relationship'] = TODO_ASSIGNEE_RELATIONSHIP;
 			$options['relationship_guid'] = $user_id;
 			$options['inverse_relationship'] = FALSE;
-			
-			//set_input('dump', 'dump');
-			$content = $get_from_relationship($options);
+
 			break;
 	}
+
+	// Trigger a hook to allow plugins to provice extra options when getting todos
+	$options = elgg_trigger_plugin_hook('get_options', 'todo', $params, $options);
+
+	// Get/list todos
+	$content = $get_from_relationship($options);	
 
 	// If we have nothing, and we're listing, return a nice no results message
 	if (!$content && $params['list']) {

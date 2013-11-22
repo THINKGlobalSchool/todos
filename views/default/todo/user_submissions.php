@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  */
 
@@ -48,68 +48,8 @@ $module = elgg_view('modules/genericmodule', array(
 	'view_vars' => $view_vars, 
 ));
 
-// Date range picker
-elgg_register_menu_item('todo-submission-sort-menu', array(
-	'name' => 'todo_user_submissions_date_range',
-	'text' => elgg_echo('todo:label:date') . ": " . elgg_view('input/text', array(
-		'name' => 'todo_user_submissions_date_input',
-		'class' => 'todo-user-submissions-date-input',
-		'readonly' => 'READONLY',
-	)),
-	'class' => 'todo-user-submissions-date-range',
-	'selected' => FALSE,
-	'href' => FALSE,
-	'priority' => 1,
-));
-
-// Register filter menu items
-elgg_register_menu_item('todo-submission-sort-menu', array(
-	'name' => 'todo_user_submissions_return_filter',
-	'text' => elgg_echo('todo:label:show') . ": " . elgg_view('input/dropdown', array(
-		'name' => 'todo_user_submission_return_dropdown',
-		'options_values' => array(
-			'all' => elgg_echo('all'),
-			1 => elgg_echo('todo:label:return'),
-			0 => 'No&nbsp;' . elgg_echo('todo:label:return'),
-		),
-		'value' => 1, // Return selected by default
-		'class' => 'todo-user-submission-return-dropdown',
-	)),
-	'class' => '',
-	'href' => FALSE,
-	'selected' => FALSE,
-	'priority' => 2,
-));
-
-// On time filter
-elgg_register_menu_item('todo-submission-sort-menu', array(
-	'name' => 'todo_user_submissions_ontime_filter',
-	'text' => elgg_view('input/dropdown', array(
-		'name' => 'todo_user_submission_ontime_dropdown',
-		'options_values' => array(
-			'all' => elgg_echo('all'),
-			1 => elgg_echo('todo:label:ontime'),
-			0 => 'Not&nbsp;' . elgg_echo('todo:label:ontime'),
-		),
-		'class' => 'todo-user-submission-ontime-dropdown',
-	)),
-	'class' => '',
-	'href' => FALSE,
-	'selected' => FALSE,
-	'priority' => 3,
-));
-
-// Sort order
-elgg_register_menu_item('todo-submission-sort-menu', array(
-	'name' => 'todo_user_submissions_sort',
-	'text' => elgg_echo('todo:label:sortasc'),
-	'class' => 'todo-user-submissions-sort',
-	'selected' => FALSE,
-	'href' => "#ASC",
-	'priority' => 4,
-));
-
-$filter_menu = elgg_view_menu('todo-submission-sort-menu', array(
+// Output menu
+$filter_menu = elgg_view_menu('todo_submission_dashboard', array(
 	'class' => 'elgg-menu-hz elgg-menu-submissions-sort',
 	'sort_by' => 'priority',
 ));
@@ -126,10 +66,8 @@ $js = <<<JAVASCRIPT
 JAVASCRIPT;
 
 $content = <<<HTML
+	$filter_menu
 	$submission_stats
-	<div id='todo-user-submissions-filter-menu'>
-		$filter_menu
-	</div>
 	$module
 	$js
 HTML;

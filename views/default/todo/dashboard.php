@@ -13,4 +13,4 @@ echo elgg_view_menu('todo_dashboard', array(
 	'sort_by' => 'priority'
 ));
 
-echo "</div><div id='todo-dashboard-content-container'></div>";
+echo "<div id='todo-dashboard-content-container'></div>";

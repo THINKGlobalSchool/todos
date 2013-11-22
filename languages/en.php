@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -105,8 +105,10 @@ $english = array(
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
 	'todo:label:assignedbyme' => 'Assigned by me',
+	'todo:label:assignedbyuser' => 'Assigned by',
 	'todo:label:assignedto' => 'Assigned to %s',
 	'todo:label:assignedtome' => 'Assigned to me',
+	'todo:label:assignedtouser' => 'Assigned to',
 	'todo:label:submittedby' => 'Submitted by %s',
 	'todo:label:me' => 'me',
 	'todo:label:acceptconfirm' => 'Accept this To Do?',
@@ -125,6 +127,8 @@ $english = array(
 	'todo:label:suggestedtagsinfo' => 'Student submission tags are the tags that students should use for any content they post related to this to do.',
 	'todo:label:sortasc' => 'Ascending',
 	'todo:label:sortdesc' => 'Descending',
+	'todo:label:sortascarrow' => 'Ascending ▲',
+	'todo:label:sortdescarrow' => 'Descending ▼',
 	'todo:label:showadvanced' => 'Advanced Options',
 	'todo:label:linkspotcontent' => 'You are submitting a link to Spot. You should be using Add Spot Content for this. Do you want to continue?',
 	'todo:label:prev' => 'Prev',
