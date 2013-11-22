@@ -59,4 +59,4 @@ $content .= elgg_view('navigation/menu/elements/todo_dashboard_section', array(
 	'item_class' => $item_class
 ));
 
-echo $content;
+echo $content . "</div>";

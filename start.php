@@ -12,14 +12,8 @@
  */
 
 /*********************** @TODO: (Code related) ************************/
-// - Implement search on dashboard menu? (Titles etc)
-// - Filter by (for admins - advanced): 
-//    - assigning user
-//    - assigned user
-//    - group role
-//    - ALL groups
-// - Move group filter to regular section
-// - Implement calendar views
+// - Implement calendar views, link in extras bar to switch
+// - Widget
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -222,6 +216,12 @@ function todo_init() {
 	// Set up the todo dashboard menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo_dashboard', 'todo_dashboard_menu_setup');
 
+	// Set up the todo dashboard tabs menu
+	elgg_register_plugin_hook_handler('register', 'menu:todo_dashboard_tabs', 'todo_dashboard_tab_menu_setup');
+
+	// Set up submission dashboard menu
+	elgg_register_plugin_hook_handler('register', 'menu:todo_submission_dashboard', 'todo_submission_dashboard_menu_setup');
+
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 	
@@ -366,8 +366,11 @@ function todo_page_handler($page) {
 	);
 
 	switch ($page_type) {
-		case 'dashboard':
 		default:
+			// Fwd to dashboard
+			forward('todo/dashboard');
+			break;
+		case 'dashboard':
 			gatekeeper();
 			elgg_register_menu_item('title', $iplan_title_options);
 
@@ -389,19 +392,11 @@ function todo_page_handler($page) {
 		
 			$params['title'] = elgg_echo('todo:title:dashboard');
 			$params['filter'] = FALSE;
-			$user = get_user_by_username($page[1]);
-			if (!$user) {
-				$user = elgg_get_logged_in_user_entity();
-			}		
-			elgg_set_page_owner_guid($user->guid);
 			
 			if (elgg_get_page_owner_guid() == elgg_get_logged_in_user_guid()) {
 				elgg_register_title_button();
 			}
-		
-			if ($user) {
-				elgg_push_breadcrumb($user->name);
-			}
+
 			set_input('owner_block_force_hidden', true);
 			if (!elgg_view_exists('topbaronly')) {
 				$layout = 'one_column_content';
@@ -409,10 +404,49 @@ function todo_page_handler($page) {
 				$layout = 'content';
 			}
 
-			set_input('assigner_guid', $user->guid);
-			set_input('assignee_guid', $user->guid);
+			// Handle tab menu
+			if ($page[1] == 'submissions') { // Submissions tab
+				set_input('submission_tab_selected', true);
 
-			$params['content'] = elgg_view('todo/dashboard');
+				$user = get_user_by_username($page[2]);
+				if (!$user) {
+					$user = elgg_get_logged_in_user_entity();
+				}		
+				elgg_set_page_owner_guid($user->guid);
+				elgg_push_breadcrumb($user->name, "todo/dashboard/{$user->username}");
+				elgg_push_breadcrumb(elgg_echo('todo:label:submissions'));
+	
+				if (submissions_gatekeeper(elgg_get_logged_in_user_guid())) {
+					$content = "<div class='todo-user-submissions-content'>";
+					$content .= elgg_view('todo/user_submissions', array(
+						'user_guid' => $user->guid,
+					));
+					$content .= "</div>";
+				} else {
+					forward('todo/dashboard');
+				}
+			} else { // Todo tab
+				$user = get_user_by_username($page[1]);
+				if (!$user) {
+					$user = elgg_get_logged_in_user_entity();
+				}		
+				elgg_set_page_owner_guid($user->guid);
+				elgg_push_breadcrumb($user->name);
+
+				set_input('todo_tab_selected', true);
+				set_input('assigner_guid', $user->guid);
+				set_input('assignee_guid', $user->guid);
+				$content = elgg_view('todo/dashboard');
+			}
+
+			// Output the dashboard tab menu
+			$params['content'] = elgg_view_menu('todo_dashboard_tabs', array(
+				'sort_by' => 'priority',
+				'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
+			));
+
+			$params['content'] .= $content;
+
 			break;
 		case 'iplan':
 			elgg_load_css('jquery.daterangepicker');
@@ -475,12 +509,42 @@ function todo_page_handler($page) {
 
 			$group = get_entity($page[2]);
 			if (elgg_instanceof($group, 'group')) {
-				elgg_push_breadcrumb($group->name);
 				elgg_set_page_owner_guid($group->guid);
 				elgg_register_title_button();
 				$params['title'] = 'To Do Dashboard';
 				$params['filter'] = FALSE;
-				$params['content'] .= elgg_view('todo/dashboard');
+
+				// Handle tab menu
+				if ($page[3] == 'submissions') { // Submissions tab
+					set_input('submission_tab_selected', true);
+					elgg_push_breadcrumb($group->name, "todo/group/dashboard/{$group->guid}/owner");
+					elgg_push_breadcrumb(elgg_echo('todo:label:submissions'));
+
+					$content = elgg_view('todo/group_user_submissions', array(
+						'group_guid' => $group->guid
+					));
+				} else if ($page[3] == 'grades') { // Grades tab
+					set_input('grade_tab_selected', true);
+					elgg_push_breadcrumb($group->name, "todo/group/dashboard/{$group->guid}/owner");
+					elgg_push_breadcrumb(elgg_echo('todo:label:grades'));
+
+					$content = elgg_view('todo/group_submission_grades', array(
+						'group_guid' => $group->guid
+					));
+				} else { // Regular list of todos
+					set_input('todo_tab_selected', true);
+					elgg_push_breadcrumb($group->name);
+
+					$content = elgg_view('todo/dashboard');
+				}
+
+				// Output the dashboard tab menu
+				$params['content'] = elgg_view_menu('todo_dashboard_tabs', array(
+					'sort_by' => 'priority',
+					'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
+				));
+
+				$params['content'] .= $content;
 			} else {
 				forward('todo/dashboard');
 			}
@@ -1582,7 +1646,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'text' => $due_filter_input,
 		'encode_text' => false,
 		'section' => 'main',
-		'priority' => 1,
+		'priority' => 200,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
@@ -1607,7 +1671,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'text' => $status_filter_input,
 		'encode_text' => false,
 		'section' => 'main',
-		'priority' => 2,
+		'priority' => 300,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
@@ -1621,7 +1685,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'encode_text' => false,
 		'data-param' => 'sort_order',
 		'section' => 'extras',
-		'priority' => 3,
+		'priority' => 400,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
@@ -1664,31 +1728,79 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'text' => $context_input,
 			'encode_text' => false,
 			'section' => 'main',
-			'priority' => 0,
+			'priority' => 100,
 		);
 
-		// Group selector, hide if we're looking at a group
+
+		// Initial group options
 		$group_options = array(
 			'type' => 'group',
-			'relationship' => 'member',
-			'relationship_guid' => elgg_get_logged_in_user_entity()->guid,
 			'limit' => 0,
 			'joins' => array("JOIN " . elgg_get_config("dbprefix") . "groups_entity ge ON e.guid = ge.guid"),
 			"order_by" => "ge.name ASC"
 		);
-		
+
+		// Todo Admin Options
+		if (is_todo_admin() || elgg_is_admin_logged_in()) {
+			// Assigned by filter
+			$assigned_input = elgg_view('input/autocomplete', array(
+				'name' => 'assigner',
+				'class' => 'todo-dashboard-clearable todo-dashboard-filter',
+				'data-param' => 'assigner',
+				'data-match_on' => 'users',
+				'data-disables' => '["#todo-context-filter", "#hidden-page-owner"]'
+			));
+
+			$options = array(
+				'name' => 'assigned-filter',
+				'label' => elgg_echo('todo:label:assignedbyuser'),
+				'text' => $assigned_input,
+				'href' => false,
+				'section' => 'advanced',
+				'priority' => 100,
+			);
+
+			$value[] = ElggMenuItem::factory($options);
+
+			$assignee_input = elgg_view('input/autocomplete', array(
+				'name' => 'assignee',
+				'class' => 'todo-dashboard-clearable todo-dashboard-filter',
+				'data-param' => 'assignee',
+				'data-match_on' => 'users',
+				'data-disables' => '["#todo-context-filter", "#hidden-page-owner"]'
+			));
+
+			// Assigned to filter
+			$options = array(
+				'name' => 'assignee-filter',
+				'label' => elgg_echo('todo:label:assignedtouser'),
+				'text' => $assignee_input,
+				'href' => false,
+				'section' => 'advanced',
+				'priority' => 200,
+			);
+
+			$value[] = ElggMenuItem::factory($options);
+
+		} else {
+			// Group options for regular users
+			$group_options['relationship'] = 'member';
+			$group_options['relationship_guid'] = elgg_get_logged_in_user_entity()->guid;				
+		}
+
+		// Put together the group selector
 		$groups = elgg_get_entities_from_relationship($group_options);
 
 		$groups_array = array();
 
 		if (count($groups) >= 1) {
-			$groups_array[0] = elgg_echo('todo:label:selectagroup');
+			$groups_array[0] = '';
 
 			foreach ($groups as $group) {
 				$groups_array[$group->guid] = $group->name;
 			}
 		} else {
-			$groups_array[0] = elgg_echo('todo:label:nogroups');
+			$groups_array[''] = elgg_echo('todo:label:nogroups');
 		}
 
 		$group_filter_input = elgg_view('input/chosen_dropdown', array(
@@ -1696,7 +1808,8 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'options_values' => $groups_array,
 			'value' => $container_guid,
 			'class' => 'todo-dashboard-filter',
-			'data-param' => 'container_guid'
+			'data-param' => 'container_guid',
+			'data-placeholder' => elgg_echo('todo:label:selectagroup')
 		));
 
 		$options = array(
@@ -1706,10 +1819,12 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'text' => $group_filter_input,
 			'encode_text' => false,
 			'section' => 'main',
-			'priority' => 4
+			'priority' => 500
 		);
 
 		$value[] = ElggMenuItem::factory($options);
+
+
 	} else {
 		// Viewing a group, hard code the context
 		$context_input = elgg_view('input/hidden', array(
@@ -1729,28 +1844,28 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 	}
 
 	// View as dropdown
-	$view_filter_input = elgg_view('input/chosen_dropdown', array(
-		'id' => 'todo-view-filter',
-		'options_values' => array(
-			0 => elgg_echo('todo:label:list'),
-			1 => elgg_echo('todo:label:calendar')
-		),
-		'value' => 0,
-		'class' => 'todo-dashboard-filter',
-		// 'data-param' => 'container_guid'
-	));
+	// $view_filter_input = elgg_view('input/chosen_dropdown', array(
+	// 	'id' => 'todo-view-filter',
+	// 	'options_values' => array(
+	// 		0 => elgg_echo('todo:label:list'),
+	// 		1 => elgg_echo('todo:label:calendar')
+	// 	),
+	// 	'value' => 0,
+	// 	'class' => 'todo-dashboard-filter',
+	// 	// 'data-param' => 'container_guid'
+	// ));
 
-	$options = array(
-		'name' => 'view-filter',
-		'href' => false,
-		'label' => elgg_echo('todo:label:viewas'),
-		'text' => $view_filter_input,
-		'encode_text' => false,
-		'section' => 'main',
-		'priority' => 9
-	);
+	// $options = array(
+	// 	'name' => 'view-filter',
+	// 	'href' => false,
+	// 	'label' => elgg_echo('todo:label:viewas'),
+	// 	'text' => $view_filter_input,
+	// 	'encode_text' => false,
+	// 	'section' => 'main',
+	// 	'priority' => 9
+	// );
 
-	$value[] = ElggMenuItem::factory($options);
+	// $value[] = ElggMenuItem::factory($options);
 
 	// Add context item (conditionally created above)
 	$value[] = ElggMenuItem::factory($context_options);
@@ -1758,6 +1873,167 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 	return $value;
 }
 
+/**
+ * Set up the todo dashboard tab menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_dashboard_tab_menu_setup($hook, $type, $value, $params) {
+	$page_owner = elgg_get_page_owner_entity();
+
+	// Inital todos tab options
+	$todo_tab_options = array(
+		'name' => 'dashboard-tab-todos',
+		'href' => 'todo/dashboard',
+		'text' => elgg_echo('todo'),
+		'encode_text' => false,
+		'priority' => 100,
+		'selected' => get_input('todo_tab_selected', false)
+	);
+
+	// Group/non group options
+	if (!elgg_instanceof($page_owner, 'group')) {
+		// Submissions tab for users
+		$options = array(
+			'name' => 'dashboard-tab-submissions',
+			'href' => 'todo/dashboard/submissions',
+			'text' => elgg_echo('todo:label:submissions'),
+			'encode_text' => false,
+			'priority' => 200,
+			'selected' => get_input('submission_tab_selected', false)
+		);
+
+		$value[] = ElggMenuItem::factory($options);
+	} else {
+		// Got a group..
+
+		// Submissions tab for users
+		$options = array(
+			'name' => 'dashboard-tab-group-submissions',
+			'href' => "todo/group/dashboard/{$page_owner->guid}/submissions",
+			'text' => elgg_echo('todo:label:groupusersubmissions'),
+			'encode_text' => false,
+			'priority' => 200,
+			'selected' => get_input('submission_tab_selected', false)
+		);
+
+		$value[] = ElggMenuItem::factory($options);
+
+		// Grades tab
+		$options = array(
+			'name' => 'dashboard-tab-group-grades',
+			'href' => "todo/group/dashboard/{$page_owner->guid}/grades",
+			'text' => elgg_echo('todo:label:grades'),
+			'encode_text' => false,
+			'priority' => 300,
+			'selected' => get_input('grade_tab_selected', false)
+		);
+
+		$value[] = ElggMenuItem::factory($options);
+
+		// Set up the todos tab
+		$todo_tab_options['href'] = "todo/group/dashboard/{$page_owner->guid}/owner";
+	}
+
+	$value[] = ElggMenuItem::factory($todo_tab_options);
+
+	return $value;
+}
+
+
+/**
+ * Set up the todo submission filter menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
+	// Date range picker	
+	$options = array(
+		'name' => 'todo_user_submissions_date_range',
+		'href' => false,
+		'label' => elgg_echo('todo:label:date'),
+		'text' => elgg_view('input/text', array(
+			'name' => 'todo_user_submissions_date_input',
+			'class' => 'todo-user-submissions-date-input',
+			'readonly' => 'READONLY',
+		)),
+		'encode_text' => false,
+		'section' => 'main',
+		'priority' => 100,
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
+	// Submission required dropdown	
+	$options = array(
+		'name' => 'todo_user_submissions_return_filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:show'),
+		'text' => elgg_view('input/chosen_dropdown', array(
+			'id' => 'todo-submission-return-filter',
+			'name' => 'todo_user_submission_return_dropdown',
+			'options_values' => array(
+				'all' => elgg_echo('all'),
+				1 => elgg_echo('todo:label:return'),
+				0 => 'No&nbsp;' . elgg_echo('todo:label:return'),
+			),
+			'value' => 1, // Return selected by default
+			'class' => 'todo-user-submission-return-dropdown',
+		)),
+		'encode_text' => false,
+		'section' => 'main',
+		'priority' => 200,
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
+	// On time filter
+	$options = array(
+		'name' => 'todo_user_submissions_ontime_filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:status'),
+		'text' => elgg_view('input/chosen_dropdown', array(
+			'id' => 'todo-submission-ontime-filter',
+			'name' => 'todo_user_submission_ontime_dropdown',
+			'options_values' => array(
+				'all' => elgg_echo('all'),
+				1 => elgg_echo('todo:label:ontime'),
+				0 => 'Not&nbsp;' . elgg_echo('todo:label:ontime'),
+			),
+			'class' => 'todo-user-submission-ontime-dropdown',
+		)),
+		'encode_text' => false,
+		'section' => 'main',
+		'priority' => 300,
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
+	// Sort filter
+	$options = array(
+		'name' => 'todo_user_submissions_sort',
+		'href' => '#ASC',
+		'text' => elgg_echo('todo:label:sortascarrow'),
+		'link_class' => 'menu-sort todo-user-submissions-sort',
+		'item_class' => 'elgg-menu-item-sort',
+		'encode_text' => false,
+		'data-param' => 'sort_order',
+		'section' => 'extras',
+		'priority' => 400,
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
+	return $value;
+}
 
 /**
  * Override comment comment counting for todo submissions to include both 

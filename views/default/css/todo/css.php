@@ -219,6 +219,16 @@ span.unviewed {
 	text-align: left;
 }
 
+.elgg-menu-todo-sort li, .elgg-menu-submissions-sort li {
+	margin-right: 5px;
+	font-size: 10px;
+	text-transform: uppercase;
+}
+
+.elgg-menu-todo-sort li a, .elgg-menu-submissions-sort li a {
+	color: #999;
+}
+
 /** Resets and tweaks for todo sidebar in groups **/
 .elgg-todo-sidebar .elgg-image-block {
 	border-bottom: 1px dotted #CCC;
@@ -454,10 +464,6 @@ h3.todo-no-submission-label {
 
 .todo-user-submissions-content {
 	min-height: 400px;
-}
-
-#todo-user-submissions-filter-menu {
-	position: relative;
 }
 
 .todo-user-submissions-datepicker {
@@ -839,6 +845,13 @@ td.todo-iplan-hover a {
 	margin-right: 5px;
 }
 
+#todo-dashboard-menu-container  li input {
+	font-size: 90%;
+	height: 24px;
+	width: 92px;
+	border: 1px solid #AAAAAA;
+}
+
 ul.todo-dashboard-menu-extras {
 	border-top: 1px dotted #AAAAAA;
 	margin-top: 4px;
@@ -880,3 +893,33 @@ ul.todo-dashboard-menu-extras li.elgg-menu-item-sort {
 #todo-dashboard-content-container .elgg-ajax-loader {
 	margin-top: 20px;
 }
+
+span.todo-clear-icon {
+	position: relative;
+}
+
+span.todo-clear-icon span {
+	position: absolute;
+	display: block;
+	top: 4px;
+	right: 5px;
+	width: 9px;
+	height: 9px;
+	/*background: url('http://cdn.sstatic.net/stackoverflow/img/sprites.png?v=4') 0 -690px;*/
+	background: url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/x-sprite.png) no-repeat 0 0;
+	cursor: pointer;
+}
+
+span.todo-clear-icon span:hover {
+	background-position: 0px -11px;
+}
+
+span.todo-clear-icon input {
+	padding-right: 16px;
+}
+
+#todo-dashboard-menu-container .chosen-disabled a {
+	color: #EEEEEE;
+}
+
+/** End Todo Dashboard Menu **/

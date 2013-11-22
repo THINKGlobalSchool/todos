@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -628,11 +628,11 @@ elgg.todo.userSubmissionsSortClick = function(event) {
 
 	// Add option and change label based on sort order
 	if (order == 'ASC') {
-		$(this).html(elgg.echo('todo:label:sortdesc'));
+		$(this).html(elgg.echo('todo:label:sortdescarrow'));
 		$(this).attr('href', '#' + 'DESC');
 		elgg.modules.addOption($container, 'sort_order', 'ASC');
 	} else {
-		$(this).html(elgg.echo('todo:label:sortasc'));
+		$(this).html(elgg.echo('todo:label:sortascarrow'));
 		$(this).attr('href', '#' + 'ASC');
 		elgg.modules.addOption($container, 'sort_order', 'DESC');
 	}
@@ -1049,15 +1049,25 @@ elgg.todo.lateChosenInit = function(hook, type, params, options) {
  * Chosen handler for dashboard inputs
  */
 elgg.todo.setupMenuInputs = function (hook, type, params, options) {
-	if (params.id == 'todo-context-filter' 
-		|| params.id == 'todo-due-filter' 
-		|| params.id == 'todo-status-filter'
-		|| params.id == 'todo-view-filter') {
+	// Disable search for these inputs
+	var disable_search_ids = new Array(
+		'todo-context-filter',
+		'todo-due-filter',
+		'todo-status-filter',
+		'todo-view-filter',
+		'todo-submission-return-filter',
+		'todo-submission-ontime-filter'
+	);
+
+	// Disable search for above inputs
+	if ($.inArray(params.id, disable_search_ids) != -1) {
 		options.disable_search = true;
 	}
 
-	if (params.id == 'todo-group-filter') {
+	// Set deselect for dashboard inputs
+	if (params.id == 'todo-group-filter' || params.id == 'todo-group-categories-filter') {
 		options.width = "135px";
+		options.allow_single_deselect = true;
 	}
 
 	return options;
@@ -1067,6 +1077,44 @@ elgg.todo.setupMenuInputs = function (hook, type, params, options) {
  * Init dashboard filter/nav
  */
 elgg.todo.initDashboardNavigation = function() {
+	// Set up autocompletes
+	$('#todo-dashboard-menu-container input.elgg-input-autocomplete').each(function(idx) {
+		// Nuke original
+		$(this).autocomplete({source: []});
+
+		// Re-init
+		var source_url = elgg.get_site_url() + 'livesearch?match_on=' + $(this).data('match_on');
+		$(this).autocomplete({
+			source: source_url,
+			minLength: 2,
+			html: "html",
+			select: function(event, ui) {
+				var username = ui.item.value;
+
+				$(this).val(username);
+
+				// Disable elements
+				elgg.todo.setEnabledState($(this), false);
+
+				// Populate, push state
+				elgg.todo.listHandler(true);
+			},
+		});
+	});
+
+	// Init clearable text inputs
+	$('input.todo-dashboard-clearable').wrap('<span class="todo-clear-icon" />').after($('<span/>').click(function() {
+		var $element = $(this).prev('input');
+
+		$element.val('').focus();
+
+		// Try to enable elements
+		elgg.todo.setEnabledState($element, true);
+
+		// Populate, push state
+		elgg.todo.listHandler(true);
+	}));
+
 	// Handle advanced click
 	$('.todo-dashboard-show-advanced').live('click', function(event) {
 		$(this).toggleClass('advanced-off').toggleClass('advanced-on');
@@ -1092,7 +1140,7 @@ elgg.todo.initDashboardNavigation = function() {
 		}
 
 		// Use the list handler
-		elgg.todo.listHandler($(this), true);
+		elgg.todo.listHandler(true);
 
 		event.preventDefault();
 	});
@@ -1107,19 +1155,19 @@ elgg.todo.initDashboardNavigation = function() {
 		$(this).val(link_params['offset']);
 
 		// Use the trusty list handler with this element
-		elgg.todo.listHandler($(this), true);
+		elgg.todo.listHandler(true);
 
 		event.preventDefault();
 	});
 
 	// If the content container is empty (first load, populate it from params)
 	if ($('#todo-dashboard-content-container').is(':empty')) {
-		elgg.todo.listHandler(null, false);
+		elgg.todo.listHandler(false);
 	}
 
 	// Add popstate event listener
-	window.addEventListener("popstate", function(e) {
-	    elgg.todo.listHandler(null, false)
+	window.addEventListener("popstate", function(event) {
+	    elgg.todo.listHandler(false)
 	});
 }
 
@@ -1128,10 +1176,18 @@ elgg.todo.initDashboardNavigation = function() {
  */
 elgg.todo.handleDashboardChange = function(hook, type, params, handler) {
 	// Check if we're dealing with a todo dashboard filter
-	if (params.element.hasClass('todo-dashboard-filter')) {
+	if (params.element.hasClass('todo-dashboard-filter')) {	
 		return function() {
+			if (params.element.val() == 0) {
+				// Try to enable elements
+				elgg.todo.setEnabledState(params.element, true);
+			} else {
+				// Disable elements as required
+				elgg.todo.setEnabledState(params.element, false);
+			}
+			
 			// Use the todo list handler
-			elgg.todo.listHandler(params.element, true);
+			elgg.todo.listHandler(true);
 		}
 	} else {
 		return handler;
@@ -1139,18 +1195,74 @@ elgg.todo.handleDashboardChange = function(hook, type, params, handler) {
 }
 
 /**
- * Todo list handler, responsible for populating the dashboard with content and pushing state
+ * Disable/enable elements in another elements disables list
  *
- * @param  obj  $element   Element that triggered the event
- * @param  bool pushState  Wether or not to push a new state
+ * @param $element The element triggering the disable/enable
+ * @param state    Enable/Disable (true/false)
+ */
+elgg.todo.setEnabledState = function($element, state) {
+	// Enable
+	if ($element.data('disables')) {
+		if (state) {
+			// Determine if we can enable elements
+			var do_enable = true;
+
+			// Get all disableable elements matching this elements disable list
+			$('[data-disables="' + $element.attr('data-disables') + '"]').each(function(i) {
+				// Check if element is empty or not
+				if ($(this).val() && $(this).val() !== '0') {
+					// Not empty, keep this element disabled!
+					do_enable = false;
+				}
+			});
+
+			// If we're clear to enable..
+			if (do_enable) {
+				// Re-enable the necessary elements
+				$.each($element.data('disables'), function(idx,item) {
+					if ($(item).is(':disabled')) {
+						$(item).attr('disabled', false).trigger("chosen:updated");
+					}
+				});
+			}
+
+
+		} else { // Disable
+			$.each($element.data('disables'), function(idx,item){
+				if ($(item).is(':enabled')) {
+					$(item).attr('disabled', true).trigger("chosen:updated");
+				}
+			});
+		}
+	}
+}
+
+/**
+ * Todo list handler, responsible for populating the dashboard with content
+ * and pushing/popping state
+ *
+ * Usage:
+ * 
+ * Call this function with doPushState = true if you want to push a new state.
+ * Pass false to respond to popState events
+ *
+ * Elements in the dashboard have a data-param attribute, the value of the element is 
+ * used for the paramter
+ * ie: param = context, context = value
+ * 
+ * Elements can also supply data-disables, any matching elements/inputs will be disabled
+ * upon change/selection
+ *
+ * @param  bool doPushState  Wether or not to push a new state (pass false for popState)
  * @return void
  */
-elgg.todo.listHandler = function ($element, pushState) {
+elgg.todo.listHandler = function (doPushState) {
+	// Show loader
 	$('#todo-dashboard-content-container').html("<div class='elgg-ajax-loader'></div>");
 
+	// Get querystring, if available
 	var query_index = window.location.href.indexOf('?');
 
-	// Check for params
 	if (query_index != -1) {
 		var params = deParam(window.location.href.slice(query_index + 1));
 		var base_url = window.location.href.slice(0, query_index);
@@ -1160,31 +1272,75 @@ elgg.todo.listHandler = function ($element, pushState) {
 		var base_url = window.location.href;
 	}
 
-	// If we were passed an element, update it's data param
-	if ($element) {
-		var param = $element.data('param');
-		params[param] = $element.val();
-	}
+	// If we're not pushing state
+	if (!doPushState) {
+		var bound_params = new Array();
 
-	// Push that state!
-	if (pushState) {
+		// Loop over available params
+		$.each(params, function(idx, val) {
+			// Get elements matching this param
+			var $element = $(".todo-dashboard-filter[data-param='" + idx + "']");
+
+			// Push updated element to bound params list
+			bound_params.push(idx);
+			
+			// Set elements value
+			$element.val(val);
+
+			// Handle sort order here manually for now
+			if ($element.is('a.todo-dashboard-sort')) {
+				if ($element.val() == 'ASC') {
+					$element.addClass('descending').removeClass('ascending');
+					$element.html(elgg.echo('todo:label:sortdesc'));
+				} else if ($element.val() == 'DESC') {
+					$element.addClass('ascending').removeClass('descending');
+					$element.html(elgg.echo('todo:label:sortasc'));
+				}
+			}
+
+			// If element is in the 'advanced' menu, make sure the menu is open
+			if ($element.closest('.todo-dashboard-menu-advanced').length) {
+				$('.todo-dashboard-menu-advanced').show();
+				$('.todo-dashboard-show-advanced').toggleClass('advanced-off').toggleClass('advanced-on');
+				elgg.todo.lateChosenInit();
+			}
+
+			// Update chosen
+			$element.trigger('chosen:updated');
+
+			// Disable elements
+			elgg.todo.setEnabledState($element, false);
+		});
+
+		// Check for unbound params
+		$('.todo-dashboard-filter[data-param]').each(function(idx) {
+			// If not bound above
+			if ($.inArray($(this).data('param'), bound_params) == -1) {
+				// Clear the value
+				$(this).val('');
+
+				// Re-enable if element previously disabled an element
+				elgg.todo.setEnabledState($(this), true);
+			}
+		}); 
+	} else {
+		// We're pusing state
+		$('.todo-dashboard-filter[data-param]').each(function(idx) {
+			// If this element has a value, and is enabled (or an anchor element)
+			if ($(this).val() && ($(this).is(':enabled') || $(this).is('a'))) {
+				params[$(this).data('param')] = $(this).val();
+			} else {
+				// Clear it out
+				delete params[$(this).data('param')];
+			}
+		});
+
+		// Push it real good
 		history.pushState({}, elgg.echo('todo:title:dashboard'), base_url + "?" + $.param(params));
 	}
 
-	// Make sure the appropriate inputs are selected on state change
-	$.each(params, function(idx, val) {
-		// Get select for each available parameter
-		var $select = $("#todo-dashboard-menu-container").find("[data-param='" + idx + "']");
-		
-		// Set new value
-		$select.val(val);
-
-		// Update chosen
-		$select.trigger('chosen:updated');
-	});
-
 	// Include any hidden inputs (ie page owner)
-	$('.todo-dashboard-hidden-filter').each(function(idx) {
+	$('.todo-dashboard-hidden-filter:enabled').each(function(idx) {
 		params[$(this).attr('name')] = $(this).val();
 	});
 
@@ -1217,118 +1373,118 @@ elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showC
 
 // Fix for goofy chrome 'empty' states, from: http://stackoverflow.com/a/18126524/1202510   
 (function() {
-    // There's nothing to do for older browsers ;)
-    if (!window.addEventListener)
-        return;
-    var blockPopstateEvent = true;
-    window.addEventListener("load", function() {
-        // The timeout ensures that popstate-events will be unblocked right
-        // after the load event occured, but not in the same event-loop cycle.
-        setTimeout(function(){ blockPopstateEvent = false; }, 0);
-    }, false);
-    window.addEventListener("popstate", function(evt) {
-        if (blockPopstateEvent && document.readyState=="complete") {
-            evt.preventDefault();
-            evt.stopImmediatePropagation();
-        }
-    }, false);
+// There's nothing to do for older browsers ;)
+if (!window.addEventListener)
+    return;
+var blockPopstateEvent = true;
+window.addEventListener("load", function() {
+    // The timeout ensures that popstate-events will be unblocked right
+    // after the load event occured, but not in the same event-loop cycle.
+    setTimeout(function(){ blockPopstateEvent = false; }, 0);
+}, false);
+window.addEventListener("popstate", function(evt) {
+    if (blockPopstateEvent && document.readyState=="complete") {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+    }
+}, false);
 })();
 
 // Check if string starts with str
 String.prototype.startsWith = function(str){
-    return (this.indexOf(str) === 0);
+return (this.indexOf(str) === 0);
 }
 
 // Deparam function (from: https://gist.github.com/dancrew32/1163405)
 function deParam (params, coerce) {
-	var obj = {};
-	var coerce_types = { 'true': !0, 'false': !1, 'null': null };
-	var decode = decodeURIComponent;
+var obj = {};
+var coerce_types = { 'true': !0, 'false': !1, 'null': null };
+var decode = decodeURIComponent;
 
-	// Iterate over all name=value pairs.
-	$.each(params.replace(/\+/g, ' ').split('&'), function(j, v){
-			var param = v.split( '=' ),
-			key = decode(param[0]),
-			val,
-			cur = obj,
-			i = 0,
+// Iterate over all name=value pairs.
+$.each(params.replace(/\+/g, ' ').split('&'), function(j, v){
+		var param = v.split( '=' ),
+		key = decode(param[0]),
+		val,
+		cur = obj,
+		i = 0,
 
-			// If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
-			// into its component parts.
-			keys = key.split(']['),
-			keys_last = keys.length - 1;
+		// If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+		// into its component parts.
+		keys = key.split(']['),
+		keys_last = keys.length - 1;
 
-			// If the first keys part contains [ and the last ends with ], then []
-			// are correctly balanced.
-			if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
-			// Remove the trailing ] from the last keys part.
-			keys[keys_last] = keys[keys_last].replace(/\]$/, '');
+		// If the first keys part contains [ and the last ends with ], then []
+		// are correctly balanced.
+		if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+		// Remove the trailing ] from the last keys part.
+		keys[keys_last] = keys[keys_last].replace(/\]$/, '');
 
-			// Split first keys part into two parts on the [ and add them back onto
-			// the beginning of the keys array.
-			keys = keys.shift().split('[').concat(keys);
+		// Split first keys part into two parts on the [ and add them back onto
+		// the beginning of the keys array.
+		keys = keys.shift().split('[').concat(keys);
 
-			keys_last = keys.length - 1;
-			} else {
-				// Basic 'foo' style key.
-				keys_last = 0;
+		keys_last = keys.length - 1;
+		} else {
+			// Basic 'foo' style key.
+			keys_last = 0;
+		}
+
+		// Are we dealing with a name=value pair, or just a name?
+		if (param.length === 2) {
+			val = decode(param[1]);
+
+			// Coerce values.
+			if (coerce) {
+				val = val && !isNaN(val)            ? +val              // number
+					: val === 'undefined'             ? undefined         // undefined
+					: coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
+					: val;                                                // string
 			}
 
-			// Are we dealing with a name=value pair, or just a name?
-			if (param.length === 2) {
-				val = decode(param[1]);
-
-				// Coerce values.
-				if (coerce) {
-					val = val && !isNaN(val)            ? +val              // number
-						: val === 'undefined'             ? undefined         // undefined
-						: coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
-						: val;                                                // string
+			if (keys_last) {
+				// Complex key, build deep object structure based on a few rules:
+				// * The 'cur' pointer starts at the object top-level.
+				// * [] = array push (n is set to array length), [n] = array if n is 
+				//   numeric, otherwise object.
+				// * If at the last keys part, set the value.
+				// * For each keys part, if the current level is undefined create an
+				//   object or array based on the type of the next keys part.
+				// * Move the 'cur' pointer to the next level.
+				// * Rinse & repeat.
+				for ( ; i <= keys_last; i++) {
+					key = keys[i] === '' ? cur.length : keys[i];
+					cur = cur[key] = i < keys_last
+						? cur[key] || (keys[i+1] && isNaN( keys[i+1] ) ? {} : [])
+						: val;
 				}
 
-				if (keys_last) {
-					// Complex key, build deep object structure based on a few rules:
-					// * The 'cur' pointer starts at the object top-level.
-					// * [] = array push (n is set to array length), [n] = array if n is 
-					//   numeric, otherwise object.
-					// * If at the last keys part, set the value.
-					// * For each keys part, if the current level is undefined create an
-					//   object or array based on the type of the next keys part.
-					// * Move the 'cur' pointer to the next level.
-					// * Rinse & repeat.
-					for ( ; i <= keys_last; i++) {
-						key = keys[i] === '' ? cur.length : keys[i];
-						cur = cur[key] = i < keys_last
-							? cur[key] || (keys[i+1] && isNaN( keys[i+1] ) ? {} : [])
-							: val;
-					}
+			} else {
+				// Simple key, even simpler rules, since only scalars and shallow
+				// arrays are allowed.
+
+				if ($.isArray(obj[key])) {
+					// val is already an array, so push on the next value.
+					obj[key].push(val);
+
+				} else if (obj[key] !== undefined) {
+					// val isn't an array, but since a second value has been specified,
+					// convert val into an array.
+					obj[key] = [obj[key], val];
 
 				} else {
-					// Simple key, even simpler rules, since only scalars and shallow
-					// arrays are allowed.
-
-					if ($.isArray(obj[key])) {
-						// val is already an array, so push on the next value.
-						obj[key].push(val);
-
-					} else if (obj[key] !== undefined) {
-						// val isn't an array, but since a second value has been specified,
-						// convert val into an array.
-						obj[key] = [obj[key], val];
-
-					} else {
-						// val is a scalar.
-						obj[key] = val;
-					}
+					// val is a scalar.
+					obj[key] = val;
 				}
-
-			} else if (key) {
-				// No value was defined, so set something meaningful.
-				obj[key] = coerce
-					? undefined
-					: '';
 			}
-	});
 
-	return obj;
+		} else if (key) {
+			// No value was defined, so set something meaningful.
+			obj[key] = coerce
+				? undefined
+				: '';
+		}
+});
+
+return obj;
 }

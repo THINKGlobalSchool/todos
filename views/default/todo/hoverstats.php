@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  * 
  * @uses $vars
@@ -26,11 +26,11 @@ $this_week_label = elgg_echo('todo:label:nextweek');
 
 $user = elgg_get_logged_in_user_entity();
 
-$url = elgg_get_site_url() . "todo/dashboard/{$user->username}?type=assigned&status=incomplete&u={$user->guid}";
+$url = elgg_get_site_url() . "todo/dashboard/{$user->username}?context=assigned&status=incomplete";
 
-$today_url = $url . "&filter_priority=" . TODO_PRIORITY_TODAY;
-$this_week_url = $url . "&filter_priority=" . TODO_PRIORITY_MEDIUM;
-$past_url = $url . "&filter_priority=" . TODO_PRIORITY_HIGH;
+$today_url = $url . "&priority=" . TODO_PRIORITY_TODAY;
+$this_week_url = $url . "&priority=" . TODO_PRIORITY_MEDIUM;
+$past_url = $url . "&priority=" . TODO_PRIORITY_HIGH;
 $upcoming_url = $url . "&sort_order=DESC";
 
 // Show iPlan if enabled
@@ -45,7 +45,6 @@ if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
 		<td colspan='2' class='todo-iplan-hover'>$iplan_link</td>
 	</tr>";
 }
-
 
 $content = <<<HTML
 	<span id='todo-topbar-hover'>
