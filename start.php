@@ -14,6 +14,7 @@
 /*********************** @TODO: (Code related) ************************/
 // - Implement calendar views, link in extras bar to switch
 // - Widget
+// - Hide 'x' in inputs when there is no value
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -1901,7 +1902,7 @@ function todo_dashboard_tab_menu_setup($hook, $type, $value, $params) {
 		$options = array(
 			'name' => 'dashboard-tab-submissions',
 			'href' => 'todo/dashboard/submissions',
-			'text' => elgg_echo('todo:label:submissions'),
+			'text' => elgg_echo('todo:label:mysubmissions'),
 			'encode_text' => false,
 			'priority' => 200,
 			'selected' => get_input('submission_tab_selected', false)

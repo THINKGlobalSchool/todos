@@ -86,6 +86,7 @@ $english = array(
 	'todo:label:datecompleted' => 'Completed',
 	'todo:label:submission' => 'Submission',
 	'todo:label:submissions' => 'Submissions',
+	'todo:label:mysubmissions' => 'My Submissions',
 	'todo:label:complete' => 'Complete',
 	'todo:label:completeincludingclosed' => 'Complete (Including Closed)',
 	'todo:label:accept' => 'Accept',

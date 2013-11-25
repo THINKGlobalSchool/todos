@@ -830,19 +830,18 @@ td.todo-iplan-hover a {
 
 /**	Todo Dashboard Menu (new) **/
 #todo-dashboard-menu-container {
-	background: none repeat scroll 0 0 #CCCCCC;
-	box-shadow: 1px 1px 1px #555555;
-	padding: 5px;
-	width: 99%;
+	background: none repeat scroll 0 0 #EEEEEE;
+    padding: 11px;
+    width: auto;
 }
 
 #todo-dashboard-menu-container > ul > li label { 
-	margin-right: 5px;
+	margin-right: 7px;
 }
 
 #todo-dashboard-menu-container > ul > li {
 	display: inline-block;
-	margin-right: 5px;
+	margin-right: 10px;
 }
 
 #todo-dashboard-menu-container  li input {
@@ -853,13 +852,13 @@ td.todo-iplan-hover a {
 }
 
 ul.todo-dashboard-menu-extras {
-	border-top: 1px dotted #AAAAAA;
+	border-top: 1px dotted #CCC;
 	margin-top: 4px;
 	overflow: auto;
 }
 
 ul.todo-dashboard-menu-advanced {
-	border-top: 1px dotted #AAAAAA;
+	border-top: 1px dotted #CCC;
 	margin-top: 4px;
 	padding-top: 4px;
 	display: none;
