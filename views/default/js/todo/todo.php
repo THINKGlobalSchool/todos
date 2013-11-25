@@ -1149,10 +1149,12 @@ elgg.todo.initDashboardNavigation = function() {
 	$('#todo-dashboard-content .elgg-pagination a').live('click', function(event) {
 		// Get link params
 		var link_params = deParam($(this).attr('href').slice($(this).attr('href').indexOf('?') + 1));
-		
+
 		// Set data attribute and value of offset
-		$(this).attr('data-param', 'offset');
+		$(this).attr('data-param', 'offset').data('param', 'offset');
 		$(this).val(link_params['offset']);
+
+		console.log($(this).data('param'));
 
 		// Use the trusty list handler with this element
 		elgg.todo.listHandler(true);
@@ -1257,9 +1259,6 @@ elgg.todo.setEnabledState = function($element, state) {
  * @return void
  */
 elgg.todo.listHandler = function (doPushState) {
-	// Show loader
-	$('#todo-dashboard-content-container').html("<div class='elgg-ajax-loader'></div>");
-
 	// Get querystring, if available
 	var query_index = window.location.href.indexOf('?');
 
@@ -1324,8 +1323,9 @@ elgg.todo.listHandler = function (doPushState) {
 			}
 		}); 
 	} else {
-		// We're pusing state
-		$('.todo-dashboard-filter[data-param]').each(function(idx) {
+		// We're pushing state
+		$('[data-param]').each(function(idx) {
+			console.log($(this));
 			// If this element has a value, and is enabled (or an anchor element)
 			if ($(this).val() && ($(this).is(':enabled') || $(this).is('a'))) {
 				params[$(this).data('param')] = $(this).val();
@@ -1343,6 +1343,9 @@ elgg.todo.listHandler = function (doPushState) {
 	$('.todo-dashboard-hidden-filter:enabled').each(function(idx) {
 		params[$(this).attr('name')] = $(this).val();
 	});
+
+	// Show loader
+	$('#todo-dashboard-content-container').html("<div class='elgg-ajax-loader'></div>");
 
 	// Load data
 	elgg.get(elgg.todo.ajaxListURL, {
