@@ -144,6 +144,8 @@ function todo_get_page_content_settings_notifications() {
  *
  * assigner_guid       => NULL|INT get todo's assigned by this user guid (used in owned context )
  * 
+ * submission          => 'yes' | 'no' | null - get todos with/without a submission required
+ * 
  * container_guid      => NULL|INT get todo's assigned by container guid (used in all/owned context)
  * 
  * sort_order          => STRING ASC|DESC
@@ -275,6 +277,19 @@ function get_todos(array $params) {
 		$due_joins[] = "JOIN {$dbprefix}metastrings mf_value on mf_table.value_id = mf_value.id";		
 
 	 	$due_where = "(mf_name.string = 'due_date' AND (mf_value.string > {$due_start} AND mf_value.string <= {$due_end}))";
+	}
+
+	// Check for submission param
+	if (in_array($params['submission'], array('yes', 'no'))) {
+		$submission_joins[] = "JOIN {$dbprefix}metadata msr_table on e.guid = msr_table.entity_guid";
+		$submission_joins[] = "JOIN {$dbprefix}metastrings msr_name on msr_table.name_id = msr_name.id";
+		$submission_joins[] = "JOIN {$dbprefix}metastrings msr_value on msr_table.value_id = msr_value.id";
+
+		if ($params['submission'] == 'yes') {
+			$submission_where = "(msr_name.string = 'return_required' AND msr_value.string = 1)";
+		} else {
+			$submission_where = "(msr_name.string = 'return_required' AND msr_value.string = 0)";
+		}
 	}
 	
 	// Get options by context
@@ -415,7 +430,6 @@ function get_todos(array $params) {
 						AND r2.guid_two = e.guid)";
 			}
 
-			// Due filter
 			$joins = $due_joins;
 			$wheres[] = $due_where;
 
@@ -428,6 +442,16 @@ function get_todos(array $params) {
 
 			break;
 	}
+
+	// Add other global joins
+	if (!is_array($options['joins'])) {
+		$options['joins'] = $submission_joins;
+	} else {
+		$options['joins'] = array_merge($options['joins'], $submission_joins);
+	}
+
+	// Add other global wheres
+	$options['wheres'][] = $submission_where;
 
 	// Trigger a hook to allow plugins to provice extra options when getting todos
 	$options = elgg_trigger_plugin_hook('get_options', 'todo', $params, $options);

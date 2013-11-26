@@ -16,6 +16,7 @@ $filter_priority = get_input('priority', 0);
 $status = get_input('status', 'incomplete');
 $sort_order = get_input('sort_order', 'DESC');
 $container_guid = get_input('container_guid', null);
+$submission = get_input('submission', null);
 
 // May be passed usernames in assignee/assigner params
 $assignee = get_user_by_username(get_input('assignee', false));
@@ -31,6 +32,8 @@ if ($assigner && !$assignee) {
 	$context = "assigned";
 }
 
+
+
 $context = get_input('context', $context); // Use input, or use computed context
 
 // Get todos options	
@@ -39,8 +42,9 @@ $options = array(
 	'status' => $status,
 	'sort_order' => $sort_order,
 	'container_guid' => $container_guid,
-	'assigner_guid' => $assigner_guid, // todo
-	'assignee_guid' => $assignee_guid, // todo
+	'assigner_guid' => $assigner_guid,
+	'assignee_guid' => $assignee_guid,
+	'submission' => $submission,
 	'list' => TRUE,
 	'limit' => 15,
 );

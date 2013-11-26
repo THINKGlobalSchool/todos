@@ -1055,6 +1055,7 @@ elgg.todo.setupMenuInputs = function (hook, type, params, options) {
 		'todo-due-filter',
 		'todo-status-filter',
 		'todo-view-filter',
+		'todo-submission-filter',
 		'todo-submission-return-filter',
 		'todo-submission-ontime-filter'
 	);
@@ -1064,10 +1065,21 @@ elgg.todo.setupMenuInputs = function (hook, type, params, options) {
 		options.disable_search = true;
 	}
 
+	// Allow deselect for these ids
+	var allow_deselect_ids = new Array(
+		'todo-submission-filter',
+		'todo-group-filter',
+		'todo-group-categories-filter'
+	);
+
 	// Set deselect for dashboard inputs
-	if (params.id == 'todo-group-filter' || params.id == 'todo-group-categories-filter') {
+	if ($.inArray(params.id, allow_deselect_ids) != -1) {
 		options.width = "135px";
 		options.allow_single_deselect = true;
+	}
+
+	if (params.id == 'todo-submission-filter') {
+		options.width = "60px";
 	}
 
 	return options;
@@ -1271,7 +1283,7 @@ elgg.todo.valuePopulatedHandler = function(hook, type, params, value) {
 	}
 
 	// If element is in the 'advanced' menu, make sure the menu is open
-	if ($element.closest('.todo-dashboard-menu-advanced').length) {
+	if ($element.closest('.todo-dashboard-menu-advanced').length && $element.val() != 0) {
 		$('.todo-dashboard-menu-advanced').show();
 		$('.todo-dashboard-show-advanced').toggleClass('advanced-off').toggleClass('advanced-on');
 		elgg.todo.lateChosenInit();
