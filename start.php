@@ -1868,6 +1868,32 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 	// $value[] = ElggMenuItem::factory($options);
 
+	// Submission required advanced filter
+	$submission_required_input = elgg_view('input/chosen_dropdown', array(
+		'id' => 'todo-submission-filter',
+		'options_values' => array(
+			0 => '',
+			'yes' => elgg_echo('todo:label:yes'),
+			'no' => elgg_echo('todo:label:no'),
+		),
+		'value' => 0,
+		'class' => 'todo-dashboard-filter',
+		'data-param' => 'submission',
+		'data-placeholder' => elgg_echo('todo:label:selectoption'),
+	));
+
+	$options = array(
+		'name' => 'submission-required-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:submissionrequired'),
+		'text' => $submission_required_input,
+		'encode_text' => false,
+		'section' => 'advanced',
+		'priority' => 99
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
 	// Add context item (conditionally created above)
 	$value[] = ElggMenuItem::factory($context_options);
 

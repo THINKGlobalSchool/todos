@@ -175,6 +175,7 @@ $english = array(
 	'todo:label:mytodos' => 'My To Do\'s',
 	'todo:label:nosubmissionrequired' => 'No Submission Required',
 	'todo:label:selectagroup' => 'Select a group',
+	'todo:label:selectoption' => 'Select an option',
 	'todo:label:nogroups' => 'No groups',
 	'todo:label:groupclass' => 'Group/Class',
 	'todo:label:selectgroupsmulti' => 'Click here to select group(s)..',
