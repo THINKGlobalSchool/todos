@@ -1103,10 +1103,21 @@ elgg.todo.initDashboardNavigation = function() {
 	});
 
 	// Init clearable text inputs
-	$('input.todo-dashboard-clearable').wrap('<span class="todo-clear-icon" />').after($('<span/>').click(function() {
+	$('input.todo-dashboard-clearable').live('change paste keyup', function(event) {
+		var $span = $(this).next('span');
+		console.log($span.val());
+		if ($(this).val()) {
+			$span.show();
+		} else {
+			$span.hide();
+		}
+		
+	}).wrap('<span class="todo-clear-icon" />').after($('<span/>').click(function() {
 		var $element = $(this).prev('input');
 
 		$element.val('').focus();
+
+		$element.next('span').hide();
 
 		// Try to enable elements
 		elgg.todo.setEnabledState($element, true);
@@ -1153,8 +1164,6 @@ elgg.todo.initDashboardNavigation = function() {
 		// Set data attribute and value of offset
 		$(this).attr('data-param', 'offset').data('param', 'offset');
 		$(this).val(link_params['offset']);
-
-		console.log($(this).data('param'));
 
 		// Use the trusty list handler with this element
 		elgg.todo.listHandler(true);
@@ -1240,6 +1249,36 @@ elgg.todo.setEnabledState = function($element, state) {
 }
 
 /**
+ * Perform extra tasks for elements populated by popstate
+ */
+elgg.todo.valuePopulatedHandler = function(hook, type, params, value) {
+	var $element = params['element'];
+
+	// Handle clearable elements
+	if ($element.is('.todo-dashboard-clearable')) {
+		$element.next('span').show();
+	}
+
+	// Handle sort order
+	if ($element.is('a.todo-dashboard-sort')) {
+		if ($element.val() == 'ASC') {
+			$element.addClass('descending').removeClass('ascending');
+			$element.html(elgg.echo('todo:label:sortdesc'));
+		} else if ($element.val() == 'DESC') {
+			$element.addClass('ascending').removeClass('descending');
+			$element.html(elgg.echo('todo:label:sortasc'));
+		}
+	}
+
+	// If element is in the 'advanced' menu, make sure the menu is open
+	if ($element.closest('.todo-dashboard-menu-advanced').length) {
+		$('.todo-dashboard-menu-advanced').show();
+		$('.todo-dashboard-show-advanced').toggleClass('advanced-off').toggleClass('advanced-on');
+		elgg.todo.lateChosenInit();
+	}
+}
+
+/**
  * Todo list handler, responsible for populating the dashboard with content
  * and pushing/popping state
  *
@@ -1286,23 +1325,8 @@ elgg.todo.listHandler = function (doPushState) {
 			// Set elements value
 			$element.val(val);
 
-			// Handle sort order here manually for now
-			if ($element.is('a.todo-dashboard-sort')) {
-				if ($element.val() == 'ASC') {
-					$element.addClass('descending').removeClass('ascending');
-					$element.html(elgg.echo('todo:label:sortdesc'));
-				} else if ($element.val() == 'DESC') {
-					$element.addClass('ascending').removeClass('descending');
-					$element.html(elgg.echo('todo:label:sortasc'));
-				}
-			}
-
-			// If element is in the 'advanced' menu, make sure the menu is open
-			if ($element.closest('.todo-dashboard-menu-advanced').length) {
-				$('.todo-dashboard-menu-advanced').show();
-				$('.todo-dashboard-show-advanced').toggleClass('advanced-off').toggleClass('advanced-on');
-				elgg.todo.lateChosenInit();
-			}
+			// Trigger a hook for populated value
+			elgg.trigger_hook('value_populated', 'todo_dashboard', {'element' : $element});
 
 			// Update chosen
 			$element.trigger('chosen:updated');
@@ -1325,7 +1349,6 @@ elgg.todo.listHandler = function (doPushState) {
 	} else {
 		// We're pushing state
 		$('[data-param]').each(function(idx) {
-			console.log($(this));
 			// If this element has a value, and is enabled (or an anchor element)
 			if ($(this).val() && ($(this).is(':enabled') || $(this).is('a'))) {
 				params[$(this).data('param')] = $(this).val();
@@ -1364,10 +1387,14 @@ elgg.todo.listHandler = function (doPushState) {
 // Main hook
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
 
+// Other hooks
+elgg.register_hook_handler('value_populated', 'todo_dashboard', elgg.todo.valuePopulatedHandler);
+
 // Chosen hooks
 elgg.register_hook_handler('change', 'chosen.js', elgg.todo.handleDashboardChange);
 elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
 elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);
+
 
 // Other
 elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
