@@ -907,6 +907,7 @@ span.todo-clear-icon span {
 	/*background: url('http://cdn.sstatic.net/stackoverflow/img/sprites.png?v=4') 0 -690px;*/
 	background: url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/x-sprite.png) no-repeat 0 0;
 	cursor: pointer;
+	display: none;
 }
 
 span.todo-clear-icon span:hover {
