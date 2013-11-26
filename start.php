@@ -14,7 +14,6 @@
 /*********************** @TODO: (Code related) ************************/
 // - Implement calendar views, link in extras bar to switch
 // - Widget
-// - Hide 'x' in inputs when there is no value
 
 elgg_register_event_handler('init', 'system', 'todo_init');
 
@@ -393,10 +392,6 @@ function todo_page_handler($page) {
 		
 			$params['title'] = elgg_echo('todo:title:dashboard');
 			$params['filter'] = FALSE;
-			
-			if (elgg_get_page_owner_guid() == elgg_get_logged_in_user_guid()) {
-				elgg_register_title_button();
-			}
 
 			set_input('owner_block_force_hidden', true);
 			if (!elgg_view_exists('topbaronly')) {
@@ -438,6 +433,11 @@ function todo_page_handler($page) {
 				set_input('assigner_guid', $user->guid);
 				set_input('assignee_guid', $user->guid);
 				$content = elgg_view('todo/dashboard');
+			}
+
+			// Add title button
+			if (elgg_get_page_owner_guid() == elgg_get_logged_in_user_guid()) {
+				elgg_register_title_button();
 			}
 
 			// Output the dashboard tab menu
