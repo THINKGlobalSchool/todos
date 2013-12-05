@@ -32,8 +32,6 @@ if ($assigner && !$assignee) {
 	$context = "assigned";
 }
 
-
-
 $context = get_input('context', $context); // Use input, or use computed context
 
 // Get todos options	
@@ -75,4 +73,4 @@ switch ($filter_priority) {
 		break;
 }	
 
-echo "<div id='todo-dashboard-content'>" . get_todos($options) . "</div>";
+echo get_todos($options);
