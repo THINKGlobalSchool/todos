@@ -432,7 +432,9 @@ function todo_page_handler($page) {
 				set_input('todo_tab_selected', true);
 				set_input('assigner_guid', $user->guid);
 				set_input('assignee_guid', $user->guid);
-				$content = elgg_view('todo/dashboard');
+				$content = elgg_view('filtrate/dashboard', array(
+					'menu_name' => 'todo_dashboard'
+				));
 			}
 
 			// Add title button
@@ -536,7 +538,9 @@ function todo_page_handler($page) {
 					set_input('todo_tab_selected', true);
 					elgg_push_breadcrumb($group->name);
 
-					$content = elgg_view('todo/dashboard');
+					$content = elgg_view('filtrate/dashboard', array(
+						'menu_name' => 'todo_dashboard'
+					));
 				}
 
 				// Output the dashboard tab menu
@@ -1635,7 +1639,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			TODO_PRIORITY_MEDIUM => elgg_echo("todo:label:nextweek"),
 			TODO_PRIORITY_LOW => elgg_echo("todo:label:future"),
 		),
-		'class' => 'todo-dashboard-filter',
+		'class' => 'filtrate-filter',
 		'data-param' => 'priority',
 		'value' => $priority,
 	));
@@ -1660,7 +1664,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'incomplete' => elgg_echo('todo:label:incomplete'),
 			'complete' => elgg_echo('todo:label:complete')
 		),
-		'class' => 'todo-dashboard-filter',
+		'class' => 'filtrate-filter',
 		'value' => $status,
 		'data-param' => 'status'
 	));
@@ -1682,7 +1686,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'name' => 'sort',
 		'href' => '#',
 		'text' => elgg_echo('todo:label:sortasc'),
-		'link_class' => 'menu-sort todo-dashboard-sort todo-dashboard-filter ascending',
+		'link_class' => 'menu-sort filtrate-sort filtrate-filter ascending',
 		'encode_text' => false,
 		'data-param' => 'sort_order',
 		'section' => 'extras',
@@ -1699,7 +1703,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'name' => 'page_owner',
 			'value' => elgg_get_page_owner_guid(),
 			'id' => 'hidden-page-owner',
-			'class' => 'todo-dashboard-hidden-filter',
+			'class' => 'filtrate-hidden-filter',
 		)),
 		'section' => 'extras',
 		'priority' => 0,
@@ -1717,7 +1721,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 				'assigned' => elgg_echo('todo:label:assignedtome'),
 				'owned' => elgg_echo('todo:label:assignedbyme')
 			),
-			'class' => 'todo-dashboard-filter',
+			'class' => 'filtrate-filter',
 			'data-param' => 'context',
 			'value' => $context,
 		));
@@ -1746,7 +1750,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			// Assigned by filter
 			$assigned_input = elgg_view('input/autocomplete', array(
 				'name' => 'assigner',
-				'class' => 'todo-dashboard-clearable todo-dashboard-filter',
+				'class' => 'filtrate-clearable filtrate-filter',
 				'data-param' => 'assigner',
 				'data-match_on' => 'users',
 				'data-disables' => '["#todo-context-filter", "#hidden-page-owner"]'
@@ -1765,7 +1769,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 			$assignee_input = elgg_view('input/autocomplete', array(
 				'name' => 'assignee',
-				'class' => 'todo-dashboard-clearable todo-dashboard-filter',
+				'class' => 'filtrate-clearable filtrate-filter',
 				'data-param' => 'assignee',
 				'data-match_on' => 'users',
 				'data-disables' => '["#todo-context-filter", "#hidden-page-owner"]'
@@ -1808,7 +1812,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'id' => 'todo-group-filter',
 			'options_values' => $groups_array,
 			'value' => $container_guid,
-			'class' => 'todo-dashboard-filter',
+			'class' => 'filtrate-filter',
 			'data-param' => 'container_guid',
 			'data-placeholder' => elgg_echo('todo:label:selectagroup')
 		));
@@ -1830,7 +1834,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		// Viewing a group, hard code the context
 		$context_input = elgg_view('input/hidden', array(
 			'id' => 'todo-hidden-context',
-			'class' => 'todo-dashboard-hidden-filter',
+			'class' => 'filtrate-hidden-filter',
 			'name' => 'context',
 			'value' => 'owned',
 		));
@@ -1852,7 +1856,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 	// 		1 => elgg_echo('todo:label:calendar')
 	// 	),
 	// 	'value' => 0,
-	// 	'class' => 'todo-dashboard-filter',
+	// 	'class' => 'filtrate-filter',
 	// 	// 'data-param' => 'container_guid'
 	// ));
 
@@ -1877,7 +1881,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 			'no' => elgg_echo('todo:label:no'),
 		),
 		'value' => 0,
-		'class' => 'todo-dashboard-filter',
+		'class' => 'filtrate-filter',
 		'data-param' => 'submission',
 		'data-placeholder' => elgg_echo('todo:label:selectoption'),
 	));

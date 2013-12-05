@@ -265,6 +265,7 @@ function get_todos(array $params) {
 
 	 	$due_where = "(mf_name.string = 'due_date' AND mf_value.string {$due_operand} {$due_date})";
 	} else if ($params['due_start'] && $params['due_end']) {
+
 		// Due between start and end date
 		$due_start = $params['due_start'];
 		$due_end = $params['due_end'];
@@ -291,7 +292,7 @@ function get_todos(array $params) {
 			$submission_where = "(msr_name.string = 'return_required' AND msr_value.string = 0)";
 		}
 	}
-	
+
 	// Get options by context
 	switch($params['context']) {
 		case 'all':
@@ -446,7 +447,7 @@ function get_todos(array $params) {
 	// Add other global joins
 	if (!is_array($options['joins'])) {
 		$options['joins'] = $submission_joins;
-	} else {
+	} else if (is_array($submission_joins)) {
 		$options['joins'] = array_merge($options['joins'], $submission_joins);
 	}
 
