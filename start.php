@@ -433,7 +433,14 @@ function todo_page_handler($page) {
 				set_input('assigner_guid', $user->guid);
 				set_input('assignee_guid', $user->guid);
 				$content = elgg_view('filtrate/dashboard', array(
-					'menu_name' => 'todo_dashboard'
+					'menu_name' => 'todo_dashboard',
+					'list_url' => elgg_get_site_url() . 'ajax/view/todo/list',
+					'default_params' => array(
+						'context' => 'assigned',
+						'priority' => 0,
+						'status' => 'incomplete',
+						'sort_order' => 'DESC'
+					)
 				));
 			}
 
@@ -539,7 +546,14 @@ function todo_page_handler($page) {
 					elgg_push_breadcrumb($group->name);
 
 					$content = elgg_view('filtrate/dashboard', array(
-						'menu_name' => 'todo_dashboard'
+						'menu_name' => 'todo_dashboard',
+						'list_url' => elgg_get_site_url() . 'ajax/view/todo/list',
+						'default_params' => array(
+							'context' => 'assigned',
+							'priority' => 0,
+							'status' => 'incomplete',
+							'sort_order' => 'DESC'
+						)
 					));
 				}
 
