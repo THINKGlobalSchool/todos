@@ -270,7 +270,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');
 
 	// Register todo roles omni widget
-	//elgg_register_widget_type('omnitodo', elgg_echo('todo:widget:omni_title'), elgg_echo('todo:widget:omni_desc'), 'rolewidget');
+	elgg_register_widget_type('todo', elgg_echo('todo:widget:todo_title'), elgg_echo('todo:widget:todo_desc'), 'rolewidget');
 
 	// Set up url handlers
 	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
@@ -815,8 +815,7 @@ function todo_profile_menu($hook, $type, $value, $params) {
 			'href' => elgg_get_site_url() . "todo/owner/{$params['owner']->username}",
 		);
 	}
-	
-	
+
 	if (elgg_instanceof($params['entity'], 'user')) {
 		$url = "todo/dashboard/{$params['entity']->username}";
 		$item = new ElggMenuItem('todo', elgg_echo('todo'), $url);
@@ -824,7 +823,7 @@ function todo_profile_menu($hook, $type, $value, $params) {
 		
 		// Add submissions (depends on access)
 		if (submissions_gatekeeper($params['entity']->guid)) {
-			$url = "todo/dashboard/{$params['entity']->username}?type=assigned&status=submissions";
+			$url = "todo/dashboard/submissions";
 			$item = new ElggMenuItem('todosubmissions', elgg_echo('item:object:todosubmission'), $url);
 			$value[] = $item;
 		}

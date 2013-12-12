@@ -8,9 +8,7 @@
  * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  *
- * @uses $vars['infinite_scroll'] Enable infinite scrolling
- * @uses $vars['list_url']        List endpoint URL
- * @uses $vars['default_params']  Initial/default params
+ * @uses $vars Menu vars
  */
 
 // Pass vars on to to filtrate
