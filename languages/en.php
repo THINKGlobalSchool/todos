@@ -389,8 +389,8 @@ To view %s's profile, click here:
 	'todo:error:nodata' => 'No data',
 
 	// Widgets
-	'todo:widget:omni_title' => 'To Do\'s',
-	'todo:widget:omni_desc' => 'The todo roles omni-widget',
+	'todo:widget:todo_title' => 'To Do\'s',
+	'todo:widget:todo_desc' => 'The todo widget',
 
 	// Other content
 	'groups:enabletodo' => 'Enable group to do\'s',
