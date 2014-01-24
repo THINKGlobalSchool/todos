@@ -25,7 +25,7 @@ if ($todo->grade_required) {
 	$colspan = 5;
 }
 
-if (!is_todo_admin()) {
+if ($todo->canEdit()) {
 	$remind_header = "<th><strong>" . elgg_echo('todo:label:reminder') . "</strong></th>";
 }
 
@@ -93,7 +93,7 @@ foreach ($assignees as $assignee) {
 		$grade_content = "<td id='assignee-grade-$assignee->guid' style='font-weight: bold;'>$grade</td>";
 	}
 
-	if (!is_todo_admin()) {
+	if ($todo->canEdit()) {
 		$remind_content = "<td>$reminder</td>";
 	}
 	
@@ -137,7 +137,6 @@ if ($todo->canEdit()) {
 	$content .= $download_content;
 	$content .= "<td>" . $remind_all . "</td></tr>";
 }
-
 
 $content .= '</tbody></table>';
 
