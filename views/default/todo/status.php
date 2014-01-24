@@ -126,7 +126,7 @@ if (get_todo_submissions_count($todo->guid)) {
 	$download_content = "<td>$download_files</td>";
 }
 
-if (!is_todo_admin()) {
+if ($todo->canEdit()) {
 	$remind_all = elgg_view("output/confirmlink", array(
 		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
 		'text' => elgg_echo('todo:label:remindall'),
