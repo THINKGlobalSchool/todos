@@ -413,11 +413,15 @@ function todo_page_handler($page) {
 				elgg_push_breadcrumb(elgg_echo('todo:label:submissions'));
 	
 				if (submissions_gatekeeper(elgg_get_logged_in_user_guid())) {
-					$content = "<div class='todo-user-submissions-content'>";
-					$content .= elgg_view('todo/user_submissions', array(
-						'user_guid' => $user->guid,
+					$content = elgg_view('filtrate/dashboard', array(
+						'menu_name' => 'todo_submission_dashboard',
+						'list_url' => elgg_get_site_url() . 'ajax/view/todo/submissions',
+						'default_params' => array(
+							'sort_order' => 'DESC',
+							'filter_return' => 1,
+							'filter_ontime' => 'all',
+						)
 					));
-					$content .= "</div>";
 				} else {
 					forward('todo/dashboard');
 				}
@@ -1999,64 +2003,91 @@ function todo_dashboard_tab_menu_setup($hook, $type, $value, $params) {
  * @return array
  */
 function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
-	// Date range picker	
+	// Start date input
+	$start_date_input = elgg_view('input/date', array(
+		'value' => $start_date,
+		'class' => 'filtrate-filter filtrate-clearable',
+		'data-param' => 'start_date',
+	));
+
 	$options = array(
-		'name' => 'todo_user_submissions_date_range',
+		'name' => 'todo-submissions-start-filter',
 		'href' => false,
-		'label' => elgg_echo('todo:label:date'),
-		'text' => elgg_view('input/text', array(
-			'name' => 'todo_user_submissions_date_input',
-			'class' => 'todo-user-submissions-date-input',
-			'readonly' => 'READONLY',
-		)),
+		'label' => elgg_echo('todo:label:startdate'),
+		'text' => $start_date_input,
 		'encode_text' => false,
 		'section' => 'main',
-		'priority' => 100,
+		'priority' => 100
 	);
 
-	$value[] = ElggMenuItem::factory($options);
+	$value[] = ElggMenuItem::factory($options);	
+
+	// End date input
+	$end_date_input = elgg_view('input/date', array(
+		'value' => $start_date,
+		'class' => 'filtrate-filter filtrate-clearable',
+		'data-param' => 'end_date',
+	));
+
+	$options = array(
+		'name' => 'todo-submissions-end-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:enddate'),
+		'text' => $end_date_input,
+		'encode_text' => false,
+		'section' => 'main',
+		'priority' => 200
+	);
+
+	$value[] = ElggMenuItem::factory($options);	
 
 	// Submission required dropdown	
+	$submission_required_input = elgg_view('input/chosen_dropdown', array(
+		'id' => 'todo-submission-return-filter',
+		'name' => 'todo_user_submission_return_dropdown',
+		'options_values' => array(
+			'all' => elgg_echo('all'),
+			1 => elgg_echo('todo:label:return'),
+			0 => 'No&nbsp;' . elgg_echo('todo:label:return'),
+		),
+		'value' => 1, // Return selected by default
+		'class' => 'filtrate-filter',
+		'data-param' => 'filter_return',
+	));
+
 	$options = array(
 		'name' => 'todo_user_submissions_return_filter',
 		'href' => false,
 		'label' => elgg_echo('todo:label:show'),
-		'text' => elgg_view('input/chosen_dropdown', array(
-			'id' => 'todo-submission-return-filter',
-			'name' => 'todo_user_submission_return_dropdown',
-			'options_values' => array(
-				'all' => elgg_echo('all'),
-				1 => elgg_echo('todo:label:return'),
-				0 => 'No&nbsp;' . elgg_echo('todo:label:return'),
-			),
-			'value' => 1, // Return selected by default
-			'class' => 'todo-user-submission-return-dropdown',
-		)),
+		'text' => $submission_required_input,
 		'encode_text' => false,
 		'section' => 'main',
-		'priority' => 200,
+		'priority' => 300,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
 
 	// On time filter
+	$ontime_input = elgg_view('input/chosen_dropdown', array(
+		'id' => 'todo-submission-ontime-filter',
+		'name' => 'todo_user_submission_ontime_dropdown',
+		'options_values' => array(
+			'all' => elgg_echo('all'),
+			1 => elgg_echo('todo:label:ontime'),
+			0 => 'Not&nbsp;' . elgg_echo('todo:label:ontime'),
+		),
+		'class' => 'filtrate-filter',
+		'data-param' => 'filter_ontime'
+	));
+
 	$options = array(
 		'name' => 'todo_user_submissions_ontime_filter',
 		'href' => false,
 		'label' => elgg_echo('todo:label:status'),
-		'text' => elgg_view('input/chosen_dropdown', array(
-			'id' => 'todo-submission-ontime-filter',
-			'name' => 'todo_user_submission_ontime_dropdown',
-			'options_values' => array(
-				'all' => elgg_echo('all'),
-				1 => elgg_echo('todo:label:ontime'),
-				0 => 'Not&nbsp;' . elgg_echo('todo:label:ontime'),
-			),
-			'class' => 'todo-user-submission-ontime-dropdown',
-		)),
+		'text' => $ontime_input,
 		'encode_text' => false,
 		'section' => 'main',
-		'priority' => 300,
+		'priority' => 400,
 	);
 
 	$value[] = ElggMenuItem::factory($options);
@@ -2075,6 +2106,30 @@ function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
 	);
 
 	$value[] = ElggMenuItem::factory($options);
+
+	// Admin options
+	if (is_todo_admin() || elgg_is_admin_logged_in()) {
+		// User filter
+		$user_input = elgg_view('input/autocomplete', array(
+			'name' => 'user',
+			'class' => 'filtrate-clearable filtrate-filter',
+			'data-param' => 'user',
+			'data-match_on' => 'users',
+		));
+
+		$options = array(
+			'name' => 'user-filter',
+			'label' => elgg_echo('todo:label:submitteduser'),
+			'text' => $user_input,
+			'href' => false,
+			'section' => 'advanced',
+			'priority' => 100,
+		);
+
+		$value[] = ElggMenuItem::factory($options);
+	}
+
+
 
 	return $value;
 }

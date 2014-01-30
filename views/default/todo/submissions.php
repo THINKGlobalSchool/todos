@@ -10,14 +10,17 @@
  */
 
 // Get inputs
-$user_guid = get_input('user_guid');
 $group_guid = get_input('group_guid', NULL);
 $sort_order = get_input('sort_order', 'DESC');
 $filter_return = get_input('filter_return');
 $filter_ontime = get_input('filter_ontime');
-$time_lower = get_input('time_lower', FALSE);
-$time_upper = get_input('time_upper', FALSE);
+$start_date = get_input('start_date', FALSE);
+$end_date = get_input('end_date', FALSE);
 $limit = get_input('limit', 10);
+
+// Get user (may be passed in via username or guid)
+$user = get_user_by_username(get_input('user', false));
+$user_guid = $user ? $user->guid : get_input('user_guid', elgg_get_logged_in_user_guid());
 
 // Empty wheres/joins arrays
 $wheres = array();
@@ -39,7 +42,7 @@ $wheres[] = "{$t1_suffix}";
 
 
 // If we were provided a return filter
-if ($filter_return !== NULL) {
+if ($filter_return !== 'all') {
 	// Access SQL
 	$n2_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table2", "guid_column" => "entity_guid"));
 	
@@ -60,7 +63,7 @@ if ($filter_return !== NULL) {
 
 
 // If we were provided an on time filter
-if ($filter_ontime !== NULL) {
+if ($filter_ontime !== 'all') {
 		$n3_suffix = _elgg_get_access_where_sql(array("table_alias" => "n_table3", "guid_column" => "entity_guid"));
 		$joins[] = "JOIN {$db_prefix}metadata n_table3 on t1.guid = n_table3.entity_guid";
 		$joins[] = "JOIN {$db_prefix}metastrings msn3 on n_table3.name_id = msn3.id";
@@ -91,14 +94,20 @@ $options = array(
 );
 
 // Add time lower if supplied
-if ($time_lower) {
-	$options['created_time_lower'] = $time_lower;
+if ($start_date) {
+	$options['created_time_lower'] = $start_date;
 }
 
 // Add time upper if supplied
-if ($time_upper) {
-	$options['created_time_upper'] = $time_upper;
+if ($end_date) {
+	$options['created_time_upper'] = $end_date;
 }
+
+// Submission stats
+echo elgg_view('todo/submission_stats', array(
+	'user_guid' => $user_guid,
+	'group_guid' => $group_guid
+));
 
 // Get content
 echo elgg_list_entities($options, 'elgg_get_entities', 'todo_view_entities_table');

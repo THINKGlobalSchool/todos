@@ -442,7 +442,9 @@ h3.todo-no-submission-label {
 	color: #666666;
 	display: block;
 	font-size: 18px;
-	margin-left: 175px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 250px;
 }
 
 #submit-empty-loader {
@@ -454,12 +456,6 @@ h3.todo-no-submission-label {
 /* Dashboard user submissions */
 .todo-submission-listing {
 	font-size: 12px;
-}
-
-.todo-user-submission-return-dropdown,
-.todo-user-submission-ontime-dropdown {
-	font-size: 10px;
-	width: 100px;
 }
 
 .todo-user-submissions-content {
