@@ -12,5 +12,5 @@
  * @uses $vars['item_class']  Additional CSS class for each menu item
  */
 
-// Use the todo dashboard menu
-echo elgg_view('navigation/menu/todo_dashboard', $vars);
+// Pass vars on to to filtrate
+echo elgg_view('navigation/menu/filtrate', $vars);

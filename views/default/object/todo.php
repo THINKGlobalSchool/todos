@@ -212,12 +212,13 @@ if ($full) { // Full View
 		<div id="todo-submission-dialog">$submission_form</div>
 	</div>
 	<script type='text/javascript'>
-		hash_check = function() {
-			// Trigger hash check
-			var todo_guid = "{$hash_todo}";
-			elgg.todo.submission.processHash(todo_guid);
+		var submissionCheck = function() {
+			if (window.location.href.indexOf('?submission=') != -1) {
+				var guid = window.location.href.substring(window.location.href.indexOf('?submission=') + 12);
+				$('td > a.todo-submission-lightbox[href$=' + guid + ']').trigger('click');
+			}
 		}
-		elgg.register_hook_handler('ready', 'system', hash_check);
+		elgg.register_hook_handler('ready', 'system', submissionCheck);
 	</script>
 </div>
 HTML;

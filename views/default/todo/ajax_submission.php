@@ -74,14 +74,23 @@ $comments = elgg_view('todo/submission_annotations', $submission_annotation_opti
 
 $module = elgg_view_module('info', $navigation, $object_view . $comments);
 
+$todo_guid = $entity->todo_guid;
+
 $content = <<<HTML
 	<div class='todo-ajax-submission'>
 		$module
 	</div>
-	<script type='text/javascript'> 
-		// Set window hash
-		var hash = "#submission:{$entity->guid}";
-		window.location.hash = hash;	
+	<script type='text/javascript'>
+		var initialURL = window.location.href;
+		var guid = '$guid';
+		var todo_guid = '$todo_guid';
+		var url = elgg.get_site_url() + 'todo/view/' + todo_guid + "?submission=" + guid;
+
+		if (elgg.filtrate) {
+			history.pushState({'url': url, 'initialURL': initialURL, 'guid': guid, 'type': 'todo_submission_fancybox'}, '', url);
+		} else {
+			history.replaceState({}, '', url);
+		}	
 	</script>
 HTML;
 

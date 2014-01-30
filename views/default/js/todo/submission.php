@@ -74,6 +74,7 @@ elgg.todo.submission.destroy = function() {
 elgg.todo.submission.initFancybox = function() {
 	// Set up submission dialog
 	$(".todo-submission-lightbox").fancybox({
+		'enableKeyboardNav': false,
 		'onComplete': function() {		
 			// Add todo navigation class to the fancybox container				
 			$('.todo-ajax-submission').closest('#fancybox-outer').addClass('todo-ajax-submission-navigation');
@@ -107,22 +108,58 @@ elgg.todo.submission.initFancybox = function() {
 
 				// Init drag and drop input
 				elgg.todo.submission.initDragDrop();
-			}	
+			}
+
+			// Set open attribute to true
+			this.orig.attr('data-open', true);
+
+			// If filtrate is loaded, modify close behavior
+			if (elgg.filtrate) {
+				// Unbind events
+				$('#fancybox-close').unbind();
+				$(document).unbind('keydown.fb');
+
+				var manualCleanup = function(event) {
+					// Fix tinymce control for submission text field
+					var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
+
+					if (id && typeof(tinyMCE) !== 'undefined') {
+						tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
+					}
+					$.fancybox.close();
+					history.pushState({'type': 'manual_close', 'initialURL': elgg.filtrate.lastURL}, '', elgg.filtrate.lastURL);
+				}
+				
+				// Use our manual cleanup function for the close button and escape key event
+				$('#fancybox-close').bind('click', manualCleanup);
+				$(document).bind('keydown.fb', function(event) {
+					manualCleanup(event);
+					event.preventDefault();
+				});
+			}
 		},
 		'onCleanup': function() {
 			// Fix tinymce control for submission text field
 			var id = $('.todo-ajax-submission').find('.elgg-input-longtext').attr('id');
 
 			if (id && typeof(tinyMCE) !== 'undefined') {
-	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
+				tinyMCE.EditorManager.execCommand('mceRemoveControl', false, id);
 			}
 		},
 		'onClosed': function() {
-			// Clear hash and prevent scrolling (set scrollTop AND hash == ' ')
+			// Prevent scrolling
 			var scr = document.body.scrollTop;
-			window.location.hash = ' ';
 			document.body.scrollTop = scr;
 			elgg.todo.submission.last_grade = null;
+			
+			// Set open attribute to false
+			this.orig.attr('data-open', false);
+
+			// Regular non-filtrate on close handling
+			if (!elgg.filtrate) {
+				var url = window.location.href.substring(0, window.location.href.indexOf('?'));
+				history.replaceState({}, '',url)
+			}
 		}
 	});
 }
@@ -354,7 +391,7 @@ elgg.todo.submission.processHash = function(todo_guid) {
 	// Check for hash
 	if (window.location.hash) {
 		// Try to grab submission guid
-		var submission_guid = window.location.hash.replace('#submission:', '');	
+		//var submission_guid = window.location.hash.replace('#submission:', '');	
 	
 		// Make sure we have an integer
 		if ((parseFloat(submission_guid) == parseInt(submission_guid)) && !isNaN(submission_guid)) {
@@ -461,6 +498,39 @@ elgg.todo.submission.graded_handler = function(hook, type, params, options) {
 	$(document).find('#submission-grade-' + todo_guid + '-' + owner_guid).html(grade_string);
 }
 
+// Interrupt filtrate popstate for fancybox handling
+elgg.todo.submission.popstate = function(hook, type, params, value) {
+	// Check for null state or any other state besides todo submission fancybox
+	if (params.state == null || params.state.type != 'todo_submission_fancybox') {
+		// If we've got a fancybox open, close it and replace state
+		if ($('a.todo-submission-lightbox[data-open="true"]').length) {
+			$.fancybox.close();
+			history.replaceState({'intialURL': elgg.filtrate.lastURL, 'type': 'todo_submission_fancybox_newstate'},'', elgg.filtrate.lastURL);
+			return false;
+		}
+	}
+
+	// Check for proper state and fancybox
+	if (params.state && params.state.type == 'todo_submission_fancybox') {
+		var $fancy = $('a.todo-submission-lightbox[href$=' + params.state.guid + ']');
+
+		// If we've got a fancybox open, close it
+		if (window.location.href == params.state.url && $fancy.attr('data-open') == true) {
+			$fancy.attr('data-open', false);
+			$.fancybox.close();
+			history.replaceState({'intialURL': initialURL, 'type': 'todo_submission_fancybox_newstate'},'', params.state.initialURL);
+			return false;
+		}
+		
+		// If we're popping state, open up the fancybox
+		$fancy.click();
+	
+		history.replaceState({'intialURL': initialURL, 'type': 'todo_submission_fancybox_newstate'},'', params.state.initialURL);
+		return false;
+	}
+	return value;
+}
+
 // Calculate file size for display
 elgg.todo.submission.calculateSize = function(size) {
     if (typeof size !== 'number') {
@@ -477,3 +547,4 @@ elgg.todo.submission.calculateSize = function(size) {
 
 elgg.register_hook_handler('submission', 'graded', elgg.todo.submission.graded_handler);
 elgg.register_hook_handler('init', 'system', elgg.todo.submission.init);
+elgg.register_hook_handler('popstate', 'filtrate', elgg.todo.submission.popstate);
