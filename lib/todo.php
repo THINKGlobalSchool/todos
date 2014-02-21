@@ -677,7 +677,13 @@ function get_todo_groups_array() {
  */
 function get_todo_rubric_array() {
 	if (TODO_RUBRIC_ENABLED) {
-		$rubrics = elgg_get_entities(array('types' => 'object', 'subtypes' => 'rubric'));
+		$rubrics = elgg_get_entities(array(
+			'types' => 'object', 
+			'subtypes' => 'rubric',
+			'limit' => 35,
+			'order_by' => 'e.time_created DESC',
+			'owner_guid' => elgg_get_logged_in_user_guid()
+		));
 		$rubrics_array = array();
 		
 		foreach ($rubrics as $rubric) {
