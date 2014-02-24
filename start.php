@@ -160,7 +160,7 @@ function todo_init() {
 	elgg_register_css('jquery.daterangepicker', $daterange_css);
 
 	// Extend groups sidebar
-	elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
+	//elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
 		
 	// Extend admin view to include some extra styles
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
