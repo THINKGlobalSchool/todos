@@ -1915,6 +1915,30 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 	$value[] = ElggMenuItem::factory($options);
 
+	$categories = todo_get_categories_dropdown();
+	array_unshift($categories, '');
+
+	// Todo category filter
+	$todo_category_input = elgg_view('input/chosen_dropdown', array(
+		'id' => 'todo-category-filter',
+		'options_values' => $categories,
+		'class' => 'filtrate-filter',
+		'data-param' => 'todo_category',
+		'data-placeholder' => elgg_echo('todo:label:selectoption'),
+	));
+
+	$options = array(
+		'name' => 'todo-category-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:todocategory'),
+		'text' => $todo_category_input,
+		'encode_text' => false,
+		'section' => 'advanced',
+		'priority' => 99
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
 	// Add context item (conditionally created above)
 	$value[] = ElggMenuItem::factory($context_options);
 

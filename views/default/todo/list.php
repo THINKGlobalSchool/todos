@@ -17,6 +17,7 @@ $status = get_input('status', 'incomplete');
 $sort_order = get_input('sort_order', 'DESC');
 $container_guid = get_input('container_guid', null);
 $submission = get_input('submission', null);
+$todo_category = get_input('todo_category', null);
 
 // May be passed usernames in assignee/assigner params
 $assignee = get_user_by_username(get_input('assignee', false));
@@ -43,6 +44,7 @@ $options = array(
 	'assigner_guid' => $assigner_guid,
 	'assignee_guid' => $assignee_guid,
 	'submission' => $submission,
+	'todo_category' => $todo_category,
 	'list' => TRUE,
 	'limit' => 15,
 );

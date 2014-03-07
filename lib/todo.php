@@ -148,6 +148,8 @@ function todo_get_page_content_settings_notifications() {
  * 
  * container_guid      => NULL|INT get todo's assigned by container guid (used in all/owned context)
  * 
+ * todo_category       => NULL | STRING the todo category (basic_task, assessed_task, exam)
+ * 
  * sort_order          => STRING ASC|DESC
  * 
  * order_by_metadata   => STRING which metadata to order by (ie: due_date)
@@ -291,6 +293,14 @@ function get_todos(array $params) {
 		} else {
 			$submission_where = "(msr_name.string = 'return_required' AND msr_value.string = 0)";
 		}
+	} 
+
+	// Check for todo category
+	if (in_array($params['todo_category'], array(TODO_BASIC_TASK, TODO_ASSESSED_TASK, TODO_EXAM))) {
+		$category_joins[] = "JOIN {$dbprefix}metadata msc_table on e.guid = msc_table.entity_guid";
+		$category_joins[] = "JOIN {$dbprefix}metastrings msc_name on msc_table.name_id = msc_name.id";
+		$category_joins[] = "JOIN {$dbprefix}metastrings msc_value on msc_table.value_id = msc_value.id";
+		$category_where = "(msc_name.string = 'category' AND msc_value.string = '{$params['todo_category']}')";
 	}
 
 	// Get options by context
@@ -451,8 +461,15 @@ function get_todos(array $params) {
 		$options['joins'] = array_merge($options['joins'], $submission_joins);
 	}
 
+	if (!is_array($options['joins'])) {
+		$options['joins'] = $category_joins;
+	} else if (is_array($category_joins)) {
+		$options['joins'] = array_merge($options['joins'], $category_joins);
+	}
+
 	// Add other global wheres
 	$options['wheres'][] = $submission_where;
+	$options['wheres'][] = $category_where;
 
 	// Trigger a hook to allow plugins to provice extra options when getting todos
 	$options = elgg_trigger_plugin_hook('get_options', 'todo', $params, $options);

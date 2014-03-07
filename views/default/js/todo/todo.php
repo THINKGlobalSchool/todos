@@ -1041,7 +1041,8 @@ elgg.todo.setupMenuInputs = function (hook, type, params, options) {
 	var allow_deselect_ids = new Array(
 		'todo-submission-filter',
 		'todo-group-filter',
-		'todo-group-categories-filter'
+		'todo-group-categories-filter',
+		'todo-category-filter'
 	);
 
 	// Set deselect for dashboard inputs

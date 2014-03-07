@@ -158,7 +158,7 @@ elgg.todo.submission.initFancybox = function() {
 			// Regular non-filtrate on close handling
 			if (!elgg.filtrate) {
 				var url = window.location.href.substring(0, window.location.href.indexOf('?'));
-				history.replaceState({}, '',url)
+				history.replaceState({}, '',url);
 			}
 		}
 	});
