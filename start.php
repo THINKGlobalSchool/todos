@@ -71,7 +71,11 @@ function todo_init() {
 	
 	// Admin CSS
 	elgg_extend_view('css/admin', 'css/todo/admin');
-	
+
+	// Extend CSS
+	elgg_extend_view('css/elgg','css/todo/gantt');
+
+
 	// Register todo JS
 	$todo_js = elgg_get_simplecache_url('js', 'todo/todo');
 	elgg_register_simplecache_view('js/todo/todo');
@@ -137,8 +141,18 @@ function todo_init() {
 	$fc_css = elgg_get_simplecache_url('css', 'fullcalendar');
 	elgg_register_simplecache_view('css/fullcalendar');
 	elgg_register_css('tgs.fullcalendar', $fc_css);
+
+	// Register JS for jQuery Gantt
+	$jg_js = elgg_get_simplecache_url('js', 'jquery-gantt');
+	elgg_register_simplecache_view('js/jquery-gantt');
+	elgg_register_js('jquery.gantt', $jg_js);
+
+	// Register CSS for jQuery Gantt
+	$jg_css = elgg_get_simplecache_url('css', 'jquery-gantt');
+	elgg_register_simplecache_view('css/jquery-gantt');
+	elgg_register_css('jquery.gantt', $jg_css);
 	
-	// Register JS for fullcalendar
+	// Register JS for qtip
 	$qt_js = elgg_get_simplecache_url('js', 'qtip');
 	elgg_register_simplecache_view('js/qtip');
 	elgg_register_js('jquery.qtip', $qt_js);
@@ -158,9 +172,6 @@ function todo_init() {
 	// Register datepicker css
 	$daterange_css = elgg_get_site_url(). 'mod/todo/vendors/ui.daterangepicker.css';
 	elgg_register_css('jquery.daterangepicker', $daterange_css);
-
-	// Extend groups sidebar
-	//elgg_extend_view('page/elements/sidebar', 'todo/group_sidebar');
 		
 	// Extend admin view to include some extra styles
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
@@ -222,7 +233,6 @@ function todo_init() {
 	// Set up submission dashboard menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo_submission_dashboard', 'todo_submission_dashboard_menu_setup');
 
-	// Set up group admin tools menu
 	elgg_register_plugin_hook_handler('register', 'menu:groups:admin', 'todo_groups_admin_menu_setup');
 
 	// Interrupt output/access view
@@ -291,6 +301,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/category_calendar_filters');
 	elgg_register_ajax_view('todo/category_calendar_group_legend');
 	elgg_register_ajax_view('todo/calendar_feed');
+	elgg_register_ajax_view('todo/gantt_feed');
 	elgg_register_ajax_view('css/todo/calendars_dynamic');
 
 	// Register actions
@@ -466,18 +477,12 @@ function todo_page_handler($page) {
 
 			break;
 		case 'iplan':
-			elgg_load_css('jquery.daterangepicker');
-			elgg_load_css('todo.smoothness');
-			elgg_load_css('tgs.fullcalendar');
-			elgg_load_css('tgs.calendars_dynamic');
-			elgg_load_js('tgs.fullcalendar');
-			elgg_load_js('jquery.qtip');
-
 			elgg_push_breadcrumb(elgg_echo('todo:label:iplan'));
 
 			$params['title'] = elgg_echo('todo:label:iplancalendar');
 			$params['filter'] = FALSE;
-			$params['content'] = elgg_view('todo/category_calendars');
+			//$params['content'] = elgg_view('todo/category_calendars');
+			$params['content'] = elgg_view('todo/gantt');
 
 			break;
 		case 'add':
