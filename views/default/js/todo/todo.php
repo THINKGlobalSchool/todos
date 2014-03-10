@@ -826,9 +826,9 @@ elgg.todo.initGantt = function() {
 		$("#todo-gantt-calendar").gantt({
 			source: elgg.get_site_url() + 'ajax/view/todo/gantt_feed?category=' + guid,
 			navigate: "scroll",
-			maxScale: "days",
-			scale: "days",
-			itemsPerPage: 10,
+			maxScale: "weeks",
+			scale: "weeks",
+			itemsPerPage: 50,
 			onItemClick: function(data) {
 				//
 			},

@@ -50,32 +50,7 @@ $content .= <<<JAVASCRIPT
 	<script type='text/javascript'>
 		$(document).ready(function() {
 			elgg.todo.initGantt();
-		});		
-
-		// $(function() {
-
-		// 	"use strict";
-
-		// 	$("#todo-gantt-calendar").gantt({
-		// 		source: elgg.get_site_url() + 'ajax/view/todo/gantt_feed?category=38244',
-		// 		navigate: "scroll",
-		// 		maxScale: "days",
-		// 		scale: "days",
-		// 		itemsPerPage: 10,
-		// 		onItemClick: function(data) {
-		// 			//
-		// 		},
-		// 		onAddClick: function(dt, rowId) {
-		// 			//
-		// 		},
-		// 		onRender: function() {
-		// 			if (window.console && typeof console.log === "function") {
-		// 				console.log("chart rendered");
-		// 			}
-		// 		}
-		// 	});
-		// });
-  
+		});		  
 	</script>
 JAVASCRIPT;
 
