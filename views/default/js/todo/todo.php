@@ -142,11 +142,6 @@ elgg.todo.init = function() {
 
 	// On time filter change handler
 	$(document).delegate('.todo-user-submission-ontime-dropdown', 'change', elgg.todo.ontimeFilterChange);
-
-	// CALENDER EVENTS
-	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', elgg.todo.toggleCalendar);
-
-	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
 }
 
 /**	
@@ -797,6 +792,10 @@ elgg.todo.isValidURL = function(url) {
  * Standalone Calendar Init 
  */
 elgg.todo.initStandaloneCalendar = function() {
+	// CALENDER EVENTS
+	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', elgg.todo.toggleCalendar);
+	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
+
 	// calendars are stored in elgg.todo.calendars.
 	elgg.todo.buildCalendar(elgg.todo.getCalendars());
 
@@ -807,6 +806,60 @@ elgg.todo.initStandaloneCalendar = function() {
 			dateFormat: 'yy-mm-dd',
 			onSelect: function(dateText,dp){
 				$('#todo-category-calendar').fullCalendar('gotoDate', new Date(Date.parse(dateText)));
+			}
+		});
+
+		// Load selected calendar
+		$selected_category = $(this).find('input[name=category_calendar_radio]:checked');
+		$selected_category.trigger('click');
+	});
+}
+
+/**
+ * Gantt calendar init
+ */
+elgg.todo.initGantt = function() {
+	// CALENDER EVENTS
+	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', function(event) {
+		var guid = $(this).attr('id').split('-')[3];
+
+		$("#todo-gantt-calendar").gantt({
+			source: elgg.get_site_url() + 'ajax/view/todo/gantt_feed?category=' + guid,
+			navigate: "scroll",
+			maxScale: "days",
+			scale: "days",
+			itemsPerPage: 10,
+			onItemClick: function(data) {
+				//
+			},
+			onAddClick: function(dt, rowId) {
+				//
+			},
+			onRender: function() {
+				$('#todo-gantt-calendar .bar').each(function(idx){
+					$(this).css('background-color', $(this).data('dataObj'));
+				});
+				if (window.console && typeof console.log === "function") {
+					console.log("chart rendered");
+				}
+			}
+		});
+
+		// Trigger a hook for any post toggle tasks
+		elgg.trigger_hook('category_toggled', 'todo_dashboard', {'guid' : guid}, null);
+	});
+
+	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', function(event) {
+
+	});
+
+	var $category_container = $('#todo-calendar-categories');
+	$category_container.load(elgg.get_site_url() + 'ajax/view/todo/category_calendar_filters', function() {
+		// init date picker
+		$('#todo-calendar-date-picker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			onSelect: function(dateText,dp){
+				//$('#todo-category-calendar').fullCalendar('gotoDate', new Date(Date.parse(dateText)));
 			}
 		});
 
