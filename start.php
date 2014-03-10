@@ -222,6 +222,9 @@ function todo_init() {
 	// Set up submission dashboard menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo_submission_dashboard', 'todo_submission_dashboard_menu_setup');
 
+	// Set up group admin tools menu
+	elgg_register_plugin_hook_handler('register', 'menu:groups:admin', 'todo_groups_admin_menu_setup');
+
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
 	
@@ -2154,6 +2157,30 @@ function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
 	}
 
 
+
+	return $value;
+}
+
+/**
+ * Set up the todo submission filter menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_groups_admin_menu_setup($hook, $type, $value, $params) {
+	$group = elgg_get_page_owner_entity();
+	$create_url = "todo/add/" . $group->guid;
+
+	$options = array(
+			'name' => 'create-todo',
+			'text' => elgg_echo('todo:label:createnewtodo'),
+			'href' => $create_url
+	);
+	
+	$value[] = ElggMenuItem::factory($options);
 
 	return $value;
 }

@@ -184,6 +184,7 @@ $english = array(
 	'todo:label:viewas' => 'View As',
 	'todo:label:list' => 'List',
 	'todo:label:calendar' => 'Calendar',
+	'todo:label:createnewtodo' => 'Create new To Do',
 
 	// Categories
 	'todo:label:category' => 'Category',
