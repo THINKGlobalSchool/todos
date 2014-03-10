@@ -148,8 +148,8 @@ function todo_init() {
 	elgg_register_js('jquery.gantt', $jg_js);
 
 	// Register CSS for jQuery Gantt
-	$jg_css = elgg_get_simplecache_url('css', 'jquery-gantt');
-	elgg_register_simplecache_view('css/jquery-gantt');
+	$jg_css = elgg_get_simplecache_url('css', 'jquery_gantt');
+	elgg_register_simplecache_view('css/jquery_gantt');
 	elgg_register_css('jquery.gantt', $jg_css);
 	
 	// Register JS for qtip
