@@ -143,8 +143,8 @@ function todo_init() {
 	elgg_register_css('tgs.fullcalendar', $fc_css);
 
 	// Register JS for jQuery Gantt
-	$jg_js = elgg_get_simplecache_url('js', 'jquery-gantt');
-	elgg_register_simplecache_view('js/jquery-gantt');
+	$jg_js = elgg_get_simplecache_url('js', 'jquery_gantt');
+	elgg_register_simplecache_view('js/jquery_gantt');
 	elgg_register_js('jquery.gantt', $jg_js);
 
 	// Register CSS for jQuery Gantt
