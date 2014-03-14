@@ -1907,7 +1907,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'text' => $start_date_input,
 		'encode_text' => false,
 		'section' => 'advanced',
-		'priority' => 500
+		'priority' => 800
 	);
 
 	$value[] = ElggMenuItem::factory($options);	
@@ -1927,7 +1927,7 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 		'text' => $end_date_input,
 		'encode_text' => false,
 		'section' => 'advanced',
-		'priority' => 600
+		'priority' => 900
 	);
 
 	$value[] = ElggMenuItem::factory($options);	
