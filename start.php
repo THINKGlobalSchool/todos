@@ -1892,6 +1892,46 @@ function todo_dashboard_menu_setup($hook, $type, $value, $params) {
 
 	// $value[] = ElggMenuItem::factory($options);
 
+	// Due start filter
+	$start_date_input = elgg_view('input/date', array(
+		'value' => $due_start_date,
+		'class' => 'filtrate-filter filtrate-clearable',
+		'data-param' => 'due_start_date',
+		'data-disables' => '["#todo-due-filter"]'
+	));
+
+	$options = array(
+		'name' => 'due-start-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:startdate'),
+		'text' => $start_date_input,
+		'encode_text' => false,
+		'section' => 'advanced',
+		'priority' => 500
+	);
+
+	$value[] = ElggMenuItem::factory($options);	
+
+	// Due end filter
+	$end_date_input = elgg_view('input/date', array(
+		'value' => $due_end_date,
+		'class' => 'filtrate-filter filtrate-clearable',
+		'data-param' => 'due_end_date',
+		'data-disables' => '["#todo-due-filter"]'
+	));
+
+	$options = array(
+		'name' => 'due-end-filter',
+		'href' => false,
+		'label' => elgg_echo('todo:label:enddate'),
+		'text' => $end_date_input,
+		'encode_text' => false,
+		'section' => 'advanced',
+		'priority' => 600
+	);
+
+	$value[] = ElggMenuItem::factory($options);	
+
 	// Submission required advanced filter
 	$submission_required_input = elgg_view('input/chosen_dropdown', array(
 		'id' => 'todo-submission-filter',
