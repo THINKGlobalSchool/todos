@@ -18,6 +18,8 @@ $sort_order = get_input('sort_order', 'DESC');
 $container_guid = get_input('container_guid', null);
 $submission = get_input('submission', null);
 $todo_category = get_input('todo_category', null);
+$due_start_date = get_input('due_start_date', null);
+$due_end_date = get_input('due_end_date', null);
 
 // May be passed usernames in assignee/assigner params
 $assignee = get_user_by_username(get_input('assignee', false));
@@ -73,6 +75,20 @@ switch ($filter_priority) {
 	default:
 		$options['due_date'] = FALSE;
 		break;
+}
+
+// Check for explicit start/end dates
+if (!$filter_priority && ($due_start_date || $due_end_date)) {
+	if ($due_start_date && $due_end_date) {
+		$options['due_start'] = $due_start_date;
+		$options['due_end'] = $due_end_date;
+	} else if ($due_start_date) {
+		$options['due_date'] = $due_start_date;
+		$options['due_operand'] = '>';
+	} else if ($due_end_date) {
+		$options['due_date'] = $due_start_date;
+		$options['due_operand'] = '<';
+	}
 }	
 
 echo get_todos($options);
