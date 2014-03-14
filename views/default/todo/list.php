@@ -86,7 +86,7 @@ if (!$filter_priority && ($due_start_date || $due_end_date)) {
 		$options['due_date'] = $due_start_date;
 		$options['due_operand'] = '>';
 	} else if ($due_end_date) {
-		$options['due_date'] = $due_start_date;
+		$options['due_date'] = $due_end_date;
 		$options['due_operand'] = '<';
 	}
 }	
