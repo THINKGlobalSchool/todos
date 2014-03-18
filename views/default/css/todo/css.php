@@ -824,6 +824,12 @@ td.todo-iplan-hover a {
 	margin-left: 6px;
 }
 
+/** Todo secondary header menu **/
+#todo-secondary-header {
+	float: right;
+	clear: both;
+}
+
 /**	Todo Dashboard Menu (new) **/
 #todo-dashboard-menu-container {
 	background: none repeat scroll 0 0 #EEEEEE;
