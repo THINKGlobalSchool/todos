@@ -164,6 +164,9 @@ function todo_init() {
 		
 	// Extend admin view to include some extra styles
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
+
+	// Extend todo title menu
+	elgg_extend_view('navigation/menu/default', 'todo/header');
 	
 	// add the group pages tool option     
 	add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
@@ -224,6 +227,12 @@ function todo_init() {
 
 	// Set up group admin tools menu
 	elgg_register_plugin_hook_handler('register', 'menu:groups:admin', 'todo_groups_admin_menu_setup');
+
+	// Set up secondary todo header menu
+	elgg_register_plugin_hook_handler('register', 'menu:todo-secondary-header', 'todo_secondary_header_menu_setup');
+
+	// Add items to the extras menu for todos
+	elgg_register_plugin_hook_handler('register', 'menu:extras', 'todo_extras_menu_setup');
 
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
@@ -375,7 +384,8 @@ function todo_page_handler($page) {
 			break;
 		case 'dashboard':
 			gatekeeper();
-			elgg_register_menu_item('title', $iplan_title_options);
+
+			set_input('todo_dashboard', 1);
 
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');
@@ -505,7 +515,7 @@ function todo_page_handler($page) {
 			$params = todo_get_page_content_edit($page_type, $page[1]);
 			break;
 		case 'group':
-			elgg_register_menu_item('title', $iplan_title_options);
+			set_input('todo_dashboard', 1);
 
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
@@ -2221,6 +2231,60 @@ function todo_groups_admin_menu_setup($hook, $type, $value, $params) {
 	);
 	
 	$value[] = ElggMenuItem::factory($options);
+
+	return $value;
+}
+
+
+/**
+ * Set up the secondary todo header menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_secondary_header_menu_setup($hook, $type, $value, $params) {
+	// iPlan menu
+	$options = array(
+		'name' => 'iplan',
+		'href' => elgg_get_site_url() . 'todo/iplan',
+		'text' => elgg_echo('todo:label:viewiplancalendar'),
+		'priority' => 500
+	);
+
+	$value[] = ElggMenuItem::factory($options);
+
+	return $value;
+}
+
+/**
+ * Set up the secondary todo header menu
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_extras_menu_setup($hook, $type, $value, $params) {
+	if (elgg_in_context('todo')) {
+		$user = elgg_get_logged_in_user_entity();
+		$hash = generate_todo_user_hash($user);
+		$calendar_url = elgg_get_site_url() . "todo/calendar/" . $user->username . "?t=" . $hash . '&bogo=' . time();
+
+		// Subscribe link
+		$options = array(
+			'name' => 'subscribe',
+			'title' => elgg_echo('todo:label:subscribetocalendar'),
+			'href' => $calendar_url,
+			'text' => elgg_view_icon('calendar-dark'),
+			'priority' => 1
+		);
+
+		$value[] = ElggMenuItem::factory($options);
+	}
 
 	return $value;
 }

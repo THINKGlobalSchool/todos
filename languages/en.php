@@ -204,9 +204,11 @@ $english = array(
 	'todo:label:calendarforeground' => 'Foreground',
 	'todo:label:iplan' => 'iPlan',
 	'todo:label:iplancalendar' => 'iPlan Calendar',
+	'todo:label:viewiplancalendar' => 'View iPlan Calendar',
 	'todo:label:groupcategories' => 'Group Categories',
 	'todo:label:jumptodate' => 'Jump to date',
 	'todo:label:palettespread' => 'Palette Spread',
+	'todo:label:subscribetocalendar' => 'Subscribe to your To Do Calendar',
 
 	
 	// Time frame labels
