@@ -300,6 +300,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/category_calendar_filters');
 	elgg_register_ajax_view('todo/category_calendar_group_legend');
 	elgg_register_ajax_view('todo/calendar_feed');
+	elgg_register_ajax_view('todo/connect_howto');
 	elgg_register_ajax_view('css/todo/calendars_dynamic');
 
 	// Register actions
@@ -2270,17 +2271,19 @@ function todo_secondary_header_menu_setup($hook, $type, $value, $params) {
  */
 function todo_extras_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('todo')) {
-		$user = elgg_get_logged_in_user_entity();
-		$hash = generate_todo_user_hash($user);
-		$calendar_url = elgg_get_site_url() . "todo/calendar/" . $user->username . "?t=" . $hash . '&bogo=' . time();
+		elgg_load_js('lightbox');
+		elgg_load_css('lightbox');
+
+		$connect = "<div style='display: none;' id='todo-google-connect'>Blah</div>";
 
 		// Subscribe link
 		$options = array(
 			'name' => 'subscribe',
 			'title' => elgg_echo('todo:label:subscribetocalendar'),
-			'href' => $calendar_url,
-			'text' => elgg_view_icon('calendar-dark'),
-			'priority' => 1
+			'href' => elgg_normalize_url('ajax/views/todo/connect_howto'),
+			'text' => elgg_view_icon('calendar-dark') . $connect,
+			'priority' => 1,
+			'class' => 'elgg-lightbox'
 		);
 
 		$value[] = ElggMenuItem::factory($options);
