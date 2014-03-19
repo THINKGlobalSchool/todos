@@ -830,6 +830,24 @@ td.todo-iplan-hover a {
 	clear: both;
 }
 
+/** Todo calendar connect help **/
+.todo-connect-help ol {
+	list-style: decimal outside;
+}
+
+.todo-connect-help ol li {
+	margin-bottom: 15px;
+}
+
+.todo-connect-help h2 {
+	border-bottom: 1px solid #999;
+}
+
+.todo-connect-help img {
+	box-shadow: 0px 0px 3px #666;
+	margin: 10px;
+}
+
 /**	Todo Dashboard Menu (new) **/
 #todo-dashboard-menu-container {
 	background: none repeat scroll 0 0 #EEEEEE;
@@ -921,3 +939,7 @@ span.todo-clear-icon input {
 }
 
 /** End Todo Dashboard Menu **/
+
+.fancybox-title-float {
+	display: none !important;
+}

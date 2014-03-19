@@ -30,7 +30,7 @@ if (check_todo_user_hash($hash, get_user_by_username($username))) {
 	$filename = "SpotTodoExport.ics";
 	
 	header("Content-Type: text/calendar");
-	header("Content-Disposition: attachment; filename=$filename");		
+	header("Content-Disposition: inline; filename=$filename");		
 ?>
 BEGIN:VCALENDAR
 PRODID:-//THINK Global School//Spot Todo Export//EN

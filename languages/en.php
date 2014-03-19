@@ -185,6 +185,11 @@ $english = array(
 	'todo:label:list' => 'List',
 	'todo:label:calendar' => 'Calendar',
 	'todo:label:createnewtodo' => 'Create new To Do',
+	'todo:label:connecttitle' => 'Subscribe to your To Do\'s in Google Calendar',
+	'todo:label:connectone' => 'Copy the URL in the text box below',
+	'todo:label:connecttwo' => 'Open up your <a href="http://calendar.google.com" target="_blank">Google Calendar</a>',
+	'todo:label:connectthree' => 'Click the arrow next to "Other Calendars" then click "Add by URL"', 
+	'todo:label:connectfour' /** fun game! **/ => 'Paste the URL into the "URL" box provided, then click "Add Calendar" to subscribe to your To Do\'s',
 
 	// Categories
 	'todo:label:category' => 'Category',
