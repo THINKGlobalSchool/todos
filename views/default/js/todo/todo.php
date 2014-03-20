@@ -1017,55 +1017,11 @@ elgg.todo.chosenInterrupt = function(hook, type, params, options) {
 }
 
 
-/**
- * Chosen setup handler for todo dashboard inputs
- */
-elgg.todo.setupMenuInputs = function (hook, type, params, options) {
-	// Disable search for these inputs
-	var disable_search_ids = new Array(
-		'todo-context-filter',
-		'todo-due-filter',
-		'todo-status-filter',
-		'todo-view-filter',
-		'todo-submission-filter',
-		'todo-submission-return-filter',
-		'todo-submission-ontime-filter'
-	);
-
-	// Disable search for above inputs
-	if ($.inArray(params.id, disable_search_ids) != -1) {
-		options.disable_search = true;
-	}
-
-	// Allow deselect for these ids
-	var allow_deselect_ids = new Array(
-		'todo-submission-filter',
-		'todo-group-filter',
-		'todo-group-categories-filter',
-		'todo-category-filter'
-	);
-
-	// Set deselect for dashboard inputs
-	if ($.inArray(params.id, allow_deselect_ids) != -1) {
-		options.width = "135px";
-		options.allow_single_deselect = true;
-	}
-
-	if (params.id == 'todo-submission-filter') {
-		options.width = "60px";
-	}
-
-	return options;
-}
-
 // Main hook
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
 
 // Hook for todo form chosen inputs
 elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
-
-// Hook to customize some todo dashboard inputs
-elgg.register_hook_handler('getOptions', 'chosen.js', elgg.todo.setupMenuInputs);
 
 // Other
 elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);

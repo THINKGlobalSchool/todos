@@ -281,7 +281,7 @@ function todo_init() {
 	// Override comment counting for todo submissions
 	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');
 
-	// Register todo roles omni widget
+	// Register todo roles widget
 	elgg_register_widget_type('todo', elgg_echo('todo:widget:todo_title'), elgg_echo('todo:widget:todo_desc'), 'rolewidget');
 
 	// Set up url handlers
