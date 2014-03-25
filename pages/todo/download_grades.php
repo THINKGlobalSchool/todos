@@ -39,7 +39,7 @@ if (elgg_instanceof($group, 'group') && $group->canEdit()) {
 
 
 	foreach ($todos as $todo) {
-		$output[] = $todo->title;
+		$output[] = $todo->title . ' (' . elgg_echo('todo:label:gradedoutof', array($todo->grade_total)) . ')';
 	}
 
 	ob_start();
@@ -61,10 +61,9 @@ if (elgg_instanceof($group, 'group') && $group->canEdit()) {
 				// Check if theres a submission, may have been manually completed
 				if ($submission = get_user_submission($member->guid, $todo->guid)) {
 					$grade = $submission->grade;
-					$grade_total = $todo->grade_total;
 				
 					if ($grade !== NULL) {
-						$output[] = "{$grade}/{$grade_total}";
+						$output[] = "{$grade}";
 					} else {
 						$output[] = "Ungraded";
 					}
