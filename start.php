@@ -18,6 +18,7 @@
 elgg_register_event_handler('init', 'system', 'todo_init');
 
 function todo_init() {	
+
 	// Library
 	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todo/lib/todo.php');
 	elgg_load_library('elgg:todo');
@@ -599,9 +600,14 @@ function todo_page_handler($page) {
 			echo elgg_view('todo/assignees', array('assignees' => $assignees, 'todo_guid' => $guid));
 			exit;
 			break;
-		case 'download':
+		case 'download_submissions':
 			set_input('guid', $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/todo/download.php';
+			include elgg_get_plugins_path() . 'todo/pages/todo/download_submissions.php';
+			return TRUE;
+			break;
+		case 'download_grades':
+			set_input('guid', $page[1]);
+			include elgg_get_plugins_path() . 'todo/pages/todo/download_grades.php';
 			return TRUE;
 			break;
 		case 'settings':
@@ -1302,6 +1308,7 @@ function submission_entity_menu_setup($hook, $type, $value, $params) {
 				'href' => "action/$handler/delete?guid={$entity->getGUID()}",
 				'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
 				'priority' => 300,
+				'section' => 'other'
 			);
 			$value[] = ElggMenuItem::factory($options);
 		}

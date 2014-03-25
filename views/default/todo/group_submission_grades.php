@@ -103,6 +103,11 @@ if (count($todos)) {
 	}
 
 	$content .= "</tbody></table>";
+	$content .= elgg_view('output/url', array(
+		'text' => elgg_view_icon('download') . elgg_echo('todo:label:downloadcsv'),
+		'href' => elgg_normalize_url('todo/download_grades/' . $group_guid),
+		'class' => 'todo-download-csv'
+	));
 
 } else {
 	$content = "<h3 class='center' style='border-top: 1px dotted #CCCCCC; padding-top: 4px; margin-top: 5px;'>" . elgg_echo('todo:label:noresults') . "</h3>"; 

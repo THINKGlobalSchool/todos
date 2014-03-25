@@ -1639,3 +1639,22 @@ function is_todo_admin($user_guid = 0) {
         return false;
     }
 }
+
+
+function todo_download_send_headers($filename) {
+    // disable caching
+    $now = gmdate("D, d M Y H:i:s");
+    header("Pragma: public");
+	header("Expires: 0");
+    header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate, post-check=0, pre-check=0");
+    header("Last-Modified: {$now} GMT");
+
+    // force download  
+    header("Content-Type: application/force-download");
+    header("Content-Type: application/octet-stream");
+    header("Content-Type: application/download");
+
+    // disposition / encoding on response body
+    header("Content-Disposition: attachment;filename={$filename}");
+    header("Content-Transfer-Encoding: binary");
+}
