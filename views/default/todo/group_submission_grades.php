@@ -81,7 +81,7 @@ if (count($todos)) {
 					$grade_total = $todo->grade_total;
 				
 					if ($grade !== NULL) {
-						$grade_text .= "{$grade}/{$grade_total}";
+						$grade_text .= "{$grade}";
 					} else {
 						$grade_text .= "Ungraded";
 						$grade_class = 'submission-ungraded';					}
