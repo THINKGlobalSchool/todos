@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2014
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -108,13 +108,8 @@ if (count($files) > 0) {
 
 	$zip_base = basename($zip_location);
 
-	header("Pragma: public");
-	header("Expires: 0");
-	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-	header("Cache-Control: private",false);
-	header("Content-type: application/octet-stream");
-	header("Content-Transfer-Encoding: binary");
-	header("Content-Disposition: attachment; filename=\"$zip_base\"");
+	todo_download_send_headers($zip_base);
+
 	header("Content-Length: ".filesize($zip_location));
 
 	ob_clean();

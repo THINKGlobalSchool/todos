@@ -117,7 +117,7 @@ foreach ($assignee_guids as $idx => $guid) {
 // If there are submissions, display extra options
 if (get_todo_submissions_count($todo->guid)) {
 	$download_files = elgg_view('output/url', array(
-		'href' => 'todo/download/' . $todo->guid,
+		'href' => 'todo/download_submissions/' . $todo->guid,
 		'text' => elgg_echo('todo:label:downloadfiles'),
 		//'class' => 'elgg-button elgg-button-action',
 	));

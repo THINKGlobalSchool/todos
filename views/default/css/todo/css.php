@@ -943,3 +943,12 @@ span.todo-clear-icon input {
 .fancybox-title-float {
 	display: none !important;
 }
+
+.todo-download-csv {
+	float: right;
+	margin-top: 10px;
+}
+
+.todo-download-csv span.elgg-icon {
+	top: 3px;
+}

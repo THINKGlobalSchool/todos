@@ -137,6 +137,7 @@ $english = array(
 	'todo:label:prev' => 'Prev',
 	'todo:label:next' => 'Next',
 	'todo:label:downloadfiles' => 'Download Files',
+	'todo:label:downloadcsv' => 'Download as CSV',
 	'todo:label:upload' => 'Upload',
 	'todo:label:zipdelete' => 'Delete Todo Submission Zip Files (Cron period)',
 	'todo:label:attached' => 'File Attached',
