@@ -37,7 +37,7 @@ $upcoming_url = $url . "&sort_order=DESC";
 if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
 	$iplan_link = elgg_view('output/url', array(
 		'text' => elgg_echo('todo:label:iplancalendar'),
-		'href' => elgg_get_site_url() . 'todo/dashboard?tab=iplan',
+		'href' => elgg_get_site_url() . 'todo/iplan',
 		'class' => 'elgg-button elgg-button-submit',
 	));
 
