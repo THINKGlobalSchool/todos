@@ -129,6 +129,12 @@ elgg.todo.init = function() {
 		$('#startdate-info').toggle().position(options);
 	});
 
+	// GOOGLE CALENDAR CONNECT
+	$(document).delegate('#todo-calendar-connect-input', 'click', function(event) {
+		this.select();
+		event.preventDefault();
+	});
+
 	// GROUP/USER SUBMISSIONS
 
 	// Group member click handler

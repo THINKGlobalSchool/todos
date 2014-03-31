@@ -167,7 +167,7 @@ function todo_init() {
 	elgg_extend_view('layouts/administration', 'todo/admin/css');
 
 	// Extend todo title menu
-	elgg_extend_view('navigation/menu/default', 'todo/header');
+	//elgg_extend_view('navigation/menu/default', 'todo/header');
 	
 	// add the group pages tool option     
 	add_group_tool_option('todo',elgg_echo('groups:enabletodo'),true);
@@ -231,9 +231,6 @@ function todo_init() {
 
 	// Set up secondary todo header menu
 	elgg_register_plugin_hook_handler('register', 'menu:todo-secondary-header', 'todo_secondary_header_menu_setup');
-
-	// Add items to the extras menu for todos
-	elgg_register_plugin_hook_handler('register', 'menu:extras', 'todo_extras_menu_setup');
 
 	// Interrupt output/access view
 	elgg_register_plugin_hook_handler('view', 'output/access', 'todo_output_access_handler');
@@ -387,8 +384,6 @@ function todo_page_handler($page) {
 		case 'dashboard':
 			gatekeeper();
 
-			set_input('todo_dashboard', 1);
-
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
@@ -468,12 +463,15 @@ function todo_page_handler($page) {
 				elgg_register_title_button();
 			}
 
+			// Secondary header
+			$params['content'] = elgg_view('todo/header');
+
 			// Output the dashboard tab menu
-			$params['content'] = elgg_view_menu('todo_dashboard_tabs', array(
+			$params['content'] .= elgg_view_menu('todo_dashboard_tabs', array(
 				'sort_by' => 'priority',
 				'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
 			));
-
+ 
 			$params['content'] .= $content;
 
 			break;
@@ -489,7 +487,16 @@ function todo_page_handler($page) {
 
 			$params['title'] = elgg_echo('todo:label:iplancalendar');
 			$params['filter'] = FALSE;
-			$params['content'] = elgg_view('todo/category_calendars');
+
+			// Secondary header
+			$params['content'] = elgg_view('todo/header');
+
+			// Output the dashboard tab menu
+			$params['content'] .= elgg_view_menu('todo_dashboard_tabs', array(
+				'sort_by' => 'priority',
+				'class' => 'elgg-menu-hz elgg-menu-filter elgg-menu-filter-default'
+			));
+			$params['content'] .= elgg_view('todo/category_calendars');
 
 			break;
 		case 'add':
@@ -2041,6 +2048,16 @@ function todo_dashboard_tab_menu_setup($hook, $type, $value, $params) {
 		);
 
 		$value[] = ElggMenuItem::factory($options);
+
+		// iPlan menu
+		$options = array(
+			'name' => 'iplan',
+			'href' => elgg_get_site_url() . 'todo/iplan',
+			'text' => elgg_echo('todo:label:iplan'),
+			'priority' => 300
+		);
+
+		$value[] = ElggMenuItem::factory($options);
 	} else {
 		// Got a group..
 
@@ -2254,48 +2271,26 @@ function todo_groups_admin_menu_setup($hook, $type, $value, $params) {
  * @return array
  */
 function todo_secondary_header_menu_setup($hook, $type, $value, $params) {
-	// iPlan menu
-	$options = array(
-		'name' => 'iplan',
-		'href' => elgg_get_site_url() . 'todo/iplan',
-		'text' => elgg_echo('todo:label:viewiplancalendar'),
-		'priority' => 500
-	);
-
-	$value[] = ElggMenuItem::factory($options);
-
-	return $value;
-}
-
-/**
- * Set up the secondary todo header menu
- *
- * @param string $hook
- * @param string $type
- * @param array  $value
- * @param array  $params
- * @return array
- */
-function todo_extras_menu_setup($hook, $type, $value, $params) {
 	if (elgg_in_context('todo')) {
 		elgg_load_js('lightbox');
 		elgg_load_css('lightbox');
 
-		$connect = "<div style='display: none;' id='todo-google-connect'>Blah</div>";
+		$connect = "<div style='display: none;' id='todo-google-connect'></div>";
 
 		// Subscribe link
 		$options = array(
 			'name' => 'subscribe',
 			'title' => elgg_echo('todo:label:subscribetocalendar'),
 			'href' => elgg_normalize_url('ajax/views/todo/connect_howto'),
-			'text' => elgg_view_icon('calendar-dark') . $connect,
+			'text' => elgg_view('output/img', array(
+					'src' => elgg_normalize_url('mod/todo/graphics/gcal.gif')
+				)) . $connect,
 			'priority' => 1,
 			'class' => 'elgg-lightbox'
 		);
 
 		$value[] = ElggMenuItem::factory($options);
 	}
-
 	return $value;
 }
 

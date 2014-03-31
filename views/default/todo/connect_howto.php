@@ -21,6 +21,7 @@ $calendar_input = elgg_view('input/text', array(
 	'size' => 100,
 	'style' => 'font-size: 12px',
 	'readonly' => 'READONLY',
+	'id' => 'todo-calendar-connect-input',
 	'value' => $calendar_url
 ));
 
