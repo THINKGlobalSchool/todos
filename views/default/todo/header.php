@@ -10,7 +10,7 @@
  */
 
 // If we're on the todo dashboard, display the secondary header menu
-if (elgg_in_context('todo') && get_input('todo_dashboard') && $vars['name'] == 'title') {
+if (elgg_in_context('todo')) {
 	$menu = elgg_view_menu('todo-secondary-header', array(
 		'sort_by' => 'priority',
 		'class' => 'elgg-menu-hz'
