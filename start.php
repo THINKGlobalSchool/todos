@@ -250,6 +250,9 @@ function todo_init() {
 	// Register todos with ECML
 	elgg_register_plugin_hook_handler('get_views', 'ecml', 'todo_ecml_views_hook');
 
+	// Modify widget menu
+	elgg_register_plugin_hook_handler('register', 'menu:widget', 'todo_widget_menu_setup', 501);
+
 	// Register for unit tests
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
@@ -2328,6 +2331,31 @@ function todo_submission_comment_count($hook, $type, $value, $params) {
  */
 function todo_ecml_views_hook($hook, $type, $return, $params) {
 	$return['object/todo'] = elgg_echo('todo');
+	return $return;
+}
+
+/**
+ * Modify widget menus for todo widget
+ */
+function todo_widget_menu_setup($hook, $type, $return, $params) {
+	if (get_input('custom_widget_controls')) {
+		$widget = $params['entity'];
+
+		if ($widget->handler == 'todo') {
+			$options = array(
+				'name' => 'todo_view_all',
+				'text' => elgg_echo('link:view:all'),
+				'title' => 'todo_view_all',
+				'href' => elgg_get_site_url() . 'todo',
+				'class' => 'home-small'
+			);
+
+			$return[] = ElggMenuItem::factory($options);
+		}
+
+		return $return;
+	}
+
 	return $return;
 }
 
