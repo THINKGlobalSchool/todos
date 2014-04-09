@@ -11,8 +11,8 @@
 	<copyright>See COPYRIGHT.txt</copyright>
 	<license>GNU Public License version 2</license>
 	<requires>
-		<type>elgg_version</type>
-		<version>2011032200</version>
+		<type>elgg_release</type>
+		<version>1.8</version>
 	</requires>
 	<requires>
 		<type>plugin</type>
@@ -38,6 +38,5 @@
 		<version>1.8</version>
 		<comparison>ge</comparison>
 	</requires>
-	<admin_interface>simple</admin_interface>
 	<activate_on_install>true</activate_on_install>
 </plugin_manifest>
