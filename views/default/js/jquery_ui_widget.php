@@ -11,6 +11,6 @@
  */
 $js_path = elgg_get_config('path');
 
-$widget = "{$js_path}mod/todo/vendors/jquery-file-upload/jquery.ui.widget.js";
+$widget = "{$js_path}mod/todos/vendors/jquery-file-upload/jquery.ui.widget.js";
 
 include $widget;

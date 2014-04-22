@@ -31,13 +31,13 @@ $step_two = elgg_echo('todo:label:connecttwo');
 
 $step_three = elgg_echo('todo:label:connectthree');
 $step_three_img = elgg_view('output/img', array(
-	'src' => elgg_normalize_url('mod/todo/graphics/connect_three.png'),
+	'src' => elgg_normalize_url('mod/todos/graphics/connect_three.png'),
 	'alt' => $step_three
 ));
 
 $step_four = elgg_echo('todo:label:connectfour');
 $step_four_img = elgg_view('output/img', array(
-	'src' => elgg_normalize_url('mod/todo/graphics/connect_four.png'),
+	'src' => elgg_normalize_url('mod/todos/graphics/connect_four.png'),
 	'alt' => $step_four
 ));
 

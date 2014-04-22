@@ -10,6 +10,6 @@
  * 
  */
 $js_path = elgg_get_config('path');
-$js_path = "{$js_path}mod/todo/vendors/tipTipv13/jquery.tipTip.minified.js";
+$js_path = "{$js_path}mod/todos/vendors/tipTipv13/jquery.tipTip.minified.js";
 
 include $js_path;

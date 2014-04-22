@@ -10,8 +10,8 @@
  * 
  */
 $js_path = elgg_get_config('path');
-$d_js = "{$js_path}mod/todo/vendors/datatables/media/js/jquery.dataTables.min.js";
-$fc_js = "{$js_path}mod/todo/vendors/datatables/extras/FixedColumns/media/js/FixedColumns.min.js";
+$d_js = "{$js_path}mod/todos/vendors/datatables/media/js/jquery.dataTables.min.js";
+$fc_js = "{$js_path}mod/todos/vendors/datatables/extras/FixedColumns/media/js/FixedColumns.min.js";
 
 include $d_js;
 include $fc_js;

@@ -21,10 +21,9 @@ $todo = get_entity($todo_guid);
 if (elgg_instanceof($todo, 'object', 'todo')) {
 	// Check if user is trying to unassign themself from the todo
 	if ($todo->canEdit() || (($current_user == $assignee_guid) && is_todo_assignee($todo_guid, $current_user))) {	
-		$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
-		$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_ACCEPTED);
-		
 		if (elgg_trigger_event('unassign', 'object', array('todo' => $todo, 'user' => $assignee))) {
+			$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_RELATIONSHIP);
+			$assignee->removeRelationship($todo_guid, TODO_ASSIGNEE_ACCEPTED);
 			system_message(elgg_echo('todo:success:assigneeremoved'));
 			forward(REFERER);
 		}

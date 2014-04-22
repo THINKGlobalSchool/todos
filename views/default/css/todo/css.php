@@ -130,11 +130,11 @@ span.unviewed {
 
 /* messages/new messages icon & counter in elgg_topbar */
 .todo-notifier {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_topbar.gif) no-repeat left 2px;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_topbar.gif) no-repeat left 2px;
 	margin-top: -3px !important;
 }
 .todo-notifier:hover {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_topbar.gif) no-repeat left -16px;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_topbar.gif) no-repeat left -16px;
 }
 
 .todo-topbar-item {
@@ -377,7 +377,7 @@ span.unviewed {
 }
 
 .todo-submission-dropzone-background {
-	background-image: url('<?php echo elgg_get_site_url() . 'mod/todo/graphics/submissiondropzone.png' ?>');
+	background-image: url('<?php echo elgg_get_site_url() . 'mod/todos/graphics/submissiondropzone.png' ?>');
 	background-position: center center;
 	background-repeat: no-repeat;
 }
@@ -745,36 +745,36 @@ td.todo-iplan-hover a {
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-return-required {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat right bottom;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/info_icon.png) no-repeat right bottom;
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-basic-task {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_basic_task_small.png) no-repeat right bottom;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_basic_task_small.png) no-repeat right bottom;
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-assessed-task {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_assessed_task_small.png) no-repeat right bottom;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_assessed_task_small.png) no-repeat right bottom;
 }
 
 #todo-category-calendar .todo-calendar-event .todo-calendar-event-subtitle-exam {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_exam_small.png) no-repeat right bottom;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_exam_small.png) no-repeat right bottom;
 }
 
 .todo-calender-tooltip-return-required {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/info_icon.png) no-repeat left center;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/info_icon.png) no-repeat left center;
 	min-width: 150px;
 }
 
 .todo-calender-tooltip-basic-task {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_basic_task_small.png) no-repeat left center;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_basic_task_small.png) no-repeat left center;
 }
 
 .todo-calender-tooltip-assessed-task {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_assessed_task_small.png) no-repeat left center;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_assessed_task_small.png) no-repeat left center;
 }
 
 .todo-calender-tooltip-exam {
-	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/todo_cat_exam_small.png) no-repeat left center;
+	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_cat_exam_small.png) no-repeat left center;
 }
 
 .todo-calendar-icon-padding {
@@ -921,7 +921,7 @@ span.todo-clear-icon span {
 	width: 9px;
 	height: 9px;
 	/*background: url('http://cdn.sstatic.net/stackoverflow/img/sprites.png?v=4') 0 -690px;*/
-	background: url(<?php echo elgg_get_site_url(); ?>mod/todo/graphics/x-sprite.png) no-repeat 0 0;
+	background: url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/x-sprite.png) no-repeat 0 0;
 	cursor: pointer;
 	display: none;
 }

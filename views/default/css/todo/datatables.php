@@ -31,23 +31,23 @@
 /** Sorting **/
 
 #todo-grade-table_wrapper .sorting_asc {
-	background: url('<?php echo elgg_get_site_url(); ?>mod/todo/vendors/datatables/media/images/sort_asc.png') no-repeat center right #DDDDDD;
+	background: url('<?php echo elgg_get_site_url(); ?>mod/todos/vendors/datatables/media/images/sort_asc.png') no-repeat center right #DDDDDD;
 }
 
 #todo-grade-table_wrapper .sorting_desc {
-	background: url('<?php echo elgg_get_site_url(); ?>mod/todo/vendors/datatables/media/images/sort_desc.png') no-repeat center right #DDDDDD;
+	background: url('<?php echo elgg_get_site_url(); ?>mod/todos/vendors/datatables/media/images/sort_desc.png') no-repeat center right #DDDDDD;
 }
 
 #todo-grade-table_wrapper .sorting {
-	background: url('<?php echo elgg_get_site_url(); ?>mod/todo/vendors/datatables/media/images/sort_both.png') no-repeat center right #EEEEEE;
+	background: url('<?php echo elgg_get_site_url(); ?>mod/todos/vendors/datatables/media/images/sort_both.png') no-repeat center right #EEEEEE;
 }
 
 #todo-grade-table_wrapper .sorting_asc_disabled {
-	background: url('<?php echo elgg_get_site_url(); ?>mod/todo/vendors/datatables/media/images/sort_asc_disabled.png') no-repeat center right #EEEEEE;
+	background: url('<?php echo elgg_get_site_url(); ?>mod/todos/vendors/datatables/media/images/sort_asc_disabled.png') no-repeat center right #EEEEEE;
 }
 
 #todo-grade-table_wrapper .sorting_desc_disabled {
-	background: url('<?php echo elgg_get_site_url(); ?>mod/todo/vendors/datatables/media/images/sort_desc_disabled.png') no-repeat center right #EEEEEE; 
+	background: url('<?php echo elgg_get_site_url(); ?>mod/todos/vendors/datatables/media/images/sort_desc_disabled.png') no-repeat center right #EEEEEE; 
 }
  
 /*

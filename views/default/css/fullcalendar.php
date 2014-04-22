@@ -10,6 +10,6 @@
  * 
  */
 $css_path = elgg_get_config('path');
-$css_path = "{$css_path}mod/todo/vendors/fullcalendar-1.5.4/fullcalendar/fullcalendar.css";
+$css_path = "{$css_path}mod/todos/vendors/fullcalendar-1.5.4/fullcalendar/fullcalendar.css";
 
 include $css_path;

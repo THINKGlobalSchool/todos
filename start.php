@@ -20,7 +20,7 @@ elgg_register_event_handler('init', 'system', 'todo_init');
 function todo_init() {	
 
 	// Library
-	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todo/lib/todo.php');
+	elgg_register_library('elgg:todo', elgg_get_plugins_path() . 'todos/lib/todo.php');
 	elgg_load_library('elgg:todo');
 
 	// Todo access levels
@@ -149,15 +149,15 @@ function todo_init() {
 	elgg_register_css('tgs.calendars_dynamic', $d_url, 999);
 
 	// Register datepicker JS
-	$daterange_js = elgg_get_site_url(). 'mod/todo/vendors/daterangepicker.jQuery.js';
+	$daterange_js = elgg_get_site_url(). 'mod/todos/vendors/daterangepicker.jQuery.js';
 	elgg_register_js('jquery.daterangepicker', $daterange_js);
 	
 	// Register custom theme CSS
-	$ui_url = elgg_get_site_url() . 'mod/todo/vendors/smoothness/todo.smoothness.css';
+	$ui_url = elgg_get_site_url() . 'mod/todos/vendors/smoothness/todo.smoothness.css';
 	elgg_register_css('todo.smoothness', $ui_url);
 
 	// Register datepicker css
-	$daterange_css = elgg_get_site_url(). 'mod/todo/vendors/ui.daterangepicker.css';
+	$daterange_css = elgg_get_site_url(). 'mod/todos/vendors/ui.daterangepicker.css';
 	elgg_register_css('jquery.daterangepicker', $daterange_css);
 
 	// Extend groups sidebar
@@ -305,7 +305,7 @@ function todo_init() {
 	elgg_register_ajax_view('css/todo/calendars_dynamic');
 
 	// Register actions
-	$action_base = elgg_get_plugins_path() . "todo/actions/todo";
+	$action_base = elgg_get_plugins_path() . "todos/actions/todo";
 	elgg_register_action('todo/save', "$action_base/save.php");
 	elgg_register_action('todo/delete', "$action_base/delete.php");
 	elgg_register_action('todo/accept', "$action_base/accept.php");
@@ -320,7 +320,7 @@ function todo_init() {
 	elgg_register_action('todo/calendars', "$action_base/calendars.php", 'admin');
 	elgg_register_action('todo/move', "$action_base/move.php", 'admin');
 	
-	$action_base = elgg_get_plugins_path() . "todo/actions/submission";
+	$action_base = elgg_get_plugins_path() . "todos/actions/submission";
 	elgg_register_action('submission/save', "$action_base/save.php");
 	elgg_register_action('submission/delete', "$action_base/delete.php");
 	elgg_register_action('submission/annotate', "$action_base/annotate.php");
@@ -612,12 +612,12 @@ function todo_page_handler($page) {
 			break;
 		case 'download_submissions':
 			set_input('guid', $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/todo/download_submissions.php';
+			include elgg_get_plugins_path() . 'todos/pages/todo/download_submissions.php';
 			return TRUE;
 			break;
 		case 'download_grades':
 			set_input('guid', $page[1]);
-			include elgg_get_plugins_path() . 'todo/pages/todo/download_grades.php';
+			include elgg_get_plugins_path() . 'todos/pages/todo/download_grades.php';
 			return TRUE;
 			break;
 		case 'settings':
@@ -678,6 +678,27 @@ function todo_unassign_user_event_listener($event, $object_type, $object) {
 
 		// This will check and set the complete flag on the todo
 		update_todo_complete($todo->getGUID());
+
+		// Notify todo owner and log the drop out
+		$current_user = elgg_get_logged_in_user_guid();
+
+		if (!$todo->canEdit() && (($current_user == $user->guid) && is_todo_assignee($todo->guid, $current_user))) {
+			notify_user($todo->owner_guid, 
+				$user->guid,
+				elgg_echo('todo:email:dropout:subject', array(
+					$user->name,
+					$todo->title
+				)), 
+				elgg_echo('todo:email:dropout:body', array(
+					$user->name,
+					$todo->title,
+					$todo->getURL()
+				))
+			);
+
+			// Create 'dropped' annotation
+			create_annotation($todo->guid, "todo_dropped", "1", "integer", $current_user, ACCESS_PRIVATE);
+		}
 	}
 	return true;
 }
@@ -900,6 +921,7 @@ function todo_page_setup() {
 		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
 		elgg_register_admin_menu_item('administer', 'manage', 'todos');
 		elgg_register_admin_menu_item('administer', 'calendars', 'todos');
+		elgg_register_admin_menu_item('administer', 'logs', 'todos');
 	}
 
 	// Todo notificaton settings
@@ -1221,7 +1243,7 @@ function todo_entity_menu_setup($hook, $type, $value, $params) {
 	if ($entity->return_required) {
 		$options = array(
 			'name' => 'todo_return_required',
-			'text' => "<img src='" . elgg_get_site_url() . 'mod/todo/graphics/info_icon_large.png' . "' />",
+			'text' => "<img src='" . elgg_get_site_url() . 'mod/todos/graphics/info_icon_large.png' . "' />",
 			'href' => '#',
 			'title' => elgg_echo('todo:label:returnrequired'),
 			'priority' => 0,
@@ -1235,7 +1257,7 @@ function todo_entity_menu_setup($hook, $type, $value, $params) {
 		$name = "category_" . $entity->category;
 		$options = array(
 			'name' => $name,
-			'text' => "<img src='" . elgg_get_site_url() . 'mod/todo/graphics/todo_cat_' . $entity->category . '.png' . "' />",
+			'text' => "<img src='" . elgg_get_site_url() . 'mod/todos/graphics/todo_cat_' . $entity->category . '.png' . "' />",
 			'href' => '#',
 			'title' => elgg_echo("todo:label:{$entity->category}"),
 			'priority' => 1,
@@ -1465,7 +1487,7 @@ function submission_file_icon_url_override($hook, $type, $value, $params) {
 		// thumbnails get first priority
 		if ($file->thumbnail) {
 			$ts = (int)$file->icontime;
-			return "mod/todo/thumbnail.php?file_guid=$file->guid&size=$size&icontime=$ts";
+			return "mod/todos/thumbnail.php?file_guid=$file->guid&size=$size&icontime=$ts";
 		}
 
 		$mapping = array(
@@ -2286,7 +2308,7 @@ function todo_secondary_header_menu_setup($hook, $type, $value, $params) {
 			'title' => elgg_echo('todo:label:subscribetocalendar'),
 			'href' => elgg_normalize_url('ajax/views/todo/connect_howto'),
 			'text' => elgg_view('output/img', array(
-					'src' => elgg_normalize_url('mod/todo/graphics/gcal.gif')
+					'src' => elgg_normalize_url('mod/todos/graphics/gcal.gif')
 				)) . $connect,
 			'priority' => 1,
 			'class' => 'elgg-lightbox'
@@ -2392,7 +2414,7 @@ function todo_run_once() {
  */
 function todo_test($hook, $type, $value, $params) {
 	//$value = array(); // uncomment to just run todo tests
-	$value[] = elgg_get_plugins_path() . 'todo/tests/todo.php';
+	$value[] = elgg_get_plugins_path() . 'todos/tests/todo.php';
 	return $value;
 }
 

@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2014
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -27,6 +27,7 @@ $english = array(
 	'admin:todos:statistics' => 'Statistics',
 	'admin:todos:calendars' => 'Calendars',
 	'admin:todos:manage' => 'Manage',
+	'admin:todos:logs' => 'Logs',
 	
 	// Page titles 
 	'todo:title:edit' => 'Edit To Do',
@@ -248,6 +249,10 @@ $english = array(
 	'todo:label:admin:manualpercentage' => 'Manually Completed Percentage', 
 	'todo:label:admin:assignedsubmitted' => 'Submitted/Assigned', 
 	'todo:label:admin:completionaverage' => 'Average User Completion',
+	'todo:label:admin:drops' => 'Dropped Todos',
+	'todo:label:admin:dropstats' => 'Dropped Statistics',
+	'todo:label:admin:totaldrops' => 'Total drops',
+	'todo:label:admin:nodrops' => 'There have been no todo drops',
 	
 	// River
 	'river:create:object:todo' => '%s created To Do titled %s',
@@ -313,6 +318,16 @@ To view or comment on the original submission, click here:
 To view %s's profile, click here:
 
 %s",
+
+	// Todo dropout notifications
+	'todo:email:dropout:subject' => '%s has dropped out of the To Do %s',
+	'todo:email:dropout:body' => 'This is a notification that %s has dropped out of the To Do titled: %s
+
+To view the To Do, click here:
+
+%s
+
+',
 
 	// Submission Annotations
 	'riveraction:annotation:submission_annotation' => '%s commented on %s',

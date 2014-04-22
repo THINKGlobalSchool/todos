@@ -10,6 +10,6 @@
  * 
  */
 $js_path = elgg_get_config('path');
-$js_path = "{$js_path}mod/todo/vendors/qtip/jquery.qtip.js";
+$js_path = "{$js_path}mod/todos/vendors/qtip/jquery.qtip.js";
 
 include $js_path;

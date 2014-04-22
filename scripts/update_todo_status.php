@@ -26,7 +26,7 @@ if ($change_status) {
 $area .= "<p><strong>Status updated.</strong></p><br/>";
 }
 
-$url = elgg_get_site_url() . "mod/todo/update_todo_status.php";
+$url = elgg_get_site_url() . "mod/todos/update_todo_status.php";
 $area .= "<p>Update all todos to status: <a href='{$url}?change_status=0'>Draft</a> <a href='{$url}?change_status=1'>Published</a></p>";
 
 $body = elgg_view_layout("one_column", $area);

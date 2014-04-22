@@ -11,6 +11,6 @@
  */
 $js_path = elgg_get_config('path');
 
-$iframe_transport = "{$js_path}mod/todo/vendors/jquery-file-upload/jquery.iframe-transport.js";
+$iframe_transport = "{$js_path}mod/todos/vendors/jquery-file-upload/jquery.iframe-transport.js";
 
 include $iframe_transport;

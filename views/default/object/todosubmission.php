@@ -106,11 +106,11 @@ HTML;
 				$guid = (int)$content;
 
 				$view_icon_content = elgg_view('output/img', array(
-					'src' => elgg_get_site_url() . 'mod/todo/graphics/spot_content.png'
+					'src' => elgg_get_site_url() . 'mod/todos/graphics/spot_content.png'
 				)) . "<span>" . elgg_echo('todo:label:viewonspot') . "</span>";
 
 				$copy_icon_content = elgg_view('output/img', array(
-					'src' => elgg_get_site_url() . 'mod/todo/graphics/copy_content.png'
+					'src' => elgg_get_site_url() . 'mod/todos/graphics/copy_content.png'
 				)) . "<span>" . elgg_echo('todo:label:copytoprofile') . "</span>";
 
 				$target = null;

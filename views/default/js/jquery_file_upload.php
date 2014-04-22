@@ -11,6 +11,6 @@
  */
 $js_path = elgg_get_config('path');
 
-$fileupload = "{$js_path}mod/todo/vendors/jquery-file-upload/jquery.fileupload.js";
+$fileupload = "{$js_path}mod/todos/vendors/jquery-file-upload/jquery.fileupload.js";
 
 include $fileupload;

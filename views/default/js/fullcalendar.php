@@ -10,6 +10,6 @@
  * 
  */
 $js_path = elgg_get_config('path');
-$js_path = "{$js_path}mod/todo/vendors/fullcalendar-1.5.4/fullcalendar/fullcalendar.min.js";
+$js_path = "{$js_path}mod/todos/vendors/fullcalendar-1.5.4/fullcalendar/fullcalendar.min.js";
 
 include $js_path;
