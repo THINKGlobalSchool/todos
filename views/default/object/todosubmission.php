@@ -115,7 +115,13 @@ HTML;
 
 				$target = null;
 
-				if (is_int($guid) && $entity = get_entity($guid)) {
+				// Handle submission content, first check if a plugin wants to deal with it first
+				if ($handled_content = elgg_trigger_plugin_hook('handle_submission_content', 'todo', $content, false)) {
+					$icon = $handled_content['icon'];
+					$href = $handled_content['url'];
+					$target = $handled_content['target'];
+					$text = $handled_content['text'];
+				} else if (is_int($guid) && $entity = get_entity($guid)) {
 					// If this is a 'downloadable' file (file or todosubmission file)
 					if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
 						// Url should point directly to the file, not the view

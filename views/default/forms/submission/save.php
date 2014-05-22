@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2014
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -33,67 +33,45 @@ if (isset($vars['entity'])) {
 		}
 	}
 
-	// Content Menu Items
-	$menu_items .= "<a href='#submission-add-content-container' class='submission-content-menu-item' id='add-content'>" . elgg_echo('todo:label:addcontent') . "</a><br />";
-	$menu_items .= "<a href='#submission-add-file-container' class='submission-content-menu-item' id='add-file'>" . elgg_echo('todo:label:addfile') . "</a><br />";
-	$menu_items .= "<a href='#submission-add-link-container' class='submission-content-menu-item' id='add-link'>" . elgg_echo('todo:label:addlink') . "</a><br />";
+	// Automatically build views/menu items from these types (priority => type)
+	$content_types = array(
+		100 => 'content',
+		200 => 'file',
+		300 => 'link'
+	);
+
+	// Trigger a hook to allow plugins to add another content type
+	$content_types = elgg_trigger_plugin_hook('get_submission_content_types', 'todo', null, $content_types);
+
+	// Register menu items and get content modules for content types
+	foreach ($content_types as $priority => $type) {
+		// Register content menu items
+		elgg_register_menu_item('todo_submission_content_type', array(
+			'name' => $type,
+			'text' => elgg_echo("todo:label:add{$type}"),
+			'href' => "#submission-add-{$type}-container",
+			'priority' => $priority,
+			'class' => 'submission-content-menu-item',
+			'id' => "add-{$type}",
+		));
+
+		$content_type_modules .= elgg_view("forms/submission/content_modules/{$type}");
+	}
+
+	// Output the dashboard tab menu
+	$menu_items = elgg_view_menu('todo_submission_content_type', array(
+		'sort_by' => 'priority'
+	));
 
 	$back_button = "<a id='submission-content-back-button'><< Back</a>";
 	
-	// Content Div's
+	// Content list div
 	$content_list = "<select id='submission-content-select' name='submission_content[]' MULTIPLE></select>";
 	
 	$content_list_module = elgg_view_module('info', elgg_echo("todo:label:content"), $content_list, array(
 		'id' => 'submission-content-list',
 		'class' => 'submission-content-pane',
 	));
-							
-	$link_content = "<form id='submission-link-form'>" . elgg_view('input/text', array(
-		'id' => 'submission-link', 
-		'name' => 'submission_link'
-	)) . "<br /><br />";
-	
-	$link_content .= elgg_view('input/submit', array(
-		'id' => 'submission-submit-link', 
-		'name' => 'link_submit', 
-		'value' => 'Submit'
-	)) . "</form>";
-	
-	$link_module = elgg_view_module('info', elgg_echo('todo:label:addlink'), $link_content, array(
-		'id' => 'submission-add-link-container', 
-		'class' => 'submission-content-pane',
-	));				
-				
-	$file_content = "<form id='submission-file-form' method='POST' enctype='multipart/form-data'>";
-	$file_content .= elgg_view("input/file",array(
-		'name' => 'upload', 
-		'js' => 'id="upload"'
-	)) . "<br /><br />";
-	
-	$file_content .= elgg_view('input/submit', array(
-		'id' => 'submission-submit-file', 
-		'name' => 'file_submit', 
-		'value' => elgg_echo('todo:label:upload'),
-	)) . "</form>";
-	
-	$file_module = elgg_view_module('info', elgg_echo('todo:label:addfile'), $file_content, array(
-		'id' => 'submission-add-file-container', 
-		'class' => 'submission-content-pane',
-	));
-	
-		
-	$content_module = elgg_view('modules/ajaxmodule', array(
-		'title' => elgg_echo('todo:label:addcontent'),
-		'limit' => 5,
-		'types' => array('object'),
-		'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'forum_reply', 'forum_topic'),
-		'container_guid' => elgg_get_logged_in_user_guid(),
-		'listing_type' => 'simpleicon',
-		'module_type' => 'info',
-		'module_class' => 'submission-content-pane',
-		'module_id' => 'submission-add-content-container',
-	));
-	
 		
 	// Labels/Input
 	$title_label = elgg_view_title(elgg_echo("todo:label:newsubmission"));
@@ -116,7 +94,7 @@ if (isset($vars['entity'])) {
 	// Build Form Body
 	$form_body = <<<HTML
 
-	<div style='padding: 10px;'>
+	<div id='todo-submission-form' style='padding: 10px;'>
 		<div>
 			$title_label<br />
 		</div>
@@ -129,9 +107,7 @@ if (isset($vars['entity'])) {
 			</div>
 			<div id='submission-content'>
 				$content_list_module
-				$link_module
-				$file_module
-				$content_module
+				$content_type_modules
 				$ajax_spinner
 				<div id='submission-output' style='display: none;'></div>
 			</div>

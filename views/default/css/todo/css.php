@@ -573,7 +573,6 @@ form.elgg-form-submission-grade {
 
 }
 
-
 input.submission-grade-input {
 	width: 100px;
 	border: 3px solid #DDD;

@@ -192,13 +192,8 @@ if ($full) { // Full View
 
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
 	
-	// Submission form vars
-	$submission_form_vars = array();
-	$submission_form_vars['id'] = 'todo-submission-form';
-	$submission_form_vars['name'] = 'todo_submission_form';
-	
-	// View submission form
-	$submission_form = elgg_view_form('submission/save', $submission_form_vars, array('entity' => $todo));
+	// Output submission form
+	$submission_form = elgg_view('forms/submission/save', array('entity' => $todo));
 	
 	// For hash submissions
 	$hash_todo = $todo->guid;

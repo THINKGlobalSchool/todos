@@ -35,7 +35,7 @@ elgg.todo.init = function() {
 				
 	// Set up submission dialog
 	$(".todo-lightbox").fancybox({
-		//'modal': true,
+		'enableEscapeButton': false,
 		'onStart' : function() {
 			$('.tgstheme-entity-menu-actions').fadeOut();
 		},
@@ -56,7 +56,7 @@ elgg.todo.init = function() {
 
 	// TODO FORM SETUP
 	// Submission form submit handler
-	$("form#todo-submission-form").live('submit', elgg.todo.submissionFormSubmit);
+	$("#todo-submission-form #submit-create-submission").live('click', elgg.todo.submissionFormSubmit);
 	
 	// Hack modules to add an 'add' button	
 	$("#submission-add-content-container").delegate('.elgg-item', 'mouseenter mouseleave', elgg.todo.submissionAddHover);
