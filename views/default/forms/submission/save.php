@@ -115,6 +115,8 @@ if (isset($vars['entity'])) {
 			<br />
 			<div id="submission-error-message">
 			</div>
+			<div id="submission-notice-message">
+			</div>
 		</div>
 		<hr />
 		<div>

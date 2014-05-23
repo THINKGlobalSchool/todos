@@ -87,6 +87,12 @@ span.unviewed {
 	display:none;
 }
 
+#submission-notice-message {
+	color: #666;
+	font-weight: bold;
+	display:none;
+}
+
 .todo-priority-label {
 	width: 100px;
 	-webkit-border-radius: 11px; 
