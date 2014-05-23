@@ -118,6 +118,7 @@ HTML;
 				// Handle submission content, first check if a plugin wants to deal with it first
 				if ($handled_content = elgg_trigger_plugin_hook('handle_submission_content', 'todo', $content, false)) {
 					$icon = $handled_content['icon'];
+					$icon_content = $handled_content['icon_content'];
 					$href = $handled_content['url'];
 					$target = $handled_content['target'];
 					$text = $handled_content['text'];
