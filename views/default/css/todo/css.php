@@ -91,6 +91,8 @@ span.unviewed {
 	color: #666;
 	font-weight: bold;
 	display:none;
+	font-size: 90%;
+	font-style: italic;
 }
 
 .todo-priority-label {
@@ -218,6 +220,7 @@ span.unviewed {
 
 .submission-content-pane {
 	display: none;
+	margin-bottom: 3px;
 }
 
 /** Todo sort menus **/

@@ -108,14 +108,14 @@ if (isset($vars['entity'])) {
 			<div id='submission-content'>
 				$content_list_module
 				$content_type_modules
+				<div id="submission-notice-message">
+				</div>
 				$ajax_spinner
 				<div id='submission-output' style='display: none;'></div>
 			</div>
 			<div style='clear:both;'></div>
 			<br />
 			<div id="submission-error-message">
-			</div>
-			<div id="submission-notice-message">
 			</div>
 		</div>
 		<hr />
