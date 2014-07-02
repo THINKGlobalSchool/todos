@@ -119,16 +119,6 @@ function todo_init() {
 	elgg_register_simplecache_view('css/todo/datatables');
 	elgg_register_css('DataTables', $dt_css);
 	
-	// Register JS for tiptip
-	$tt_js = elgg_get_simplecache_url('js', 'tiptip');
-	elgg_register_simplecache_view('js/tiptip');
-	elgg_register_js('jquery.tiptip', $tt_js, 'head', 501);
-
-	// Register CSS for tiptip
-	$t_css = elgg_get_simplecache_url('css', 'tiptip');
-	elgg_register_simplecache_view('css/tiptip');
-	elgg_register_css('jquery.tiptip', $t_css);
-	
 	// Register JS for fullcalendar
 	$fc_js = elgg_get_simplecache_url('js', 'fullcalendar');
 	elgg_register_simplecache_view('js/fullcalendar');
