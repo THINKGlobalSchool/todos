@@ -75,73 +75,55 @@ function todo_init() {
 	
 	// Register todo JS
 	$todo_js = elgg_get_simplecache_url('js', 'todo/todo');
-	elgg_register_simplecache_view('js/todo/todo');
 	elgg_register_js('elgg.todo', $todo_js);
 	
 	// Submission JS
 	$s_js = elgg_get_simplecache_url('js', 'todo/submission');
-	elgg_register_simplecache_view('js/todo/submission');
 	elgg_register_js('elgg.todo.submission', $s_js);
 	
 	// Register and load global todo JS
 	$g_js = elgg_get_simplecache_url('js', 'todo/global');
-	elgg_register_simplecache_view('js/todo/global');
 	elgg_register_js('elgg.todo.global', $g_js);
 	elgg_load_js('elgg.todo.global');
 	
 	// Register admin todo JS
 	$g_js = elgg_get_simplecache_url('js', 'todo/admin');
-	elgg_register_simplecache_view('js/todo/admin');
 	elgg_register_js('elgg.todo.admin', $g_js);
-
-	// Register jquery ui widget (for jquery file upload)
-	$js = elgg_get_simplecache_url('js', 'jquery_ui_widget');
-	elgg_register_simplecache_view('js/jquery_ui_widget');
-	elgg_register_js('jquery.ui.widget', $js);
 	
 	// Register JS File Upload
 	$j_js = elgg_get_simplecache_url('js', 'jquery_file_upload');
-	elgg_register_simplecache_view('js/jquery_file_upload');
 	elgg_register_js('jquery-file-upload', $j_js);
 
 	// Register jquery.iframe-transport (for jquery file upload)
 	$j_js = elgg_get_simplecache_url('js', 'jquery_iframe_transport');
-	elgg_register_simplecache_view('js/jquery_iframe_transport');
 	elgg_register_js('jquery.iframe-transport', $j_js);
 	
 	// Register DataTables JS
 	$dt_js = elgg_get_simplecache_url('js', 'datatables');
-	elgg_register_simplecache_view('js/datatables');
 	elgg_register_js('DataTables', $dt_js);
 	
 	// Register DataTables CSS
 	$dt_css = elgg_get_simplecache_url('css', 'todo/datatables');
-	elgg_register_simplecache_view('css/todo/datatables');
 	elgg_register_css('DataTables', $dt_css);
 	
 	// Register JS for tiptip
 	$tt_js = elgg_get_simplecache_url('js', 'tiptip');
-	elgg_register_simplecache_view('js/tiptip');
 	elgg_register_js('jquery.tiptip', $tt_js, 'head', 501);
 
 	// Register CSS for tiptip
 	$t_css = elgg_get_simplecache_url('css', 'tiptip');
-	elgg_register_simplecache_view('css/tiptip');
 	elgg_register_css('jquery.tiptip', $t_css);
 	
 	// Register JS for fullcalendar
 	$fc_js = elgg_get_simplecache_url('js', 'fullcalendar');
-	elgg_register_simplecache_view('js/fullcalendar');
 	elgg_register_js('tgs.fullcalendar', $fc_js);
 
 	// Register CSS for fullcalendar
 	$fc_css = elgg_get_simplecache_url('css', 'fullcalendar');
-	elgg_register_simplecache_view('css/fullcalendar');
 	elgg_register_css('tgs.fullcalendar', $fc_css);
 	
-	// Register JS for fullcalendar
+	// Register JS for tiptip
 	$qt_js = elgg_get_simplecache_url('js', 'qtip');
-	elgg_register_simplecache_view('js/qtip');
 	elgg_register_js('jquery.qtip', $qt_js);
 	
 	// Uncached url that calls the views and builds the colors for the calendars
@@ -394,7 +376,6 @@ function todo_page_handler($page) {
 			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
-			elgg_load_js('jquery.ui.widget');
 			elgg_load_js('jquery-file-upload');
 			elgg_load_js('jquery.iframe-transport');
 			elgg_load_js('elgg.todo.submission');
@@ -511,7 +492,6 @@ function todo_page_handler($page) {
 			elgg_load_js('lightbox');
 			elgg_load_js('elgg.todo.submission');
 			elgg_load_js('jquery.form');
-			elgg_load_js('jquery.ui.widget');
 			elgg_load_js('jquery-file-upload');
 			elgg_load_js('jquery.iframe-transport');
 			gatekeeper();
@@ -532,7 +512,6 @@ function todo_page_handler($page) {
 			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
-			elgg_load_js('jquery.ui.widget');
 			elgg_load_js('jquery-file-upload');
 			elgg_load_js('jquery.iframe-transport');
 			elgg_load_js('elgg.todo.submission');
