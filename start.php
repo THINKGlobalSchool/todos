@@ -105,15 +105,7 @@ function todo_init() {
 	// Register DataTables CSS
 	$dt_css = elgg_get_simplecache_url('css', 'todo/datatables');
 	elgg_register_css('DataTables', $dt_css);
-	
-	// Register JS for tiptip
-	$tt_js = elgg_get_simplecache_url('js', 'tiptip');
-	elgg_register_js('jquery.tiptip', $tt_js, 'head', 501);
 
-	// Register CSS for tiptip
-	$t_css = elgg_get_simplecache_url('css', 'tiptip');
-	elgg_register_css('jquery.tiptip', $t_css);
-	
 	// Register JS for fullcalendar
 	$fc_js = elgg_get_simplecache_url('js', 'fullcalendar');
 	elgg_register_js('tgs.fullcalendar', $fc_js);
@@ -703,22 +695,34 @@ function submission_create_event_listener($event, $object_type, $object) {
 		if ($object->content) {
 			$contents = unserialize($object->content);
 			foreach ($contents as $content) {
-				$guid = (int)$content;
-				$entity = get_entity($guid);
-				if (elgg_instanceof($entity, 'object')) {
-					// If content is a todosubmissionfile entitity, set its ACL to that of the submission
-					if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
-						$entity->access_id = $object->access_id;
-					}
+				// Params for hook
+				$content_params = array(
+					'todo_guid' => $todo->guid,
+					'content' => $content
+				);
 
-					// Set up a todo content relationship for the entity
-					$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+				// Check if plugins want to handle permissions, etc for submission content
+				if (!elgg_trigger_plugin_hook('handle_submission_content_create', 'todo', $content_params, false)) {
+					// No dice, lets check for an entity
+					$guid = (int)$content;
+					$entity = get_entity($guid);
 
-					// Set content tags to todo suggested tags
-					todo_set_content_tags($entity, $todo);
+					// If we have an entity, we'll update permission
+					if (elgg_instanceof($entity, 'object')) {
+						// If content is a todosubmissionfile entitity, set its ACL to that of the submission
+						if (elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
+							$entity->access_id = $object->access_id;
+						}
 
-					$entity->save();
-				} 
+						// Set up a todo content relationship for the entity
+						$r = add_entity_relationship($entity->guid, TODO_CONTENT_RELATIONSHIP, $todo->guid);
+
+						// Set content tags to todo suggested tags
+						todo_set_content_tags($entity, $todo);
+
+						$entity->save();
+					} 
+				}
 			}
 		}			
 

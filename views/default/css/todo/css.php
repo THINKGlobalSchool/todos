@@ -87,6 +87,14 @@ span.unviewed {
 	display:none;
 }
 
+#submission-notice-message {
+	color: #666;
+	font-weight: bold;
+	display:none;
+	font-size: 90%;
+	font-style: italic;
+}
+
 .todo-priority-label {
 	width: 100px;
 	-webkit-border-radius: 11px; 
@@ -212,6 +220,7 @@ span.unviewed {
 
 .submission-content-pane {
 	display: none;
+	margin-bottom: 3px;
 }
 
 /** Todo sort menus **/
@@ -572,7 +581,6 @@ div.todo-submission-grade-container {
 form.elgg-form-submission-grade {
 
 }
-
 
 input.submission-grade-input {
 	width: 100px;
