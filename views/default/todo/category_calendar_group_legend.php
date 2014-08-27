@@ -16,7 +16,7 @@ $category = get_entity($category_guid);
 
 if (elgg_instanceof($category, 'object', 'group_category')) {
 	// Get category colors from backend
-	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 	$colors = unserialize($colors);
 
 	// Get category specific colors and palette

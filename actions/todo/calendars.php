@@ -18,7 +18,7 @@ $foregrounds = get_input('foreground');
 
 $spread = get_input('palette_spread');
 
-elgg_set_plugin_setting('palette_spread', $spread, 'todo');
+elgg_set_plugin_setting('palette_spread', $spread, 'todos');
 
 if ($backgrounds && $foregrounds) {
 	$colors = array();
@@ -38,11 +38,11 @@ if ($backgrounds && $foregrounds) {
 		);
 	}
 
-	elgg_set_plugin_setting('calendar_category_colors', serialize($colors), 'todo');
+	elgg_set_plugin_setting('calendar_category_colors', serialize($colors), 'todos');
 }
 
 
-elgg_set_plugin_setting('calendar_categories', $categories, 'todo');
+elgg_set_plugin_setting('calendar_categories', $categories, 'todos');
 
 system_message(elgg_echo('todo:success:calendarsettings'));
 forward(REFERER);

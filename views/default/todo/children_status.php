@@ -72,7 +72,7 @@ if ($child_content) {
 	if (elgg_is_active_plugin('roles')) {
 		 if (roles_is_member(elgg_get_plugin_setting('view_students_role', 'parentportal'), elgg_get_logged_in_user_guid())) {
 		 	$user_label = elgg_echo('todo:label:student');
-		 } else if (roles_is_member(elgg_get_plugin_setting('todofacultyrole', 'todo'), elgg_get_logged_in_user_guid())) {
+		 } else if (roles_is_member(elgg_get_plugin_setting('todofacultyrole', 'todos'), elgg_get_logged_in_user_guid())) {
 		 	$user_label = elgg_echo('todo:label:advisee');
 		 } else if (elgg_is_active_plugin('parentportal') && parentportal_is_user_parent(elgg_get_logged_in_user_entity())) {
 			$user_label = elgg_echo('parentportal:title:childinfo');

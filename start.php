@@ -261,7 +261,7 @@ function todo_init() {
 	}
 
 	// Cron hook for todo zip cleanup
-	$delete_period = elgg_get_plugin_setting('zipdelete', 'todo');
+	$delete_period = elgg_get_plugin_setting('zipdelete', 'todos');
 	
 	if (!$delete_period) {
 		$delete_period = 'daily';
@@ -325,7 +325,7 @@ function todo_init() {
 	run_function_once("todo_run_once");
 	
 	// Set global todo admin role in config
-	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todo'));
+	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todos'));
 
 	return TRUE;	
 }

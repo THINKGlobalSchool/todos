@@ -34,7 +34,7 @@ $past_url = $url . "&priority=" . TODO_PRIORITY_HIGH;
 $upcoming_url = $url . "&sort_order=DESC";
 
 // Show iPlan if enabled
-if (elgg_get_plugin_setting('enable_iplan', 'todo')) {
+if (elgg_get_plugin_setting('enable_iplan', 'todos')) {
 	$iplan_link = elgg_view('output/url', array(
 		'text' => elgg_echo('todo:label:iplancalendar'),
 		'href' => elgg_get_site_url() . 'todo/iplan',

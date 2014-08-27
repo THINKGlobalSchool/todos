@@ -11,7 +11,7 @@
  */
 header('Content-type: text/css', true);
 
-$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 $calendar_colors = unserialize($calendar_colors);
 
 foreach ($calendar_colors as $guid => $calendar) {
