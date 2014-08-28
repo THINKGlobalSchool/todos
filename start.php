@@ -947,7 +947,7 @@ function todo_submission_url($entity) {
 	access_show_hidden_entities(TRUE);
 	$todo = get_entity($entity->todo_guid);
 	if ($todo && $todo->isEnabled()) {
-		$url = $todo->getURL() . "#submission:{$entity->guid}";
+		$url = $todo->getURL() . "?submission={$entity->guid}";
 	} else {
 		$url = elgg_get_site_url() . 'todo/view/submission/' . $entity->guid;
 	}

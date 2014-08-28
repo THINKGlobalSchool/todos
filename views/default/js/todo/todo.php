@@ -222,6 +222,7 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 		error: function(e) {
 			// Display error (will probably look gross)
 			$("#submission-error-message").show().html(e);
+			console.log();
 			elgg.register_error(e);
 			$('#submit-create-loader').replaceWith($button);
 			return false;
