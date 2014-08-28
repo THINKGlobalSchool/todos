@@ -35,6 +35,8 @@ $guid				= elgg_extract('guid', $vars);
 if ($guid) {	
 	$entity_hidden  = elgg_view('input/hidden', array('name' => 'guid', 'value' => $guid));
 
+	$default_assignment = 0;
+
 	$script .= <<<HTML
 		<script type='text/javascript'>
 			$(document).ready(function() {
@@ -133,6 +135,7 @@ $assign_content = elgg_view('input/dropdown', array(
 	'name' => 'assignee_type_select',
 	'id' => 'todo-assignee-type-select',
 	'options_values' =>	$assign_options,
+	'value' => $default_assignment
 ));
 													
 $user_picker = elgg_view('input/userpicker', array(
