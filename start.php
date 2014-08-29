@@ -137,10 +137,6 @@ function todo_init() {
 	// Uncached url that calls the views and builds the colors for the calendars
 	$d_url = 'ajax/view/css/todo/calendars_dynamic';
 	elgg_register_css('tgs.calendars_dynamic', $d_url, 999);
-
-	// Register datepicker JS
-	$daterange_js = elgg_get_site_url(). 'mod/todos/vendors/daterangepicker.jQuery.js';
-	elgg_register_js('jquery.daterangepicker', $daterange_js);
 	
 	// Register custom theme CSS
 	$ui_url = elgg_get_site_url() . 'mod/todos/vendors/smoothness/todo.smoothness.css';
@@ -381,7 +377,6 @@ function todo_page_handler($page) {
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
 			elgg_load_css('tgs.calendars_dynamic');
-			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
 			elgg_load_js('jquery.ui.widget');
@@ -469,7 +464,6 @@ function todo_page_handler($page) {
 
 			break;
 		case 'iplan':
-			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
 			elgg_load_css('tgs.calendars_dynamic');
@@ -519,9 +513,7 @@ function todo_page_handler($page) {
 		case 'group':
 			set_input('todo_dashboard', 1);
 
-			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
-			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('jquery.ui.widget');
 			elgg_load_js('jquery-file-upload');
 			elgg_load_js('jquery.iframe-transport');
@@ -2226,7 +2218,7 @@ function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
 		'name' => 'todo_user_submissions_sort',
 		'href' => '#ASC',
 		'text' => elgg_echo('todo:label:sortascarrow'),
-		'link_class' => 'menu-sort todo-user-submissions-sort',
+		'link_class' => 'menu-sort todo-user-submissions-sort filtrate-sort filtrate-filter ascending',
 		'item_class' => 'elgg-menu-item-sort',
 		'encode_text' => false,
 		'data-param' => 'sort_order',

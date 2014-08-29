@@ -11,6 +11,9 @@
  * @uses $vars['group_guid'] The group guid
  */
 
+elgg_load_js('elgg.filtrate');
+elgg_load_js('elgg.filtrate.utilities');
+
 $group_guid = elgg_extract('group_guid', $vars);
 
 $group = get_entity($group_guid);
@@ -35,6 +38,20 @@ $submissions_content = <<<HTML
 	<div class='todo-user-submissions-content'>
 		<strong>&#9668; $submissions_instructions</strong>
 	</div>
+
+	<style type='text/css'>
+		.filtrate-menu-advanced {
+			display: none !important;
+		}
+		.elgg-menu-item-advanced {
+			display: none !important;
+		}
+	</style>
+
+	<script type='text/javascript'>
+		// Smack down the default init handler.. kind of gross
+		elgg.register_hook_handler('init', 'chosen.js', function(){return function(){return false;};});
+	</script>
 HTML;
 
 $members_content = "";
