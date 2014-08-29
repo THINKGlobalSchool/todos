@@ -280,6 +280,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/list');
 	elgg_register_ajax_view('todo/ajax_submission');
 	elgg_register_ajax_view('todo/submissions');
+	elgg_register_ajax_view('todo/group_submissions');
 	elgg_register_ajax_view('todo/user_submissions');
 	elgg_register_ajax_view('todo/group_user_submissions');
 	elgg_register_ajax_view('todo/group_submission_grades');

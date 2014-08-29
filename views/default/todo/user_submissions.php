@@ -8,7 +8,7 @@
  * @copyright THINK Global School 2010 - 2013
  * @link http://www.thinkglobalschool.com/
  */
-
+echo $user_guid;
 $user_guid = get_input('user_guid', elgg_extract('user_guid', $vars, NULL));
 $group_guid = get_input('group_guid', elgg_extract('group_guid', $vars, NULL));
 
@@ -41,39 +41,29 @@ $filter_menu = elgg_view_menu('todo_submission_dashboard', array(
 	'sort_by' => 'priority',
 ));
 
-$default_params = json_encode(array(
-	'sort_order' => 'DESC',
-	'filter_return' => 1,
-	'filter_ontime' => 'all',
-));
-
 $menu_name = 'todo_submission_dashboard';
 $list_url = elgg_get_site_url() . 'ajax/view/todo/submissions';
+elgg_set_page_owner_guid($group_guid);
+
+set_input('blah', 'sadjasdkjsdakkjdsjkdsjkdsajkasdjkadjks');
+
+$context = json_encode(array('user_guid' => $user_guid, 'group_guid' => $group_guid));
 
 $content = elgg_view('filtrate/dashboard', array(
 	'menu_name' => 'todo_submission_dashboard',
-	'list_url' => elgg_get_site_url() . 'ajax/view/todo/submissions',
+	'list_url' => elgg_get_site_url() . 'ajax/view/todo/group_submissions',
 	'default_params' => array(
 		'sort_order' => 'DESC',
 		'filter_return' => 1,
 		'filter_ontime' => 'all',
 		'user' => $user->username
-	)
+	),
+	'page_context' => $context
 ));
 
 $js = <<<JAVASCRIPT
 	<script type='text/javascript'>
-		elgg.register_hook_handler('init', 'system', function() {
-
-			// // Go go gadget filtrate
-			// var filtrate = $('.todo-user-submissions-content').filtrate({
-			// 	defaultParams: $.param($.parseJSON('$default_params')),
-			// 	ajaxListUrl: '$list_url',
-			// 	enableInfinite: false,
-			// 	disableHistory: true,
-			// 	context: 'user_submissions'
-			// });
-	
+		elgg.register_hook_handler('init', 'system', function() {	
 			// Re-init the chosen elements after filtrate
 			$('.tgstheme-chosen-select').each(function(idx) {
 				elgg.tgstheme.defaultChosenInit($(this));

@@ -40,7 +40,6 @@ $joins[] = "JOIN {$db_prefix}entities t1 on msv1.string = t1.guid";
 $wheres[] = "(msn1.string IN ('todo_guid')) AND ({$n1_suffix})";
 $wheres[] = "{$t1_suffix}";
 
-
 // If we were provided a return filter
 if ($filter_return !== 'all') {
 	// Access SQL
@@ -78,7 +77,7 @@ if ($filter_ontime !== 'all') {
 
 // Check for a group guid, include another where clause
 if ($group_guid) {
-	$wheres[] = "((t1.container_guid = {$group_guid}))";	
+	$wheres[] = "(t1.container_guid = {$group_guid})";	
 	elgg_push_context('group_todo_submissions'); // Display slightly different for groups
 }
 
