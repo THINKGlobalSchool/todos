@@ -117,11 +117,17 @@ if (elgg_instanceof($page_owner, 'group')) {
 	);
 	$userpicker_hidden = 'hidden';
 	
-	$current_group_hidden = elgg_view('input/hidden', array(
+	$current_group_options = array(
 		'id' => 'todo-current-group-select',
 		'name' => 'members[]',
-		'value' => $page_owner->guid,
-	));
+		'value' => $page_owner->guid
+	);
+
+	if ($default_assignment === 0) {
+		$current_group_options['disabled'] = 'DISABLED';
+	}
+
+	$current_group_hidden = elgg_view('input/hidden', $current_group_options);
 	
 } else {
 	$assign_options = array(
