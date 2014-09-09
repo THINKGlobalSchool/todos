@@ -18,7 +18,7 @@ $link_content = elgg_view('input/text', array(
 $link_content .= elgg_view('input/submit', array(
 	'id' => 'submission-submit-link', 
 	'name' => 'link_submit', 
-	'value' => 'Submit'
+	'value' => 'Add'
 ));
 
 $link_form = elgg_view('input/form', array(
