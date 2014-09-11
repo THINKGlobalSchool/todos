@@ -2456,7 +2456,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$value['ors'][] = "({$user_guid} IN (
 			SELECT guid_one FROM {$dbprefix}entity_relationships
 			WHERE relationship = 'member_of_role'
-			AND guid_two = (
+			AND guid_two IN (
 				SELECT value from {$dbprefix}private_settings
 				WHERE name = 'todoadminrole'
 			)
