@@ -12,7 +12,7 @@
  */
 
 if (get_input('display_label', false) && get_input('page_context') != 'widgets') {
-	$today = strtotime(date("F j, Y"));
+	$today = strtotime(date("F j, Y",time() + todo_get_submission_timezone_offset()));
 	$tomorrow = strtotime("+1 days", $today);
 	$next_week = strtotime("+7 days", $today);
 
