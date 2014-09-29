@@ -2505,7 +2505,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 		// Check if the user is the parent of the submisson owner's content/annotations/etc
 		$parent_submission_owner_content_object_and = "EXISTS(
 			SELECT owner_guid FROM {$dbprefix}entities se
-			WHERE se.guid = (
+			WHERE se.guid IN (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
 				WHERE guid_one = {$table_alias}{$guid_column}
 				AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}'))
@@ -2515,9 +2515,9 @@ function todo_access_handler($hook, $type, $value, $params) {
 		// Ensure the user is the parent of the user to whom this todo is assigned
 		$parent_todo_owner_object_and = "EXISTS(
 			SELECT owner_guid FROM {$dbprefix}entities se
-			WHERE se.guid = (
+			WHERE se.guid IN (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
-				WHERE guid_one = (
+				WHERE guid_one IN (
 					SELECT guid_two FROM {$dbprefix}entity_relationships
 					WHERE guid_one = {$table_alias}{$guid_column}
 					AND relationship = '$r_saf'
@@ -2542,7 +2542,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	// SQL to check if the user is the owner of the submission for submission files/annotations
 	$submission_owner_content_object_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities se
-		WHERE se.guid = (
+		WHERE se.guid IN (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
 			WHERE guid_one = {$table_alias}{$guid_column}
 			AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
