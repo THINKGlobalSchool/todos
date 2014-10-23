@@ -66,7 +66,7 @@ add_to_river('river/object/todosubmission/create', 'create', $user->guid, $submi
 // Notify todo owner
 global $CONFIG;
 
-if (!elgg_get_plugin_user_setting('suppress_complete', $todo->owner_guid, 'todo')) {
+if (!elgg_get_plugin_user_setting('suppress_complete', $todo->owner_guid, 'todos')) {
 	notify_user(
 		$todo->owner_guid, 
 		$CONFIG->site->guid,

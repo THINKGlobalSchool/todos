@@ -12,7 +12,7 @@
 
 $user = elgg_extract('user', $vars);
 
-$suppress_complete = elgg_get_plugin_user_setting('suppress_complete', $user->guid, 'todo');
+$suppress_complete = elgg_get_plugin_user_setting('suppress_complete', $user->guid, 'todos');
 
 $suppress_complete_input = elgg_view('input/checkboxes', array(
 	'name' => "suppress_complete", 
