@@ -243,7 +243,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
 	// Register _elgg_get_access_where_sql hook handler for todos
-	if (elgg_is_logged_in() && !(elgg_is_admin_logged_in() && $user_guid == elgg_get_logged_in_user_guid())) {
+	if (elgg_is_logged_in() && !elgg_is_admin_logged_in()) {
 		elgg_register_plugin_hook_handler('get_sql', 'access', 'todo_access_handler');	
 	}
 	
