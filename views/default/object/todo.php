@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
+ * @copyright THINK Global School 2010 - 2014
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -76,7 +76,7 @@ if ($full) { // Full View
 	$description_content = elgg_view('output/longtext', array('value' => $vars['entity']->description));
 
 	$duedate_label = elgg_echo("todo:label:duedate");
-	$duedate_content = elgg_view('output/longtext', array('value' => $date));
+	$duedate_content = elgg_view('output/text', array('value' => $date));
 
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';
@@ -88,10 +88,9 @@ if ($full) { // Full View
 	} else {
 		$grade_content = elgg_echo("todo:label:notgraded");
 	}
-
-	$status_label = elgg_echo("todo:label:status");
 	
 	if (elgg_is_admin_logged_in() || $is_owner || $is_assignee) {
+		$status_label = elgg_echo("todo:label:overallstatus");
 		// Default status
 		if (have_assignees_completed_todo($todo->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";		
@@ -102,6 +101,7 @@ if ($full) { // Full View
 	
 	// Assignee
 	if ($is_assignee) {
+		$status_label = elgg_echo("todo:label:status");
 		if (has_user_submitted(elgg_get_logged_in_user_guid(), $todo->getGUID())) {
 			$status_content = "<span class='complete'>" . elgg_echo('todo:label:complete') . "</span>";
 
@@ -135,49 +135,54 @@ if ($full) { // Full View
 	
 	// Owner
 	if ($is_owner) {
-		$status_content .= elgg_view('todo/status', $vars);
-	} 
+		$status_canedit .= elgg_view('todo/status', $vars);
+	}
 
 	// Description Content
-	$body = elgg_view_module('info', $description_label, $description_content);
+	$body = elgg_view_module('aside', $description_label, $description_content);
+
+	$body_table = "<table class='elgg-table todo-info-table'>";
 
 	// Optional Start Date
 	if ($todo->start_date) {
 		$start = is_int($todo->start_date) ? date("F j, Y", $todo->start_date) : $todo->start_date;
 		$startdate_label = elgg_echo("todo:label:startdate");
-		$startdate_content = elgg_view('output/longtext', array('value' => $start));
-		$body .= elgg_view_module('info', $startdate_label, $startdate_content);
+		$startdate_content = elgg_view('output/text', array('value' => $start));
+		$body_table .= "<tr><td>$startdate_label</td><td>$startdate_content</td></td>";
 	}
 
 	// Due date content
 	if ($todo->due_date) {
-		$body .= elgg_view_module('info', $duedate_label, $duedate_content);
+		$body_table .= "<tr><td>$duedate_label</td><td>$duedate_content</td></td>";
 	}
 
 	// Submission Required Content
-	$body .= elgg_view_module('info', $return_label, $return_content);	
+	$body_table .= "<tr><td>$return_label</td><td>$return_content</td></td>";
 
 	// If supplied suggested tags, display them
 	if ($todo->suggested_tags) {
 		$suggested_tags_label = elgg_echo("todo:label:suggestedtags");
 		$suggested_tags_content = elgg_view('output/tags', array('value' => $todo->suggested_tags));
-		$body .= elgg_view_module('info', $suggested_tags_label, $suggested_tags_content);	
+		$body_table .= "<tr><td>$suggested_tags_label</td><td>$suggested_tags_content</td></td>";
 	}
 
-	$body .= elgg_view_module('info', $grade_label, $grade_content);	
+	$body_table .= "<tr><td>$grade_label</td><td>$grade_content</td></td>";
 	
 	// If we have a rubric guid, display its info
 	if ((int)$todo->rubric_guid) {
 		$rubric = get_entity($todo->rubric_guid);
 		if (elgg_instanceof($rubric, 'object', 'rubric')) {
+			$rubric_label = elgg_echo('todo:label:assessmentrubric');
 			$rubric_content = "<a href='{$rubric->getURL()}'>{$rubric->title}</a>";
-			$body .= elgg_view_module('info', elgg_echo('todo:label:assessmentrubric'), $rubric_content);
+			$body_table .= "<tr><td>$rubric_label</td><td>$rubric_content</td></td>";
 		}
 	}
 	
 	if ($status_content) {
-		$body .= elgg_view_module('info', $status_label, $status_content);
+		$body_table .= "<tr><td>$status_label</td><td>$status_content</td></td>";
 	}
+
+	$body_table .= "</table>";
 
 	$header = elgg_view_title($todo->title);
 
@@ -203,6 +208,8 @@ if ($full) { // Full View
 	$header
 	$todo_info<br />
 	$body
+	$body_table
+	$status_canedit
 	<div style='display: none;'>
 		<div id="todo-submission-dialog">$submission_form</div>
 	</div>

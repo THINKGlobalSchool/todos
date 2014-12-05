@@ -232,7 +232,7 @@ $english = array(
 	'todo:label:remindall' => 'All',
 	
 	// Status Labels
-	'todo:label:status' => 'Status',
+	'todo:label:overallstatus' => 'Overall To Do Status',
 	'todo:status:published' => 'Published', 
 	'todo:status:draft' => 'Draft',
 	'todo:status:closed' => 'Closed',

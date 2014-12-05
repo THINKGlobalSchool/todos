@@ -873,7 +873,7 @@ function todo_profile_menu($hook, $type, $value, $params) {
 		
 		// Add submissions (depends on access)
 		if (submissions_gatekeeper($params['entity']->guid)) {
-			$url = "todo/dashboard/submissions";
+			$url = "todo/dashboard/submissions/{$params['entity']->username}";
 			$item = new ElggMenuItem('todosubmissions', elgg_echo('item:object:todosubmission'), $url);
 			$value[] = $item;
 		}
