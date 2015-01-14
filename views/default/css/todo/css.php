@@ -808,6 +808,10 @@ td.todo-iplan-hover a {
 	padding-left: 18px;
 }
 
+.todo-calendar-event-title-container, 
+.todo-category-calendars-group-legend {
+	text-shadow: 1px 1px 1px #666;
+}
 
 /** End FC **/
 

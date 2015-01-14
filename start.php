@@ -913,6 +913,7 @@ function todo_page_setup() {
 
 	// Admin menus
 	if (elgg_in_context('admin')) {
+		elgg_register_admin_menu_item('administer', 'todos');
 		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
 		elgg_register_admin_menu_item('administer', 'manage', 'todos');
 		elgg_register_admin_menu_item('administer', 'calendars', 'todos');

@@ -37,7 +37,7 @@ if (elgg_instanceof($category, 'object', 'group_category')) {
 
 		// Create content
 		$text = <<<HTML
-			<div style='background: $bg; color: #$fg;' class='todo-category-calendars-group-legend'>
+			<div style='background: $bg; color: $fg;' class='todo-category-calendars-group-legend'>
 				<a href='$url'>$group->name</a>
 			</div>
 HTML;
