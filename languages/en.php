@@ -5,11 +5,11 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2014
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
-$english = array(
+return array(
 	
 	// Generic
 	'todo:title' => 'To Do\'s',
@@ -424,5 +424,3 @@ To view %s's profile, click here:
 	'todo:group' => 'Group to do\'s', 
 
 );
-
-add_translation('en',$english);

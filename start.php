@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  * This plugin requires the apache2 zip module
@@ -255,10 +255,8 @@ function todo_init() {
 	// Register todo roles widget
 	elgg_register_widget_type('todo', elgg_echo('todo:widget:todo_title'), elgg_echo('todo:widget:todo_desc'), 'rolewidget');
 
-	// Set up url handlers
-	elgg_register_entity_url_handler('object', 'todo', 'todo_url');
-	elgg_register_entity_url_handler('object', 'todosubmission', 'todo_submission_url');
-	elgg_register_entity_url_handler('object', 'todosubmissionfile', 'submission_file_url');
+	// Set up url handler (for all todo related entities)
+	elgg_register_plugin_hook_handler('entity:url', 'object', 'todo_url_handler');
 
 	// Whitelist ajax views
 	elgg_register_ajax_view('todo/list');
@@ -915,43 +913,42 @@ function todo_page_setup() {
 }
 
 /**
- * Populates the ->getUrl() method for todo submission entities
+ * Returns the URL from a todo related entity
  *
- * @param ElggEntity entity
- * @return string request url
+ * @param string $hook   'entity:url'
+ * @param string $type   'object'
+ * @param string $url    The current URL
+ * @param array  $params Hook parameters
+ * @return string
  */
-function todo_submission_url($entity) {
-	access_show_hidden_entities(TRUE);
-	$todo = get_entity($entity->todo_guid);
-	if ($todo && $todo->isEnabled()) {
-		$url = $todo->getURL() . "?submission={$entity->guid}";
-	} else {
-		$url = elgg_get_site_url() . 'todo/view/submission/' . $entity->guid;
+function todo_url_handler($hook, $type, $url, $params) {
+	$entity = $params['entity'];
+
+	$title = elgg_get_friendly_title($entity->title);
+	
+	// Handle todo subtypes
+	switch ($entity->getSubtype()) {
+		case 'todo':
+			"todo/view/{$entity->guid}/{$title}";
+			break;
+		case 'todosubmission':
+			access_show_hidden_entities(TRUE);
+			$todo = get_entity($entity->todo_guid);
+			if ($todo && $todo->isEnabled()) {
+				$url = $todo->getURL() . "?submission={$entity->guid}";
+			} else {
+				$url = 'todo/view/submission/' . $entity->guid;
+			}
+			access_show_hidden_entities(FALSE);
+			return $url;
+			break;
+		case 'todosubmissionfile':
+			return "file/view/{$entity->guid}/{$title}";
+			break;
+		default:
+			return;
+			break;
 	}
-	access_show_hidden_entities(FALSE);
-	return $url;
-}
-
-/*
- * Populates the ->getUrl() method for submission file objects
- *
- * @param ElggEntity $entity File entity
- * @return string File URL
- */
-function submission_file_url($entity) {
-	$title = $entity->title;
-	$title = elgg_get_friendly_title($title);
-	return "file/view/" . $entity->getGUID() . "/" . $title;
-}
-
-/**
- * Populates the ->getUrl() method for todo entities
- *
- * @param ElggEntity entity
- * @return string request url
- */
-function todo_url($entity) {	
-	return elgg_get_site_url() . "todo/view/{$entity->guid}/";
 }
 
 /**
