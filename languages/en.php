@@ -59,7 +59,7 @@ $english = array(
 	'todo:label:group' => 'Group',
 	'todo:label:currentgroup' => 'Current Group',
 	'todo:label:anothergroup' => 'Another Group',
-	'todo:label:loggedin' => 'Logged In Users', 
+	'todo:label:loggedin' => 'Logged-in Users', 
 	'todo:label:assigneesonly' => 'Assignees Only',
 	'todo:label:accesslevel' => 'View Access Level',
 	'todo:label:assessmentrubric' => 'Assessment Rubric', 
@@ -232,7 +232,7 @@ $english = array(
 	'todo:label:remindall' => 'All',
 	
 	// Status Labels
-	'todo:label:status' => 'Status',
+	'todo:label:overallstatus' => 'Overall To Do Status',
 	'todo:status:published' => 'Published', 
 	'todo:status:draft' => 'Draft',
 	'todo:status:closed' => 'Closed',

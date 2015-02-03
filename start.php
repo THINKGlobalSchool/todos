@@ -121,10 +121,6 @@ function todo_init() {
 	// Uncached url that calls the views and builds the colors for the calendars
 	$d_url = 'ajax/view/css/todo/calendars_dynamic';
 	elgg_register_css('tgs.calendars_dynamic', $d_url, 999);
-
-	// Register datepicker JS
-	$daterange_js = elgg_get_site_url(). 'mod/todos/vendors/daterangepicker.jQuery.js';
-	elgg_register_js('jquery.daterangepicker', $daterange_js);
 	
 	// Register custom theme CSS
 	$ui_url = elgg_get_site_url() . 'mod/todos/vendors/smoothness/todo.smoothness.css';
@@ -231,7 +227,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'todo_test');
 
 	// Register _elgg_get_access_where_sql hook handler for todos
-	if (elgg_is_logged_in() && !(elgg_is_admin_logged_in() && $user_guid == elgg_get_logged_in_user_guid())) {
+	if (elgg_is_logged_in() && !elgg_is_admin_logged_in()) {
 		elgg_register_plugin_hook_handler('get_sql', 'access', 'todo_access_handler');	
 	}
 	
@@ -245,7 +241,7 @@ function todo_init() {
 	}
 
 	// Cron hook for todo zip cleanup
-	$delete_period = elgg_get_plugin_setting('zipdelete', 'todo');
+	$delete_period = elgg_get_plugin_setting('zipdelete', 'todos');
 	
 	if (!$delete_period) {
 		$delete_period = 'daily';
@@ -268,6 +264,7 @@ function todo_init() {
 	elgg_register_ajax_view('todo/list');
 	elgg_register_ajax_view('todo/ajax_submission');
 	elgg_register_ajax_view('todo/submissions');
+	elgg_register_ajax_view('todo/group_submissions');
 	elgg_register_ajax_view('todo/user_submissions');
 	elgg_register_ajax_view('todo/group_user_submissions');
 	elgg_register_ajax_view('todo/group_submission_grades');
@@ -309,7 +306,7 @@ function todo_init() {
 	run_function_once("todo_run_once");
 	
 	// Set global todo admin role in config
-	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todo'));
+	elgg_set_config('todo_admin_role', elgg_get_plugin_setting('todoadminrole', 'todos'));
 
 	return TRUE;	
 }
@@ -365,7 +362,6 @@ function todo_page_handler($page) {
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
 			elgg_load_css('tgs.calendars_dynamic');
-			elgg_load_js('jquery.daterangepicker');
 			elgg_load_js('tinymce');
 			elgg_load_js('elgg.tinymce');
 			elgg_load_js('jquery-file-upload');
@@ -452,7 +448,6 @@ function todo_page_handler($page) {
 
 			break;
 		case 'iplan':
-			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');
 			elgg_load_css('tgs.fullcalendar');
 			elgg_load_css('tgs.calendars_dynamic');
@@ -501,9 +496,9 @@ function todo_page_handler($page) {
 		case 'group':
 			set_input('todo_dashboard', 1);
 
-			elgg_load_css('jquery.daterangepicker');
 			elgg_load_css('todo.smoothness');	
 			elgg_load_js('jquery.daterangepicker');
+			elgg_load_js('jquery.ui.widget');
 			elgg_load_js('jquery-file-upload');
 			elgg_load_js('jquery.iframe-transport');
 			elgg_load_js('elgg.todo.submission');
@@ -861,7 +856,7 @@ function todo_profile_menu($hook, $type, $value, $params) {
 		
 		// Add submissions (depends on access)
 		if (submissions_gatekeeper($params['entity']->guid)) {
-			$url = "todo/dashboard/submissions";
+			$url = "todo/dashboard/submissions/{$params['entity']->username}";
 			$item = new ElggMenuItem('todosubmissions', elgg_echo('item:object:todosubmission'), $url);
 			$value[] = $item;
 		}
@@ -901,6 +896,7 @@ function todo_page_setup() {
 
 	// Admin menus
 	if (elgg_in_context('admin')) {
+		elgg_register_admin_menu_item('administer', 'todos');
 		elgg_register_admin_menu_item('administer', 'statistics', 'todos');
 		elgg_register_admin_menu_item('administer', 'manage', 'todos');
 		elgg_register_admin_menu_item('administer', 'calendars', 'todos');
@@ -928,7 +924,7 @@ function todo_submission_url($entity) {
 	access_show_hidden_entities(TRUE);
 	$todo = get_entity($entity->todo_guid);
 	if ($todo && $todo->isEnabled()) {
-		$url = $todo->getURL() . "#submission:{$entity->guid}";
+		$url = $todo->getURL() . "?submission={$entity->guid}";
 	} else {
 		$url = elgg_get_site_url() . 'todo/view/submission/' . $entity->guid;
 	}
@@ -2207,7 +2203,7 @@ function todo_submission_dashboard_menu_setup($hook, $type, $value, $params) {
 		'name' => 'todo_user_submissions_sort',
 		'href' => '#ASC',
 		'text' => elgg_echo('todo:label:sortascarrow'),
-		'link_class' => 'menu-sort todo-user-submissions-sort',
+		'link_class' => 'menu-sort todo-user-submissions-sort filtrate-sort filtrate-filter ascending',
 		'item_class' => 'elgg-menu-item-sort',
 		'encode_text' => false,
 		'data-param' => 'sort_order',
@@ -2444,7 +2440,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$value['ors'][] = "({$user_guid} IN (
 			SELECT guid_one FROM {$dbprefix}entity_relationships
 			WHERE relationship = 'member_of_role'
-			AND guid_two = (
+			AND guid_two IN (
 				SELECT value from {$dbprefix}private_settings
 				WHERE name = 'todoadminrole'
 			)
@@ -2493,7 +2489,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 		// Check if the user is the parent of the submisson owner's content/annotations/etc
 		$parent_submission_owner_content_object_and = "EXISTS(
 			SELECT owner_guid FROM {$dbprefix}entities se
-			WHERE se.guid = (
+			WHERE se.guid IN (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
 				WHERE guid_one = {$table_alias}{$guid_column}
 				AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}'))
@@ -2503,9 +2499,9 @@ function todo_access_handler($hook, $type, $value, $params) {
 		// Ensure the user is the parent of the user to whom this todo is assigned
 		$parent_todo_owner_object_and = "EXISTS(
 			SELECT owner_guid FROM {$dbprefix}entities se
-			WHERE se.guid = (
+			WHERE se.guid IN (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
-				WHERE guid_one = (
+				WHERE guid_one IN (
 					SELECT guid_two FROM {$dbprefix}entity_relationships
 					WHERE guid_one = {$table_alias}{$guid_column}
 					AND relationship = '$r_saf'
@@ -2530,7 +2526,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	// SQL to check if the user is the owner of the submission for submission files/annotations
 	$submission_owner_content_object_and = "{$user_guid} IN (
 		SELECT owner_guid FROM {$dbprefix}entities se
-		WHERE se.guid = (
+		WHERE se.guid IN (
 			SELECT guid_two FROM {$dbprefix}entity_relationships
 			WHERE guid_one = {$table_alias}{$guid_column}
 			AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')

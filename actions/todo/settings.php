@@ -16,8 +16,8 @@ $suppress_complete = get_input('suppress_complete');
 
 $value = $suppress_complete ? 1 : 0;
 
-elgg_set_plugin_user_setting('suppress_complete', $value, $user->getGUID(), 'todo');
-$val = elgg_get_plugin_user_setting('suppress_complete', $user->getGUID(), 'todo');
+elgg_set_plugin_user_setting('suppress_complete', $value, $user->getGUID(), 'todos');
+$val = elgg_get_plugin_user_setting('suppress_complete', $user->getGUID(), 'todos');
 
 system_message(elgg_echo('admin:configuration:success'));
 forward(REFERER);

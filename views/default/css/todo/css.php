@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2014
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -62,6 +62,25 @@ span.unviewed {
 	font-weight: bold !important;
 	color: #9D1520 !important;
 }
+
+/** Todo Table **/
+
+.todo-info-table {
+
+}
+
+.todo-info-table td:first-child {
+	width: 29%;
+	font-weight: bold;
+	background: #f0f0f0;
+}
+
+.elgg-table.todo-info-table tr:nth-child(2n), .elgg-table tr.even {
+    background-color: #FFF;
+}
+
+
+/** End Todo Table **/
 
 #submission-content-container .content-menu {
 	width: 20%;
@@ -789,6 +808,10 @@ td.todo-iplan-hover a {
 	padding-left: 18px;
 }
 
+.todo-calendar-event-title-container, 
+.todo-category-calendars-group-legend {
+	text-shadow: 1px 1px 1px #666;
+}
 
 /** End FC **/
 

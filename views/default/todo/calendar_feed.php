@@ -26,7 +26,7 @@ if (elgg_instanceof($category, 'object', 'group_category')) {
 	$container_colors = array();
 
 	// Get plugin setting colors
-	$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+	$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 	$calendar_colors = unserialize($calendar_colors);
 	
 	// Isolate palette for this category

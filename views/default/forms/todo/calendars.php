@@ -11,9 +11,10 @@
  */
 
 
-$categories = elgg_get_plugin_setting('calendar_categories', 'todo');
-$category_colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
-$spread = elgg_get_plugin_setting('palette_spread', 'todo');
+$categories = elgg_get_plugin_setting('calendar_categories', 'todos');
+
+$category_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
+$spread = elgg_get_plugin_setting('palette_spread', 'todos');
 
 if (!$spread) {
 	$spread = 50;

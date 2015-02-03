@@ -14,7 +14,7 @@ echo elgg_view('modules/ajaxmodule', array(
 	'title' => elgg_echo('todo:label:addcontent'),
 	'limit' => 5,
 	'types' => array('object'),
-	'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'forum_reply', 'forum_topic'),
+	'subtypes' => array('blog', 'bookmarks', 'image', 'album', 'poll', 'file', 'shared_doc', 'forum_reply', 'forum_topic', 'simplekalura_video'),
 	'container_guid' => elgg_get_logged_in_user_guid(),
 	'listing_type' => 'simpleicon',
 	'module_type' => 'info',

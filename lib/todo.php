@@ -1255,7 +1255,7 @@ function todo_set_content_tags($entity, $todo) {
  */
 function generate_todo_user_hash($user) {
 	// Salt defined in plugin settings
-	$salt = elgg_get_plugin_setting('calsalt', 'todo');
+	$salt = elgg_get_plugin_setting('calsalt', 'todos');
 	
 	// Hash username, hash salt, hash user_guid
 	$hash = md5($user->username);
@@ -1463,7 +1463,7 @@ function todo_get_submission_timezone_offset() {
 	// Get current date/time
 	$current_dt = new DateTime('now', $utc);
 
-	$submission_tz = elgg_get_plugin_setting('submission_tz', 'todo');
+	$submission_tz = elgg_get_plugin_setting('submission_tz', 'todos');
 
 	// Might be unset/disabled, so return 0
 	if (!$submission_tz) {

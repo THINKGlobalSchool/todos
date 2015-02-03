@@ -25,7 +25,7 @@ $content = <<<HTML
 
 HTML;
 
-$categories = elgg_get_plugin_setting('calendar_categories', 'todo');
+$categories = elgg_get_plugin_setting('calendar_categories', 'todos');
 
 $calendars = array();
 
@@ -50,11 +50,13 @@ $json = json_encode($calendars);
 
 $content .= <<<JAVASCRIPT
 	<script type='text/javascript'>
-			elgg.todo.calendars = $json;
+			
 
-			$(document).ready(function() {
+			// Init hook
+			elgg.register_hook_handler('init', 'system', function(e){
+				elgg.todo.calendars = $json;
 				elgg.todo.initStandaloneCalendar();
-			});			
+			});		
 	</script>
 JAVASCRIPT;
 

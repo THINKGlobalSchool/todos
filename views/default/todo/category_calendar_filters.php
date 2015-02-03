@@ -11,11 +11,11 @@
  */
 
 // Get admin defined categories
-$categories = elgg_get_plugin_setting('calendar_categories', 'todo');
+$categories = elgg_get_plugin_setting('calendar_categories', 'todos');
 
 if ($categories) {
 	// Get category colors
-	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 	$colors = unserialize($colors);
 
 	$categories = unserialize($categories);

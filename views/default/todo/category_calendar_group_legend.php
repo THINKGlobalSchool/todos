@@ -16,7 +16,7 @@ $category = get_entity($category_guid);
 
 if (elgg_instanceof($category, 'object', 'group_category')) {
 	// Get category colors from backend
-	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todo');
+	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 	$colors = unserialize($colors);
 
 	// Get category specific colors and palette
@@ -37,7 +37,7 @@ if (elgg_instanceof($category, 'object', 'group_category')) {
 
 		// Create content
 		$text = <<<HTML
-			<div style='background: $bg; color: #$fg;' class='todo-category-calendars-group-legend'>
+			<div style='background: $bg; color: $fg;' class='todo-category-calendars-group-legend'>
 				<a href='$url'>$group->name</a>
 			</div>
 HTML;

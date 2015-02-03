@@ -222,6 +222,7 @@ elgg.todo.createSubmission = function(todo_guid, content, comment) {
 		error: function(e) {
 			// Display error (will probably look gross)
 			$("#submission-error-message").show().html(e);
+			console.log();
 			elgg.register_error(e);
 			$('#submit-create-loader').replaceWith($button);
 			return false;
@@ -695,32 +696,6 @@ elgg.todo.ontimeFilterChange = function(event) {
 	event.preventDefault();
 }
 
-/**
- * Init submissions filter daterangepicker
- */
-elgg.todo.initDateRangePicker = function(selector) {
-	var $input = $(selector);
-	
-	// Init daterange picker
-	$input.daterangepicker({
-		posX: "0",
-		posY: "25",
-		onOpen: function() {
-			$('.ui-daterangepickercontain')
-				.position({
-					my: "right top",
-					at: "right bottom",
-					of: $('input.todo-user-submissions-date-input'),
-					offset: "0 0",
-				})
-			.addClass('todo-user-submissions-datepicker');
-		},
-		onClose: function() {
-			elgg.todo.dateRangePickerChange($input);
-		},
-	});
-}
-
 /** 
  * Handle daterangepicker change events (not an event)
  */
@@ -1021,7 +996,6 @@ elgg.todo.chosenInterrupt = function(hook, type, params, options) {
 	}
 	return options;
 }
-
 
 // Main hook
 elgg.register_hook_handler('init', 'system', elgg.todo.init);
