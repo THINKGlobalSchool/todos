@@ -6,7 +6,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -15,13 +15,13 @@
 elgg.provide('elgg.todo.global');
 
 elgg.todo.global.init = function() {			
-	$(".todo-show-info").live('hover', elgg.todo.global.showEntityInfo);
-	$(".todo-show-info").live('click', function(event) {
+	$(document).on('hover', ".todo-show-info", elgg.todo.global.showEntityInfo);
+	$(document).on('click', ".todo-show-info", function(event) {
 		event.preventDefault();
 	});
 	
 	// Ajaxify todo accept button
-	$(".todo-accept-ajax").live('click', elgg.todo.global.acceptTodo);
+	$(document).on('click', ".todo-accept-ajax", elgg.todo.global.acceptTodo);
 	
 	// Todo hover menu item
 	$(".todo-topbar-item").mouseenter(function(event) {
@@ -34,7 +34,7 @@ elgg.todo.global.init = function() {
 	});
 
 	// Hide multi-todo's when clicking outside box
-	$('body').live('click', function(event) {
+	$(document).on('click', 'body', function(event) {
 		if (!$(event.target).hasClass('todo-show-info') && event.target.className !== "todo-entity-info") {
 			$(".todo-entity-info").fadeOut();
 		}
@@ -68,19 +68,20 @@ elgg.todo.global.acceptTodo = function(event) {
 		},
 		success: function(data) {
 			if (data.status != -1) {
-				// Find entity anchor
-				var $entity_anchor = $(document).find('#entity-anchor-' + todo_guid);
-				var $elgg_body = $entity_anchor.closest('.elgg-body');
-				
 				// Create accepted list item
 				var $accepted_li = $(document.createElement('li'));
 				$accepted_li.html("<span class='accepted'>✓ Accepted</span>");
 				
-				// Add accepted list item to the info menu
-				$elgg_body.find('.elgg-menu-entity-info > li.elgg-menu-item-access').before($accepted_li).fadeIn();
-				
-				// Remove the accept button
-				$_this.closest('.elgg-menu-item-todo-accept').fadeOut();
+				// Replace the accept button
+				$_this.fadeOut('fast', function() {
+					if ($(this).closest('.elgg-menu-todo-actions').length) {
+						// Place the accepted item in the entity menu (full view)
+						$(this).closest('.todo').find('.elgg-menu-entity').prepend($accepted_li);
+					} else {
+						// Straight up replace (listing view)
+						$(this).replaceWith($accepted_li).fadeIn('fast');
+					}
+				});
 			}
 		}
 	});
@@ -126,6 +127,26 @@ elgg.todo.global.setupMenuInputs = function (hook, type, params, options) {
 	}
 
 	return options;
+}
+
+// Trim HTTP or HTTPS from a url string
+elgg.todo.global.trimProtocol = function(str) {
+	if (str) {
+		if (str.startsWith("http://"))
+			return str.substr(7);
+		else if (str.startsWith("https://"))
+			return str.substr(8);
+		else 
+			return str;
+	}
+	return false;
+}
+
+if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
 }
 
 // Hook to customize some todo dashboard inputs

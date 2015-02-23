@@ -101,9 +101,10 @@ return array(
 	'todo:label:assignment' => 'Assignment',
 	'todo:label:moreinfo' => 'Additional Information',
 	'todo:label:worksubmitted' => 'Work Submitted',
-	'todo:label:addlink' => 'Add Link',
-	'todo:label:addfile' => 'Add File',
-	'todo:label:addcontent' => 'Add Spot Content',
+	'todo:label:add..' => 'Add..',
+	'todo:label:addlink' => 'Link',
+	'todo:label:addfile' => 'File',
+	'todo:label:addcontent' => 'Spot Content',
 	'todo:label:content' => 'Content',
 	'todo:label:rubricpicker' => 'Choose Rubric',
 	'todo:label:assignedby' => 'Assigned by %s ',
@@ -192,6 +193,7 @@ return array(
 	'todo:label:connecttwo' => 'Open up your <a href="http://calendar.google.com" target="_blank">Google Calendar</a>',
 	'todo:label:connectthree' => 'Click the arrow next to "Other Calendars" then click "Add by URL"', 
 	'todo:label:connectfour' /** fun game! **/ => 'Paste the URL into the "URL" box provided, then click "Add Calendar" to subscribe to your To Do\'s',
+	'todo:label:loadingtodos' => 'Loading To Do\'s',
 
 	// Categories
 	'todo:label:category' => 'Category',
@@ -414,6 +416,7 @@ To view %s's profile, click here:
 	'todo:error:access' => 'Access Denied',
 	'todo:error:gradevalue' => 'Grade must be a number!',
 	'todo:error:nodata' => 'No data',
+	'todo:error:nocategories' => 'No todo group categories have been defined.',
 
 	// Widgets
 	'todo:widget:todo_title' => 'To Do\'s',

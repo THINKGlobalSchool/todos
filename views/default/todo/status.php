@@ -58,7 +58,7 @@ foreach ($assignees as $assignee) {
 	
 	$submission_info = $date = $grade = $dash;
 	
-	$reminder = elgg_view("output/confirmlink", array(
+	$reminder = elgg_view("output/url", array(
 		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->guid . "&a=" . $assignee->guid,
 		'text' => elgg_echo('todo:label:sendreminder'),
 		'confirm' => elgg_echo('todo:label:remindconfirm'),
@@ -127,7 +127,7 @@ if (get_todo_submissions_count($todo->guid)) {
 }
 
 if ($todo->canEdit()) {
-	$remind_all = elgg_view("output/confirmlink", array(
+	$remind_all = elgg_view("output/url", array(
 		'href' => elgg_get_site_url() . "action/todo/sendreminder?todo_guid=" . $todo->getGUID() . $qs,
 		'text' => elgg_echo('todo:label:remindall'),
 		'confirm' => elgg_echo('todo:label:remindconfirm'),

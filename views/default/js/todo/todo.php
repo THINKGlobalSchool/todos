@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -30,54 +30,6 @@ elgg.todo.defaultDashboard = $.param({
  * Main init hook
  */
 elgg.todo.init = function() {
-	// Create submission click handler
-	$('.todo-submit-empty').live('click', elgg.todo.completeClick);
-				
-	// Set up submission dialog
-	$(".todo-lightbox").fancybox({
-		'enableEscapeButton': false,
-		'onStart' : function() {
-			$('.tgstheme-entity-menu-actions').fadeOut();
-		},
-		'onComplete': function() {
-			// Set up submission content form
-			elgg.todo.submissionFormDefault();
-			
-			if (typeof(tinyMCE) !== 'undefined') {
-				tinyMCE.EditorManager.execCommand('mceAddControl', false, 'submission-description');
-			}
-		},
-		'onCleanup': function() {
-			if (typeof(tinyMCE) !== 'undefined') {
-	    		tinyMCE.EditorManager.execCommand('mceRemoveControl', false, 'submission-description');
-			}
-		}
-	});
-
-	// TODO FORM SETUP
-	// Submission form submit handler
-	$("#todo-submission-form #submit-create-submission").live('click', elgg.todo.submissionFormSubmit);
-	
-	// Hack modules to add an 'add' button	
-	$("#submission-add-content-container").delegate('.elgg-item', 'mouseenter mouseleave', elgg.todo.submissionAddHover);
-	
-	// SUBMISSION CONTENT FORM SETUP
-	
-	// Make menu items clickable
-	$(".submission-content-menu-item").live('click', elgg.todo.submissionContentMenuClick);
-	
-	// Make submit link button clickable
-	$("#submission-submit-link").live('click', elgg.todo.submissionSubmitLink);
-	
-	// Back button click action
-	$("#submission-content-back-button").live('click', elgg.todo.submissionFormDefault);
-	
-	// Register submit handler for submission file form
-	$("#submission-file-form").submit(elgg.todo.submissionSubmitFile);
-	
-	// Register click handler for submission content submit
-	$('.submission-content-input-add').live('click', elgg.todo.submissionSubmitContent);
-
 	// Change handler for todo grade required checkbox
 	$(document).delegate('#todo-grade-required-input', 'change', function(){
 		if ($(this).is(":checked")) {
@@ -93,7 +45,7 @@ elgg.todo.init = function() {
 	});
 
 	// Verify todo submit form
-	$(document).delegate('#todo-edit', 'submit', elgg.todo.todoSaveSubmit);
+	$(document).delegate('#todo-edit', 'submit', elgg.todo.saveSubmit);
 	
 	// OTHER
 	
@@ -155,321 +107,6 @@ elgg.todo.init = function() {
 	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
 }
 
-/**	
- * Click handler for creating an empty submission
- */
-elgg.todo.completeClick = function(event) {
-	// Replace with spinner
-	var $button = $(this).clone(); // Store original button
-	$(this).replaceWith("<div id='submit-empty-loader' class='elgg-ajax-loader'></div>");
-
-	var todo_guid = $('#todo-guid').val();
-
-	// Create empty submission
-	if (!elgg.todo.createSubmission(todo_guid, '', '')) {
-		// Display button again (retry)
-		$('#submit-empty-loader').replaceWith($button);
-	}
-
-	event.preventDefault();
-}
-
-/**
- * Submit handler for submission form
- */
-elgg.todo.submissionFormSubmit = function(event) {
-	/** May not be tinyMCE **/
-	if (typeof(tinyMCE) !== 'undefined') {
-		var comment = tinyMCE.get('submission-description').getContent();
-		$("textarea#submission-description").val(comment);
-	} else {
-		var comment = $("textarea#submission-description").val();
-	}
-	
-	var content = $("#submission-content-select").val();
-	var todo_guid = $('#todo-guid').val();
-		
-	// If we have content (content is required)
-	if (content) {
-		$('#submit-create-submission').attr('disabled', 'disabled');
-		// Create submission
-		if (!elgg.todo.createSubmission(todo_guid, content, comment)) {
-			// Re-enable button (try again)
-			$('#submit-create-submission').removeAttr('disabled');
-		}
-	} else {
-		// error
-		$("#submission-error-message").show().html("** Content is required");
-	}
-	
-	event.preventDefault();
-}
-
-/**
- * Create submission action
- */
-elgg.todo.createSubmission = function(todo_guid, content, comment) {	
-	// Replace submit button with spinner	
-	var $button = $('#submit-create-submission').clone(); // Store original button
-	$('#submit-create-submission').replaceWith("<div id='submit-create-loader' class='elgg-ajax-loader'></div>");
-
-	elgg.action('submission/save', {
-		data: {
-			submission_description: comment,
-			todo_guid: todo_guid, 
-			submission_content: content,
-		},
-		error: function(e) {
-			// Display error (will probably look gross)
-			$("#submission-error-message").show().html(e);
-			console.log();
-			elgg.register_error(e);
-			$('#submit-create-loader').replaceWith($button);
-			return false;
-		},
-		success: function(json) {
-			// Check for bad status 
-			if (json.status == -1) {
-				$("#submission-error-message").show().html(json.output);
-				$('#submit-create-loader').replaceWith($button);
-				$button.removeAttr('disabled');
-				return false;
-			} else {
-				// Remove tinymce
-				if (typeof(tinyMCE) !== 'undefined') {
-		    		tinyMCE.execCommand('mceRemoveControl', false, 'submission-description');
-				}
-				
-				// Close dialog
-				$.fancybox.close();
-				
-				// Reload
-				setTimeout('window.location.reload()', 1000);
-				
-				return true;
-			}
-		}
-	});
-}
-
-/** 
- * Displays the submission content add menu in its default state
- */
-elgg.todo.submissionFormDefault = function() {
-	$("div.submission-content-pane").hide();
-	$("div#submission-content-list").show();
-	$("div#submission-content-menu").show();
-	$("div#submission-control-back").hide();
-}
-
-/**
- * Submit link click handler
- */
-elgg.todo.submissionSubmitLink = function(event) {
-	var link = $('#submission-link').val();
-	
-	if (link) {
-		
-		// Check for valid link
-		if (!elgg.todo.isValidURL(link)) {
-			elgg.register_error(elgg.echo('todo:error:invalidurl'));
-			return false;
-		}
-
-		// Get a protocol trimmed version of the link, and site url
-		var trimmed_link = elgg.todo.trimProtocol(link);
-		var trimmed_site = elgg.todo.trimProtocol(elgg.get_site_url());
-	
-		// Check is given url comes from this site
-		if (trimmed_link.indexOf(trimmed_site) !== -1) {
-			// This url did come from this site, parse out the first number we come across
-			var regex = ".*?(\\d+)";
-			var p = new RegExp(regex,["i"]);
-			var m = p.exec(trimmed_link);
-		
-			// If we have a match, try to find the elgg object 
-			if (m != null) {
-				var guid = m[1];
-							
-				elgg.action('todo/checkcontent', {
-					data: {
-						guid: guid,
-						show_error: 0,
-					},
-					success: function(data) {
-						if (data.status == -1) {
-							elgg.todo.confirmLocalLink(link);
-						} else {
-							$('#submission-content-select').append(
-								$('<option></option>').attr('selected', 'selected').val(data.output.entity_guid).html(data.output.entity_title)
-							);
-							elgg.todo.submissionFormDefault();	
-						}
-					}
-				});
-			} else {
-				elgg.todo.confirmLocalLink(link);
-			} 
-		} else {
-			$('#submission-content-select').append(
-				$('<option></option>').attr('selected', 'selected').val(link).html(link)
-			);
-			elgg.todo.submissionFormDefault();
-			$('#submission-link').val('');
-		}
-	}
-	event.preventDefault();
-}
-
-/**
- * Confirm that the user wants to submit a local link
- */
-elgg.todo.confirmLocalLink = function(link) {
-	// If the object doesn't check out, show a confirmation
-	var response = confirm(elgg.echo('todo:label:linkspotcontent'));
-	
-	// If 'ok' is clicked, add the link anyway
-	if (response) {
-		$('#submission-content-select').append(
-			$('<option></option>').attr('selected', 'selected').val(link).html(link)
-		);
-		elgg.todo.submissionFormDefault();
-	} else {
-		// Reset the form and click the contenet menu item
-		elgg.todo.submissionFormDefault();
-		$('#add-content').click();
-	}	
-	
-	$('#submission-link').val('');
-}
-
-/** 
- * Submit handler for submission file form
- */ 
-elgg.todo.submissionSubmitFile = function(event) {	
-	var options = { 
-			url: 			elgg.security.addToken(elgg.todo.fileUploadURL), 
-			type: 			"POST", 
-	        target: 		'#submission-output',   // target element(s) to be updated with server response 
-			clearForm: 		true,
-	        beforeSubmit:  	function(formData, jqForm, options) { // pre-submit
-							    $("#submission-ajax-spinner").show();
-							}, 
-	        success:       	function(response, statusText, xhr, $form) {
-								$("#submission-ajax-spinner").hide();
-								var file = eval( "(" + response + ")" );
-								$('#submission-content-select').append(
-									$('<option></option>').attr('selected', 'selected').val(file.guid).html(file.name)
-								);
-								elgg.todo.submissionFormDefault();	
-							},
-	    };
-	
-	$(this).ajaxSubmit(options); 
-	
-	event.preventDefault();
-}
-
-/** 
- * Submit handler for submission content form
- */ 
-elgg.todo.submissionSubmitContent = function(event) {
-	var id = $(this).closest('.elgg-item').attr('id');
-	
-	var guid = id.substring(id.lastIndexOf('-') + 1);
-	
-	elgg.action('todo/checkcontent', {
-		data: {
-			guid: guid
-		},
-		success: function(data) {
-			if (data.status == -1) {
-				$("#submission-error-message").show().html("** Invalid Content");
-			} else {
-				$('#submission-content-select').append(
-					$('<option></option>').attr('selected', 'selected').val(data.output.entity_guid).html(data.output.entity_title)
-				);
-				elgg.todo.submissionFormDefault();	
-				
-				var $listitem = $('#elgg-object-' + guid);
-				var $addmenu = $listitem.data('addmenu');
-				
-				// Get values from content select, we don't want to show the add button
-				// for already added content
-				var selected = $('#submission-content-select').val();
-				
-				// Check if we've already added this content
-				if (selected && $.inArray(guid, selected) !== -1) {
-					// Update menu data accordingly
-					var added = "<span class='todo-content-added'>Added!</span>";
-					$addmenu.find('input').replaceWith(added);
-					$listitem.find('input').replaceWith(added);
-				}
-			}
-		}
-	});
-
-	event.preventDefault();
-}
-
-/**
- * Handler to add an 'add' button to the modules content listing to allow
- * adding spot content to a todo submission
- */
-elgg.todo.submissionAddHover = function(event) {
-	// For some reason the height is only accurate at this point.. 
-	var height = $(this).height();
-	if (event.type == 'mouseenter') {
-		var $addmenu = $(this).data('addmenu') || null;
-
-		if (!$addmenu) {
-			var $addmenu = $("<div class='add-menu'><input type='submit' value='Add'class='elgg-button elgg-button-action submission-content-input-add' /></div>");
-			$(this).data('addmenu', $addmenu);
-			$addmenu.appendTo($(this));
-		}
-		
-		// Grab guid and check to make sure content is not already selected
-		var id = $(this).closest('.elgg-item').attr('id');
-		var guid = id.substring(id.lastIndexOf('-') + 1);
-		var selected = $('#submission-content-select').val();
-		
-		if (selected && $.inArray(guid, selected) !== -1) {
-			// Update menu data accordingly
-			var added = "<span class='todo-content-added'>Added!</span>";
-			$addmenu.find('input').replaceWith(added);
-		}
-
-		var margin = '-' + height + 'px';
-
-		$addmenu
-			.css("width", '90px')
-			.css("height", height + 'px')
-			.css("z-index", '100')
-			.fadeIn('fast')
-			.position({
-				my: "right top",
-				at: "right top",
-				of: $(this)
-			}).css("margin-bottom", margin);
-	} else if (event.type == 'mouseleave') {
-		var $addmenu = $(this).data('addmenu');
-		$addmenu.fadeOut();
-	}
-}
-
-/**
- * Submission content menu item click handler
- */
-elgg.todo.submissionContentMenuClick = function(event) {
-	$("div.submission-content-pane").hide();
-	$("div#submission-content-menu").hide();
-	$("div#submission-control-back").show();
-	
-	// The id to show is supplied as the items href
-	$($(this).attr('href')).show();
-	
-	event.preventDefault();
-}
 
 /**
  * Load todo assignees into container
@@ -488,7 +125,7 @@ elgg.todo.loadAssignees = function(guid, container) {
 /**
  * Validate the todo save form
  */
-elgg.todo.todoSaveSubmit = function(event) {
+elgg.todo.saveSubmit = function(event) {
 	var valid = true;
 
 	if ($('select[name=status]').val() == 1) {
@@ -739,19 +376,6 @@ elgg.todo.dateRangePickerChange = function($input) {
 	elgg.modules.genericmodule.init();
 }
 
-// Trim HTTP or HTTPS from a url string
-elgg.todo.trimProtocol = function(str) {
-	if (str) {
-		if (str.startsWith("http://"))
-			return str.substr(7);
-		else if (str.startsWith("https://"))
-			return str.substr(8);
-		else 
-			return str;
-	}
-	return false;
-}
-
 /**
  * Determine if given string is a valid url
  */
@@ -817,7 +441,6 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 	} else {
 		view = view.name;
 	}
-	
 	var url = elgg.get_site_url() + 'ajax/view/todo/calendar_feed';
 	$('#todo-category-calendar').fullCalendar({
 		weekMode: 'liquid',
@@ -841,18 +464,20 @@ elgg.todo.buildCalendar = function(calendars, date, view) {
 		},
 		loading: function(isLoading, view) {
 			if (isLoading) {
-				$(".todo-calendar-lightbox").fancybox({
-					overlayShow: true,
-					hideOnOverlayClick: false,
-					hideOnContentClick: false,
-					enableEscapeButton: false,
-					showCloseButton: false,
+				$(".todo-calendar-lightbox").colorbox({
+					inline: true,
+					overlayClose: false,
+					closeButton: false,
+					escKey: false,
+					initialHeight: 70,
+					initialWidth: 200,
+					opacity: 0
 				}).trigger('click');
 			} else {
 				// Using a timeout here, sometimes loading too quickly 
 				// will prevent the lightbox from closing
 				setTimeout(function() {
-					$.fancybox.close();
+					$.colorbox.close();
 				}, 300)			
 			}
 		}
@@ -997,11 +622,15 @@ elgg.todo.chosenInterrupt = function(hook, type, params, options) {
 	return options;
 }
 
-// Main hook
-elgg.register_hook_handler('init', 'system', elgg.todo.init);
 
-// Hook for todo form chosen inputs
-elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
+// Require fileupload before regisitering hooks
+require(['jquery.iframe-transport', 'jquery.fileupload', 'jquery.form'], function() {
+	// Main hook
+	elgg.register_hook_handler('init', 'system', elgg.todo.init);
 
-// Other
-elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
+	// Hook for todo form chosen inputs
+	elgg.register_hook_handler('init', 'chosen.js', elgg.todo.chosenInterrupt);
+
+	// Other
+	elgg.register_hook_handler('category_toggled', 'todo_dashboard', elgg.todo.showCategoryLegend);
+});

@@ -138,8 +138,17 @@ if ($full) { // Full View
 		$status_canedit .= elgg_view('todo/status', $vars);
 	}
 
+	// Todo Actions
+	$action_menu = elgg_view_menu('todo_actions', array(
+		'entity' => $todo,
+		'sort_by' => 'priority',
+		'class' => 'elgg-menu-hz',
+	));
+
+	$body = $action_menu;
+
 	// Description Content
-	$body = elgg_view_module('aside', $description_label, $description_content);
+	$body .= elgg_view_module('aside', $description_label, $description_content);
 
 	$body_table = "<table class='elgg-table todo-info-table'>";
 
@@ -196,10 +205,7 @@ if ($full) { // Full View
 	$list_body = elgg_view('object/elements/summary', $params);
 
 	$todo_info = elgg_view_image_block($owner_icon, $list_body);
-	
-	// Output submission form
-	$submission_form = elgg_view('forms/submission/save', array('entity' => $todo));
-	
+
 	// For hash submissions
 	$hash_todo = $todo->guid;
 
@@ -210,9 +216,6 @@ if ($full) { // Full View
 	$body
 	$body_table
 	$status_canedit
-	<div style='display: none;'>
-		<div id="todo-submission-dialog">$submission_form</div>
-	</div>
 	<script type='text/javascript'>
 		var submissionCheck = function() {
 			if (window.location.href.indexOf('?submission=') != -1) {

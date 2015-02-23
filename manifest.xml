@@ -18,7 +18,7 @@
 	<requires>
 		<type>plugin</type>
 		<name>file</name>
-		<version>1.10</version>
+		<version>1.9</version>
 		<comparison>ge</comparison>
 	</requires>
 	<requires>
@@ -35,7 +35,19 @@
 	</requires>
 	<requires>
 		<type>plugin</type>
-		<name>tgstheme</name>
+		<name>tgsutilities</name>
+		<version>1.10</version>
+		<comparison>ge</comparison>
+	</requires>
+	<requires>
+		<type>plugin</type>
+		<name>jqueryfileupload</name>
+		<version>1.10</version>
+		<comparison>ge</comparison>
+	</requires>
+	<requires>
+		<type>plugin</type>
+		<name>group-extender</name>
 		<version>1.10</version>
 		<comparison>ge</comparison>
 	</requires>

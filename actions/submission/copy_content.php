@@ -113,7 +113,13 @@ if ($type == 'file') {
 	// Check guid
 	if ($guid) {
 		// Good to go, add to river
-		add_to_river('river/object/file/create', 'create', elgg_get_logged_in_user_guid(), $file->guid);
+		elgg_create_river_item(array(
+			'view' => 'river/object/file/create',
+			'action_type' => 'create',
+			'subject_guid' => elgg_get_logged_in_user_guid(),
+			'object_guid' => $file->guid
+		));
+
 
 		// Forward to edit
 		system_message(elgg_echo("file:saved"));
@@ -166,7 +172,13 @@ if ($type == 'file') {
 		system_message(elgg_echo('bookmarks:save:success'));
 
 		// Add river
-		add_to_river('river/object/bookmarks/create','create', elgg_get_logged_in_user_guid(), $bookmark->getGUID());
+		elgg_create_river_item(array(
+			'view' => 'river/object/bookmarks/create',
+			'action_type' => 'create',
+			'subject_guid' => elgg_get_logged_in_user_guid(),
+			'object_guid' => $bookmark->guid
+		));
+
 
 		// Forward to edit
 		forward(elgg_normalize_url('bookmarks/edit/' . $bookmark->getGUID()));

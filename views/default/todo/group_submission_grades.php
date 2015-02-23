@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  * @uses $vars['group_guid'] The group guid
@@ -33,14 +33,13 @@ $options = array(
 $todos = elgg_get_entities_from_metadata($options);
 
 if (count($todos)) {
-	$members = $group->getMembers(0);
+	$members = $group->getMembers(array('limit' => 0));
 	
 	$a_label = elgg_echo('todo:label:assignees');
 
 	$content = "<table id='todo-grade-table' class='elgg-table'><thead><tr><th>{$a_label}</th>";
 
 	foreach ($todos as $todo) {
-		
 		$grade_total_label = elgg_echo('todo:label:gradedoutof', array($todo->grade_total));
 		$tip = "<p>{$todo->title}</p><p>{$grade_total_label}</p>";
 		
@@ -81,12 +80,12 @@ if (count($todos)) {
 					$grade_total = $todo->grade_total;
 				
 					if ($grade !== NULL) {
-						$grade_text .= "{$grade}";
+						$grade_text .= "{$grade}/{$grade_total}";
 					} else {
 						$grade_text .= "Ungraded";
 						$grade_class = 'submission-ungraded';					}
 				
-					$grade_content = "<a id='submission-grade-{$todo->guid}-{$member->guid}' onclick='javascript:return false;' rel='grade-lightbox-{$member->guid}' class='todo-submission-lightbox' href='{$ajax_url}' style='font-weight: bold;'>$grade_text</a>";
+					$grade_content = "<a id='submission-grade-{$todo->guid}-{$member->guid}' onclick='javascript:return false;' rel='grade-lightbox-{$member->guid}' class='todo-submission-lightbox' href='{$ajax_url}' style='font-weight: bold;'>{$grade_text}</a>";
 				}
 			} else if (!is_todo_assignee($todo->guid, $member->guid)) {
 				$grade_content = "Not assigned";
@@ -116,11 +115,7 @@ if (count($todos)) {
 echo $content;
 
 echo <<<JAVASCRIPT
-	<script type='text/javascript'>
-		elgg.tinymce.init();
-		elgg.todo.submission.destroy();
-		elgg.todo.submission.init();
-		
+	<script type='text/javascript'>		
 		$(document).ready(function() {
 			var gradeDataTable = $('#todo-grade-table').dataTable({
 				"sScrollX": "100%",

@@ -118,7 +118,13 @@ if (!$todo->save() || !assign_users_to_todo($assignees, $todo->getGUID())) {
 if ($guid) { // Existing
 	// Remove from river if setting back to a draft
 	if ($previous_status == TODO_STATUS_DRAFT && $status == TODO_STATUS_PUBLISHED) {
-		add_to_river('river/object/todo/create', 'create', elgg_get_logged_in_user_guid(), $todo->getGUID());	
+		elgg_create_river_item(array(
+			'view' => 'river/object/todo/create',
+			'action_type' => 'create',
+			'subject_guid' => elgg_get_logged_in_user_guid(),
+			'object_guid' => $todo->guid
+		));
+
 		notify_todo_users_assigned($todo);
 	} else if ($previous_status == TODO_STATUS_PUBLISHED && $status == TODO_STATUS_DRAFT) {
 		// Remove from river if being set back to draft from published;
@@ -142,7 +148,12 @@ if ($guid) { // Existing
 } else { // New
 	// Don't notify or add todo to the river unless its published
 	if ($status == TODO_STATUS_PUBLISHED) {
-		add_to_river('river/object/todo/create', 'create', elgg_get_logged_in_user_guid(), $todo->getGUID());	
+		elgg_create_river_item(array(
+			'view' => 'river/object/todo/create',
+			'action_type' => 'create',
+			'subject_guid' => elgg_get_logged_in_user_guid(),
+			'object_guid' => $todo->guid
+		));	
 		notify_todo_users_assigned($todo);
 	}
 }

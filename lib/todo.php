@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -232,9 +232,9 @@ function get_todos(array $params) {
 	$dbprefix = elgg_get_config('dbprefix');
 	
 	// Without complete/manual wheres (for owned/all)
-	$complete = get_metastring_id('complete');
-	$manual_complete = get_metastring_id('manual_complete');
-	$one_id = get_metastring_id(1);
+	$complete = elgg_get_metastring_id('complete');
+	$manual_complete = elgg_get_metastring_id('manual_complete');
+	$one_id = elgg_get_metastring_id(1);
 						
 	$without_complete_manual_wheres = array();
 	$without_complete_manual_wheres[] = "NOT EXISTS (
@@ -386,8 +386,8 @@ function get_todos(array $params) {
 			break;
 		case 'assigned':
 		/********************* ASSIGNED ********************/
-			$test_id = get_metastring_id('manual_complete');
-			$one_id = get_metastring_id(1);
+			$test_id = elgg_get_metastring_id('manual_complete');
+			$one_id = elgg_get_metastring_id(1);
 			$wheres = array();
 
 			$relationship = COMPLETED_RELATIONSHIP;
@@ -556,7 +556,7 @@ function assign_users_to_todo($assignee_guids, $todo_guid) {
 				$success &= assign_user_to_todo($assignee, $todo_guid);
 			} else if ($entity instanceof ElggGroup) {
 				// If we've got a group, we need to assign each member of that group
-				foreach ($entity->getMembers(0) as $member) {
+				foreach ($entity->getMembers(array('limit' => 0)) as $member) {
 					if ($member->getGUID() == $todo->owner_guid) {
 						continue;
 					}
@@ -744,7 +744,7 @@ function get_todo_assignees($guid) {
 			if (elgg_instanceof($entity, 'user')) {
 				$assignees[] = $entity;
 			} else if (elgg_instanceof($entity, 'group')) {
-				foreach ($entity->getMembers() as $member) {
+				foreach ($entity->getMembers(array('limit' => 0)) as $member) {
 					$assignees[] = $member;
 				}
 			}
@@ -930,8 +930,8 @@ function count_unaccepted_todos($user_guid) {
 			AND r3.relationship = '$completed'
 			AND r3.guid_two = e.guid)";
 			
-	$test_id = get_metastring_id('manual_complete');
-	$one_id = get_metastring_id(1);
+	$test_id = elgg_get_metastring_id('manual_complete');
+	$one_id = elgg_get_metastring_id(1);
 	
 	$wheres[] = "NOT EXISTS (
 			SELECT 1 FROM {$dbprefix}metadata md
@@ -1056,8 +1056,8 @@ function count_assigned_todos_by_due_date($user_guid, $date_params, $status = 'i
 	
 
 
-	$test_id = get_metastring_id('manual_complete');
-	$one_id = get_metastring_id(1);
+	$test_id = elgg_get_metastring_id('manual_complete');
+	$one_id = elgg_get_metastring_id(1);
 	$dbprefix = elgg_get_config('dbprefix');
 	
 	$wheres = array();

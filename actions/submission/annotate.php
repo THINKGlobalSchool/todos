@@ -89,7 +89,14 @@ if ($entity->owner_guid != $user->guid) {
 system_message(elgg_echo("submission_annotation:posted"));
 
 //add to river
-add_to_river('river/annotation/submission_annotation/create', 'comment', $user->guid, $entity->guid, "", 0, $annotation);
+elgg_create_river_item(array(
+	'view' => 'river/annotation/submission_annotation/create',
+	'action_type' => 'comment',
+	'subject_guid' => $user->guid,
+	'object_guid' => $entity_guid,
+	'access_id' => $entity->access_id,
+	'annotation_id' => $annotation,
+));
 
 if (elgg_is_xhr()) {
 	$annotation_view = elgg_view_annotation(elgg_get_annotation_from_id($annotation));

@@ -118,7 +118,6 @@ if ($group_guid) {
 
 echo <<<JAVASCRIPT
 	<script type='text/javascript'>
-		elgg.tinymce.init();
 		elgg.todo.submission.destroy();
 		elgg.todo.submission.init();
 	</script>

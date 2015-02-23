@@ -5,7 +5,7 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2014
+ * @copyright THINK Global School 2010 - 2015
  * @link http://www.thinkglobalschool.com/
  * 
  */
@@ -31,7 +31,7 @@ if (elgg_instanceof($group, 'group') && $group->canEdit()) {
 
 	$todos = elgg_get_entities_from_metadata($options);
 
-	$members = $group->getMembers(0);
+	$members = $group->getMembers(array('limit' => 0));
 	
 	$a_label = elgg_echo('todo:label:assignees');
 

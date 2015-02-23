@@ -61,7 +61,12 @@ add_entity_relationship($submission->owner_guid, COMPLETED_RELATIONSHIP, $submis
 user_accept_todo($user->getGUID(), $todo_guid);
 
 // River
-add_to_river('river/object/todosubmission/create', 'create', $user->guid, $submission->getGUID());	
+elgg_create_river_item(array(
+	'view' => 'river/object/todosubmission/create',
+	'action_type' => 'create',
+	'subject_guid' => $user->guid,
+	'object_guid' => $submission->guid
+));
 
 // Notify todo owner
 global $CONFIG;
