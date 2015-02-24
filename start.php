@@ -973,6 +973,7 @@ function todo_topbar_menu_setup($hook, $type, $value, $params) {
 		'href' =>  'todo/dashboard/' . elgg_get_logged_in_user_entity()->username,
 		'priority' => 999,
 		'item_class' => 'todo-topbar-item',
+		'link_class' => 'tgsutilities-topbar-dropdown'
 	);
 	$value[] = ElggMenuItem::factory($options);
 
