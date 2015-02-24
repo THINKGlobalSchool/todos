@@ -7,7 +7,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
  * @copyright THINK Global School 2010 - 2015
- * @link http://www.thinkglobalschool.com/
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 ?>
@@ -23,16 +23,6 @@ elgg.todo.global.init = function() {
 	// Ajaxify todo accept button
 	$(document).on('click', ".todo-accept-ajax", elgg.todo.global.acceptTodo);
 	
-	// Todo hover menu item
-	$(".todo-topbar-item").mouseenter(function(event) {
-		$('#todo-topbar-hover').appendTo($(this)).position({
-			my: "left top",
-			at: "left bottom",
-			of: $(this),
-			offset: "0 -8",
-		})
-	});
-
 	// Hide multi-todo's when clicking outside box
 	$(document).on('click', 'body', function(event) {
 		if (!$(event.target).hasClass('todo-show-info') && event.target.className !== "todo-entity-info") {

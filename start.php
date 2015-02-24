@@ -209,10 +209,7 @@ function todo_init() {
 	// Logged in users init
 	if (elgg_is_logged_in()) {
 		// Owner block hook (for logged in users)
-		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');
-		
-		// Hook for site menu
-		elgg_register_plugin_hook_handler('register', 'menu:topbar', 'todo_topbar_menu_setup', 9000);
+		elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'todo_profile_menu');	
 	}
 
 	// Cron hook for todo zip cleanup
@@ -873,15 +870,52 @@ function todo_page_setup() {
 		elgg_register_admin_menu_item('administer', 'logs', 'todos');
 	}
 
-	// Todo notificaton settings
-	$item = array(
-		'name' => 'todo_notification_settings',
-		'text' => elgg_echo('todo:menu:notifications'),
-		'href' =>  'todo/settings/notifications',
-		'contexts' => array('settings'),
-		'priority' => 9999,
-	);
-	elgg_register_menu_item('page', ElggMenuItem::factory($item));
+	// Menu items for logged in users
+	if (elgg_is_logged_in()) {
+		// Todo notificaton settings
+		$item = array(
+			'name' => 'todo_notification_settings',
+			'text' => elgg_echo('todo:menu:notifications'),
+			'href' =>  'todo/settings/notifications',
+			'contexts' => array('settings'),
+			'priority' => 9999,
+		);
+		elgg_register_menu_item('page', ElggMenuItem::factory($item));
+
+		/** TODO NOTIFIER AND HOVER STATS **/
+		$user = elgg_get_logged_in_user_entity();
+		$assigned_count = count_unaccepted_todos($user->guid);
+		$incomplete_count = count_incomplete_todos($user->guid);
+
+		$class = "elgg-icon todo-notifier";
+		$text = "<span class='$class'></span>";
+
+		if ($assigned_count != 0) {
+			$text .= "<span class='messages-new unaccepted'>$assigned_count</span>";
+		} else if ($incomplete_count != 0) {
+			$text .= "<span class='messages-new incomplete'>$incomplete_count</span>";
+		}
+
+		$text .= elgg_echo('todo');
+
+		$stats_view = elgg_view('todo/topbar_stats');
+
+		elgg_register_menu_item('topbar', array(
+			'parent_name' => 'todo',
+			'name' => 'todo_hover',
+			'href' => FALSE,
+			'text' => $stats_view
+		));
+
+		elgg_register_menu_item('topbar', array(
+			'name' => 'todo',
+			'text' => $text,
+			'href' => "#",
+			'priority' => 700,
+			'section' => 'default',
+			'link_class' => "elgg-topbar-dropdown",
+		));
+	}
 }
 
 /**
@@ -921,63 +955,6 @@ function todo_url_handler($hook, $type, $url, $params) {
 			return;
 			break;
 	}
-}
-
-/**
- * Tobar menu hook handler
- * - adds the todo icon to the topbar
- *
- * @param string $hook
- * @param string $type
- * @param array  $value
- * @param array  $params
- * @return array
- */
-function todo_topbar_menu_setup($hook, $type, $value, $params) {		
-	$user = elgg_get_logged_in_user_entity();
-	$assigned_count = count_unaccepted_todos($user->guid);
-	$incomplete_count = count_incomplete_todos($user->guid);
-
-	$today = strtotime(date("F j, Y"));
-	$next_week = strtotime("+7 days", $today);
-	
-	$due_today_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '='), 'incomplete');
-	$upcoming_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '>'), 'incomplete');
-	$past_due_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '<='), 'incomplete');
-	$due_this_week_count = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'end' => $next_week), 'incomplete');
-	
-	$class = "elgg-icon todo-notifier";
-	$text = "<span class='$class'></span>";
-
-	if ($assigned_count != 0) {
-		$text .= "<span class='messages-new unaccepted'>$assigned_count</span>";
-	} else if ($incomplete_count != 0) {
-		$text .= "<span class='messages-new incomplete'>$incomplete_count</span>";
-	}
-
-	$text .= elgg_echo('todo');
-	//$text .= elgg_echo('todo:label:mytodos');
-
-	$text .= elgg_view('todo/hoverstats', array(
-		'new' => $assigned_count,
-		'upcoming' => $upcoming_count,
-		'past_due' => $past_due_count,
-		'today' => $due_today_count,
-		'this_week' => $due_this_week_count,
-	));
-	
-	// Add todo item
-	$options = array(
-		'name' => 'todo',
-		'text' => $text,
-		'href' =>  'todo/dashboard/' . elgg_get_logged_in_user_entity()->username,
-		'priority' => 999,
-		'item_class' => 'todo-topbar-item',
-		'link_class' => 'tgsutilities-topbar-dropdown'
-	);
-	$value[] = ElggMenuItem::factory($options);
-
-	return $value;
 }
 
 /**

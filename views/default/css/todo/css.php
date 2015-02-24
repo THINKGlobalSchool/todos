@@ -172,27 +172,8 @@ span.unviewed {
 	background-color: #000099;
 }
 
-.todo-topbar-item:hover #todo-topbar-hover {
-	display: block;
-}
-
-#todo-topbar-hover {
-	position: absolute;
-	top: 32px;
-	left: 0;
-	display: none;
-	background: #ffffff;
-	padding: 5px;
-	-webkit-border-radius: 0 0 4px 4px;
-	-moz-border-radius: 0 0 4px 4px;
-	border-radius: 0 0 4px 4px;
-	border: 1px solid #999;
-	border-top: 0px;
-	width: 145px;
-}
-
-#todo-topbar-hover .elgg-table td {
-	color: #222222;
+.todo-topbar-stats-table {
+	width: 180px;
 }
 
 /** Todo info toggler **/
