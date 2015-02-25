@@ -160,6 +160,19 @@ span.unviewed {
 	background:transparent url(<?php echo elgg_get_site_url(); ?>mod/todos/graphics/todo_topbar.gif) no-repeat left -16px;
 }
 
+.elgg-menu-item-todo > a:after {
+	content: "»";
+    margin-left: 6px;
+}
+
+.elgg-menu-item-todo .messages-new {
+	left: 10px;
+}
+
+.elgg-menu-item-todo a.elgg-topbar-dropdown:hover {
+	cursor: pointer !important;
+}
+
 .todo-topbar-item {
 	height: 40px;
 }

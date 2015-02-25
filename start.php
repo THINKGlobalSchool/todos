@@ -910,7 +910,7 @@ function todo_page_setup() {
 		elgg_register_menu_item('topbar', array(
 			'name' => 'todo',
 			'text' => $text,
-			'href' => "#",
+			'href' => 'todo/dashboard',
 			'priority' => 700,
 			'section' => 'default',
 			'link_class' => "elgg-topbar-dropdown",
