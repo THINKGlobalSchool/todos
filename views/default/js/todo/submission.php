@@ -30,6 +30,9 @@ elgg.todo.submission.init = function() {
 			// Set up submission content form
 			elgg.todo.submission.formDefault();
 			elgg.modules.ajaxmodule.init();
+
+			// Trigger a hook to let plugins know that the lightbox has loaded
+			elgg.trigger_hook('submission_lightbox_loaded', 'todos');
 		}
 	});
 
