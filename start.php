@@ -152,6 +152,11 @@ function todo_init() {
 	
 	// Generic entity menu handler
 	elgg_register_plugin_hook_handler('register', 'menu:entity', 'todo_content_entity_menu_setup');
+
+	// Put menu items into action menu sections if tgsutilies is enabled
+	if (elgg_is_active_plugin('tgsutilities')) {
+		elgg_register_plugin_hook_handler('sectionmap', 'actionmenu', 'todo_action_menu_setup');		
+	}
 	
 	// Remove comments from todo complete river entries
 	elgg_register_plugin_hook_handler('register', 'menu:river', 'submission_river_menu_setup');
@@ -1045,7 +1050,7 @@ function todo_entity_menu_setup($hook, $type, $value, $params) {
 					'name' => 'todo_dropout',
 					'text' => elgg_echo('todo:label:dropout'),
 					'href' => $drop_url,
-					'priority' => 151,
+					'priority' => 1,
 					'confirm' => elgg_echo('todo:label:dropoutconfirm')
 				);
 				$value[] = ElggMenuItem::factory($options);
@@ -1179,13 +1184,12 @@ function submission_entity_menu_setup($hook, $type, $value, $params) {
 		// If we can delete, show the link with provided label
 		if ($can_delete) {
 			$options = array(
-				'name' => 'delete',
+				'name' => 'submission_delete',
 				'text' => $delete_label,
 				'title' => elgg_echo('delete:this'),
 				'href' => "action/$handler/delete?guid={$entity->getGUID()}",
 				'confirm' => elgg_echo('todo:label:deletesubmissionconfirm'),
-				'priority' => 300,
-				'section' => 'other'
+				'priority' => 300
 			);
 			$value[] = ElggMenuItem::factory($options);
 		}
@@ -1269,6 +1273,31 @@ function todo_content_entity_menu_setup($hook, $type, $value, $params) {
 		$value[] = ElggMenuItem::factory($options);
 	}
 	elgg_set_ignore_access($ia);
+
+	return $value;
+}
+
+/**
+ * Place todo related entity menu items into action menu sections
+ *
+ * @param string $hook
+ * @param string $type
+ * @param array  $value
+ * @param array  $params
+ * @return array
+ */
+function todo_action_menu_setup($hook, $type, $value, $params) {
+	// Define which sections items should be in
+	$value['todo_return_required'] = 'info';
+	$value['category_assessed_task'] = 'info';
+	$value['category_exam'] = 'info';
+	$value['category_basic_task'] = 'info';
+	$value['todo_status'] = 'info';
+	$value['todo_accept'] = 'info';
+	$value['todo_duelabel'] = 'info';
+	$value['todo_view_submission'] = 'info';
+	$value['todo_dropout'] = 'actions';
+	$value['submission_delete'] = 'core';
 
 	return $value;
 }

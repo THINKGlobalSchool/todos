@@ -292,7 +292,7 @@ span.unviewed {
 }
 
 .elgg-menu-item-todo-dropout {
-	background-position: 0 -180px !important;
+	background-position: 0 -234px !important;
 }
 
 .elgg-menu-item-todo-return-required img,
