@@ -5,8 +5,8 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -105,7 +105,7 @@ $tag_input = elgg_view('input/tags', array(
 $suggested_tags_label = elgg_echo('todo:label:suggestedtags');
 $suggested_tags_input = elgg_view('input/tags', array(
 	'name' => 'suggested_tags',
-	'value' => $suggested_tags ? $suggested_tags : ',',
+	'value' => $suggested_tags
 ));
 
 // Set assignee options depending on page owner
@@ -115,7 +115,6 @@ if (elgg_instanceof($page_owner, 'group')) {
 		1 => elgg_echo('todo:label:anothergroup'),
 		0 => elgg_echo('todo:label:individuals'),
 	);
-	$userpicker_hidden = 'hidden';
 	
 	$current_group_options = array(
 		'id' => 'todo-current-group-select',
@@ -149,7 +148,7 @@ $user_picker = elgg_view('input/userpicker', array(
 ));
 
 $group_label = elgg_echo('todo:label:selectgroup');
-$group_picker = elgg_view('input/chosen_dropdown', array(
+$group_picker = elgg_view('input/dropdown', array(
 	'name' => 'members[]', 
 	'id' => 'todo-group-assignee-select', 
 	'options_values' => get_todo_groups_array(),  

@@ -468,6 +468,11 @@ h3.todo-no-submission-label {
 	background-size: 27px;
 }
 
+/* Todo Form */
+#todo-suggested-tags-container input.elgg-input-tags {
+	margin-bottom: 20px;
+}
+
 /* Todo Submission Form */
 #todo-submission-form {
 	width: 750px;

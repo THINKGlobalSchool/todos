@@ -126,7 +126,7 @@ HTML;
 					// If this is a 'downloadable' file (file or todosubmission file)
 					if (elgg_instanceof($entity, 'object', 'file') || elgg_instanceof($entity, 'object', 'todosubmissionfile')) {
 						// Url should point directly to the file, not the view
-						$href = "file/download/{$entity->guid}";
+						$href = "todo/download_file/{$entity->guid}";
 
 						// If this an elgg 'file' submitted to the todo
 						if (elgg_instanceof($entity, 'object', 'file')) {

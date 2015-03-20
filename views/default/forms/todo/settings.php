@@ -5,12 +5,12 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
-$user = elgg_extract('user', $vars);
+$user = elgg_get_logged_in_user_entity();
 
 $suppress_complete = elgg_get_plugin_user_setting('suppress_complete', $user->guid, 'todos');
 

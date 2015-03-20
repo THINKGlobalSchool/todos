@@ -14,7 +14,7 @@
 $entity = elgg_extract('entity', $vars);
 
 if ($entity) {
-	$download_url = elgg_get_site_url() . "file/download/{$entity->guid}";
+	$download_url = elgg_get_site_url() . "todo/download_file/{$entity->guid}";
 
 	$params = array(
 		'href' => $download_url,

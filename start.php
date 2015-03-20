@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
  * @copyright THINK Global School 2010 - 2015
- * @link http://www.thinkglobalschool.com/
+ * @link http://www.thinkglobalschool.org/
  * 
  * This plugin requires the apache2 zip module
  */
@@ -567,6 +567,11 @@ function todo_page_handler($page) {
 					$params = todo_get_page_content_settings_notifications();
 					break;
 			}
+			break;
+		case 'download_file':
+			$pages_dir = elgg_get_plugins_path() . 'todos/pages/todo';
+			set_input('guid', $page[1]);
+			include "$pages_dir/download_file.php";
 			break;
 		case 'debug':
 			// access_show_hidden_entities(TRUE);
