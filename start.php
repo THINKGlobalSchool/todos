@@ -2446,6 +2446,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$r_saf = SUBMISSION_ANNOTATION_FILE_RELATIONSHIP;
 	$r_ta = TODO_ASSIGNEE_RELATIONSHIP;
 	$r_tc = TODO_CONTENT_RELATIONSHIP;
+	$r_ga = 'group_admin'; // Group admin relationship, from group_tools
 
 	// Other vars
 	$dbprefix = elgg_get_config('dbprefix');
@@ -2567,15 +2568,40 @@ function todo_access_handler($hook, $type, $value, $params) {
 			) AND relationship = '$r_sub')
 	)";
 
+	// Group admin todo check (shows assignee only todos to group admins)
+	$group_admin_todo_sql_and = "(EXISTS(
+		SELECT guid_one FROM {$dbprefix}entity_relationships
+		WHERE guid_two IN (
+			SELECT ce.container_guid FROM {$dbprefix}entities ce
+			WHERE ce.guid = {$table_alias}{$guid_column}
+		)
+		AND relationship='{$r_ga}'
+		AND guid_one IN ({$user_guid})
+	))"; 
+
+	$group_admin_sub_sql_and = "{$user_guid} IN (
+		SELECT guid_one FROM {$dbprefix}entity_relationships
+		WHERE guid_two IN (
+			SELECT ce.container_guid FROM {$dbprefix}entities ce
+			WHERE ce.guid = (
+				SELECT guid_two FROM {$dbprefix}entity_relationships
+				WHERE guid_one = {$table_alias}{$guid_column}
+				AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
+			)
+		)
+		AND relationship='{$r_ga}'
+	)";
 
 	// Todo related ors
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$todo_assigned_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$group_admin_todo_sql_and}))";
 
 	// Submission related ors
 	//$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_content_object_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_object_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_object_and}))";
+	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$group_admin_sub_sql_and}))";
 
 
 	return $value;
