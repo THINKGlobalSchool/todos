@@ -33,7 +33,9 @@ if (elgg_instanceof($vars['entity'], 'object', 'todosubmission')) {
 	if (elgg_get_logged_in_user_entity() == $todo_owner 
 		|| elgg_get_logged_in_user_entity() == get_entity($vars['entity']->owner_guid) 
 		|| elgg_is_admin_logged_in()
-		|| is_todo_admin() || $parent_condition ) 
+		|| is_todo_admin() 
+		|| $todo->canEdit()
+		|| $parent_condition ) 
 	{
 		$valid = true;
 	}
