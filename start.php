@@ -2583,7 +2583,7 @@ function todo_access_handler($hook, $type, $value, $params) {
 		SELECT guid_one FROM {$dbprefix}entity_relationships
 		WHERE guid_two IN (
 			SELECT ce.container_guid FROM {$dbprefix}entities ce
-			WHERE ce.guid = (
+			WHERE ce.guid IN (
 				SELECT guid_two FROM {$dbprefix}entity_relationships
 				WHERE guid_one = {$table_alias}{$guid_column}
 				AND relationship IN ('{$r_sub}','{$r_saf}','{$r_tc}')
