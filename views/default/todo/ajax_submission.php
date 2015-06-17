@@ -66,15 +66,17 @@ $submission_annotation_options = array(
 	'entity' => $entity,
 );
 
-if (is_todo_admin() || elgg_get_logged_in_user_entity()->is_parent) {
+$todo_guid = $entity->todo_guid;
+
+$todo = get_entity($todo_guid);
+
+if (!$todo->canEdit() && (is_todo_admin() || elgg_get_logged_in_user_entity()->is_parent)) {
 	$submission_annotation_options['show_add_form'] = false;
 }
 
 $comments = elgg_view('todo/submission_annotations', $submission_annotation_options);
 
 $module = elgg_view_module('info', $navigation, $object_view . $comments);
-
-$todo_guid = $entity->todo_guid;
 
 $content = <<<HTML
 	<div class='todo-ajax-submission'>

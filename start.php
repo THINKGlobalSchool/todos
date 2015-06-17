@@ -2597,7 +2597,6 @@ function todo_access_handler($hook, $type, $value, $params) {
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($todo_acl) AND ({$group_admin_todo_sql_and}))";
 
 	// Submission related ors
-	//$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_submission_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_content_object_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$submission_owner_object_and}))";
 	$value['ors'][] = "({$table_alias}{$access_column} IN ($submission_acl) AND ({$todo_owner_object_and}))";
