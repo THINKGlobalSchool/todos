@@ -216,8 +216,9 @@ if ($full) { // Full View
 	<script type='text/javascript'>
 		var submissionCheck = function() {
 			if (window.location.href.indexOf('?submission=') != -1) {
-				var guid = window.location.href.substring(window.location.href.indexOf('?submission=') + 12);
-				$('td > a.todo-submission-lightbox[href$=' + guid + ']').trigger('click');
+					var guid = window.location.href.substring(window.location.href.indexOf('?submission=') + 12);
+					$.fancybox.init();
+					$('td > a.todo-submission-lightbox[href$=' + guid + ']').fancybox(elgg.todo.submission.getFancybox()).trigger('click.fb')
 			}
 		}
 		elgg.register_hook_handler('ready', 'system', submissionCheck);

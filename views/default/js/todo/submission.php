@@ -49,9 +49,6 @@ elgg.todo.submission.init = function() {
 	
 	// Override grade form submission
 	$(document).delegate('form.elgg-form-submission-grade', 'submit', elgg.todo.submission.submitGrade);
-	
-	// Init submission fancyboxen
-	elgg.todo.submission.initFancybox();
 }
 
 /**
@@ -73,7 +70,11 @@ elgg.todo.submission.destroy = function() {
 // Init the fancybox
 elgg.todo.submission.initFancybox = function() {
 	// Set up submission dialog
-	$(".todo-submission-lightbox").fancybox({
+	$(".todo-submission-lightbox").fancybox(elgg.todo.submission.getFancybox());
+}
+
+elgg.todo.submission.getFancybox = function() {
+	return {
 		'enableKeyboardNav': false,
 		'onComplete': function() {		
 			// Add todo navigation class to the fancybox container				
@@ -161,7 +162,7 @@ elgg.todo.submission.initFancybox = function() {
 				history.replaceState({}, '',url);
 			}
 		}
-	});
+	}
 }
 
 // Init the drag and drop uploader
@@ -547,4 +548,5 @@ elgg.todo.submission.calculateSize = function(size) {
 
 elgg.register_hook_handler('submission', 'graded', elgg.todo.submission.graded_handler);
 elgg.register_hook_handler('init', 'system', elgg.todo.submission.init);
+elgg.register_hook_handler('init', 'system',elgg.todo.submission.initFancybox);
 elgg.register_hook_handler('popstate', 'filtrate', elgg.todo.submission.popstate);
