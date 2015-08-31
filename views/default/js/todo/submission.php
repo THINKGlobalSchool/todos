@@ -142,7 +142,7 @@ elgg.todo.submission.completeClick = function(event) {
 	var $button = $(this).clone(); // Store original button
 	$(this).replaceWith("<div id='submit-empty-loader' class='elgg-ajax-loader'></div>");
 
-	var todo_guid = $('#todo-guid').val();
+	var todo_guid = $('#todo-guid-hidden').val();
 
 	// Create empty submission
 	if (!elgg.todo.submission.createSubmission(todo_guid, '', '')) {

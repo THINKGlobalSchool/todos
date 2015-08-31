@@ -17,6 +17,8 @@ if (!elgg_instanceof($todo, 'object', 'todo')) {
 	return TRUE;
 }
 
+//var_dump(has_user_submitted(elgg_get_logged_in_user_guid(), $todo->guid));
+
 $owner = $todo->getOwnerEntity();
 $container = $todo->getContainerEntity();
 $categories = elgg_view('output/categories', $vars);
@@ -209,6 +211,12 @@ if ($full) { // Full View
 	// For hash submissions
 	$hash_todo = $todo->guid;
 
+	$todo_guid_hidden = elgg_view('input/hidden', array(
+		'name' => 'todo_guid_hidden',
+		'id' => 'todo-guid-hidden',
+		'value' => $todo->guid
+	));
+
 	echo <<<HTML
 <div class='todo'>
 	$header
@@ -216,6 +224,7 @@ if ($full) { // Full View
 	$body
 	$body_table
 	$status_canedit
+	$todo_guid_hidden
 	<script type='text/javascript'>
 		var submissionCheck = function() {
 			if (window.location.href.indexOf('?submission=') != -1) {
@@ -225,6 +234,7 @@ if ($full) { // Full View
 		}
 		elgg.register_hook_handler('ready', 'system', submissionCheck);
 	</script>
+	
 </div>
 HTML;
 } else { // listing view

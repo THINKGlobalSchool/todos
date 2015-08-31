@@ -69,12 +69,10 @@ elgg_create_river_item(array(
 ));
 
 // Notify todo owner
-global $CONFIG;
-
 if (!elgg_get_plugin_user_setting('suppress_complete', $todo->owner_guid, 'todos')) {
 	notify_user(
 		$todo->owner_guid, 
-		$CONFIG->site->guid,
+		elgg_get_site_entity()->guid,
 		elgg_echo('todo:email:subjectsubmission', array($user->name, $todo->title)), 
 		elgg_echo('todo:email:bodysubmission', array($user->name, $todo->title, $todo->getURL(), $submission->getURL()))
 	);
