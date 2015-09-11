@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
  * @copyright THINK Global School 2010 - 2015
- * @link http://www.thinkglobalschool.com/
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 return array(
@@ -154,6 +154,8 @@ return array(
 	'todo:label:facultyrole' => 'Faculty Role',
 	'todo:label:adminrole' => 'Todo Admin Role',
 	'todo:label:dropoutexemptrole' => 'Drop out exempt role',
+	'todo:label:studentrole' => 'Student Role',
+	'todo:label:studentfilter' => 'My Groups',
 	'todo:label:graderequired' => 'Grade Required',
 	'todo:label:gradetotal' => 'Grade Total',
 	'todo:label:grade' => 'Grade',

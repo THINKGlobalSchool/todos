@@ -5,8 +5,8 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010 - 2013
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -34,13 +34,26 @@ $calendars = array();
 if ($categories) {
 	$categories = unserialize($categories);
 
-	foreach ($categories as $category) {
-		$category = get_entity($category);
+	// If the user is a member of the 'student' role add a filter for a psuedo category containing the users groups
+	if (roles_is_member(elgg_get_plugin_setting('studentrole', 'todos'), elgg_get_logged_in_user_guid())) {
+		array_unshift($categories, "student_groups");
+	}
+
+	foreach ($categories as $id) {
+		$category = get_entity($id);
 		if (elgg_instanceof($category, 'object', 'group_category')) {
 			$url = elgg_get_site_url() . 'ajax/view/todo/calendar_feed?category=' . $category->guid;
 			$url .= '&' . TODO_ASSESSED_TASK . '=1&' . TODO_EXAM . '=1';
 
 			$calendars[$category->guid] = array(
+				'display' => FALSE,
+				'url' => $url,
+			);
+		} else if ($id == 'student_groups') {
+			$url = elgg_get_site_url() . 'ajax/view/todo/calendar_feed?category=' . $id;
+			$url .= '&' . TODO_ASSESSED_TASK . '=1&' . TODO_EXAM . '=1';
+
+			$calendars['student_groups'] = array(
 				'display' => FALSE,
 				'url' => $url,
 			);

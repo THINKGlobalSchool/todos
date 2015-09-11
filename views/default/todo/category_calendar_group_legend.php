@@ -5,8 +5,8 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -14,7 +14,7 @@ $category_guid = get_input('category_guid');
 
 $category = get_entity($category_guid);
 
-if (elgg_instanceof($category, 'object', 'group_category')) {
+if (elgg_instanceof($category, 'object', 'group_category') || $category_guid == 'student_groups') {
 	// Get category colors from backend
 	$colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 	$colors = unserialize($colors);
@@ -26,8 +26,13 @@ if (elgg_instanceof($category, 'object', 'group_category')) {
 	// Get foreground color
 	$fg = $category_colors['fg'];
 
-	// Get category groups
-	$groups = groupcategories_get_groups($category, 0);
+	if ($category) {
+		// Get category groups
+		$groups = groupcategories_get_groups($category, 0);
+	} else if ($category_guid == 'student_groups') {
+		$groups = elgg_get_logged_in_user_entity()->getGroups(array('limit' => 0));
+	}
+
 
 	foreach ($groups as $idx => $group) {
 		// Get this groups color from the available palette

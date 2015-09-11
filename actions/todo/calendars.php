@@ -11,10 +11,46 @@
  */
 
 $category_guids = get_input('categories_list');
+$student_category = get_input('student_category');
+
+if (!in_array($student_category, $category_guids)) {
+	$category_guids[] = $student_category;
+}
+
+$category_count = count($category_guids);
+
 $categories = serialize($category_guids);
 
 $backgrounds = get_input('background');
 $foregrounds = get_input('foreground');
+
+$color_count = count($backgrounds);
+
+// Add/remove elements if there is a count discrepency 
+if ($category_count > $color_count) {
+	array_unshift($backgrounds, "");
+	array_unshift($foregrounds, "");
+} else if ($category_count < $color_count) {
+
+
+	$current_colors = unserialize(elgg_get_plugin_setting('calendar_category_colors', 'todos'));
+	
+	$current_categories = array();
+
+	foreach ($current_colors as $idx => $val) {
+		$current_categories[] = $idx;
+	}
+
+	$diff = array_diff($current_categories, $category_guids);
+	
+	foreach ($diff as $idx => $val) {
+		unset($backgrounds[$idx]);
+		unset($foregrounds[$idx]);
+
+		$backgrounds = array_values($backgrounds);
+		$foregrounds = array_values($backgrounds);
+	}
+}
 
 $spread = get_input('palette_spread');
 

@@ -22,13 +22,13 @@ echo <<<___CSS
 	.elgg-todocalendar-feed-$guid a,
 	.elgg-todocalendar-feed-$guid,
 	.elgg-todocalendar-feed-$guid .fc-event-skin {
-		background-color: #$bg;
-		border-color: #$bg;
-		color: #$fg;
+		background-color: $bg;
+		border-color: $bg;
+		color: $fg;
 	}
 	
 	.elgg-todocalendar-feed-$guid label {
-		color: #$fg;
+		color: $fg;
 	}
 ___CSS;
 }

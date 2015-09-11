@@ -5,8 +5,8 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -43,6 +43,13 @@ $dropout_exempt_role_label = elgg_echo('todo:label:dropoutexemptrole');
 $dropout_exempt_role_input = elgg_view('input/roledropdown', array(
     'name' => 'params[dropoutexemptrole]',
     'value' => $vars['entity']->dropoutexemptrole,
+    'show_hidden' => TRUE,
+));
+
+$student_role_label = elgg_echo('todo:label:studentrole');
+$student_role_input = elgg_view('input/roledropdown', array(
+    'name' => 'params[studentrole]',
+    'value' => $vars['entity']->studentrole,
     'show_hidden' => TRUE,
 ));
 
@@ -141,6 +148,10 @@ $content = <<<HTML
     <div>
         <label>$dropout_exempt_role_label</label> 
         $dropout_exempt_role_input
+    </div>
+       <div>
+        <label>$student_role_label</label> 
+        $student_role_input
     </div>
 	<div>
 		<label>$submission_tz_label</label> 

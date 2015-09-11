@@ -5,14 +5,13 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  *
  */
 
 
 $categories = elgg_get_plugin_setting('calendar_categories', 'todos');
-
 $category_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
 $spread = elgg_get_plugin_setting('palette_spread', 'todos');
 
@@ -24,13 +23,23 @@ if ($categories) {
 	$categories = unserialize($categories);
 	$category_colors = unserialize($category_colors);
 
+	if (!in_array("student_groups", $categories)) {
+		$categories[] = "student_groups";
+	}
+
 	$background_label = elgg_echo('todo:label:calendarbackground');
 	$foreground_label = elgg_echo('todo:label:calendarforeground');
 	
-	foreach ($categories as $category) {
-		$category = get_entity($category);
+	foreach ($categories as $category_guid) {
+		$category = get_entity($category_guid);
+
+		if (elgg_instanceof($category, 'object', 'group_category')) {
+			$title = $category->title;
+		} else {
+			$title = elgg_echo('todo:label:studentfilter');
+		}
 		
-		$bg = $category_colors[$category->guid]['bg'];
+		$bg = $category_colors[$category_guid]['bg'];
 		
 		$background_input = elgg_view('input/text', array(
 			'name' => 'background[]',
@@ -38,7 +47,7 @@ if ($categories) {
 			'class' => 'mvm',
 		));
 		
-		$fg = $category_colors[$category->guid]['fg'];
+		$fg = $category_colors[$category_guid]['fg'];
 		
 		$foreground_input = elgg_view('input/text', array(
 			'name' => 'foreground[]',
@@ -47,7 +56,7 @@ if ($categories) {
 		));
 	
 		$category_color_content .= "<tr>
-			<td><div class='elgg-todocalendar-feed elgg-todocalendar-feed-$category->guid pas mvm'>$category->title</div></td>
+			<td><div class='elgg-todocalendar-feed elgg-todocalendar-feed-$category_guid pas mvm'>$title</div></td>
 			<td>$background_input</td>
 			<td>$foreground_input</td>
 		</tr>";
@@ -74,6 +83,11 @@ if ($categories) {
 HTML;
 }
 
+$student_hidden_input = elgg_view('input/hidden', array(
+	'name' => 'student_category',
+	'value' => 'student_groups'
+));
+
 $categories_input = elgg_view('input/groupcategories', array(
 	'label' => elgg_echo('todo:label:showcategorycalendar'),
 	'value' => $categories,
@@ -92,6 +106,7 @@ $submit_input = elgg_view('input/submit', array(
 
 $content = <<<HTML
 	<div>
+		$student_hidden_input
 		$categories_input
 	</div>
 	$color_content

@@ -5,8 +5,8 @@
  * @package Todo
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
- * @copyright THINK Global School 2010
- * @link http://www.thinkglobalschool.com/
+ * @copyright THINK Global School 2010 - 2015
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -21,28 +21,32 @@ $category = get_entity($category_guid);
 
 $container_guids = ELGG_ENTITIES_ANY_VALUE;
 
+// Array to hold container colors (per group colors)
+$container_colors = array();
+
+// Get plugin setting colors
+$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
+$calendar_colors = unserialize($calendar_colors);
+
+// Isolate palette for this category
+$category_color = $calendar_colors[$category_guid];
+$category_palette = $category_color['palette'];
+
 if (elgg_instanceof($category, 'object', 'group_category')) {
-	// Array to hold container colors (per group colors)
-	$container_colors = array();
-
-	// Get plugin setting colors
-	$calendar_colors = elgg_get_plugin_setting('calendar_category_colors', 'todos');
-	$calendar_colors = unserialize($calendar_colors);
-	
-	// Isolate palette for this category
-	$category_color = $calendar_colors[$category_guid];
-	$category_palette = $category_color['palette'];
-
 	$groups = groupcategories_get_groups($category, 0);
-	if ($groups) {
-		$container_guids = array();
-		foreach ($groups as $idx => $group) {
-			// Add group guid to container
-			$container_guids[] = $group->guid;
+} else if ($category_guid == 'student_groups') {
+	$groups = elgg_get_logged_in_user_entity()->getGroups(array('limit' => 0));
+}
 
-			// Pick out a color from palette based on the index
-			$container_colors[$group->guid] = $category_palette[$idx];
-		}
+// Add groups to feed
+if ($groups) {
+	$container_guids = array();
+	foreach ($groups as $idx => $group) {
+		// Add group guid to container
+		$container_guids[] = $group->guid;
+
+		// Pick out a color from palette based on the index
+		$container_colors[$group->guid] = $category_palette[$idx];
 	}
 }
 
