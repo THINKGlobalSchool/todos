@@ -39,6 +39,13 @@ $admin_role_input = elgg_view('input/roledropdown', array(
     'show_hidden' => TRUE,
 ));
 
+$dropout_exempt_role_label = elgg_echo('todo:label:dropoutexemptrole');
+$dropout_exempt_role_input = elgg_view('input/roledropdown', array(
+    'name' => 'params[dropoutexemptrole]',
+    'value' => $vars['entity']->dropoutexemptrole,
+    'show_hidden' => TRUE,
+));
+
 $calendar_salt_label = elgg_echo('todo:label:calendarsalt');
 $calendar_salt_input = elgg_view('input/text', array(
 	'name' => 'params[calsalt]',
@@ -130,6 +137,10 @@ $content = <<<HTML
 	<div>
         <label>$admin_role_label</label> 
         $admin_role_input
+    </div>
+    <div>
+        <label>$dropout_exempt_role_label</label> 
+        $dropout_exempt_role_input
     </div>
 	<div>
 		<label>$submission_tz_label</label> 

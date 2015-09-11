@@ -1048,8 +1048,9 @@ function todo_entity_menu_setup($hook, $type, $value, $params) {
 				$value[] = ElggMenuItem::factory($options);
 			}
 		} else {
-			// Add a 'drop out' button, if user has not already submitted
-			if (!has_user_submitted($user_guid, $entity->getGUID())) {
+			// Add a 'drop out' button, if user has not already submitted, and user isn't in exempt role
+			$dropout_exempt_role = elgg_get_plugin_setting('dropoutexemptrole', 'todos');
+			if (!has_user_submitted($user_guid, $entity->getGUID()) && !roles_is_member($dropout_exempt_role, elgg_get_logged_in_user_guid())) {
 				$drop_url = elgg_get_site_url() . "action/todo/unassign?todo_guid=" . $entity->getGUID() . "&assignee_guid=" . $user_guid;
 				$options = array(
 					'name' => 'todo_dropout',
@@ -1581,18 +1582,22 @@ function todo_actions_menu_setup($hook, $type, $value, $params) {
 
 		// Assignees only
 		if (is_todo_assignee($entity->guid, $user_guid)) { 
-			// Add a 'drop out' button, if user has not already submitted
-			if (!has_user_submitted($user_guid, $entity->guid)) {
-				$drop_url = elgg_get_site_url() . "action/todo/unassign?todo_guid=" . $entity->getGUID() . "&assignee_guid=" . $user_guid;
-				$options = array(
-					'name' => 'todo_dropout',
-					'text' => elgg_echo('todo:label:dropout'),
-					'href' => $drop_url,
-					'priority' => 400,
-					'confirm' => elgg_echo('todo:label:dropoutconfirm'),
-					'link_class' => "elgg-button elgg-button-delete"
-				);
-				$value[] = ElggMenuItem::factory($options);
+			// Add a 'drop out' button, if user has not already submitted, and not in dropout exempt role
+			$dropout_exempt_role = elgg_get_plugin_setting('dropoutexemptrole', 'todos');
+			if (!has_user_submitted($user_guid, $entity->getGUID())) {
+				
+				if (!roles_is_member($dropout_exempt_role, elgg_get_logged_in_user_guid())) {
+					$drop_url = elgg_get_site_url() . "action/todo/unassign?todo_guid=" . $entity->getGUID() . "&assignee_guid=" . $user_guid;
+					$options = array(
+						'name' => 'todo_dropout',
+						'text' => elgg_echo('todo:label:dropout'),
+						'href' => $drop_url,
+						'priority' => 400,
+						'confirm' => elgg_echo('todo:label:dropoutconfirm'),
+						'link_class' => "elgg-button elgg-button-delete"
+					);
+					$value[] = ElggMenuItem::factory($options);
+				}
 
 				if (!$entity->manual_complete) {
 					elgg_load_js('lightbox');

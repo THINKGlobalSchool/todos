@@ -153,6 +153,7 @@ return array(
 	'todo:label:submissionsadmin' => 'Submission Admin Role',
 	'todo:label:facultyrole' => 'Faculty Role',
 	'todo:label:adminrole' => 'Todo Admin Role',
+	'todo:label:dropoutexemptrole' => 'Drop out exempt role',
 	'todo:label:graderequired' => 'Grade Required',
 	'todo:label:gradetotal' => 'Grade Total',
 	'todo:label:grade' => 'Grade',
