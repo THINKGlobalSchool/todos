@@ -17,6 +17,9 @@ $basic_task = get_input(TODO_BASIC_TASK, FALSE);
 $assessed_task = get_input(TODO_ASSESSED_TASK, FALSE);
 $exam = get_input(TODO_EXAM, FALSE);
 
+// Check for due only input
+$due_only = get_input('due_only', FALSE);
+
 $category = get_entity($category_guid);
 
 $container_guids = ELGG_ENTITIES_ANY_VALUE;
@@ -111,8 +114,13 @@ foreach ($todos as $todo) {
 	</div>
 HTML;
 	
-	// Use supplied start date, or default to time created
-	$start_date = $todo->start_date ? $todo->start_date  : $todo->time_created;
+	// Check if we're using only the due date, or displaying the full duration
+	if ($due_only) {
+		$start_date = $todo->due_date;
+	} else {
+		// Use supplied start date, or default to time created
+		$start_date = $todo->start_date ? $todo->start_date  : $todo->time_created;
+	}
 
 	$events[] = array(
 		'title' => $title_content,

@@ -105,6 +105,8 @@ elgg.todo.init = function() {
 	$(document).delegate('.todo-sidebar-calendar-toggler', 'click', elgg.todo.toggleCalendar);
 
 	$(document).delegate('.todo-sidebar-todo-category-checkbox input[name="todo_category[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
+
+	$(document).delegate('.todo-sidebar-todo-due-checkbox input[name="due_switch[]"]', 'click', elgg.todo.toggleCalendarTodoCategory);
 }
 
 
@@ -562,6 +564,10 @@ elgg.todo.toggleCalendarTodoCategory = function(event) {
 	$checked_categories.each(function() {
 		url_enabled += "&" + $(this).val() + '=1';
 	});
+
+	if ($('input[name="due_switch[]"]').is(':checked')) {
+		url_enabled += "&due_only=1";
+	}
 
 	$.each(calendars, function(k, v) {
 	 	calendars[k]['url'] = base_url + "?category=" + k + url_enabled;

@@ -90,9 +90,18 @@ if ($categories) {
 
 		$todo_category_module = elgg_view_module('aside', elgg_echo('todo:label:todocategories'), $todo_category_input, array('id' => 'filter-todo-categories'));
 
+		// Due date/start day switcher
+		$due_switch_label = elgg_echo('todo:label:dueswitch');
+
+		$due_switch_check = elgg_view('input/checkboxes', array(
+			'name' => 'due_switch',
+			'class' => 'todo-sidebar-todo-due-checkbox mtm',
+			'options' => array(0 => $due_switch_label)
+		));
+
 		// Date content
 		$datepicker = elgg_view('input/text', array('id' => 'todo-calendar-date-picker'));		
-		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker, array('id' => 'filter-date'));
+		$date_module = elgg_view_module('aside', elgg_echo('todo:label:jumptodate'), $datepicker . $due_switch_check, array('id' => 'filter-date'));
 		
 		$content = <<<HTML
 			<div id='todo-calendar-filters-content'>

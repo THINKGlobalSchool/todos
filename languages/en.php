@@ -219,6 +219,7 @@ return array(
 	'todo:label:viewiplancalendar' => 'View iPlan Calendar',
 	'todo:label:groupcategories' => 'Group Categories',
 	'todo:label:jumptodate' => 'Jump to date',
+	'todo:label:dueswitch' => 'Show only due dates',
 	'todo:label:palettespread' => 'Palette Spread',
 	'todo:label:subscribetocalendar' => 'Subscribe to your To Do Calendar',
 
