@@ -31,6 +31,8 @@ if (elgg_instanceof($student_role, 'object', 'role')) {
 
 	// Loop over members
 	foreach($role_members as $member) {
+		$todo_list = '';
+
 		$todos = get_unaccepted_todos($member->guid);
 
 		foreach ($todos as $todo) {
