@@ -172,6 +172,7 @@ return array(
 	'todo:label:todoguid' => 'Todo GUID',
 	'todo:label:groupguid' => 'Group GUID',
 	'todo:label:enable_iplan' => 'iPlan Calendars Enabled?',
+	'todo:label:enable_unaccepted_weekly' => 'Enable weekly unaccapted email?',
 	'todo:label:submission_tz' => 'Submission Timezone',
 	'todo:label:deletesubmission' => 'Delete this submission',
 	'todo:label:deletesubmissionassignee' => 'Delete this submission (for the next %s minutes)',
@@ -324,6 +325,16 @@ To view or comment on the original submission, click here:
 To view %s's profile, click here:
 
 %s",
+
+	// Todo digest emails
+	'todo:email:subjectunaccepteddigest' => 'Spot: Unaccepted To Do\'s as of %s',
+	'todo:email:bodyunaccepteddigest' => 'Hello %s,
+
+You have not yet accepted the following To Do\'s assigned to you:
+
+%s
+
+',
 
 	// Todo dropout notifications
 	'todo:email:dropout:subject' => '%s has dropped out of the To Do %s',

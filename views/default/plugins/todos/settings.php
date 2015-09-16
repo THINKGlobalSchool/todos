@@ -87,6 +87,17 @@ $enable_iplan_input = elgg_view('input/dropdown', array(
 ));
 
 
+$enable_unaccepted_weekly_label = elgg_echo('todo:label:enable_unaccepted_weekly');
+$enable_unaccepted_weekly_input = elgg_view('input/dropdown', array(
+		'name' => 'params[enable_unaccepted_weekly]',
+		'options_values' => array(
+			'1' => elgg_echo('option:yes'),
+			'0' => elgg_echo('option:no')
+		),
+	'value' => $vars['entity']->enable_unaccepted_weekly,
+));
+
+
 
 // Time zone offset select
 $utc = new DateTimeZone('UTC');
@@ -157,6 +168,10 @@ $content = <<<HTML
 		<label>$submission_tz_label</label> 
 		$submission_tz_input
 		$time_offset_preview
+	</div>
+	<div>
+		<label>$enable_unaccepted_weekly_label</label>
+		$enable_unaccepted_weekly_input
 	</div>
 HTML;
 

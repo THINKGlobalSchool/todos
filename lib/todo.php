@@ -893,12 +893,14 @@ function has_user_accepted_todo($user_guid, $todo_guid) {
 }
 
 /**
- * Count user's unaccepted todo's
+ * Get user's unaccepted todo's
  * 
  * @param $user_guid int
+ * @param $count     bool (optional) return count
+ * @param $limit     int  (optional) limit - default 10
  * @return int
  */
-function count_unaccepted_todos($user_guid) {
+function get_unaccepted_todos($user_guid, $count = FALSE, $limit = 10) {
 
 	$options = array(
 		'type' => 'object',
@@ -908,7 +910,8 @@ function count_unaccepted_todos($user_guid) {
 		'inverse_relationship' => FALSE,
 		'metadata_name' => 'status',
 		'metadata_value' => TODO_STATUS_PUBLISHED,
-		'count' => TRUE,
+		'limit' => $limit,
+		'count' => $count,
 	);
 	
 	$accepted = TODO_ASSIGNEE_ACCEPTED;
@@ -941,7 +944,36 @@ function count_unaccepted_todos($user_guid) {
 
 	$options['wheres'] = $wheres;
 	
-	return (int)elgg_get_entities_from_relationship($options);
+	return elgg_get_entities_from_relationship($options);
+}
+
+/**
+ * Count user's unaccepted todo's
+ * 
+ * @param $user_guid int
+ * @return int
+ */
+function count_unaccepted_todos($user_guid) {
+	return (int)get_unaccepted_todos($user_guid, TRUE);
+}
+
+/**
+ * Get user's complete todo's
+ *
+ * @param $user_guid      int
+ * @param $container_guid int  (optional) todos assigned by group
+ * @param $count          bool (optional) return count
+ * @return int
+ */
+function get_complete_todos($user_guid, $container_guid = NULL, $count = FALSE) {
+	return get_todos(array(
+		'context' => 'assigned',
+		'status' => 'complete',
+		'assignee_guid' => $user_guid,
+		'container_guid' => $container_guid,
+		'list' => FALSE,
+		'count' => $count,
+	));
 }
 
 /**
@@ -952,15 +984,28 @@ function count_unaccepted_todos($user_guid) {
  * @return int
  */
 function count_complete_todos($user_guid, $container_guid = NULL) {
+	return get_complete_todos($user_guid, $container_guid, TRUE);
+}
+
+/** 
+ * Get user's incomplete todo's
+ *
+ * @param $user_guid      int
+ * @param $container_guid int  (optional) todos assigned by group
+ * @param $count          bool (optional) return count
+ * @return int
+ */
+function get_incomplete_todos($user_guid, $container_guid = NULL, $count = FALSE) {
 	return get_todos(array(
 		'context' => 'assigned',
-		'status' => 'complete',
+		'status' => 'incomplete',
 		'assignee_guid' => $user_guid,
 		'container_guid' => $container_guid,
 		'list' => FALSE,
-		'count' => TRUE,
+		'count' => $count,
 	));
 }
+
 
 /** 
  * Count user's incomplete todo's
@@ -970,9 +1015,21 @@ function count_complete_todos($user_guid, $container_guid = NULL) {
  * @return int
  */
 function count_incomplete_todos($user_guid, $container_guid = NULL) {
+	return get_incomplete_todos($user_guid, $container_guid, TRUE);
+}
+
+/** 
+ * Get user's assigned todos
+ *
+ * @param $user_guid int
+ * @param $container_guid int  (optional) todos assigned by group
+ * @param $count          bool (optional) return count
+ * @return int
+ */
+function get_assigned_todos($user_guid, $container_guid = NULL, $count) {
 	return get_todos(array(
 		'context' => 'assigned',
-		'status' => 'incomplete',
+		'status' => 'any',
 		'assignee_guid' => $user_guid,
 		'container_guid' => $container_guid,
 		'list' => FALSE,
@@ -988,14 +1045,7 @@ function count_incomplete_todos($user_guid, $container_guid = NULL) {
  * @return int
  */
 function count_assigned_todos($user_guid, $container_guid = NULL) {
-	return get_todos(array(
-		'context' => 'assigned',
-		'status' => 'any',
-		'assignee_guid' => $user_guid,
-		'container_guid' => $container_guid,
-		'list' => FALSE,
-		'count' => TRUE,
-	));
+	return get_assigned_todos($user_guid, $container_guid, TRUE);
 }
 
 /**
@@ -1640,7 +1690,12 @@ function is_todo_admin($user_guid = 0) {
     }
 }
 
-
+/**
+ * Generate headers for todo attachments downloads
+ *
+ * @param  $filename Name of the file to download
+ * @return void
+ */
 function todo_download_send_headers($filename) {
     // disable caching
     $now = gmdate("D, d M Y H:i:s");
@@ -1657,4 +1712,54 @@ function todo_download_send_headers($filename) {
     // disposition / encoding on response body
     header("Content-Disposition: attachment;filename={$filename}");
     header("Content-Transfer-Encoding: binary");
+}
+
+/**
+ * Todo weekly accepted cron job
+ */
+function todo_send_weekly_unaccepted_cron($hook, $type, $value, $params) {
+	// Make sure weekly cron is enabled
+	
+	if (elgg_get_plugin_setting('enable_unaccepted_weekly', 'todos') == 1) {
+	
+		// No time limit.. could be a while
+		set_time_limit(0);
+
+		$ia = elgg_get_ignore_access();
+
+		elgg_set_ignore_access(TRUE);
+
+
+		// Get student role
+		$student_role_guid = elgg_get_plugin_setting('studentrole', 'todos');
+
+		$student_role = get_entity($student_role_guid);
+
+		$date = date("F j, Y");
+
+		$email_subject = elgg_echo('todo:email:subjectunaccepteddigest', array($date));
+
+		if (elgg_instanceof($student_role, 'object', 'role')) {
+
+			// Get role members
+			$role_members = $student_role->getMembers(0, 0, FALSE, TRUE);
+
+			// Loop over members
+			foreach($role_members as $member) {
+				$todos = get_unaccepted_todos($member->guid, FALSE, 0);
+
+				foreach ($todos as $todo) {
+					$todo_list .= "{$todo->title}\r\n{$todo->getURL()}\r\n\r\n";
+				}
+
+				$email_body = elgg_echo('todo:email:bodyunaccepteddigest', array($member->name, $todo_list));
+
+				notify_user($member->guid, elgg_get_site_entity()->guid, $email_subject, $email_body, array(), "email");
+			}
+		} 
+
+		elgg_set_ignore_access($ia);
+	}
+
+	return $value;
 }

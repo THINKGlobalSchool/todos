@@ -226,6 +226,9 @@ function todo_init() {
 
 	elgg_register_plugin_hook_handler('cron', $delete_period, 'todo_cleanup_cron');
 
+	// Cron hook for weekly unaccepted email
+	elgg_register_plugin_hook_handler('cron', 'minute', 'todo_send_weekly_unaccepted_cron');
+
 	// Override comment counting for todo submissions
 	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');
 
