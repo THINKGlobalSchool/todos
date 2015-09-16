@@ -35,21 +35,23 @@ if (elgg_instanceof($student_role, 'object', 'role')) {
 
 		$todos = get_unaccepted_todos($member->guid);
 
-		foreach ($todos as $todo) {
-			$todo_list .= "{$todo->title}\r\n{$todo->getURL()}\r\n\r\n";
+		if (count($todos)) {
+			foreach ($todos as $todo) {
+				$todo_list .= "{$todo->title}\r\n{$todo->getURL()}\r\n\r\n";
+			}
+
+			$email_body = elgg_echo('todo:email:bodyunaccepteddigest', array($member->name, $todo_list));
+
+			echo "\r\n\r\n======================================================================\r\n\r\n";
+
+			echo "Subject: {$email_subject}\r\n\r\n";
+
+			echo "Body:\r\n\r\n{$email_body}";
+
+			echo "\r\n======================================================================\r\n\r\n";
+
+			//notify_user($member->guid, elgg_get_site_entity()->guid, $email_subject, $email_body, array(), "email");
 		}
-
-		$email_body = elgg_echo('todo:email:bodyunaccepteddigest', array($member->name, $todo_list));
-
-		echo "\r\n\r\n======================================================================\r\n\r\n";
-
-		echo "Subject: {$email_subject}\r\n\r\n";
-
-		echo "Body:\r\n\r\n{$email_body}";
-
-		echo "\r\n======================================================================\r\n\r\n";
-
-		//notify_user($member->guid, elgg_get_site_entity()->guid, $email_subject, $email_body, array(), "email");
 
 	}
 } else {
