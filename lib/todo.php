@@ -1746,6 +1746,8 @@ function todo_send_weekly_unaccepted_cron($hook, $type, $value, $params) {
 
 			// Loop over members
 			foreach($role_members as $member) {
+				$todo_list = '';
+
 				$todos = get_unaccepted_todos($member->guid, FALSE, 0);
 
 				foreach ($todos as $todo) {
