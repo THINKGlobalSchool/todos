@@ -1752,7 +1752,16 @@ function todo_send_weekly_unaccepted_cron($hook, $type, $value, $params) {
 
 				if (count($todos)) {
 					foreach ($todos as $todo) {
-						$todo_list .= "{$todo->title}\r\n{$todo->getURL()}\r\n\r\n";
+						$container = $todo->getContainerEntity();
+						$owner = $todo->getOwnerEntity();
+						$due = date("F j, Y", $todo->due_date);
+
+						if (elgg_instanceof($container, 'group')) {
+							$group_name = " ({$container->name}) ";
+						} else {
+							$group_name = '';
+						}
+						$todo_list .= "Title: {$todo->title}\r\nBy: {$owner->name}{$group_name}\r\nDue: {$due}\r\n{$todo->getURL()}\r\n\r\n";
 					}
 
 					$email_body = elgg_echo('todo:email:bodyunaccepteddigest', array($member->name, $todo_list));
