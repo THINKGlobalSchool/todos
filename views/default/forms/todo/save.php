@@ -26,6 +26,8 @@ $is_rubric_selected	= elgg_extract('rubric_select', $vars);
 $rubric_guid		= elgg_extract('rubric_guid', $vars);
 $access_id 			= elgg_extract('access_level', $vars);
 $category           = elgg_extract('category', $vars);
+$auto_publish       = elgg_extract('auto_publish', $vars);
+$publish_date       = elgg_extract('publish_date', $vars);
 $status				= elgg_extract('status', $vars);
 $grade_required		= elgg_extract('grade_required', $vars);
 $grade_total		= elgg_extract('grade_total', $vars);
@@ -259,8 +261,35 @@ $status_input = elgg_view('input/dropdown', array(
 		TODO_STATUS_PUBLISHED => elgg_echo('todo:status:published')
 	)
 ));
-		
-		
+
+// Auto publish checkbox
+$auto_publish_label = elgg_echo('todo:label:autopublish');
+$auto_publish_check = "<input type='checkbox' class='input-checkboxes' " . ($auto_publish ? "checked='checked' ": '' ) .  " name='auto_publish' id='todo-auto-publish'>";
+
+// Show/hide the publish date input
+if ($auto_publish) {
+	$publish_date_class = '';
+} else {
+	$publish_date_class = 'hidden';
+}
+
+// Publish date input
+$publish_date_input = elgg_view('input/date', array(
+	'name' => 'publish_date',
+	'class' => $publish_date_class,
+	'id' => 'auto-publish-date',
+	'value' => $publish_date
+));
+
+// Show/hide the auto publish input(s)
+if ($status == TODO_STATUS_DRAFT) {
+	$auto_publish_class = '';
+} else {
+	$auto_publish_class = 'hidden';
+}
+
+
+
 $assignees_label = elgg_echo('todo:label:currentassignees');
 
 $suggested_popup_label = elgg_echo('todo:label:whatisthis');
@@ -354,7 +383,7 @@ $form_body = <<<HTML
 	</div><br />
 	<div>
 		<label>$status_label</label><br />
-		$status_input
+		$status_input <span id='auto-publish-container' class='$auto_publish_class'>$auto_publish_check <label>$auto_publish_label</label>$publish_date_input</span>
 	</div>
 	<br />
 	<div class="elgg-foot">

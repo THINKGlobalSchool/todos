@@ -74,6 +74,7 @@ return array(
 	'todo:label:currentassignees' => 'Current Assignees',
 	'todo:label:status' => 'Status',
 	'todo:label:publishstatus' => 'Publish Status',
+	'todo:label:publishdate' => 'Publishing on date',
 	'todo:label:completetodo' => 'Complete To Do',
 	'todo:label:flagcomplete' => 'Close To Do',
 	'todo:label:flagopen' => 'Open To Do',
@@ -198,6 +199,7 @@ return array(
 	'todo:label:connectthree' => 'Click the arrow next to "Other Calendars" then click "Add by URL"', 
 	'todo:label:connectfour' /** fun game! **/ => 'Paste the URL into the "URL" box provided, then click "Add Calendar" to subscribe to your To Do\'s',
 	'todo:label:loadingtodos' => 'Loading To Do\'s',
+	'todo:label:autopublish' => 'Publish on date?',
 
 	// Categories
 	'todo:label:category' => 'Category',
@@ -396,6 +398,7 @@ To view %s's profile, click here:
 	'todo:error:requireddate' => 'Due date is required',
 	'todo:error:requiredgradetotal' => 'Grade Total is required',
 	'todo:error:requiredcategory' => 'Category is required',
+	'todo:error:requiredpublishdate' => 'Publish date is required',
 	'todo:error:create' => 'There was an error creating your Todo',
 	'todo:error:edit' => 'There was an error editing the Todo',
 	'todo:error:delete' => 'There was an error deleting the Todo',

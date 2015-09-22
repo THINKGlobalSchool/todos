@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
  * @copyright THINK Global School 2010 - 2015
- * @link http://www.thinkglobalschool.com/
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 
@@ -503,6 +503,8 @@ function todo_prepare_form_vars($todo = NULL) {
 		'access_level' => TODO_ACCESS_LEVEL_LOGGED_IN,
 		'access_id' => NULL,
 		'category' => NULL,
+		'auto_publish' => NULL,
+		'publish_date' => NULL,
 		'tags' => NULL,
 		'suggested_tags' => NULL,
 		'container_guid' => NULL,
@@ -533,6 +535,155 @@ function todo_prepare_form_vars($todo = NULL) {
 	elgg_clear_sticky_form('todo_edit');
 
 	return $values;
+}
+
+/**
+ * Save (create/update) a todo
+ *
+ * @param array $params
+ *
+ *     title            =>  STRING Title
+ *
+ *     description      =>  STRING Description
+ *
+ *     assignees        =>  ARRAY  Assignees
+ *
+ *     tags             =>  ARRAY  Tags
+ *
+ *     suggested_tags   =>  Array  Suggested tags
+ *
+ *     return_required  =>  BOOL   Submission required?
+ *
+ *     grade_required   =>  BOOL   Grade required?
+ *
+ *     grade_total      =>  INT    Grade total
+ *
+ *     status           =>  INT    Status (TODO_STATUS_PUBLISHED | TODO_STATUS_DRAFT)
+ *
+ *     rubric_guid      =>  INT    Rubric guid
+ *
+ *     category         =>  STRING Category (TODO_BASIC_TASK | TODO_ASSESSED_TASK | TODO_EXAM)
+ *
+ *     auto_publish     =>  BOOL   Auto publish todo on publish date (below)
+ *
+ *     publish_date     =>  INT    Publish date (timestamp)
+ *
+ *     due_date         =>  INT    Due date (timestamp)
+ *
+ *     start_date       =>  INT    Start date (timestamp)
+ *
+ *     container_guid   =>  INT    Container guid
+ *
+ *     time_published   =>  INT    Published time (timestamp)
+ *
+ *     access_id        =>  INT    Access ID
+ *
+ * @return mixed array 
+ *   
+ *     status =>  BOOL   Success or fail
+ *     guid   =>  INT    Todo guid (if successful)
+ *     error  =>  STRING Error message (if failed)
+ */
+function save_todo($params, $guid = FALSE) {	
+	// Check if we were supplied a guid
+	$todo = get_entity($guid);
+
+	// Flag to identity new/exisitng todo
+	$new = TRUE;
+
+	// Check for valid entity and edit perms
+	if (elgg_instanceof($todo, 'object', 'todo')) {
+
+		// Make sure this user can edit the todo/container
+		if (!$todo->canEdit() || !can_write_to_container($todo->owner_guid, $todo->container_guid)) {
+			return array(
+				'status' => FALSE,
+				'error' => elgg_echo("todo:error:permission")
+			); 
+		}
+
+		// Get previous status for notifications
+		$previous_status = $todo->status;
+		$todo->time_published = (($previous_status == TODO_STATUS_DRAFT && $params['status'] == TODO_STATUS_PUBLISHED) ? time() : NULL);
+
+		$new = FALSE;
+	} else {
+		// Create new entity
+		$todo = new ElggObject();
+		$todo->subtype 		  = "todo";
+		$todo->container_guid = $params['container_guid'];
+		$todo->time_published = ($params['status'] == TODO_STATUS_PUBLISHED ? time() : NULL);
+		
+	}
+
+	// Set all other supplied metadata
+	foreach ($params as $k => $v) {
+		$todo->$k = $v;
+	}
+
+	// Disable auto publish metadata if status is published
+	if ($params['status'] == TODO_STATUS_PUBLISHED) {
+		$todo->auto_publish = FALSE;
+	}
+
+	// Save and assign users
+	if (!$todo->save() || !assign_users_to_todo($params['assignees'], $todo->guid)) {
+		return array(
+			'status' => FALSE,
+			'error' => elgg_echo("todo:error:create")
+		);
+	}
+
+	// Process river/notifications
+	if (!$new) {
+		// Remove from river if setting back to a draft
+		if ($previous_status == TODO_STATUS_DRAFT && $todo->status == TODO_STATUS_PUBLISHED) {
+			elgg_create_river_item(array(
+				'view' => 'river/object/todo/create',
+				'action_type' => 'create',
+				'subject_guid' => elgg_get_logged_in_user_guid(),
+				'object_guid' => $todo->guid
+			));
+
+			notify_todo_users_assigned($todo);
+		} else if ($previous_status == TODO_STATUS_PUBLISHED && $todo->status == TODO_STATUS_DRAFT) {
+			// Remove from river if being set back to draft from published;
+			elgg_delete_river(array('object_guid' => $todo->getGUID()));
+		}
+		
+		// If we have new assignees, notify them if status is published
+		if ($assignees && $todo->status = TODO_STATUS_PUBLISHED) {
+			$owner = get_entity($todo->container_guid);
+			foreach ($assignees as $assignee) {
+				notify_user(
+					$assignee,
+					$todo->container_guid,
+					elgg_echo('todo:email:subjectassign'), 
+					sprintf(elgg_echo('todo:email:bodyassign'), 
+					$owner->name, 
+					$todo->title, 
+					$todo->getURL())
+				);
+			}
+		}
+	} else {
+		// Don't notify or add todo to the river unless its published
+		if ($todo->status == TODO_STATUS_PUBLISHED) {
+			elgg_create_river_item(array(
+				'view' => 'river/object/todo/create',
+				'action_type' => 'create',
+				'subject_guid' => elgg_get_logged_in_user_guid(),
+				'object_guid' => $todo->guid
+			));	
+			notify_todo_users_assigned($todo);
+		}
+	}
+
+	// All good, return
+	return array(
+		'status' => TRUE,
+		'guid' => $todo->guid
+	);
 }
 
 /**
@@ -1773,6 +1924,55 @@ function todo_send_weekly_unaccepted_cron($hook, $type, $value, $params) {
 
 		elgg_set_ignore_access($ia);
 	}
+
+	return $value;
+}
+
+/**
+ * Todo daily publish cron
+ */
+function todo_daily_auto_publish_cron($hook, $type, $value, $params) {
+
+	// No time limit.. could be a while
+	set_time_limit(0);
+
+	// Ignore access system
+	$ia = elgg_get_ignore_access();
+	elgg_set_ignore_access(TRUE);
+
+	// Draft, auto publish options
+	$options = array(
+		'type' => 'object',
+		'subtype' => 'todo',
+		'metadata_name_value_pairs' => array(array(
+			'name' => 'status',
+			'value' => TODO_STATUS_DRAFT
+		), array(
+			'name' => 'auto_publish',
+			'value' => 'on'
+		)),
+		'limit' => 0
+	);
+
+	// Grab todos
+	$todos = elgg_get_entities_from_metadata($options);
+
+	// Get today's timestamp, including the date offset
+	$offset_today = strtotime('today midnight') + todo_get_submission_timezone_offset();
+
+	foreach ($todos as $todo) {
+		// Get the todo's publish timestamp, including the date offset
+		$offset_publish = $todo->publish_date + todo_get_submission_timezone_offset();
+
+		// We got a match! Update to publish the todo
+		if ($offset_today == $offset_publish) {
+			save_todo(array(
+				'status' => TODO_STATUS_PUBLISHED
+			), $todo->guid);
+		}
+	}	
+
+	elgg_set_ignore_access($ia);
 
 	return $value;
 }

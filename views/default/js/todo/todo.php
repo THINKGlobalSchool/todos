@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
  * @author Jeff Tilson
  * @copyright THINK Global School 2010 - 2015
- * @link http://www.thinkglobalschool.com/
+ * @link http://www.thinkglobalschool.org/
  * 
  */
 ?>
@@ -55,8 +55,15 @@ elgg.todo.init = function() {
 	// Assign onchange for the assignee type select input
 	$('#todo-assignee-type-select').change(elgg.todo.assigneeTypeSelectChange);
 
+	// Rubric select change event
 	$('#todo-rubric-select').change(elgg.todo.rubricSelectChange);
+
+	// Todo status change event
+	$('#todo_status').change(elgg.todo.statusSelectChange);
 	
+	// Auto publish click event
+	$(document).delegate('#todo-auto-publish', 'click', elgg.todo.autoPublishClick);
+
 	// 'What is this' rollover for submission tags
 	$('#todo-suggested-what').click(function(e){e.preventDefault();});
 	$('#todo-suggested-what').hover(function() {
@@ -151,6 +158,11 @@ elgg.todo.saveSubmit = function(event) {
 			valid = false;
 		}
 	}
+
+	if ($('#todo-auto-publish').is(':checked') && !$('#auto-publish-date').val()) {
+		elgg.register_error(elgg.echo('todo:error:requiredpublishdate'));
+		valid = false;
+	}
 	
 	if (!valid) {
 		event.preventDefault();
@@ -232,6 +244,28 @@ elgg.todo.rubricSelectChange = function() {
 	} else {
 		$('#todo-rubric-select-container').hide();
 		$('#todo-rubric-guid').attr('disabled', 'DISABLED');
+	}
+}
+
+/**
+ * On change handler for todo status select
+ */
+elgg.todo.statusSelectChange = function() {
+	if ($(this).val() == 0) {
+		$('#auto-publish-container').removeClass('hidden');
+	} else {
+		$('#auto-publish-container').addClass('hidden');
+	}
+}
+
+/**
+ * Click handler for auto publish checked
+ */
+elgg.todo.autoPublishClick = function() {
+	if ($(this).is(':checked')) {
+		$('#auto-publish-date').removeClass('hidden');
+	} else {
+		$('#auto-publish-date').addClass('hidden');
 	}
 }
 

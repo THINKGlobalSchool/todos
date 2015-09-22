@@ -34,6 +34,16 @@ div.todo-assignee-container {
 	display: none;
 }
 
+#auto-publish-date {
+	width: 150px;
+	margin-left: 15px;
+	display: inline-block;
+}
+
+#auto-publish-date.hidden {
+	display: none !important;
+}
+
 .todo span.complete {
 	color: green;
 	font-weight: bold;

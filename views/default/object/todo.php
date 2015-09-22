@@ -80,6 +80,9 @@ if ($full) { // Full View
 	$duedate_label = elgg_echo("todo:label:duedate");
 	$duedate_content = elgg_view('output/text', array('value' => $date));
 
+	$publish_date_label = elgg_echo("todo:label:publishdate");
+	$publish_date_content = elgg_view('output/text', array('value' => is_int($todo->publish_date) ? date("F j, Y", $todo->publish_date) : $todo->publish_date));	
+
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';
 	
@@ -165,6 +168,11 @@ if ($full) { // Full View
 	// Due date content
 	if ($todo->due_date) {
 		$body_table .= "<tr><td>$duedate_label</td><td>$duedate_content</td></td>";
+	}
+
+	// Show auto publish date (if set) 
+	if ($todo->status == TODO_STATUS_DRAFT && $todo->auto_publish) {
+		$body_table .= "<tr><td>$publish_date_label</td><td>$publish_date_content</td></td>";	
 	}
 
 	// Submission Required Content
