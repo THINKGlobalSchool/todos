@@ -1957,15 +1957,13 @@ function todo_daily_auto_publish_cron($hook, $type, $value, $params) {
 	// Grab todos
 	$todos = elgg_get_entities_from_metadata($options);
 
-	// Get today's timestamp, including the date offset
-	$offset_today = strtotime('today midnight') + todo_get_submission_timezone_offset();
+	// Get the current hour's timestamp (might be triggered a few seconds later.. need to use min), including the date offset
+	$current_hour = mktime(date("H"), 0, 0);
+	$offset_hour = $current_hour + todo_get_submission_timezone_offset();
 
 	foreach ($todos as $todo) {
-		// Get the todo's publish timestamp, including the date offset
-		$offset_publish = $todo->publish_date + todo_get_submission_timezone_offset();
-
 		// We got a match! Update to publish the todo
-		if ($offset_today == $offset_publish) {
+		if ($offset_hour == $todo->publish_date) {
 			save_todo(array(
 				'status' => TODO_STATUS_PUBLISHED
 			), $todo->guid);

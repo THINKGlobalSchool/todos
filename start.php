@@ -230,7 +230,7 @@ function todo_init() {
 	elgg_register_plugin_hook_handler('cron', 'weekly', 'todo_send_weekly_unaccepted_cron');
 
 	// Cron hook for daily autopublish
-	elgg_register_plugin_hook_handler('cron', 'daily', 'todo_daily_auto_publish_cron');
+	elgg_register_plugin_hook_handler('cron', 'hourly', 'todo_daily_auto_publish_cron');
 
 	// Override comment counting for todo submissions
 	elgg_register_plugin_hook_handler('comments:count', 'object', 'todo_submission_comment_count');

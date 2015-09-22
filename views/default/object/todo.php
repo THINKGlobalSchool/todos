@@ -81,7 +81,7 @@ if ($full) { // Full View
 	$duedate_content = elgg_view('output/text', array('value' => $date));
 
 	$publish_date_label = elgg_echo("todo:label:publishdate");
-	$publish_date_content = elgg_view('output/text', array('value' => is_int($todo->publish_date) ? date("F j, Y", $todo->publish_date) : $todo->publish_date));	
+	$publish_date_content = elgg_view('output/text', array('value' => is_int($todo->publish_date) ? date("F j, Y g:i a", $todo->publish_date) : $todo->publish_date));	
 
 	$return_label = elgg_echo("todo:label:returnrequired");
 	$return_content = $todo->return_required ? 'Yes' : 'No';

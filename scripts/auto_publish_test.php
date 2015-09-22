@@ -25,17 +25,21 @@ $options = array(
 $todos = elgg_get_entities_from_metadata($options);
 
 if ($ddate = get_input('ddate', FALSE)) {
-	$offset_today = strtotime(date("Ymd", $ddate)) + todo_get_submission_timezone_offset();
-
-	var_dump($offset_today);
+	$given_hour = mktime(date("H", $ddate), 0, 0);
+	$offset_hour = strtotime(date("Ymd", $ddate)) + todo_get_submission_timezone_offset();
 } else {
-	$offset_today = strtotime('today midnight') + todo_get_submission_timezone_offset();
+	$current_hour = mktime(date("H"), 0, 0);
+	$offset_hour = $current_hour + todo_get_submission_timezone_offset();
 }
+
+// var_dump($offset_hour);
 
 foreach ($todos as $todo) {
 	$offset_publish = $todo->publish_date + todo_get_submission_timezone_offset();
 
-	if ($offset_today == $offset_publish) {
+	var_dump($todo->publish_date);
+
+	if ($offset_hour == $offset_publish) {
 		save_todo(array(
 			'status' => TODO_STATUS_PUBLISHED
 		), $todo->guid);

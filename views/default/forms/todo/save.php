@@ -274,11 +274,13 @@ if ($auto_publish) {
 }
 
 // Publish date input
-$publish_date_input = elgg_view('input/date', array(
+$publish_date_input = elgg_view('input/datetime', array(
 	'name' => 'publish_date',
 	'class' => $publish_date_class,
 	'id' => 'auto-publish-date',
-	'value' => $publish_date
+	'value' => $publish_date,
+	'timeformat' => "h:00 tt",
+	'minDate' => 0
 ));
 
 // Show/hide the auto publish input(s)

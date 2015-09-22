@@ -74,7 +74,7 @@ return array(
 	'todo:label:currentassignees' => 'Current Assignees',
 	'todo:label:status' => 'Status',
 	'todo:label:publishstatus' => 'Publish Status',
-	'todo:label:publishdate' => 'Publishing on date',
+	'todo:label:publishdate' => 'Publishing on',
 	'todo:label:completetodo' => 'Complete To Do',
 	'todo:label:flagcomplete' => 'Close To Do',
 	'todo:label:flagopen' => 'Open To Do',

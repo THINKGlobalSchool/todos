@@ -35,7 +35,7 @@ div.todo-assignee-container {
 }
 
 #auto-publish-date {
-	width: 150px;
+	width: 220px;
 	margin-left: 15px;
 	display: inline-block;
 }
