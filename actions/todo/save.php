@@ -65,6 +65,7 @@ $result = save_todo(array(
 	'suggested_tags' => $suggested_tags,
 	'due_date' => $due_date,
 	'start_date' => $start_date,
+	'return_required' => $return_required,
 	'assignees' => $assignees,
 	'container_guid' => $container_guid,
 	'status' => $status,
