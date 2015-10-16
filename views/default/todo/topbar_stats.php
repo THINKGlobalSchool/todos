@@ -13,13 +13,13 @@
  */
 $user = elgg_get_logged_in_user_entity();
 
-$today = strtotime(date("F j, Y"));
+$today = strtotime(date("F j, Y",time() + todo_get_submission_timezone_offset()));
 $next_week = strtotime("+7 days", $today);
 		
 $new = count_unaccepted_todos($user->guid);
 $due_today = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '='), 'incomplete');
 $upcoming = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '>'), 'incomplete');
-$past_due = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '<='), 'incomplete');
+$past_due = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'operand' => '<'), 'incomplete');
 $due_this_week = count_assigned_todos_by_due_date($user_guid, array('start' => $today, 'end' => $next_week), 'incomplete');
 
 $past_due_label = elgg_echo('todo:label:pastdue');
