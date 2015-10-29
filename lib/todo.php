@@ -708,7 +708,7 @@ function assign_users_to_todo($assignee_guids, $todo_guid) {
 			} else if ($entity instanceof ElggGroup) {
 				// If we've got a group, we need to assign each member of that group
 				foreach ($entity->getMembers(array('limit' => 0)) as $member) {
-					if ($member->getGUID() == $todo->owner_guid) {
+					if ($member->getGUID() == $todo->owner_guid || $entity->canEdit($member->guid)) {
 						continue;
 					}
 					$success &= assign_user_to_todo($member->getGUID(), $todo_guid);
